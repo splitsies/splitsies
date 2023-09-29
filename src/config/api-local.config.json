@@ -1,0 +1,5 @@
+{
+    "expense": "http://localhost:14623/dev-pr/expense",
+    "expenseSocket": "ws://localhost:14624",
+    "users": "http://localhost:6001/dev-pr/users/"
+}

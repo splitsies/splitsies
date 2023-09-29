@@ -5,7 +5,7 @@
  * @format
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import type {PropsWithChildren} from 'react';
 import {
   SafeAreaView,
@@ -24,12 +24,15 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import { IExpenseManager } from './src/managers/expense-manager/expense-manager-interface';
+import { lazyInject } from './src/utils/lazy-inject';
 
 type SectionProps = PropsWithChildren<{
   title: string;
 }>;
 
-function Section({children, title}: SectionProps): JSX.Element {
+function Section({ children, title }: SectionProps): JSX.Element {
+    
   const isDarkMode = useColorScheme() === 'dark';
   return (
     <View style={styles.sectionContainer}>
@@ -56,7 +59,24 @@ function Section({children, title}: SectionProps): JSX.Element {
 }
 
 function App(): JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+    const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
+    const [expenses, setExpenses] = useState(_expenseManager.expenses);
+
+    const isDarkMode = useColorScheme() === 'dark';
+
+    useEffect(() => onConnect(), []);
+
+    const onConnect = () => {
+        const subscription = _expenseManager.expenses$.subscribe({
+            next: data => setExpenses(data)
+        });
+
+        void _expenseManager.requestForUser();
+        
+        return () => subscription.unsubscribe();
+    }
+    
+    
 
   const backgroundStyle = {
     backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
@@ -85,6 +105,7 @@ function App(): JSX.Element {
           </Section>
           <Section title="Debug">
             <DebugInstructions />
+            
           </Section>
           <Section title="Learn More">
             Read the docs to discover what to do next:

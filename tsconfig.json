@@ -1,3 +1,9 @@
 {
-  "extends": "@tsconfig/react-native/tsconfig.json"
+  "extends": "@tsconfig/react-native/tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react",
+    "experimentalDecorators": true, // necessary for inversify usage
+    "emitDecoratorMetadata": true,
+    "types": ["reflect-metadata"],
+  }
 }
