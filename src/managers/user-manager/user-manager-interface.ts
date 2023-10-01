@@ -1,7 +1,13 @@
-import { IUserDto } from "@splitsies/shared-models";
+import { IUserCredential, IUserDto } from "@splitsies/shared-models";
 import { Observable } from "rxjs";
+import { IBaseManager } from "../base-manager-interface";
 
-export interface IUserManager {
-    readonly user$: Observable<IUserDto | null>;
-    createUser(user: Omit<IUserDto, "id">, password: string): Promise<IUserDto>;
+export interface IUserManager extends IBaseManager {
+    readonly user$: Observable<IUserCredential | null>;
+    readonly user: IUserCredential | null;
+    signOut(): Promise<void>;
+    requestCreateUser(user: Omit<IUserDto, "id">, password: string): Promise<boolean>;
+    requestAuthenticate(username: string, password: string): Promise<boolean>;
 }
+
+export const IUserManager = Symbol.for("IUserManager");

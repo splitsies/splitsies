@@ -32,9 +32,18 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         super();
     }
 
-    async requestForUser(): Promise<void> {
-        // TODO: Stash the user credential and read from `IUserManager`
-        this._api.getAllExpenses("q3YRmR7cKfYDy7JB1IlemuAqdQWt");
+    protected async initialize(): Promise<void> {
+        this._api.userExpenses$.subscribe({
+            next: (data) => this._expenses$.next(data),
+        });
+
+        this._api.sessionExpense$.subscribe({
+            next: (data) => this._currentExpense$.next(data),
+        });
+    }
+
+    async requestForUser(userId: string): Promise<void> {
+        this._api.getAllExpenses(userId);
     }
 
     async connectToExpense(expenseId: string): Promise<void> {
@@ -43,17 +52,5 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     disconnectFromExpense(): void {
         this._api.disconnectFromExpense();
-    }
-
-    protected subscribe(): void {
-        this._api.userExpenses$.subscribe({
-            next: (data) => {
-                console.log(`data length from api: ${data.length}`); this._expenses$.next(data)
-            }
-        });
-
-        this._api.sessionExpense$.subscribe({
-            next: (data) => this._currentExpense$.next(data),
-        });
     }
 }

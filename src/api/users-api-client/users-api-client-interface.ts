@@ -1,8 +1,11 @@
-import { CreateUserRequest, IDataResponse, IUserDto } from "@splitsies/shared-models";
+import { CreateUserRequest, IDataResponse, IUserCredential, IUserDto } from "@splitsies/shared-models";
+import { Observable } from "rxjs";
 
 export interface IUsersApiClient {
-    getById(id: string): Promise<IDataResponse<IUserDto>>;
-    create(user: CreateUserRequest): Promise<IDataResponse<IUserDto>>;
+    readonly user$: Observable<IUserCredential | null>;
+    create(user: CreateUserRequest): Promise<void>;
+    authenticate(username: string, password: string): Promise<void>;
+    signOut(): void;
 }
 
 export const IUsersApiClient = Symbol.for("IUsersApiClient");

@@ -5,6 +5,7 @@ import { BehaviorSubject, Observable } from "rxjs";
 import { IExpense, IExpenseUpdate } from "@splitsies/shared-models";
 import { ClientBase } from "../client-base";
 import { lazyInject } from "../../utils/lazy-inject";
+import { IAuthProvider } from "../../providers/auth-provider/auth-provider-interface";
 
 @injectable()
 export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
@@ -12,6 +13,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     private readonly _userExpenses$ = new BehaviorSubject<IExpense[]>([]);
     private readonly _sessionExpense$ = new BehaviorSubject<IExpense | null>(null);
     private readonly _config = lazyInject<IApiConfig>(IApiConfig);
+    private readonly _authProvider = lazyInject<IAuthProvider>(IAuthProvider);
 
     constructor() {
         super();
@@ -27,14 +29,13 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
 
     async getAllExpenses(userId: string): Promise<void> {
         const uri = `${this._config.expense}?userId=${userId}`;
-        const expenses = await this.get<IExpense[]>(uri);
-        console.log(expenses.data);
+        const expenses = await this.get<IExpense[]>(uri, this._authProvider.provideAuthHeader());
         this._userExpenses$.next(expenses.data);
     }
 
     async getExpense(expenseId: string): Promise<void> {
         const uri = `${this._config.expense}${expenseId}`;
-        const expense = await this.get<IExpense>(uri);
+        const expense = await this.get<IExpense>(uri, this._authProvider.provideAuthHeader());
         this._sessionExpense$.next(expense.data);
     }
 
@@ -46,8 +47,8 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         const socketUri = `${this._config.expenseSocket}?expenseId=${expenseId}`;
         const onConnected = new Promise<void>((res, rej) => {
             try {
-                console.log(`attempting to connect to ${expenseId}...`)
-                this._connection = new WebSocket(socketUri);
+                console.log(`attempting to connect to ${expenseId}...`);
+                this._connection = new WebSocket(socketUri, null, { headers: this._authProvider.provideAuthHeader() });
 
                 this._connection.onopen = async () => {
                     await this.getExpense(expenseId);

@@ -26,6 +26,7 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import { IExpenseManager } from './src/managers/expense-manager/expense-manager-interface';
 import { lazyInject } from './src/utils/lazy-inject';
+import { IUserManager } from './src/managers/user-manager/user-manager-interface';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -59,19 +60,28 @@ function Section({ children, title }: SectionProps): JSX.Element {
 }
 
 function App(): JSX.Element {
+    const _userManager = lazyInject<IUserManager>(IUserManager);
+
     const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
     const [expenses, setExpenses] = useState(_expenseManager.expenses);
 
     const isDarkMode = useColorScheme() === 'dark';
-
+    useEffect(() => { console.log(expenses) }, [expenses]);
     useEffect(() => onConnect(), []);
-
     const onConnect = () => {
         const subscription = _expenseManager.expenses$.subscribe({
             next: data => setExpenses(data)
         });
 
-        void _expenseManager.requestForUser();
+        _userManager.initialized.then(() => {
+            if (!_userManager.user) { 
+                console.log("Need to authenticate");
+                return;
+            }
+    
+            void _expenseManager.requestForUser(_userManager.user.user.id);
+            console.log(`authenticated successfully. user is ${_userManager.user}`);
+        });
         
         return () => subscription.unsubscribe();
     }

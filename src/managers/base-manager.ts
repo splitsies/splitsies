@@ -2,9 +2,20 @@ import { injectable } from "inversify";
 
 @injectable()
 export abstract class BaseManager {
+    readonly initialized: Promise<void>;
+
     constructor() {
-        setTimeout(() => this.subscribe(), 0);
+        let initResolver: () => void;
+
+        this.initialized = new Promise<void>((resolve) => {
+            initResolver = resolve;
+        });
+
+        setTimeout(async () => {
+            await this.initialize();
+            initResolver();
+        }, 0);
     }
 
-    protected abstract subscribe(): void;
+    protected abstract initialize(): Promise<any>;
 }

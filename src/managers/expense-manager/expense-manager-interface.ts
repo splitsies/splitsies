@@ -8,7 +8,7 @@ export interface IExpenseManager {
     readonly currentExpense: IExpense | null;
     readonly currentExpense$: Observable<IExpense | null>;
 
-    requestForUser(): Promise<void>;
+    requestForUser(userId: string): Promise<void>;
     connectToExpense(expenseId: string): Promise<void>;
     disconnectFromExpense(): void;
 }
