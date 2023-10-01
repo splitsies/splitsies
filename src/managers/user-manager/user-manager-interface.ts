@@ -6,7 +6,7 @@ export interface IUserManager extends IBaseManager {
     readonly user$: Observable<IUserCredential | null>;
     readonly user: IUserCredential | null;
     signOut(): Promise<void>;
-    requestCreateUser(user: Omit<IUserDto, "id">, password: string): Promise<boolean>;
+    requestCreateUser(user: CreateUserRequest): Promise<boolean>;
     requestAuthenticate(username: string, password: string): Promise<boolean>;
 }
 
