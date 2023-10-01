@@ -1,4 +1,4 @@
-import { IUserCredential, IUserDto } from "@splitsies/shared-models";
+import { CreateUserRequest, IUserCredential } from "@splitsies/shared-models";
 import { Observable } from "rxjs";
 import { IBaseManager } from "../base-manager-interface";
 
