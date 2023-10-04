@@ -11,13 +11,21 @@
     "format": "prettier --write \"**/*.ts\""
   },
   "dependencies": {
+    "@react-native-community/blur": "^4.3.2",
+    "@react-native-community/datetimepicker": "^7.6.0",
+    "@react-native-community/netinfo": "^9.4.1",
+    "@react-native-picker/picker": "^2.5.1",
     "@splitsies/shared-models": "0.0.15",
     "http2": "^3.3.7",
     "inversify": "^6.0.1",
     "inversify-inject-decorators": "^3.1.0",
     "react": "18.2.0",
     "react-native": "0.72.4",
+    "react-native-gesture-handler": "^2.13.1",
     "react-native-keychain": "^8.1.2",
+    "react-native-navigation": "^7.37.0-hotfix.1",
+    "react-native-reanimated": "^3.5.4",
+    "react-native-ui-lib": "^7.8.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1",
     "stream": "^0.0.2"

@@ -1,0 +1,23 @@
+{
+    "primary": "#FFBD2F",
+    "primaryTranslucent": "rgba(255,189,47,0.25)",
+    "primaryTranslucentLight": "rgba(255,189,47,0.25)",
+    "primaryTranslucentDark": "rgba(255,189,47,0.75)",
+    "white": "#FFFFFF",
+    "black": "#000000",
+    "greyFont": "#B8B8B8",
+    "greyFontLight": "#B8B8B8",
+    "greyFontDark": "#474747",
+    "darkOverlay": "rgba(0,0,0,0.5)",
+    "divider": "#EFEFEF",
+    "dividerLight": "#EFEFEF",
+    "dividerDark": "#303030",
+    "iosKeyboardBgDarkDark": "#1C1C1C",
+    "iosKeyboardBgDarkLight": "#3A3A3A",
+    "iosKeyboardBgLightDark": "#CED1D6",
+    "iosKeyboardBgLightLight": "#CED1D6",
+    "iosKeyboardBtnDarkDark": "#616161",
+    "iosKeyboardBtnDarkLight": "#757575",
+    "iosKeyboardBtnLightDark": "#FFFFFF",
+    "iosKeyboardBtnLightLight": "#FFFFFF"
+}  

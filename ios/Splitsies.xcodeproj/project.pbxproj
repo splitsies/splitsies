@@ -8,12 +8,68 @@
 
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* SplitsiesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* SplitsiesTests.m */; };
+		09CD3F04E3CE441F9692E0FF /* ZillaSlab-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0E146DA45F54FAEB239AB7A /* ZillaSlab-Medium.ttf */; };
+		0C74B45223F1451D80BBD704 /* SofiaProLight-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 427F89B54FD84D958D04DF2C /* SofiaProLight-Italic.ttf */; };
 		0C80B921A6F3F58F76C31292 /* libPods-Splitsies.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 5DCACB8F33CDC322A6C60F78 /* libPods-Splitsies.a */; };
+		0D6D3A891289475C93FBE62A /* ZillaSlab-BoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B859070C187A4EAEA6FE71A2 /* ZillaSlab-BoldItalic.ttf */; };
+		103790BCAA6E49B8A3754D67 /* SFProDisplay-RegularItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 94133E1DF94B4AD295FC246B /* SFProDisplay-RegularItalic.otf */; };
+		12A2D713F4D94612B0459F93 /* ZillaSlab-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FB29BA16D9504DE9B74D193D /* ZillaSlab-Bold.ttf */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		1765BEA49893401B9759D6A9 /* Avenir-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 04042A2BB6974EF6A5A6EE64 /* Avenir-Light.ttf */; };
+		24D4B30A51AC46D9983F877B /* SFProDisplay-UltralightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 97DE6B2250F74D4088CACDC3 /* SFProDisplay-UltralightItalic.otf */; };
+		25A3DE2B5EE84C49ABA785B9 /* SFProDisplay-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 93B766245FB3452DB3D39585 /* SFProDisplay-Bold.otf */; };
+		3DE10A4EEDE64E19B5F72F99 /* ZillaSlab-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6C8949299AA64C36B43FFC5A /* ZillaSlab-SemiBold.ttf */; };
+		49613F0C09CF477CAA7FF6CC /* SofiaProBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E8DCEA385F8341F3BAC247FC /* SofiaProBold.ttf */; };
+		4AD434EAE70C43289E16225F /* Avenir-HeavyOblique.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 790B736A11D94B85BD79CC44 /* Avenir-HeavyOblique.ttf */; };
+		4FAF5940D03047DABDC230AE /* SFProDisplay-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 29CBF9EE9549423F8B710F39 /* SFProDisplay-MediumItalic.otf */; };
+		519B271D6676402A8D1238C5 /* Avenir-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 14CC2BF3DF5E42BBAA88519B /* Avenir-Medium.ttf */; };
+		529DA748B73949D48D066F7A /* Avenir-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2EFF492F2E634860B0A82A46 /* Avenir-Black.ttf */; };
+		56BAAA9B72424544B22E6369 /* SFProDisplay-HeavyItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = D5BE6BA9045847459342CBFD /* SFProDisplay-HeavyItalic.otf */; };
+		5ED455D131984911B3078900 /* SFProDisplay-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 32A323F4D0D3436FB2476C3F /* SFProDisplay-Light.otf */; };
+		695F40A155FC489CB8324097 /* SofiaProExtraLight-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = B604B966BAF248319405D127 /* SofiaProExtraLight-Italic.ttf */; };
+		6A72CD33983B4AA5AF7106D3 /* ZillaSlab-LightItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A830B1D622EE4ACDB18642AB /* ZillaSlab-LightItalic.ttf */; };
+		6DB8FF15B21E4EF0A62901FC /* Avenir-Oblique.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 76FE587C649E4E668E10BD19 /* Avenir-Oblique.ttf */; };
+		7072E78A955247BC800CD9B0 /* SofiaProRegular-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F6AF423B02FC48D3A7937B86 /* SofiaProRegular-Italic.ttf */; };
+		756A29B82CF049BC9B82B93A /* SFProDisplay-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 60D536F704654C91B27E9E78 /* SFProDisplay-Black.otf */; };
 		7699B88040F8A987B510C191 /* libPods-Splitsies-SplitsiesTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-Splitsies-SplitsiesTests.a */; };
+		77CC9ED6B91E448AB722C062 /* ZillaSlab-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CBD50837607F440982B3764A /* ZillaSlab-Regular.ttf */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+		827D1A6B70174C24A3C74315 /* SFProDisplay-BlackItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 97B63AAD162B47C48D92B8C1 /* SFProDisplay-BlackItalic.otf */; };
+		82D2F3E58BB94775AAF7CFA6 /* SFProDisplay-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = F6D04C0CBC9C49F5B98C3A9F /* SFProDisplay-Thin.otf */; };
+		8666A0DE43E74B7AB181947A /* SofiaProMedium-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1EA9282E39404DB691DDE41A /* SofiaProMedium-Italic.ttf */; };
+		8BFC0BD0CE4743F2B8D0D0FC /* ZillaSlab-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C922536F622744708DF34EA7 /* ZillaSlab-Italic.ttf */; };
+		905D2B86FEE54F1EBF376CA0 /* SofiaProSemiBold-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DEADB0C0D6DC4077A246C5E3 /* SofiaProSemiBold-Italic.ttf */; };
+		92276CC569274B7DB3437E12 /* SofiaProBlack-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 18C295E00DB14DF986518592 /* SofiaProBlack-Italic.ttf */; };
+		9325ADFA32544797A7336DC3 /* Avenir-BlackOblique.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 6894F43FEADE4FF0888E6D2B /* Avenir-BlackOblique.ttf */; };
+		954BEF9F21DA4105B94754A6 /* SofiaProUltraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 10103C4E87494F77A37DF134 /* SofiaProUltraLight.ttf */; };
+		A0E07E5BC5C948A48908AFC6 /* ZillaSlab-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DAA7B65BA01643769804D5CF /* ZillaSlab-Light.ttf */; };
+		A1175D6EF1974BFA9D6FBFDB /* SofiaProMedium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 516B24184FF24E0F90706286 /* SofiaProMedium.ttf */; };
+		A5060A89EB4B41AC85AA9FBF /* SofiaProRegular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0B361C402DDE45449C3DC27D /* SofiaProRegular.ttf */; };
+		A55D0DC9013646318197B370 /* SofiaProExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2843924795534B7A879863CD /* SofiaProExtraLight.ttf */; };
+		A6F922283B4B46DFA8356F90 /* SofiaProUltraLight-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 383F37E9E67E48DB8504C3EF /* SofiaProUltraLight-Italic.ttf */; };
+		A80BA8A4CC8F4B93B1959F6A /* Avenir-MediumOblique.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0BFCA8643E9544A0AF9058B7 /* Avenir-MediumOblique.ttf */; };
+		A9137F00829B4A8CB64D5429 /* SofiaProBlack.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 484B42FF26CE4C6B8D1A0550 /* SofiaProBlack.ttf */; };
+		B170AE5A10FA4BAAB08B1F43 /* SFProDisplay-SemiboldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 0C044390BC8C4878A0F66372 /* SFProDisplay-SemiboldItalic.otf */; };
+		B6421AA711064EA7ABC51632 /* Avenir-LightOblique.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 8162B13D5BBC49438FD69FCA /* Avenir-LightOblique.ttf */; };
+		BBD6BF688CF74C1D842C7D54 /* SFProDisplay-Heavy.otf in Resources */ = {isa = PBXBuildFile; fileRef = 672419FB6F794F28B6935B4E /* SFProDisplay-Heavy.otf */; };
+		BC22D85A66C14A068B965462 /* ZillaSlab-SemiBoldItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A6297DE5838D425A840BF0E5 /* ZillaSlab-SemiBoldItalic.ttf */; };
+		BE182F81795744849131E1ED /* Avenir-Book.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D6711B4EE27949418DFC7A53 /* Avenir-Book.ttf */; };
+		BE9141B4FD45461FBAA97CF1 /* SFProDisplay-Ultralight.otf in Resources */ = {isa = PBXBuildFile; fileRef = A4268799DEE146C6ACDAD6B2 /* SFProDisplay-Ultralight.otf */; };
+		BE9AD74864504AD0BDACE8B6 /* Avenir-BookOblique.ttf in Resources */ = {isa = PBXBuildFile; fileRef = FE6CBDD5513D4A63AEEC981A /* Avenir-BookOblique.ttf */; };
+		C1F0D1B72BCA495D86313039 /* SFProDisplay-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9A4AB79A26F048FC95C022F1 /* SFProDisplay-Regular.otf */; };
+		C3380B1D6F1A4BE3B391873E /* SFProDisplay-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2FD7E43AE52C4C3EA01F2EFE /* SFProDisplay-Medium.otf */; };
+		C55683E00D4E422EA20E8157 /* SFProDisplay-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = D2FFC041C71F4F10B549A201 /* SFProDisplay-BoldItalic.otf */; };
+		D210C759507044169D925DA4 /* SFProDisplay-ThinItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = AAC102FA9E66444F89D64225 /* SFProDisplay-ThinItalic.otf */; };
+		DA5C4FFF3F4E4A4783462B6E /* ZillaSlab-MediumItalic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CFEABF9B5CB240529BE78923 /* ZillaSlab-MediumItalic.ttf */; };
+		DB915414BEB04AF58B82260B /* Avenir-Roman.ttf in Resources */ = {isa = PBXBuildFile; fileRef = AED87C2BACCC48F2B2CFE787 /* Avenir-Roman.ttf */; };
+		E6588F8C40624D06A893E3BC /* SFProDisplay-LightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 2B233B5E4ECD41979F7C2963 /* SFProDisplay-LightItalic.otf */; };
+		EEE6DC1BA369408A81E1D5D1 /* SofiaProSemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3B857FF653EB420C93B2118B /* SofiaProSemiBold.ttf */; };
+		EF00B5D54D9540ECBE8D9E2D /* Avenir-Heavy.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9585C76C78DE4D03AFD728BC /* Avenir-Heavy.ttf */; };
+		EF68D9A01D664B1F83A0A0EF /* SFProDisplay-Semibold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 06BD2FAE0A2B46629B19DA4F /* SFProDisplay-Semibold.otf */; };
+		F444A031751D44ACB69BDCE2 /* SofiaProBold-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E599D65E62E84E098F645311 /* SofiaProBold-Italic.ttf */; };
+		F72D9122919B4BAF9792D1FE /* SofiaProLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 870394F14F734A3092E47FE6 /* SofiaProLight.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -30,20 +86,76 @@
 		00E356EE1AD99517003FC87E /* SplitsiesTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SplitsiesTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		00E356F11AD99517003FC87E /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		00E356F21AD99517003FC87E /* SplitsiesTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SplitsiesTests.m; sourceTree = "<group>"; };
+		04042A2BB6974EF6A5A6EE64 /* Avenir-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Avenir-Light.ttf"; path = "../assets/fonts/Avenir-Light.ttf"; sourceTree = "<group>"; };
+		06BD2FAE0A2B46629B19DA4F /* SFProDisplay-Semibold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-Semibold.otf"; path = "../assets/fonts/SFProDisplay-Semibold.otf"; sourceTree = "<group>"; };
+		0B361C402DDE45449C3DC27D /* SofiaProRegular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = SofiaProRegular.ttf; path = ../assets/fonts/SofiaProRegular.ttf; sourceTree = "<group>"; };
+		0BFCA8643E9544A0AF9058B7 /* Avenir-MediumOblique.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Avenir-MediumOblique.ttf"; path = "../assets/fonts/Avenir-MediumOblique.ttf"; sourceTree = "<group>"; };
+		0C044390BC8C4878A0F66372 /* SFProDisplay-SemiboldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-SemiboldItalic.otf"; path = "../assets/fonts/SFProDisplay-SemiboldItalic.otf"; sourceTree = "<group>"; };
+		10103C4E87494F77A37DF134 /* SofiaProUltraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = SofiaProUltraLight.ttf; path = ../assets/fonts/SofiaProUltraLight.ttf; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Splitsies.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Splitsies.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Splitsies/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = Splitsies/AppDelegate.mm; sourceTree = "<group>"; };
 		13B07FB51A68108700A75B9A /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = Splitsies/Images.xcassets; sourceTree = "<group>"; };
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = Splitsies/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = Splitsies/main.m; sourceTree = "<group>"; };
+		14CC2BF3DF5E42BBAA88519B /* Avenir-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Avenir-Medium.ttf"; path = "../assets/fonts/Avenir-Medium.ttf"; sourceTree = "<group>"; };
+		18C295E00DB14DF986518592 /* SofiaProBlack-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SofiaProBlack-Italic.ttf"; path = "../assets/fonts/SofiaProBlack-Italic.ttf"; sourceTree = "<group>"; };
 		19F6CBCC0A4E27FBF8BF4A61 /* libPods-Splitsies-SplitsiesTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Splitsies-SplitsiesTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		1EA9282E39404DB691DDE41A /* SofiaProMedium-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SofiaProMedium-Italic.ttf"; path = "../assets/fonts/SofiaProMedium-Italic.ttf"; sourceTree = "<group>"; };
+		2843924795534B7A879863CD /* SofiaProExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = SofiaProExtraLight.ttf; path = ../assets/fonts/SofiaProExtraLight.ttf; sourceTree = "<group>"; };
+		29CBF9EE9549423F8B710F39 /* SFProDisplay-MediumItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-MediumItalic.otf"; path = "../assets/fonts/SFProDisplay-MediumItalic.otf"; sourceTree = "<group>"; };
+		2B233B5E4ECD41979F7C2963 /* SFProDisplay-LightItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-LightItalic.otf"; path = "../assets/fonts/SFProDisplay-LightItalic.otf"; sourceTree = "<group>"; };
+		2EFF492F2E634860B0A82A46 /* Avenir-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Avenir-Black.ttf"; path = "../assets/fonts/Avenir-Black.ttf"; sourceTree = "<group>"; };
+		2FD7E43AE52C4C3EA01F2EFE /* SFProDisplay-Medium.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-Medium.otf"; path = "../assets/fonts/SFProDisplay-Medium.otf"; sourceTree = "<group>"; };
+		32A323F4D0D3436FB2476C3F /* SFProDisplay-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-Light.otf"; path = "../assets/fonts/SFProDisplay-Light.otf"; sourceTree = "<group>"; };
+		383F37E9E67E48DB8504C3EF /* SofiaProUltraLight-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SofiaProUltraLight-Italic.ttf"; path = "../assets/fonts/SofiaProUltraLight-Italic.ttf"; sourceTree = "<group>"; };
 		3B4392A12AC88292D35C810B /* Pods-Splitsies.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Splitsies.debug.xcconfig"; path = "Target Support Files/Pods-Splitsies/Pods-Splitsies.debug.xcconfig"; sourceTree = "<group>"; };
+		3B857FF653EB420C93B2118B /* SofiaProSemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = SofiaProSemiBold.ttf; path = ../assets/fonts/SofiaProSemiBold.ttf; sourceTree = "<group>"; };
+		427F89B54FD84D958D04DF2C /* SofiaProLight-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SofiaProLight-Italic.ttf"; path = "../assets/fonts/SofiaProLight-Italic.ttf"; sourceTree = "<group>"; };
+		484B42FF26CE4C6B8D1A0550 /* SofiaProBlack.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = SofiaProBlack.ttf; path = ../assets/fonts/SofiaProBlack.ttf; sourceTree = "<group>"; };
+		516B24184FF24E0F90706286 /* SofiaProMedium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = SofiaProMedium.ttf; path = ../assets/fonts/SofiaProMedium.ttf; sourceTree = "<group>"; };
 		5709B34CF0A7D63546082F79 /* Pods-Splitsies.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Splitsies.release.xcconfig"; path = "Target Support Files/Pods-Splitsies/Pods-Splitsies.release.xcconfig"; sourceTree = "<group>"; };
 		5B7EB9410499542E8C5724F5 /* Pods-Splitsies-SplitsiesTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Splitsies-SplitsiesTests.debug.xcconfig"; path = "Target Support Files/Pods-Splitsies-SplitsiesTests/Pods-Splitsies-SplitsiesTests.debug.xcconfig"; sourceTree = "<group>"; };
 		5DCACB8F33CDC322A6C60F78 /* libPods-Splitsies.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-Splitsies.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		60D536F704654C91B27E9E78 /* SFProDisplay-Black.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-Black.otf"; path = "../assets/fonts/SFProDisplay-Black.otf"; sourceTree = "<group>"; };
+		672419FB6F794F28B6935B4E /* SFProDisplay-Heavy.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-Heavy.otf"; path = "../assets/fonts/SFProDisplay-Heavy.otf"; sourceTree = "<group>"; };
+		6894F43FEADE4FF0888E6D2B /* Avenir-BlackOblique.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Avenir-BlackOblique.ttf"; path = "../assets/fonts/Avenir-BlackOblique.ttf"; sourceTree = "<group>"; };
+		6C8949299AA64C36B43FFC5A /* ZillaSlab-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ZillaSlab-SemiBold.ttf"; path = "../assets/fonts/ZillaSlab-SemiBold.ttf"; sourceTree = "<group>"; };
+		76FE587C649E4E668E10BD19 /* Avenir-Oblique.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Avenir-Oblique.ttf"; path = "../assets/fonts/Avenir-Oblique.ttf"; sourceTree = "<group>"; };
+		790B736A11D94B85BD79CC44 /* Avenir-HeavyOblique.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Avenir-HeavyOblique.ttf"; path = "../assets/fonts/Avenir-HeavyOblique.ttf"; sourceTree = "<group>"; };
+		8162B13D5BBC49438FD69FCA /* Avenir-LightOblique.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Avenir-LightOblique.ttf"; path = "../assets/fonts/Avenir-LightOblique.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Splitsies/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		870394F14F734A3092E47FE6 /* SofiaProLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = SofiaProLight.ttf; path = ../assets/fonts/SofiaProLight.ttf; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-Splitsies-SplitsiesTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Splitsies-SplitsiesTests.release.xcconfig"; path = "Target Support Files/Pods-Splitsies-SplitsiesTests/Pods-Splitsies-SplitsiesTests.release.xcconfig"; sourceTree = "<group>"; };
+		93B766245FB3452DB3D39585 /* SFProDisplay-Bold.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-Bold.otf"; path = "../assets/fonts/SFProDisplay-Bold.otf"; sourceTree = "<group>"; };
+		94133E1DF94B4AD295FC246B /* SFProDisplay-RegularItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-RegularItalic.otf"; path = "../assets/fonts/SFProDisplay-RegularItalic.otf"; sourceTree = "<group>"; };
+		9585C76C78DE4D03AFD728BC /* Avenir-Heavy.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Avenir-Heavy.ttf"; path = "../assets/fonts/Avenir-Heavy.ttf"; sourceTree = "<group>"; };
+		97B63AAD162B47C48D92B8C1 /* SFProDisplay-BlackItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-BlackItalic.otf"; path = "../assets/fonts/SFProDisplay-BlackItalic.otf"; sourceTree = "<group>"; };
+		97DE6B2250F74D4088CACDC3 /* SFProDisplay-UltralightItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-UltralightItalic.otf"; path = "../assets/fonts/SFProDisplay-UltralightItalic.otf"; sourceTree = "<group>"; };
+		9A4AB79A26F048FC95C022F1 /* SFProDisplay-Regular.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-Regular.otf"; path = "../assets/fonts/SFProDisplay-Regular.otf"; sourceTree = "<group>"; };
+		A4268799DEE146C6ACDAD6B2 /* SFProDisplay-Ultralight.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-Ultralight.otf"; path = "../assets/fonts/SFProDisplay-Ultralight.otf"; sourceTree = "<group>"; };
+		A6297DE5838D425A840BF0E5 /* ZillaSlab-SemiBoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ZillaSlab-SemiBoldItalic.ttf"; path = "../assets/fonts/ZillaSlab-SemiBoldItalic.ttf"; sourceTree = "<group>"; };
+		A830B1D622EE4ACDB18642AB /* ZillaSlab-LightItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ZillaSlab-LightItalic.ttf"; path = "../assets/fonts/ZillaSlab-LightItalic.ttf"; sourceTree = "<group>"; };
+		AAC102FA9E66444F89D64225 /* SFProDisplay-ThinItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-ThinItalic.otf"; path = "../assets/fonts/SFProDisplay-ThinItalic.otf"; sourceTree = "<group>"; };
+		AED87C2BACCC48F2B2CFE787 /* Avenir-Roman.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Avenir-Roman.ttf"; path = "../assets/fonts/Avenir-Roman.ttf"; sourceTree = "<group>"; };
+		B604B966BAF248319405D127 /* SofiaProExtraLight-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SofiaProExtraLight-Italic.ttf"; path = "../assets/fonts/SofiaProExtraLight-Italic.ttf"; sourceTree = "<group>"; };
+		B859070C187A4EAEA6FE71A2 /* ZillaSlab-BoldItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ZillaSlab-BoldItalic.ttf"; path = "../assets/fonts/ZillaSlab-BoldItalic.ttf"; sourceTree = "<group>"; };
+		C0E146DA45F54FAEB239AB7A /* ZillaSlab-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ZillaSlab-Medium.ttf"; path = "../assets/fonts/ZillaSlab-Medium.ttf"; sourceTree = "<group>"; };
+		C922536F622744708DF34EA7 /* ZillaSlab-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ZillaSlab-Italic.ttf"; path = "../assets/fonts/ZillaSlab-Italic.ttf"; sourceTree = "<group>"; };
+		CBD50837607F440982B3764A /* ZillaSlab-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ZillaSlab-Regular.ttf"; path = "../assets/fonts/ZillaSlab-Regular.ttf"; sourceTree = "<group>"; };
+		CFEABF9B5CB240529BE78923 /* ZillaSlab-MediumItalic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ZillaSlab-MediumItalic.ttf"; path = "../assets/fonts/ZillaSlab-MediumItalic.ttf"; sourceTree = "<group>"; };
+		D2FFC041C71F4F10B549A201 /* SFProDisplay-BoldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-BoldItalic.otf"; path = "../assets/fonts/SFProDisplay-BoldItalic.otf"; sourceTree = "<group>"; };
+		D5BE6BA9045847459342CBFD /* SFProDisplay-HeavyItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-HeavyItalic.otf"; path = "../assets/fonts/SFProDisplay-HeavyItalic.otf"; sourceTree = "<group>"; };
+		D6711B4EE27949418DFC7A53 /* Avenir-Book.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Avenir-Book.ttf"; path = "../assets/fonts/Avenir-Book.ttf"; sourceTree = "<group>"; };
+		DAA7B65BA01643769804D5CF /* ZillaSlab-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ZillaSlab-Light.ttf"; path = "../assets/fonts/ZillaSlab-Light.ttf"; sourceTree = "<group>"; };
+		DEADB0C0D6DC4077A246C5E3 /* SofiaProSemiBold-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SofiaProSemiBold-Italic.ttf"; path = "../assets/fonts/SofiaProSemiBold-Italic.ttf"; sourceTree = "<group>"; };
+		E599D65E62E84E098F645311 /* SofiaProBold-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SofiaProBold-Italic.ttf"; path = "../assets/fonts/SofiaProBold-Italic.ttf"; sourceTree = "<group>"; };
+		E8DCEA385F8341F3BAC247FC /* SofiaProBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = SofiaProBold.ttf; path = ../assets/fonts/SofiaProBold.ttf; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
+		F6AF423B02FC48D3A7937B86 /* SofiaProRegular-Italic.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SofiaProRegular-Italic.ttf"; path = "../assets/fonts/SofiaProRegular-Italic.ttf"; sourceTree = "<group>"; };
+		F6D04C0CBC9C49F5B98C3A9F /* SFProDisplay-Thin.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-Thin.otf"; path = "../assets/fonts/SFProDisplay-Thin.otf"; sourceTree = "<group>"; };
+		FB29BA16D9504DE9B74D193D /* ZillaSlab-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "ZillaSlab-Bold.ttf"; path = "../assets/fonts/ZillaSlab-Bold.ttf"; sourceTree = "<group>"; };
+		FE6CBDD5513D4A63AEEC981A /* Avenir-BookOblique.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Avenir-BookOblique.ttf"; path = "../assets/fonts/Avenir-BookOblique.ttf"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +193,70 @@
 				00E356F11AD99517003FC87E /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		0F88A5FE5DD044D7B4F86AF5 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				60D536F704654C91B27E9E78 /* SFProDisplay-Black.otf */,
+				97B63AAD162B47C48D92B8C1 /* SFProDisplay-BlackItalic.otf */,
+				93B766245FB3452DB3D39585 /* SFProDisplay-Bold.otf */,
+				D2FFC041C71F4F10B549A201 /* SFProDisplay-BoldItalic.otf */,
+				672419FB6F794F28B6935B4E /* SFProDisplay-Heavy.otf */,
+				D5BE6BA9045847459342CBFD /* SFProDisplay-HeavyItalic.otf */,
+				32A323F4D0D3436FB2476C3F /* SFProDisplay-Light.otf */,
+				2B233B5E4ECD41979F7C2963 /* SFProDisplay-LightItalic.otf */,
+				2FD7E43AE52C4C3EA01F2EFE /* SFProDisplay-Medium.otf */,
+				29CBF9EE9549423F8B710F39 /* SFProDisplay-MediumItalic.otf */,
+				9A4AB79A26F048FC95C022F1 /* SFProDisplay-Regular.otf */,
+				94133E1DF94B4AD295FC246B /* SFProDisplay-RegularItalic.otf */,
+				06BD2FAE0A2B46629B19DA4F /* SFProDisplay-Semibold.otf */,
+				0C044390BC8C4878A0F66372 /* SFProDisplay-SemiboldItalic.otf */,
+				F6D04C0CBC9C49F5B98C3A9F /* SFProDisplay-Thin.otf */,
+				AAC102FA9E66444F89D64225 /* SFProDisplay-ThinItalic.otf */,
+				A4268799DEE146C6ACDAD6B2 /* SFProDisplay-Ultralight.otf */,
+				97DE6B2250F74D4088CACDC3 /* SFProDisplay-UltralightItalic.otf */,
+				2EFF492F2E634860B0A82A46 /* Avenir-Black.ttf */,
+				6894F43FEADE4FF0888E6D2B /* Avenir-BlackOblique.ttf */,
+				D6711B4EE27949418DFC7A53 /* Avenir-Book.ttf */,
+				FE6CBDD5513D4A63AEEC981A /* Avenir-BookOblique.ttf */,
+				9585C76C78DE4D03AFD728BC /* Avenir-Heavy.ttf */,
+				790B736A11D94B85BD79CC44 /* Avenir-HeavyOblique.ttf */,
+				04042A2BB6974EF6A5A6EE64 /* Avenir-Light.ttf */,
+				8162B13D5BBC49438FD69FCA /* Avenir-LightOblique.ttf */,
+				14CC2BF3DF5E42BBAA88519B /* Avenir-Medium.ttf */,
+				0BFCA8643E9544A0AF9058B7 /* Avenir-MediumOblique.ttf */,
+				76FE587C649E4E668E10BD19 /* Avenir-Oblique.ttf */,
+				AED87C2BACCC48F2B2CFE787 /* Avenir-Roman.ttf */,
+				18C295E00DB14DF986518592 /* SofiaProBlack-Italic.ttf */,
+				484B42FF26CE4C6B8D1A0550 /* SofiaProBlack.ttf */,
+				E599D65E62E84E098F645311 /* SofiaProBold-Italic.ttf */,
+				E8DCEA385F8341F3BAC247FC /* SofiaProBold.ttf */,
+				B604B966BAF248319405D127 /* SofiaProExtraLight-Italic.ttf */,
+				2843924795534B7A879863CD /* SofiaProExtraLight.ttf */,
+				427F89B54FD84D958D04DF2C /* SofiaProLight-Italic.ttf */,
+				870394F14F734A3092E47FE6 /* SofiaProLight.ttf */,
+				1EA9282E39404DB691DDE41A /* SofiaProMedium-Italic.ttf */,
+				516B24184FF24E0F90706286 /* SofiaProMedium.ttf */,
+				F6AF423B02FC48D3A7937B86 /* SofiaProRegular-Italic.ttf */,
+				0B361C402DDE45449C3DC27D /* SofiaProRegular.ttf */,
+				DEADB0C0D6DC4077A246C5E3 /* SofiaProSemiBold-Italic.ttf */,
+				3B857FF653EB420C93B2118B /* SofiaProSemiBold.ttf */,
+				383F37E9E67E48DB8504C3EF /* SofiaProUltraLight-Italic.ttf */,
+				10103C4E87494F77A37DF134 /* SofiaProUltraLight.ttf */,
+				FB29BA16D9504DE9B74D193D /* ZillaSlab-Bold.ttf */,
+				B859070C187A4EAEA6FE71A2 /* ZillaSlab-BoldItalic.ttf */,
+				C922536F622744708DF34EA7 /* ZillaSlab-Italic.ttf */,
+				DAA7B65BA01643769804D5CF /* ZillaSlab-Light.ttf */,
+				A830B1D622EE4ACDB18642AB /* ZillaSlab-LightItalic.ttf */,
+				C0E146DA45F54FAEB239AB7A /* ZillaSlab-Medium.ttf */,
+				CFEABF9B5CB240529BE78923 /* ZillaSlab-MediumItalic.ttf */,
+				CBD50837607F440982B3764A /* ZillaSlab-Regular.ttf */,
+				6C8949299AA64C36B43FFC5A /* ZillaSlab-SemiBold.ttf */,
+				A6297DE5838D425A840BF0E5 /* ZillaSlab-SemiBoldItalic.ttf */,
+			);
+			name = Resources;
+			path = "";
 			sourceTree = "<group>";
 		};
 		13B07FAE1A68108700A75B9A /* Splitsies */ = {
@@ -122,6 +298,7 @@
 				83CBBA001A601CBA00E9B192 /* Products */,
 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
 				BBD78D7AC51CEA395F1C20DB /* Pods */,
+				0F88A5FE5DD044D7B4F86AF5 /* Resources */,
 			);
 			indentWidth = 2;
 			sourceTree = "<group>";
@@ -244,6 +421,62 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				756A29B82CF049BC9B82B93A /* SFProDisplay-Black.otf in Resources */,
+				827D1A6B70174C24A3C74315 /* SFProDisplay-BlackItalic.otf in Resources */,
+				25A3DE2B5EE84C49ABA785B9 /* SFProDisplay-Bold.otf in Resources */,
+				C55683E00D4E422EA20E8157 /* SFProDisplay-BoldItalic.otf in Resources */,
+				BBD6BF688CF74C1D842C7D54 /* SFProDisplay-Heavy.otf in Resources */,
+				56BAAA9B72424544B22E6369 /* SFProDisplay-HeavyItalic.otf in Resources */,
+				5ED455D131984911B3078900 /* SFProDisplay-Light.otf in Resources */,
+				E6588F8C40624D06A893E3BC /* SFProDisplay-LightItalic.otf in Resources */,
+				C3380B1D6F1A4BE3B391873E /* SFProDisplay-Medium.otf in Resources */,
+				4FAF5940D03047DABDC230AE /* SFProDisplay-MediumItalic.otf in Resources */,
+				C1F0D1B72BCA495D86313039 /* SFProDisplay-Regular.otf in Resources */,
+				103790BCAA6E49B8A3754D67 /* SFProDisplay-RegularItalic.otf in Resources */,
+				EF68D9A01D664B1F83A0A0EF /* SFProDisplay-Semibold.otf in Resources */,
+				B170AE5A10FA4BAAB08B1F43 /* SFProDisplay-SemiboldItalic.otf in Resources */,
+				82D2F3E58BB94775AAF7CFA6 /* SFProDisplay-Thin.otf in Resources */,
+				D210C759507044169D925DA4 /* SFProDisplay-ThinItalic.otf in Resources */,
+				BE9141B4FD45461FBAA97CF1 /* SFProDisplay-Ultralight.otf in Resources */,
+				24D4B30A51AC46D9983F877B /* SFProDisplay-UltralightItalic.otf in Resources */,
+				529DA748B73949D48D066F7A /* Avenir-Black.ttf in Resources */,
+				9325ADFA32544797A7336DC3 /* Avenir-BlackOblique.ttf in Resources */,
+				BE182F81795744849131E1ED /* Avenir-Book.ttf in Resources */,
+				BE9AD74864504AD0BDACE8B6 /* Avenir-BookOblique.ttf in Resources */,
+				EF00B5D54D9540ECBE8D9E2D /* Avenir-Heavy.ttf in Resources */,
+				4AD434EAE70C43289E16225F /* Avenir-HeavyOblique.ttf in Resources */,
+				1765BEA49893401B9759D6A9 /* Avenir-Light.ttf in Resources */,
+				B6421AA711064EA7ABC51632 /* Avenir-LightOblique.ttf in Resources */,
+				519B271D6676402A8D1238C5 /* Avenir-Medium.ttf in Resources */,
+				A80BA8A4CC8F4B93B1959F6A /* Avenir-MediumOblique.ttf in Resources */,
+				6DB8FF15B21E4EF0A62901FC /* Avenir-Oblique.ttf in Resources */,
+				DB915414BEB04AF58B82260B /* Avenir-Roman.ttf in Resources */,
+				92276CC569274B7DB3437E12 /* SofiaProBlack-Italic.ttf in Resources */,
+				A9137F00829B4A8CB64D5429 /* SofiaProBlack.ttf in Resources */,
+				F444A031751D44ACB69BDCE2 /* SofiaProBold-Italic.ttf in Resources */,
+				49613F0C09CF477CAA7FF6CC /* SofiaProBold.ttf in Resources */,
+				695F40A155FC489CB8324097 /* SofiaProExtraLight-Italic.ttf in Resources */,
+				A55D0DC9013646318197B370 /* SofiaProExtraLight.ttf in Resources */,
+				0C74B45223F1451D80BBD704 /* SofiaProLight-Italic.ttf in Resources */,
+				F72D9122919B4BAF9792D1FE /* SofiaProLight.ttf in Resources */,
+				8666A0DE43E74B7AB181947A /* SofiaProMedium-Italic.ttf in Resources */,
+				A1175D6EF1974BFA9D6FBFDB /* SofiaProMedium.ttf in Resources */,
+				7072E78A955247BC800CD9B0 /* SofiaProRegular-Italic.ttf in Resources */,
+				A5060A89EB4B41AC85AA9FBF /* SofiaProRegular.ttf in Resources */,
+				905D2B86FEE54F1EBF376CA0 /* SofiaProSemiBold-Italic.ttf in Resources */,
+				EEE6DC1BA369408A81E1D5D1 /* SofiaProSemiBold.ttf in Resources */,
+				A6F922283B4B46DFA8356F90 /* SofiaProUltraLight-Italic.ttf in Resources */,
+				954BEF9F21DA4105B94754A6 /* SofiaProUltraLight.ttf in Resources */,
+				12A2D713F4D94612B0459F93 /* ZillaSlab-Bold.ttf in Resources */,
+				0D6D3A891289475C93FBE62A /* ZillaSlab-BoldItalic.ttf in Resources */,
+				8BFC0BD0CE4743F2B8D0D0FC /* ZillaSlab-Italic.ttf in Resources */,
+				A0E07E5BC5C948A48908AFC6 /* ZillaSlab-Light.ttf in Resources */,
+				6A72CD33983B4AA5AF7106D3 /* ZillaSlab-LightItalic.ttf in Resources */,
+				09CD3F04E3CE441F9692E0FF /* ZillaSlab-Medium.ttf in Resources */,
+				DA5C4FFF3F4E4A4783462B6E /* ZillaSlab-MediumItalic.ttf in Resources */,
+				77CC9ED6B91E448AB722C062 /* ZillaSlab-Regular.ttf in Resources */,
+				3DE10A4EEDE64E19B5F72F99 /* ZillaSlab-SemiBold.ttf in Resources */,
+				BC22D85A66C14A068B965462 /* ZillaSlab-SemiBoldItalic.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
