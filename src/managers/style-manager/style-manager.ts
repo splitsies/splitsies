@@ -12,26 +12,30 @@ export class StyleManager implements IStyleManager {
     initialize(): void {
         Colors.loadColors({
             primary: this.colorConfiguration.primary,
-            hint: this.colorConfiguration.greyFont
+            primaryTranslucent: this.colorConfiguration.primaryTranslucent,
+            hint: this.colorConfiguration.greyFont,
         });
 
         Typography.loadTypographies({
             heading: { fontSize: 36, fontWeight: "600", fontFamily: "Avenir-Heavy" },
             body: { fontSize: 14, fontFamily: "Avenir-Roman" },
             subtext: { fontSize: 12, fontFamily: "Avenir-Roman" },
-            letter: { fontFamily: 'ZillaSlab-Bold' },
-            letterHeading: { fontFamily: 'ZillaSlab-Bold', fontSize: 36}
+            letter: { fontFamily: "ZillaSlab-Bold" },
+            letterHeading: { fontFamily: "ZillaSlab-Bold", fontSize: 36 },
         });
 
         ThemeManager.setComponentTheme("Text", {
-            body: true
+            body: true,
         });
 
         Assets.loadAssetsGroup("icons", {
+            logoWhite: require("../../../assets/icons/logo_white.png"),
+            logoBlack: require("../../../assets/icons/logo_black.png"),
             location: require("../../../assets/icons/location.png"),
             calendar: require("../../../assets/icons/calendar.png"),
             price: require("../../../assets/icons/price.png"),
-            people: require("../../../assets/icons/people.png")
+            people: require("../../../assets/icons/people.png"),
+            error: require("../../../assets/icons/error.png"),
         });
 
         console.log("initialized the theme!!");
