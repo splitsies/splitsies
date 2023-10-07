@@ -28,9 +28,14 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     async getAllExpenses(userId: string): Promise<void> {
+        if (!userId) {
+            this._userExpenses$.next([]);
+            return;
+        }
+        
         const uri = `${this._config.expense}?userId=${userId}`;
         const expenses = await this.get<IExpense[]>(uri, this._authProvider.provideAuthHeader());
-        this._userExpenses$.next(expenses.data);
+        this._userExpenses$.next(expenses.data.map((e) => ({ ...e, transactionDate: new Date(e.transactionDate) })));
     }
 
     async getExpense(expenseId: string): Promise<void> {
@@ -69,9 +74,12 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     disconnectFromExpense(): void {
-        if (!this._connection || this._connection.readyState >= 2) return;
-        this._connection.close();
+        if (!this._connection || this._connection.readyState >= 2) {
+            this._sessionExpense$.next(null);
+            return;
+        }
 
+        this._connection.close();
         this._sessionExpense$.next(null);
     }
 }

@@ -1,14 +1,16 @@
 import { injectable } from "inversify";
 import { IExpenseManager } from "./expense-manager-interface";
-import { IExpense } from "@splitsies/shared-models";
+import { IExpense, IUserCredential } from "@splitsies/shared-models";
 import { BehaviorSubject, Observable } from "rxjs";
 import { IExpenseApiClient } from "../../api/expense-api-client/expense-api-client-interface";
 import { lazyInject } from "../../utils/lazy-inject";
 import { BaseManager } from "../base-manager";
+import { IUserManager } from "../user-manager/user-manager-interface";
 
 @injectable()
 export class ExpenseManager extends BaseManager implements IExpenseManager {
     private readonly _api = lazyInject<IExpenseApiClient>(IExpenseApiClient);
+    private readonly _userManager = lazyInject<IUserManager>(IUserManager);
     private readonly _expenses$ = new BehaviorSubject<IExpense[]>([]);
     private readonly _currentExpense$ = new BehaviorSubject<IExpense | null>(null);
 
@@ -33,6 +35,11 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     }
 
     protected async initialize(): Promise<void> {
+        await this._userManager.initialized;
+        this._userManager.user$.subscribe({
+            next: (user) => this.onUserCredentialUpdated(user)
+        });
+
         this._api.userExpenses$.subscribe({
             next: (data) => this._expenses$.next(data),
         });
@@ -52,5 +59,10 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     disconnectFromExpense(): void {
         this._api.disconnectFromExpense();
+    }
+
+    private async onUserCredentialUpdated(userCredential: IUserCredential | null): Promise<void> {
+        this._api.disconnectFromExpense();
+        this._api.getAllExpenses(userCredential?.user.id ?? "");
     }
 }

@@ -14,7 +14,8 @@ import { IAuthProvider } from "../providers/auth-provider/auth-provider-interfac
 import { AuthProvider } from "../providers/auth-provider/auth-provider";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { ColorConfiguration } from "../models/configuration/color-config/color-configuration";
-import { IThemeManager } from "../managers/theme-manager/theme-manager-interface";
+import { IStyleManager } from "../managers/style-manager/style-manager-interface";
+import { StyleManager } from "../managers/style-manager/style-manager";
 const container = new Container();
 
 container.bind<IApiConfig>(IApiConfig).to(ApiConfig).inSingletonScope();
@@ -24,6 +25,6 @@ container.bind<IExpenseApiClient>(IExpenseApiClient).to(ExpenseApiClient).inSing
 container.bind<IUsersApiClient>(IUsersApiClient).to(UsersApiClient).inSingletonScope();
 container.bind<IAuthProvider>(IAuthProvider).to(AuthProvider).inSingletonScope();
 container.bind<IColorConfiguration>(IColorConfiguration).to(ColorConfiguration).inSingletonScope();
-container.bind<IThemeManager>(IThemeManager).to(ThemeInitializer).inSingletonScope();
+container.bind<IStyleManager>(IStyleManager).to(StyleManager).inSingletonScope();
 
 export { container };
