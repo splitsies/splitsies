@@ -6,7 +6,7 @@ import { lazyInject } from "../utils/lazy-inject";
 import React from "react";
 import { View, Text } from "react-native-ui-lib";
 import type { RootStackScreenParams } from "./root-stack-screen-params";
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 
@@ -37,20 +37,20 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackScree
                         backgroundColor: "#BBB",
                         marginTop: 10,
                         marginBottom: 10,
-                        opacity: 0.33
+                        opacity: 0.33,
                     }}
                 />
             </View>
         );
-    }
-    
+    };
+
     const HeaderComponent = () => {
         return (
             <View marginT-40 marginL-20 marginB-15 centerV>
                 <Text letterHeading>Splitsies</Text>
             </View>
         );
-    }
+    };
 
     return (
         <SafeAreaView>
@@ -64,10 +64,9 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackScree
                         onPress={onExpenseClick}
                         onLongPress={() => console.log("LONG")}
                     />
-                ) }
-                
+                )}
                 data={expenses}
             />
         </SafeAreaView>
     );
-}
+};

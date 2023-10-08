@@ -32,7 +32,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
             this._userExpenses$.next([]);
             return;
         }
-        
+
         const uri = `${this._config.expense}?userId=${userId}`;
         const expenses = await this.get<IExpense[]>(uri, this._authProvider.provideAuthHeader());
         this._userExpenses$.next(expenses.data.map((e) => ({ ...e, transactionDate: new Date(e.transactionDate) })));

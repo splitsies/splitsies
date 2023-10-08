@@ -33,7 +33,6 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
     return (
         <TouchableOpacity onPress={() => onPress(data.id)} onLongPress={onLongPress}>
             <View style={[styles.container]}>
-
                 <View style={styles.rowContainer}>
                     <View style={styles.leftBox}>
                         <Icon assetName="location" size={17} />
@@ -61,7 +60,8 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
                     <View style={styles.rightBox}>
                         <View
                             style={styles.peopleContainer}
-                            onLayout={({ nativeEvent }) => setPeopleContainerWidth(nativeEvent.layout.width)}>
+                            onLayout={({ nativeEvent }) => setPeopleContainerWidth(nativeEvent.layout.width)}
+                        >
                             <UserIcon letter="K" style={{ marginRight: 6 }} />
                             {/* {data.items.length === 0 ? (
                                 <Text style={{ ...Font.HINT, color: themeColors.hint }}>None</Text>
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "flex-end",
-        marginRight: 15
+        marginRight: 15,
     },
     rightBox: {
         flex: 5,
