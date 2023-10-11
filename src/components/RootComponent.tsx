@@ -10,6 +10,7 @@ import { lazyInject } from "../utils/lazy-inject";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { HomeScreen } from "../screens/HomeScreen";
 import { LoginScreen } from "../screens/LoginScreen";
+import { ExpenseScreen } from "../screens/ExpenseScreen";
 
 lazyInject<IStyleManager>(IStyleManager).initialize();
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -52,6 +53,7 @@ export const RootComponent = () => {
         >
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
             <Stack.Screen name="LoginScreen" component={LoginScreen} />
+            <Stack.Screen name="ExpenseScreen" component={ExpenseScreen} />
         </Stack.Navigator>
     );
 };

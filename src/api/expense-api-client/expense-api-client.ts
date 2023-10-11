@@ -2,7 +2,7 @@ import { injectable } from "inversify";
 import { IExpenseApiClient } from "./expense-api-client-interface";
 import { IApiConfig } from "../../models/configuration/api-config/api-config-interface";
 import { BehaviorSubject, Observable } from "rxjs";
-import { IExpense, IExpenseUpdate } from "@splitsies/shared-models";
+import { IExpense, IExpenseDto, IExpenseUpdate } from "@splitsies/shared-models";
 import { ClientBase } from "../client-base";
 import { lazyInject } from "../../utils/lazy-inject";
 import { IAuthProvider } from "../../providers/auth-provider/auth-provider-interface";
@@ -39,21 +39,34 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     async getExpense(expenseId: string): Promise<void> {
-        const uri = `${this._config.expense}${expenseId}`;
-        const expense = await this.get<IExpense>(uri, this._authProvider.provideAuthHeader());
-        this._sessionExpense$.next(expense.data);
+        const uri = `${this._config.expense}/${expenseId}`;
+        try {
+            const expense = await this.get<IExpense>(uri, this._authProvider.provideAuthHeader());
+            this._sessionExpense$.next({ ...expense.data, transactionDate: new Date(expense.data.transactionDate) });
+        } catch (e) {
+            console.error(e);
+        }
     }
 
-    async updateExpense(update: IExpenseUpdate): Promise<void> {
-        this._connection.send(JSON.stringify(update));
+    async updateExpense(expense: IExpense): Promise<void> {
+        const { id } = expense;
+        const update = { ...expense, transactionDate: expense.transactionDate.toISOString() } as IExpenseUpdate;
+
+        this._connection.send(
+            JSON.stringify({
+                id,
+                expense: update,
+            }),
+        );
     }
 
     async connectToExpense(expenseId: string): Promise<void> {
-        const socketUri = `${this._config.expenseSocket}?expenseId=${expenseId}`;
+        const socketUri = `${
+            this._config.expenseSocket
+        }?expenseId=${expenseId}&authToken=${this._authProvider.provideAuthToken()}`;
         const onConnected = new Promise<void>((res, rej) => {
             try {
-                console.log(`attempting to connect to ${expenseId}...`);
-                this._connection = new WebSocket(socketUri, null, { headers: this._authProvider.provideAuthHeader() });
+                this._connection = new WebSocket(socketUri);
 
                 this._connection.onopen = async () => {
                     await this.getExpense(expenseId);
@@ -61,8 +74,13 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
                 };
 
                 this._connection.onmessage = (e) => {
-                    const updatedExpense = e.data as IExpense;
-                    this._sessionExpense$.next(updatedExpense);
+                    const updatedExpense = JSON.parse(e.data) as IExpenseDto;
+                    const expense = {
+                        ...updatedExpense,
+                        transactionDate: new Date(updatedExpense.transactionDate),
+                    } as IExpense;
+
+                    this._sessionExpense$.next(expense);
                 };
             } catch (e) {
                 console.error(e);

@@ -3,8 +3,6 @@ import { StyleSheet, Dimensions, NativeModules, Platform, TouchableOpacity } fro
 import { IExpense } from "@splitsies/shared-models";
 import { Icon, Text, View } from "react-native-ui-lib";
 import { UserIcon } from "./UserIcon";
-// import { Icon } from "./Icon";
-// import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const Locale = (
     Platform.OS === "ios"

@@ -7,6 +7,7 @@ import React from "react";
 import { View, Text } from "react-native-ui-lib";
 import type { RootStackScreenParams } from "./root-stack-screen-params";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { lastValueFrom, first } from "rxjs";
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 
@@ -23,8 +24,10 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackScree
         return () => subscription.unsubscribe();
     };
 
-    const onExpenseClick = () => {
-        navigation.navigate("LoginScreen");
+    const onExpenseClick = async (expenseId: string) => {
+        await _expenseManager.connectToExpense(expenseId);
+        await lastValueFrom(_expenseManager.currentExpense$.pipe(first((e) => !!e)));
+        navigation.navigate("ExpenseScreen");
     };
 
     const FlatListItemSeparator = () => {
@@ -66,6 +69,7 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackScree
                     />
                 )}
                 data={expenses}
+                stickyHeaderIndices={[0]}
             />
         </SafeAreaView>
     );

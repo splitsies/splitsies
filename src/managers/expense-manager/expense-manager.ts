@@ -34,6 +34,10 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         super();
     }
 
+    updateExpense(expense: IExpense): Promise<void> {
+        return this._api.updateExpense(expense);
+    }
+
     protected async initialize(): Promise<void> {
         await this._userManager.initialized;
         this._userManager.user$.subscribe({
