@@ -38,6 +38,16 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         return this._api.updateExpense(expense);
     }
 
+    addItemToExpense(
+        id: string,
+        name: string,
+        price: number,
+        owners: string[],
+        isProportional: boolean,
+    ): Promise<void> {
+        return this._api.addItemToExpense(id, name, price, owners, isProportional);
+    }
+
     protected async initialize(): Promise<void> {
         await this._userManager.initialized;
         this._userManager.user$.subscribe({

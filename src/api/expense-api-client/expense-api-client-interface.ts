@@ -9,6 +9,7 @@ export interface IExpenseApiClient {
     updateExpense(expense: IExpense): Promise<void>;
     connectToExpense(expenseId: string): Promise<void>;
     disconnectFromExpense(): void;
+    addItemToExpense(id: string, name: string, price: number, owners: string[], isProportional: boolean): Promise<void>;
 }
 
 export const IExpenseApiClient = Symbol.for("IExpenseApiClient");

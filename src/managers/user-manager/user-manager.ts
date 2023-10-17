@@ -44,6 +44,10 @@ export class UserManager extends BaseManager implements IUserManager {
         return this._user$.asObservable();
     }
 
+    get userId(): string {
+        return this.user?.user.id ?? "";
+    }
+
     async requestCreateUser(user: CreateUserRequest): Promise<boolean> {
         try {
             await this._client.create(user);
