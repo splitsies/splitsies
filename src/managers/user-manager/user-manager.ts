@@ -23,13 +23,12 @@ export class UserManager extends BaseManager implements IUserManager {
 
         const userCreds = (await getGenericPassword()) as UserCredentials;
         if (!userCreds) {
-            // TODO: login screen
+            return Promise.resolve();
         }
 
         const onInitialAuthResponse = lastValueFrom(this._client.user$.pipe(first((user) => !!user?.authToken)));
 
-        if (!(await this.requestAuthenticate("kevchen21@gmail.com", "my-awesome-password"))) {
-            // TODO: login screen if user is still null after initializing
+        if (!(await this.requestAuthenticate(userCreds.username, userCreds.password))) {            
             return Promise.resolve();
         }
 

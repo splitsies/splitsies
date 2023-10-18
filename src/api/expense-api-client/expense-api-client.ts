@@ -36,8 +36,13 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
 
         const uri = `${this._config.expense}?userId=${userId}`;
-        const expenses = await this.get<IExpenseDto[]>(uri, this._authProvider.provideAuthHeader());
-        this._userExpenses$.next(expenses.data.map((e) => this._expenseMappper.toDomainModel(e)));
+        try {
+            const expenses = await this.get<IExpenseDto[]>(uri, this._authProvider.provideAuthHeader());
+            this._userExpenses$.next(expenses.data.map((e) => this._expenseMappper.toDomainModel(e)));
+        } catch (e) {
+            console.error(e);
+        }
+        
     }
 
     async getExpense(expenseId: string): Promise<void> {
