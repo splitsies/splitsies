@@ -3,8 +3,6 @@ import { StyleSheet, Dimensions, NativeModules, Platform, TouchableOpacity } fro
 import { IExpense } from "@splitsies/shared-models";
 import { Icon, Text, View } from "react-native-ui-lib";
 import { UserIcon } from "./UserIcon";
-// import { Icon } from "./Icon";
-// import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const Locale = (
     Platform.OS === "ios"
@@ -28,7 +26,6 @@ interface propTypes {
 export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
     const [peopleContainerWidth, setPeopleContainerWidth] = useState<number>(Dimensions.get("window").width);
     const PERSON_LIMIT = Math.floor((peopleContainerWidth - 20) / 30) - 1;
-    const total = data.items.length === 0 ? 0 : data.items.reduce((p, c) => p + c.price, 0);
 
     return (
         <TouchableOpacity onPress={() => onPress(data.id)} onLongPress={onLongPress}>
@@ -86,7 +83,7 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
                         <Icon assetName="price" size={17} />
                     </View>
                     <View style={styles.rightBox}>
-                        <Text subtext>${total.toFixed(2)}</Text>
+                        <Text subtext>${data.total.toFixed(2)}</Text>
                     </View>
                 </View>
             </View>

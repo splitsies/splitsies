@@ -22,6 +22,7 @@ export class StyleManager implements IStyleManager {
             subtext: { fontSize: 12, fontFamily: "Avenir-Roman" },
             letter: { fontFamily: "ZillaSlab-Bold" },
             letterHeading: { fontFamily: "ZillaSlab-Bold", fontSize: 36 },
+            hint: { fontSize: 13, fontFamily: "Avenir-Medium", color: this.colorConfiguration.greyFont },
         });
 
         ThemeManager.setComponentTheme("Text", {
@@ -36,6 +37,8 @@ export class StyleManager implements IStyleManager {
             price: require("../../../assets/icons/price.png"),
             people: require("../../../assets/icons/people.png"),
             error: require("../../../assets/icons/error.png"),
+            arrowBack: require("../../../assets/icons/arrow-back.png"),
+            pencil: require("../../../assets/icons/pencil.png"),
         });
 
         console.log("initialized the theme!!");

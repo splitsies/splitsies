@@ -10,6 +10,8 @@ export interface IExpenseManager {
 
     requestForUser(userId: string): Promise<void>;
     connectToExpense(expenseId: string): Promise<void>;
+    updateExpense(expense: IExpense): Promise<void>;
+    addItemToExpense(id: string, name: string, price: number, owners: string[], isProportional: boolean): Promise<void>;
     disconnectFromExpense(): void;
 }
 

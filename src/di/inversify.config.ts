@@ -16,6 +16,8 @@ import { IColorConfiguration } from "../models/configuration/color-config/color-
 import { ColorConfiguration } from "../models/configuration/color-config/color-configuration";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { StyleManager } from "../managers/style-manager/style-manager";
+import { IExpenseMapper } from "../mappers/expense-mapper-interface";
+import { ExpenseMapper } from "../mappers/expense-mapper";
 const container = new Container();
 
 container.bind<IApiConfig>(IApiConfig).to(ApiConfig).inSingletonScope();
@@ -26,5 +28,6 @@ container.bind<IUsersApiClient>(IUsersApiClient).to(UsersApiClient).inSingletonS
 container.bind<IAuthProvider>(IAuthProvider).to(AuthProvider).inSingletonScope();
 container.bind<IColorConfiguration>(IColorConfiguration).to(ColorConfiguration).inSingletonScope();
 container.bind<IStyleManager>(IStyleManager).to(StyleManager).inSingletonScope();
+container.bind<IExpenseMapper>(IExpenseMapper).to(ExpenseMapper).inSingletonScope();
 
 export { container };

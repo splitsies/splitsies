@@ -2,10 +2,11 @@ import { injectable } from "inversify";
 import { IExpenseApiClient } from "./expense-api-client-interface";
 import { IApiConfig } from "../../models/configuration/api-config/api-config-interface";
 import { BehaviorSubject, Observable } from "rxjs";
-import { IExpense, IExpenseUpdate } from "@splitsies/shared-models";
+import { IExpense, IExpenseDto, IExpenseUpdate } from "@splitsies/shared-models";
 import { ClientBase } from "../client-base";
 import { lazyInject } from "../../utils/lazy-inject";
 import { IAuthProvider } from "../../providers/auth-provider/auth-provider-interface";
+import { IExpenseMapper } from "../../mappers/expense-mapper-interface";
 
 @injectable()
 export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
@@ -14,6 +15,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     private readonly _sessionExpense$ = new BehaviorSubject<IExpense | null>(null);
     private readonly _config = lazyInject<IApiConfig>(IApiConfig);
     private readonly _authProvider = lazyInject<IAuthProvider>(IAuthProvider);
+    private readonly _expenseMappper = lazyInject<IExpenseMapper>(IExpenseMapper);
 
     constructor() {
         super();
@@ -34,26 +36,64 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
 
         const uri = `${this._config.expense}?userId=${userId}`;
-        const expenses = await this.get<IExpense[]>(uri, this._authProvider.provideAuthHeader());
-        this._userExpenses$.next(expenses.data.map((e) => ({ ...e, transactionDate: new Date(e.transactionDate) })));
+        try {
+            const expenses = await this.get<IExpenseDto[]>(uri, this._authProvider.provideAuthHeader());
+            this._userExpenses$.next(expenses.data.map((e) => this._expenseMappper.toDomainModel(e)));
+        } catch (e) {
+            console.error(e);
+        }
+        
     }
 
     async getExpense(expenseId: string): Promise<void> {
-        const uri = `${this._config.expense}${expenseId}`;
-        const expense = await this.get<IExpense>(uri, this._authProvider.provideAuthHeader());
-        this._sessionExpense$.next(expense.data);
+        const uri = `${this._config.expense}/${expenseId}`;
+        try {
+            const expense = await this.get<IExpenseDto>(uri, this._authProvider.provideAuthHeader());
+            this._sessionExpense$.next(this._expenseMappper.toDomainModel(expense.data));
+        } catch (e) {
+            console.error(e);
+        }
     }
 
-    async updateExpense(update: IExpenseUpdate): Promise<void> {
-        this._connection.send(JSON.stringify(update));
+    async updateExpense(expense: IExpense): Promise<void> {
+        const { id } = expense;
+        const update = { ...expense, transactionDate: expense.transactionDate.toISOString() } as IExpenseUpdate;
+
+        this._connection.send(
+            JSON.stringify({
+                id,
+                method: "update",
+                expense: update,
+            }),
+        );
+    }
+
+    async addItemToExpense(
+        id: string,
+        name: string,
+        price: number,
+        owners: string[],
+        isProportional: boolean,
+    ): Promise<void> {
+        const item = { name, price, owners };
+
+        this._connection.send(
+            JSON.stringify({
+                id,
+                method: "addItem",
+                item,
+                isProportional,
+            }),
+        );
     }
 
     async connectToExpense(expenseId: string): Promise<void> {
-        const socketUri = `${this._config.expenseSocket}?expenseId=${expenseId}`;
+        const socketUri = `${
+            this._config.expenseSocket
+        }?expenseId=${expenseId}&authToken=${this._authProvider.provideAuthToken()}`;
         const onConnected = new Promise<void>((res, rej) => {
             try {
-                console.log(`attempting to connect to ${expenseId}...`);
-                this._connection = new WebSocket(socketUri, null, { headers: this._authProvider.provideAuthHeader() });
+                this._connection = new WebSocket(socketUri);
 
                 this._connection.onopen = async () => {
                     await this.getExpense(expenseId);
@@ -61,8 +101,18 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
                 };
 
                 this._connection.onmessage = (e) => {
-                    const updatedExpense = e.data as IExpense;
-                    this._sessionExpense$.next(updatedExpense);
+                    const updatedExpense = JSON.parse(e.data) as IExpenseDto;
+                    const expense = this._expenseMappper.toDomainModel(updatedExpense);
+                    this._sessionExpense$.next(expense);
+
+                    const expenses = [...this._userExpenses$.value];
+                    const expenseIndex = expenses.findIndex((e) => e.id === expense.id);
+                    if (expenseIndex === -1) {
+                        return;
+                    }
+
+                    expenses[expenseIndex] = expense;
+                    this._userExpenses$.next(expenses);
                 };
             } catch (e) {
                 console.error(e);
