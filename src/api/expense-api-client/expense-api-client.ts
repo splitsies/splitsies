@@ -2,7 +2,7 @@ import { injectable } from "inversify";
 import { IExpenseApiClient } from "./expense-api-client-interface";
 import { IApiConfig } from "../../models/configuration/api-config/api-config-interface";
 import { BehaviorSubject, Observable } from "rxjs";
-import { IExpense, IExpenseDto, IExpenseMapper, IExpenseUpdate, IExpenseUpdateMapper } from "@splitsies/shared-models";
+import { IExpense, IExpenseDto, IExpenseMapper, IExpenseUpdateMapper } from "@splitsies/shared-models";
 import { ClientBase } from "../client-base";
 import { lazyInject } from "../../utils/lazy-inject";
 import { IAuthProvider } from "../../providers/auth-provider/auth-provider-interface";
@@ -93,26 +93,8 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         const onConnected = new Promise<void>((res, rej) => {
             try {
                 this._connection = new WebSocket(socketUri);
-
-                this._connection.onopen = async () => {
-                    await this.getExpense(expenseId);
-                    res();
-                };
-
-                this._connection.onmessage = (e) => {
-                    const updatedExpense = JSON.parse(e.data) as IExpenseDto;
-                    const expense = this._expenseMappper.toDomainModel(updatedExpense);
-                    this._sessionExpense$.next(expense);
-
-                    const expenses = [...this._userExpenses$.value];
-                    const expenseIndex = expenses.findIndex((e) => e.id === expense.id);
-                    if (expenseIndex === -1) {
-                        return;
-                    }
-
-                    expenses[expenseIndex] = expense;
-                    this._userExpenses$.next(expenses);
-                };
+                this._connection.onopen = () => void this.onExpenseConnection(res, expenseId);
+                this._connection.onmessage = (e) => this.onMessage(e);
             } catch (e) {
                 console.error(e);
                 rej(e);
@@ -130,5 +112,25 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
 
         this._connection.close();
         this._sessionExpense$.next(null);
+    }
+
+    private async onExpenseConnection(promiseResolver: () => void, expenseId: string): Promise<void> {
+        await this.getExpense(expenseId);
+        promiseResolver();
+    }
+
+    private async onMessage(e: WebSocketMessageEvent): Promise<void> {
+        const updatedExpense = JSON.parse(e.data) as IExpenseDto;
+        const expense = this._expenseMappper.toDomainModel(updatedExpense);
+        this._sessionExpense$.next(expense);
+
+        const expenses = [...this._userExpenses$.value];
+        const expenseIndex = expenses.findIndex((e) => e.id === expense.id);
+        if (expenseIndex === -1) {
+            return;
+        }
+
+        expenses[expenseIndex] = expense;
+        this._userExpenses$.next(expenses);
     }
 }
