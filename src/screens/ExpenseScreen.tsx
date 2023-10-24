@@ -65,7 +65,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
             if (itemIndex === -1) {
                 expense.items.push(updatedItem);
             } else {
-                expense.items[itemIndex] = updatedItem
+                expense.items[itemIndex] = updatedItem;
             }
 
             void _expenseManager.updateExpense(expense);
@@ -156,7 +156,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
 
             <FlatList
                 style={styles.list}
-                data={expense.items.filter(i => !i.isProportional)}
+                data={expense.items.filter((i) => !i.isProportional)}
                 ItemSeparatorComponent={Separator}
                 renderItem={({ item }) => (
                     <ExpenseItem
@@ -176,14 +176,10 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                 />
 
                 {expense.items
-                    .filter(i => i.isProportional)
+                    .filter((i) => i.isProportional)
                     .map((pi) => (
-                        <ExpenseItem
-                            key={pi.id}
-                            item={pi}
-                            onPress={() => setSelectedItem(pi)}
-                        />
-                ))}
+                        <ExpenseItem key={pi.id} item={pi} onPress={() => setSelectedItem(pi)} />
+                    ))}
 
                 <ExpenseItem item={{ name: "Total", price: expense.total, owners: [] } as unknown as IExpenseItem} />
 

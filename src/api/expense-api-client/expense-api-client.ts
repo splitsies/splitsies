@@ -42,7 +42,6 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         } catch (e) {
             console.error(e);
         }
-        
     }
 
     async getExpense(expenseId: string): Promise<void> {
