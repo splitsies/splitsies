@@ -2,11 +2,10 @@ import { injectable } from "inversify";
 import { IExpenseApiClient } from "./expense-api-client-interface";
 import { IApiConfig } from "../../models/configuration/api-config/api-config-interface";
 import { BehaviorSubject, Observable } from "rxjs";
-import { IExpense, IExpenseDto, IExpenseUpdate } from "@splitsies/shared-models";
+import { IExpense, IExpenseDto, IExpenseMapper, IExpenseUpdate, IExpenseUpdateMapper } from "@splitsies/shared-models";
 import { ClientBase } from "../client-base";
 import { lazyInject } from "../../utils/lazy-inject";
 import { IAuthProvider } from "../../providers/auth-provider/auth-provider-interface";
-import { IExpenseMapper } from "../../mappers/expense-mapper-interface";
 
 @injectable()
 export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
@@ -16,6 +15,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     private readonly _config = lazyInject<IApiConfig>(IApiConfig);
     private readonly _authProvider = lazyInject<IAuthProvider>(IAuthProvider);
     private readonly _expenseMappper = lazyInject<IExpenseMapper>(IExpenseMapper);
+    private readonly _expenseUpdateMapper = lazyInject<IExpenseUpdateMapper>(IExpenseUpdateMapper);
 
     constructor() {
         super();
@@ -57,7 +57,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
 
     async updateExpense(expense: IExpense): Promise<void> {
         const { id } = expense;
-        const update = { ...expense, transactionDate: expense.transactionDate.toISOString() } as IExpenseUpdate;
+        const update = this._expenseUpdateMapper.toDtoModel(expense);
 
         this._connection.send(
             JSON.stringify({
