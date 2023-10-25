@@ -100,6 +100,19 @@ export const ExpenseScreen = ({ navigation }: Props) => {
         [inProgressSelections],
     );
 
+    const onItemDelete = useCallback((): void => {
+        const itemIndex = expense.items.findIndex((i) => i.id === selectedItem?.id);
+
+        if (itemIndex === -1) {
+            setSelectedItem(null);
+            return;
+        }
+
+        expense.items.splice(itemIndex, 1);
+        void _expenseManager.updateExpense(expense);
+        setSelectedItem(null);
+    }, [expense, selectedItem]);
+
     const onSelectAction = (): void => {
         if (!isSelecting) {
             const userExpenseIds = expense.items
@@ -209,6 +222,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                 onSave={onItemSave}
                 proportional={!!selectedItem?.isProportional}
                 onCancel={() => setSelectedItem(null)}
+                onDelete={() => onItemDelete()}
             />
 
             <EditModal
