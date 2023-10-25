@@ -56,32 +56,16 @@ export const ExpenseScreen = ({ navigation }: Props) => {
 
     const onItemSave = useCallback(
         ({ name, price, isProportional }: EditResult) => {
-            const updatedItem = { ...selectedItem, name, price } as IExpenseItem;
+            const updatedItem = { ...selectedItem, name, price, isProportional } as IExpenseItem;
             if (!selectedItem) {
                 return;
             }
 
-            if (isProportional) {
-                const itemIndex = expense.proportionalItems.findIndex((i) => i.id === selectedItem?.id);
-                if (itemIndex === -1) {
-                    // add to proportional items
-                    const itemIndex = expense.items.indexOf(selectedItem);
-                    if (itemIndex === -1) return;
-                    expense.items.splice(itemIndex, 1);
-                    expense.proportionalItems.push({ ...selectedItem, name: name ?? "", price: price ?? 0 });
-                } else {
-                    expense.proportionalItems[itemIndex] = updatedItem;
-                }
+            const itemIndex = expense.items.indexOf(selectedItem);
+            if (itemIndex === -1) {
+                expense.items.push(updatedItem);
             } else {
-                const itemIndex = expense.items.indexOf(selectedItem);
-                if (itemIndex === -1) {
-                    const itemIndex = expense.proportionalItems.indexOf(selectedItem);
-                    if (itemIndex === -1) return;
-                    expense.proportionalItems.splice(itemIndex, 1);
-                    expense.items.push({ ...selectedItem, name: name ?? "", price: price ?? 0 });
-                } else {
-                    expense.items[itemIndex] = updatedItem;
-                }
+                expense.items[itemIndex] = updatedItem;
             }
 
             void _expenseManager.updateExpense(expense);
@@ -172,7 +156,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
 
             <FlatList
                 style={styles.list}
-                data={expense.items}
+                data={expense.items.filter((i) => !i.isProportional)}
                 ItemSeparatorComponent={Separator}
                 renderItem={({ item }) => (
                     <ExpenseItem
@@ -191,15 +175,11 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                     item={{ name: "Subtotal", price: expense.subtotal, owners: [] } as unknown as IExpenseItem}
                 />
 
-                {expense.proportionalItems.map((pi) => (
-                    <ExpenseItem
-                        key={pi.id}
-                        item={pi}
-                        onPress={() => {
-                            setSelectedItem(pi);
-                        }}
-                    />
-                ))}
+                {expense.items
+                    .filter((i) => i.isProportional)
+                    .map((pi) => (
+                        <ExpenseItem key={pi.id} item={pi} onPress={() => setSelectedItem(pi)} />
+                    ))}
 
                 <ExpenseItem item={{ name: "Total", price: expense.total, owners: [] } as unknown as IExpenseItem} />
 
@@ -227,7 +207,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                 nameValue={selectedItem?.name}
                 priceValue={selectedItem?.price}
                 onSave={onItemSave}
-                proportional={!!selectedItem && expense.proportionalItems.includes(selectedItem)}
+                proportional={!!selectedItem?.isProportional}
                 onCancel={() => setSelectedItem(null)}
             />
 

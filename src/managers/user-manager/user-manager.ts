@@ -28,7 +28,7 @@ export class UserManager extends BaseManager implements IUserManager {
 
         const onInitialAuthResponse = lastValueFrom(this._client.user$.pipe(first((user) => !!user?.authToken)));
 
-        if (!(await this.requestAuthenticate(userCreds.username, userCreds.password))) {            
+        if (!(await this.requestAuthenticate(userCreds.username, userCreds.password))) {
             return Promise.resolve();
         }
 
