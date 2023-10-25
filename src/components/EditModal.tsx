@@ -18,11 +18,12 @@ type Props = {
     priceValue?: number;
     onSave: (result: EditResult) => void;
     onCancel: () => void;
+    onDelete?: () => void;
     children?: any;
     proportional?: boolean;
 };
 
-export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, proportional }: Props) => {
+export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, proportional, onDelete }: Props) => {
     const [name, setName] = useState<string>(nameValue ?? "");
     const [price, setPrice] = useState<number>(priceValue ?? 0);
     const [isProportional, setIsProportional] = useState<boolean>(!!proportional);
@@ -71,6 +72,7 @@ export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, pr
                     <View row style={styles.buttons}>
                         <Button body label="Save" bg-primary onPress={() => onSave({ name, price, isProportional })} />
                         <Button body label="Cancel" bg-primary onPress={onCancel} />
+                        {onDelete != null && <Button body label="Delete" bg-primary onPress={onDelete} />}
                     </View>
                 </KeyboardAvoidingView>
                 <View style={styles.optionsContainer}>

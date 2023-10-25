@@ -74,16 +74,15 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         owners: string[],
         isProportional: boolean,
     ): Promise<void> {
-        const item = { name, price, owners };
+        const item = { name, price, owners, isProportional };
 
-        this._connection.send(
-            JSON.stringify({
-                id,
-                method: "addItem",
-                item,
-                isProportional,
-            }),
-        );
+        const payload = JSON.stringify({
+            id,
+            method: "addItem",
+            item,
+        });
+
+        this._connection.send(payload);
     }
 
     async connectToExpense(expenseId: string): Promise<void> {
