@@ -1,11 +1,8 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { Dimensions, KeyboardAvoidingView, StyleSheet } from "react-native";
+import React, { useEffect, useState } from "react";
+import { Dimensions, Keyboard, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button, Checkbox, Modal, NumberInputData, TextField, View } from "react-native-ui-lib";
+import { Button, Checkbox, Modal, TextField, View } from "react-native-ui-lib";
 import { EditResult } from "../models/edit-result";
-
-import NumberInput from "react-native-ui-lib/numberInput";
-import _default from "@react-native-community/netinfo";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 
@@ -19,7 +16,6 @@ type Props = {
     onSave: (result: EditResult) => void;
     onCancel: () => void;
     onDelete?: () => void;
-    children?: any;
     proportional?: boolean;
 };
 
@@ -28,56 +24,55 @@ export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, pr
     const [price, setPrice] = useState<number>(priceValue ?? 0);
     const [isProportional, setIsProportional] = useState<boolean>(!!proportional);
 
-    const textFieldProps = {
-        style: styles.textInput,
-        body: true,
-        caretHidden: false,
-    };
-
     useEffect(() => setName(nameValue ?? ""), [nameValue, visible]);
     useEffect(() => setPrice(priceValue ?? 0), [priceValue, visible]);
     useEffect(() => setIsProportional(proportional ?? false), [proportional, visible]);
 
-    const onChangeNumber = useCallback(
-        (data: NumberInputData): void => {
-            if (data.type === "valid") {
-                setPrice(data.number);
-            }
-        },
-        [setPrice],
-    );
+    const onPriceChange = (value: string): void => {
+        const expanded = value.replace(".", "");
+        const parsedPrice = parseFloat(expanded);
+        setPrice(parsedPrice / 100);
+    };
 
     return (
         <Modal enableModalBlur visible={visible} transparent animationType="fade">
-            <SafeAreaView style={styles.container}>
-                <KeyboardAvoidingView style={styles.inputContainer}>
-                    {nameValue != null && (
-                        <TextField
-                            body
-                            placeholder="Name"
-                            value={name}
-                            onChangeText={(text) => setName(text)}
-                            style={styles.textInput}
-                        />
-                    )}
+            <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                <SafeAreaView style={styles.container}>
+                    <KeyboardAvoidingView style={styles.inputContainer}>
+                        {nameValue != null && (
+                            <TextField
+                                body
+                                placeholder="Name"
+                                value={name}
+                                onChangeText={(text) => setName(text)}
+                                style={styles.textInput}
+                            />
+                        )}
 
-                    {priceValue != null && (
-                        <NumberInput
-                            initialNumber={price}
-                            onChangeNumber={onChangeNumber}
-                            textFieldProps={textFieldProps}
-                        />
-                    )}
+                        {priceValue != null && (
+                            <TextField
+                                body
+                                placeholder="Price"
+                                value={`${price.toFixed(2)}`}
+                                inputMode="numeric"
+                                onChangeText={(text) => onPriceChange(text)}
+                                style={styles.textInput}
+                            />
+                        )}
 
-                    <View row style={styles.buttons}>
-                        <Button body label="Save" bg-primary onPress={() => onSave({ name, price, isProportional })} />
-                        <Button body label="Cancel" bg-primary onPress={onCancel} />
-                        {onDelete != null && <Button body label="Delete" bg-primary onPress={onDelete} />}
-                    </View>
-                </KeyboardAvoidingView>
-                <View style={styles.optionsContainer}>
-                    {proportional != null && (
-                        <View style={styles.input}>
+                        <View row style={styles.buttons}>
+                            <Button
+                                body
+                                label="Save"
+                                bg-primary
+                                onPress={() => onSave({ name, price, isProportional })}
+                            />
+                            <Button body label="Cancel" bg-primary onPress={onCancel} />
+                            {onDelete != null && <Button body label="Delete" bg-primary onPress={onDelete} />}
+                        </View>
+                    </KeyboardAvoidingView>
+                    <View style={styles.optionsContainer}>
+                        {proportional != null && (
                             <Checkbox
                                 containerStyle={styles.textInput}
                                 color={_colorConfiguration.primary}
@@ -85,10 +80,20 @@ export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, pr
                                 label="Proportional"
                                 onValueChange={() => setIsProportional(!isProportional)}
                             />
-                        </View>
-                    )}
-                </View>
-            </SafeAreaView>
+                        )}
+
+                        {priceValue != null && (
+                            <Checkbox
+                                containerStyle={styles.textInput}
+                                color={_colorConfiguration.primary}
+                                value={price < 0}
+                                label="Discount"
+                                onValueChange={() => setPrice(-price)}
+                            />
+                        )}
+                    </View>
+                </SafeAreaView>
+            </TouchableWithoutFeedback>
         </Modal>
     );
 };
@@ -100,7 +105,7 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         alignItems: "center",
         height: "100%",
-        backgroundColor: "rgba(0,0,0,0.2)",
+        backgroundColor: _colorConfiguration.darkOverlay,
     },
     inputContainer: {
         display: "flex",
@@ -115,11 +120,8 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         alignItems: "center",
         paddingBottom: 25,
-    },
-    input: {
-        display: "flex",
-        flex: 4,
-        marginTop: 50,
+        paddingTop: 25,
+        rowGap: 10,
     },
     textInput: {
         height: 50,
