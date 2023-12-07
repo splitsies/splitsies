@@ -1,4 +1,10 @@
-import { CreateUserRequest, IUserCredential } from "@splitsies/shared-models";
+import {
+    CreateUserRequest,
+    IExpenseUserDetails,
+    IExpenseUserDetailsMapper,
+    IUserCredential,
+    IUserDto,
+} from "@splitsies/shared-models";
 import { BehaviorSubject, Observable, first, lastValueFrom } from "rxjs";
 import { IUserManager } from "./user-manager-interface";
 import { injectable } from "inversify";
@@ -7,10 +13,17 @@ import { lazyInject } from "../../utils/lazy-inject";
 import { BaseManager } from "../base-manager";
 import { resetGenericPassword, setGenericPassword, getGenericPassword, UserCredentials } from "react-native-keychain";
 
+import Contacts from "react-native-contacts";
+import { PermissionsAndroid } from "react-native";
+import { IPersmissionRequester } from "../../utils/permission-requester/permission-requester-interface";
+
 @injectable()
 export class UserManager extends BaseManager implements IUserManager {
     private readonly _client = lazyInject<IUsersApiClient>(IUsersApiClient);
+    private readonly _expenseUserDetailsMapper = lazyInject<IExpenseUserDetailsMapper>(IExpenseUserDetailsMapper);
+    private readonly _permissionRequester = lazyInject<IPersmissionRequester>(IPersmissionRequester);
     private readonly _user$ = new BehaviorSubject<IUserCredential | null>(null);
+    private readonly _contactUsers$ = new BehaviorSubject<IUserDto[]>([]);
 
     constructor() {
         super();
@@ -26,7 +39,29 @@ export class UserManager extends BaseManager implements IUserManager {
             return Promise.resolve();
         }
 
-        const onInitialAuthResponse = lastValueFrom(this._client.user$.pipe(first((user) => !!user?.authToken)));
+        const onInitialAuthResponse = lastValueFrom(this._client.user$.pipe(first((user) => !!user?.authToken))).then(
+            () => {
+                this._permissionRequester
+                    .requestReadContacts()
+                    .then(() => {
+                        Contacts.getAll()
+                            .then((contacts) => {
+                                const numbers: string[] = [];
+                                for (const c of contacts) {
+                                    numbers.push(...c.phoneNumbers.map((n) => n.number.replace(/\D/g, "")));
+                                }
+
+                                void this.requestFindUsersByPhoneNumber(numbers);
+                            })
+                            .catch((r) => {
+                                console.error(r);
+                            });
+                    })
+                    .catch((e) => {
+                        console.error(e);
+                    });
+            },
+        );
 
         if (!(await this.requestAuthenticate(userCreds.username, userCreds.password))) {
             return Promise.resolve();
@@ -35,12 +70,24 @@ export class UserManager extends BaseManager implements IUserManager {
         return onInitialAuthResponse;
     }
 
+    get expenseUserDetails(): IExpenseUserDetails {
+        if (this._user$.value) {
+            return this._expenseUserDetailsMapper.fromUserDto(this._user$.value.user);
+        }
+
+        throw new Error("Attempted to cast user details without an active user");
+    }
+
     get user(): IUserCredential | null {
         return this._user$.value;
     }
 
     get user$(): Observable<IUserCredential | null> {
         return this._user$.asObservable();
+    }
+
+    get contactUsers$(): Observable<IUserDto[]> {
+        return this._contactUsers$.asObservable();
     }
 
     get userId(): string {
@@ -91,5 +138,18 @@ export class UserManager extends BaseManager implements IUserManager {
 
             this.requestAuthenticate(userCreds.username, userCreds.password);
         }, ttlMs);
+    }
+
+    async requestFindUsersByPhoneNumber(phoneNumbers: string[]): Promise<void> {
+        const users = await this._client.requestFindUsersByPhoneNumber(phoneNumbers);
+        this._contactUsers$.next(users);
+    }
+
+    async requestUsersByIds(ids: string[]): Promise<IUserDto[]> {
+        return this._client.requestUsersByIds(ids);
+    }
+
+    async requestAddGuestUser(givenName: string): Promise<IUserDto> {
+        return this._client.requestAddGuestUser(givenName);
     }
 }

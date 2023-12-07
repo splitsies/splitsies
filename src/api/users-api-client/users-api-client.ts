@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { IUsersApiClient } from "./users-api-client-interface";
-import { CreateUserRequest, IUserCredential } from "@splitsies/shared-models";
+import { CreateUserRequest, IUserCredential, IUserDto } from "@splitsies/shared-models";
 import { IApiConfig } from "../../models/configuration/api-config/api-config-interface";
 import { ClientBase } from "../client-base";
 import { BehaviorSubject, Observable, ReplaySubject } from "rxjs";
@@ -10,6 +10,7 @@ import { lazyInject } from "../../utils/lazy-inject";
 export class UsersApiClient extends ClientBase implements IUsersApiClient {
     private readonly _config = lazyInject<IApiConfig>(IApiConfig);
     private readonly _user$ = new BehaviorSubject<IUserCredential | null>(null);
+    private readonly _contactUsers$ = new BehaviorSubject<IUserDto[]>([]);
 
     constructor() {
         super();
@@ -28,7 +29,6 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
 
         try {
             const result = await this.postJson<IUserCredential>(url, { username, password });
-
             if (!result.success) {
                 throw new Error();
             }
@@ -52,5 +52,35 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
         } catch {
             throw new Error("Unable to authorize user");
         }
+    }
+
+    async requestFindUsersByPhoneNumber(phoneNumbers: string[]): Promise<IUserDto[]> {
+        const url = `${this._config.users}?phoneNumbers=${phoneNumbers.join(",")}`;
+
+        try {
+            const result = await this.get<IUserDto[]>(url);
+            return result.data;
+        } catch (e) {
+            console.error(e);
+            return [];
+        }
+    }
+
+    async requestUsersByIds(ids: string[]): Promise<IUserDto[]> {
+        const url = `${this._config.users}?ids=${ids.join(",")}`;
+
+        try {
+            const result = await this.get<IUserDto[]>(url);
+            return result.data;
+        } catch (e) {
+            console.error(e);
+            return [];
+        }
+    }
+
+    async requestAddGuestUser(givenName: string): Promise<IUserDto> {
+        const url = `${this._config.users}/guests`;
+        const result = await this.postJson<IUserDto>(url, { givenName });
+        return result.data;
     }
 }

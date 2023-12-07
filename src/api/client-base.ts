@@ -37,4 +37,10 @@ export abstract class ClientBase {
         const dataResponse = await response.json();
         return this.parseResponse(dataResponse);
     }
+
+    async delete(url: string, headers: any = {}): Promise<void> {
+        const response = await fetch(url, {
+            method: "DELETE",
+        });
+    }
 }

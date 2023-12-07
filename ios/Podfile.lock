@@ -377,6 +377,8 @@ PODS:
     - glog
   - react-native-blur (4.3.2):
     - React-Core
+  - react-native-contacts (7.0.7):
+    - React-Core
   - react-native-netinfo (9.4.1):
     - React-Core
   - react-native-safe-area-context (4.7.2):
@@ -585,6 +587,7 @@ DEPENDENCIES:
   - React-jsinspector (from `../node_modules/react-native/ReactCommon/jsinspector`)
   - React-logger (from `../node_modules/react-native/ReactCommon/logger`)
   - "react-native-blur (from `../node_modules/@react-native-community/blur`)"
+  - react-native-contacts (from `../node_modules/react-native-contacts`)
   - "react-native-netinfo (from `../node_modules/@react-native-community/netinfo`)"
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
@@ -676,6 +679,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/logger"
   react-native-blur:
     :path: "../node_modules/@react-native-community/blur"
+  react-native-contacts:
+    :path: "../node_modules/react-native-contacts"
   react-native-netinfo:
     :path: "../node_modules/@react-native-community/netinfo"
   react-native-safe-area-context:
@@ -766,6 +771,7 @@ SPEC CHECKSUMS:
   React-jsinspector: aaed4cf551c4a1c98092436518c2d267b13a673f
   React-logger: da1ebe05ae06eb6db4b162202faeafac4b435e77
   react-native-blur: cfdad7b3c01d725ab62a8a729f42ea463998afa2
+  react-native-contacts: 61971364bf9f11a846587eeb736a4e65632815d4
   react-native-netinfo: fefd4e98d75cbdd6e85fc530f7111a8afdf2b0c5
   react-native-safe-area-context: 7aa8e6d9d0f3100a820efb1a98af68aa747f9284
   React-NativeModulesApple: edb5ace14f73f4969df6e7b1f3e41bef0012740f
@@ -796,6 +802,6 @@ SPEC CHECKSUMS:
   Yoga: 3efc43e0d48686ce2e8c60f99d4e6bd349aff981
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: d9c9805f08dd0d4b17a5512d05607fcc44033a38
+PODFILE CHECKSUM: a4a72264e18d1c19042fe7cf311440e046296932
 
 COCOAPODS: 1.13.0

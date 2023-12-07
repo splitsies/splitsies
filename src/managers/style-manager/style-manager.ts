@@ -40,7 +40,5 @@ export class StyleManager implements IStyleManager {
             arrowBack: require("../../../assets/icons/arrow-back.png"),
             pencil: require("../../../assets/icons/pencil.png"),
         });
-
-        console.log("initialized the theme!!");
     }
 }

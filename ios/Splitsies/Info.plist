@@ -35,6 +35,8 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSContactsUsageDescription</key>
+	<string>$(PRODUCT_NAME) Users lookup</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>UIAppFonts</key>

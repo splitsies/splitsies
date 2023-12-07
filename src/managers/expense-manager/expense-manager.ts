@@ -1,6 +1,12 @@
 import { injectable } from "inversify";
 import { IExpenseManager } from "./expense-manager-interface";
-import { IExpense, IUserCredential } from "@splitsies/shared-models";
+import {
+    IExpense,
+    IExpenseUserDetails,
+    IExpenseUserDetailsMapper,
+    IUserCredential,
+    IUserDto,
+} from "@splitsies/shared-models";
 import { BehaviorSubject, Observable } from "rxjs";
 import { IExpenseApiClient } from "../../api/expense-api-client/expense-api-client-interface";
 import { lazyInject } from "../../utils/lazy-inject";
@@ -11,8 +17,10 @@ import { IUserManager } from "../user-manager/user-manager-interface";
 export class ExpenseManager extends BaseManager implements IExpenseManager {
     private readonly _api = lazyInject<IExpenseApiClient>(IExpenseApiClient);
     private readonly _userManager = lazyInject<IUserManager>(IUserManager);
+    private readonly _expenseUserDetailsMapper = lazyInject<IExpenseUserDetailsMapper>(IExpenseUserDetailsMapper);
     private readonly _expenses$ = new BehaviorSubject<IExpense[]>([]);
     private readonly _currentExpense$ = new BehaviorSubject<IExpense | null>(null);
+    private readonly _currentExpenseUsers$ = new BehaviorSubject<IExpenseUserDetails[]>([]);
 
     get expenses$(): Observable<IExpense[]> {
         return this._expenses$.asObservable();
@@ -28,6 +36,14 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     get currentExpense(): IExpense | null {
         return this._currentExpense$.value;
+    }
+
+    get currentExpenseUsers$(): Observable<IExpenseUserDetails[]> {
+        return this._currentExpenseUsers$.asObservable();
+    }
+
+    get currentExpenseUsers(): IExpenseUserDetails[] {
+        return this._currentExpenseUsers$.value;
     }
 
     constructor() {
@@ -69,6 +85,23 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     async connectToExpense(expenseId: string): Promise<void> {
         await this._api.connectToExpense(expenseId);
+    }
+
+    async requestUsersForExpense(expenseId: string): Promise<void> {
+        const userIds = await this._api.getUserIdsForExpense(expenseId);
+        const users = await this._userManager.requestUsersByIds(userIds);
+
+        this._currentExpenseUsers$.next(users.map((u) => this._expenseUserDetailsMapper.fromUserDto(u)));
+    }
+
+    async requestAddUserToExpense(userId: string, expenseId: string): Promise<void> {
+        await this._api.addUserToExpense(userId, expenseId);
+        void this.requestUsersForExpense(expenseId);
+    }
+
+    async requestRemoveUserFromExpense(userId: string, expenseId: string): Promise<void> {
+        await this._api.removeUserFromExpense(userId, expenseId);
+        void this.requestUsersForExpense(expenseId);
     }
 
     disconnectFromExpense(): void {

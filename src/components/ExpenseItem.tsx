@@ -1,3 +1,4 @@
+import React from "react";
 import { IExpenseItem } from "@splitsies/shared-models";
 import { StyleSheet } from "react-native";
 import { Checkbox } from "react-native-ui-lib";
@@ -19,7 +20,9 @@ const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration)
 
 export const ExpenseItem = ({ item, selected, selectable, showOwners, style, onPress, onSelect }: Props) => {
     const ownerList = item.owners
-        .map((personId) => personId)
+        .map(
+            (userDetails) => `${userDetails.givenName}${userDetails.familyName ? " " + userDetails.familyName[0] : ""}`,
+        )
         .filter((entry) => !!entry)
         .join(", ");
 
