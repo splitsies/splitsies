@@ -16,7 +16,16 @@ import { IColorConfiguration } from "../models/configuration/color-config/color-
 import { ColorConfiguration } from "../models/configuration/color-config/color-configuration";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { StyleManager } from "../managers/style-manager/style-manager";
-import { ExpenseMapper, ExpenseUpdateMapper, IExpenseMapper, IExpenseUpdateMapper } from "@splitsies/shared-models";
+import {
+    ExpenseMapper,
+    ExpenseUpdateMapper,
+    ExpenseUserDetailsMapper,
+    IExpenseMapper,
+    IExpenseUpdateMapper,
+    IExpenseUserDetailsMapper,
+} from "@splitsies/shared-models";
+import { IPersmissionRequester } from "../utils/permission-requester/permission-requester-interface";
+import { PermissionRequester } from "../utils/permission-requester/permission-requester";
 const container = new Container();
 
 container.bind<IApiConfig>(IApiConfig).to(ApiConfig).inSingletonScope();
@@ -29,5 +38,7 @@ container.bind<IColorConfiguration>(IColorConfiguration).to(ColorConfiguration).
 container.bind<IStyleManager>(IStyleManager).to(StyleManager).inSingletonScope();
 container.bind<IExpenseMapper>(IExpenseMapper).to(ExpenseMapper).inSingletonScope();
 container.bind<IExpenseUpdateMapper>(IExpenseUpdateMapper).to(ExpenseUpdateMapper).inSingletonScope();
+container.bind<IExpenseUserDetailsMapper>(IExpenseUserDetailsMapper).to(ExpenseUserDetailsMapper).inSingletonScope();
+container.bind<IPersmissionRequester>(IPersmissionRequester).to(PermissionRequester).inSingletonScope();
 
 export { container };

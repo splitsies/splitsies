@@ -113,6 +113,38 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         this._sessionExpense$.next(null);
     }
 
+    async getUserIdsForExpense(expenseId: string): Promise<string[]> {
+        const url = `${this._config.expense}/${expenseId}/users`;
+        try {
+            const response = await this.get<string[]>(url, this._authProvider.provideAuthHeader());
+            return response.data;
+        } catch (e) {
+            console.error(e);
+            return [];
+        }
+    }
+
+    async addUserToExpense(userId: string, expenseId: string): Promise<void> {
+        const url = `${this._config.expense}/${expenseId}/users`;
+
+        try {
+            const response = await this.postJson<void>(url, { userId }, this._authProvider.provideAuthHeader());
+            if (!response.success) throw new Error(`${response.data}`);
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    async removeUserFromExpense(userId: string, expenseId: string): Promise<void> {
+        const url = `${this._config.expense}/${expenseId}/users/${userId}`;
+
+        try {
+            await this.delete(url, this._authProvider.provideAuthHeader());
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
     private async onExpenseConnection(promiseResolver: () => void, expenseId: string): Promise<void> {
         await this.getExpense(expenseId);
         promiseResolver();

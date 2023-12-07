@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { lazyInject } from "../utils/lazy-inject";
 import { RootStackScreenParams } from "./root-stack-screen-params";
 import { Subscription, filter } from "rxjs";
-import { IExpense, IExpenseItem } from "@splitsies/shared-models";
+import { IExpense, IExpenseItem, IExpenseUserDetails, IUserDto } from "@splitsies/shared-models";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { View, TouchableOpacity, Text } from "react-native-ui-lib/core";
 import { ActionBar, Icon } from "react-native-ui-lib";
@@ -16,6 +16,8 @@ import { EditResult } from "../models/edit-result";
 import { useInitialize } from "../hooks/use-initialize";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
+import { PeopleModal } from "../components/PeopleModal";
+import { ListSeparator } from "../components/ListSeparator";
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -25,11 +27,13 @@ type Props = NativeStackScreenProps<RootStackScreenParams, "ExpenseScreen">;
 
 export const ExpenseScreen = ({ navigation }: Props) => {
     const [expense, setExpense] = useState<IExpense>(_expenseManager.currentExpense!);
+    const [expenseUsers, setExpenseUsers] = useState<IExpenseUserDetails[]>([]);
     const [selectedItem, setSelectedItem] = useState<IExpenseItem | null>(null);
     const [editingTitle, setEditingTitle] = useState<boolean>(false);
     const [isSelecting, setIsSelecting] = useState<boolean>(false);
     const [isAddingItem, setIsAddingItem] = useState<boolean>(false);
     const [inProgressSelections, setInProgressSelections] = useState<string[]>([]);
+    const [isSelectingPeople, setIsSelectingPeople] = useState<boolean>(false);
 
     useInitialize(() => {
         const subscription = new Subscription();
@@ -37,6 +41,12 @@ export const ExpenseScreen = ({ navigation }: Props) => {
         subscription.add(
             _expenseManager.currentExpense$.pipe(filter((e) => !!e)).subscribe({
                 next: (expense) => setExpense(expense!),
+            }),
+        );
+
+        subscription.add(
+            _expenseManager.currentExpenseUsers$.subscribe({
+                next: (users) => setExpenseUsers(users),
             }),
         );
 
@@ -116,18 +126,18 @@ export const ExpenseScreen = ({ navigation }: Props) => {
     const onSelectAction = (): void => {
         if (!isSelecting) {
             const userExpenseIds = expense.items
-                .map((i) => (i.owners.includes(_userManager.userId) ? i.id : ""))
+                .map((i) => (i.owners.find((u) => u.id === _userManager.userId) ? i.id : ""))
                 .filter((i) => !!i);
 
             setInProgressSelections(userExpenseIds);
         } else {
             for (const item of expense.items) {
-                const idIndex = item.owners.indexOf(_userManager.userId);
+                const idIndex = item.owners.findIndex((u) => u.id === _userManager.userId);
 
                 if (idIndex !== -1 && !inProgressSelections.includes(item.id)) {
                     item.owners.splice(idIndex, 1);
                 } else if (idIndex === -1 && inProgressSelections.includes(item.id)) {
-                    item.owners.push(_userManager.userId);
+                    item.owners.push(_userManager.expenseUserDetails);
                 }
             }
 
@@ -138,23 +148,12 @@ export const ExpenseScreen = ({ navigation }: Props) => {
         setIsSelecting(!isSelecting);
     };
 
-    const HeaderComponent = () => {
-        return (
-            <View centerH marginB-15>
-                <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
-                    <Text heading>{expense.name}</Text>
-                </TouchableOpacity>
-                <Text subtext>{format(expense.transactionDate)}</Text>
-            </View>
-        );
-    };
-
-    const Separator = () => {
-        return (
-            <View style={{ width: "100%" }} flex centerH>
-                <View style={styles.separator} />
-            </View>
-        );
+    const onUserSelectionChanged = (userId: string, included: boolean) => {
+        if (included) {
+            void _expenseManager.requestAddUserToExpense(userId, expense.id);
+        } else {
+            void _expenseManager.requestRemoveUserFromExpense(userId, expense.id);
+        }
     };
 
     return (
@@ -165,12 +164,17 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                 </TouchableOpacity>
             </View>
 
-            <HeaderComponent />
+            <View centerH marginB-15>
+                <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
+                    <Text heading>{expense.name}</Text>
+                </TouchableOpacity>
+                <Text subtext>{format(expense.transactionDate)}</Text>
+            </View>
 
             <FlatList
                 style={styles.list}
                 data={expense.items.filter((i) => !i.isProportional)}
-                ItemSeparatorComponent={Separator}
+                ItemSeparatorComponent={ListSeparator}
                 renderItem={({ item }) => (
                     <ExpenseItem
                         item={item}
@@ -204,6 +208,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                     actions={[
                         { label: isSelecting ? "Done" : "Select", onPress: onSelectAction },
                         { label: "Add", onPress: () => setIsAddingItem(true) },
+                        { label: "Share", onPress: () => setIsSelectingPeople(true) },
                     ]}
                 />
             </View>
@@ -233,6 +238,13 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                 proportional={false}
                 onCancel={() => setIsAddingItem(false)}
             />
+
+            <PeopleModal
+                visible={isSelectingPeople}
+                expenseUsers={expenseUsers}
+                onCancel={() => setIsSelectingPeople(false)}
+                onUserSelectionChanged={onUserSelectionChanged}
+            />
         </SafeAreaView>
     );
 };
@@ -242,14 +254,6 @@ const styles = StyleSheet.create({
         display: "flex",
         flexGrow: 1,
         width: "100%",
-    },
-    separator: {
-        height: 1,
-        width: "100%",
-        backgroundColor: _colorConfiguration.greyFont,
-        marginTop: 10,
-        marginBottom: 10,
-        opacity: 0.33,
     },
     itemContainer: {
         justifyContent: "space-between",
