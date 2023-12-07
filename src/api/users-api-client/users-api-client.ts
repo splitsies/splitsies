@@ -10,7 +10,6 @@ import { lazyInject } from "../../utils/lazy-inject";
 export class UsersApiClient extends ClientBase implements IUsersApiClient {
     private readonly _config = lazyInject<IApiConfig>(IApiConfig);
     private readonly _user$ = new BehaviorSubject<IUserCredential | null>(null);
-    private readonly _contactUsers$ = new BehaviorSubject<IUserDto[]>([]);
 
     constructor() {
         super();
