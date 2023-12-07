@@ -12,10 +12,9 @@ import { IUsersApiClient } from "../../api/users-api-client/users-api-client-int
 import { lazyInject } from "../../utils/lazy-inject";
 import { BaseManager } from "../base-manager";
 import { resetGenericPassword, setGenericPassword, getGenericPassword, UserCredentials } from "react-native-keychain";
+import { IPersmissionRequester } from "../../utils/permission-requester/permission-requester-interface";
 
 import Contacts from "react-native-contacts";
-import { PermissionsAndroid } from "react-native";
-import { IPersmissionRequester } from "../../utils/permission-requester/permission-requester-interface";
 
 @injectable()
 export class UserManager extends BaseManager implements IUserManager {
@@ -39,29 +38,7 @@ export class UserManager extends BaseManager implements IUserManager {
             return Promise.resolve();
         }
 
-        const onInitialAuthResponse = lastValueFrom(this._client.user$.pipe(first((user) => !!user?.authToken))).then(
-            () => {
-                this._permissionRequester
-                    .requestReadContacts()
-                    .then(() => {
-                        Contacts.getAll()
-                            .then((contacts) => {
-                                const numbers: string[] = [];
-                                for (const c of contacts) {
-                                    numbers.push(...c.phoneNumbers.map((n) => n.number.replace(/\D/g, "")));
-                                }
-
-                                void this.requestFindUsersByPhoneNumber(numbers);
-                            })
-                            .catch((r) => {
-                                console.error(r);
-                            });
-                    })
-                    .catch((e) => {
-                        console.error(e);
-                    });
-            },
-        );
+        const onInitialAuthResponse = lastValueFrom(this._client.user$.pipe(first((user) => !!user?.authToken)));
 
         if (!(await this.requestAuthenticate(userCreds.username, userCreds.password))) {
             return Promise.resolve();
@@ -151,5 +128,26 @@ export class UserManager extends BaseManager implements IUserManager {
 
     async requestAddGuestUser(givenName: string): Promise<IUserDto> {
         return this._client.requestAddGuestUser(givenName);
+    }
+
+    async requestUsersFromContacts(): Promise<void> {
+        const permissionStatus = await this._permissionRequester.requestReadContacts();
+
+        if (permissionStatus === "denied") {
+            this._contactUsers$.next([]);
+            return;
+        }
+
+        try {
+            const contacts = await Contacts.getAll();
+            const numbers: string[] = [];
+            for (const c of contacts) {
+                numbers.push(...c.phoneNumbers.map((n) => n.number.replace(/\D/g, "")));
+            }
+
+            void this.requestFindUsersByPhoneNumber(numbers);
+        } catch (e) {
+            console.error(e);
+        }
     }
 }

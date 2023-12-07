@@ -26,6 +26,8 @@ export const PeopleModal = ({ visible, onCancel, expenseUsers, onUserSelectionCh
             next: (users) => setContactUsers(users),
         });
 
+        void _userManager.requestUsersFromContacts();
+
         return () => subscription.unsubscribe();
     });
 
