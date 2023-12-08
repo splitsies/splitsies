@@ -9,7 +9,7 @@ type propTypes = {
 
 export const UserIcon = ({ letter, style }: propTypes) => {
     return (
-        <View style={styles.container} bg-primary>
+        <View style={[styles.container, style]} bg-primary>
             <Text letter>{letter}</Text>
         </View>
     );

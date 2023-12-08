@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, Dimensions, NativeModules, Platform, TouchableOpacity } from "react-native";
-import { IExpense } from "@splitsies/shared-models";
+import { IExpense, IExpenseMapper, IExpensePayload } from "@splitsies/shared-models";
 import { Icon, Text, View } from "react-native-ui-lib";
 import { UserIcon } from "./UserIcon";
+import { lazyInject } from "../utils/lazy-inject";
 
 const Locale = (
     Platform.OS === "ios"
@@ -14,8 +15,10 @@ const Locale = (
 type DateTimeFormatOptions = { weekday: "long"; year: "numeric"; month: "long"; day: "numeric" };
 const DATE_OPTIONS: DateTimeFormatOptions = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
 
+const _expenseMapper = lazyInject<IExpenseMapper>(IExpenseMapper);
+
 interface propTypes {
-    data: IExpense;
+    data: IExpensePayload;
     onPress: (expenseId: string) => void;
     onLongPress?: () => void;
 }
@@ -24,18 +27,21 @@ interface propTypes {
  * @{@link propTypes}
  */
 export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
+    const [expense, setExpense] = useState<IExpense>(_expenseMapper.toDomainModel(data.expense));
     const [peopleContainerWidth, setPeopleContainerWidth] = useState<number>(Dimensions.get("window").width);
-    const PERSON_LIMIT = Math.floor((peopleContainerWidth - 20) / 30) - 1;
+    const PERSON_LIMIT = Math.floor((peopleContainerWidth - 20) / 36) - 1;
+
+    useEffect(() => setExpense(_expenseMapper.toDomainModel(data.expense)), [data]);
 
     return (
-        <TouchableOpacity onPress={() => onPress(data.id)} onLongPress={onLongPress}>
+        <TouchableOpacity onPress={() => onPress(expense.id)} onLongPress={onLongPress}>
             <View style={[styles.container]}>
                 <View style={styles.rowContainer}>
                     <View style={styles.leftBox}>
                         <Icon assetName="location" size={17} />
                     </View>
                     <View style={styles.rightBox}>
-                        <Text>{data.name}</Text>
+                        <Text>{expense.name}</Text>
                     </View>
                 </View>
 
@@ -45,7 +51,9 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
                     </View>
                     <View style={styles.rightBox}>
                         <Text subtext>
-                            {data.transactionDate.toLocaleString(Locale, DATE_OPTIONS).replace(/\d{2}:\d{2}:\d{2}/, "")}
+                            {expense.transactionDate
+                                .toLocaleString(Locale, DATE_OPTIONS)
+                                .replace(/\d{2}:\d{2}:\d{2}/, "")}
                         </Text>
                     </View>
                 </View>
@@ -59,21 +67,20 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
                             style={styles.peopleContainer}
                             onLayout={({ nativeEvent }) => setPeopleContainerWidth(nativeEvent.layout.width)}
                         >
-                            <UserIcon letter="K" style={{ marginRight: 6 }} />
-                            {/* {data.items.length === 0 ? (
-                                <Text style={{ ...Font.HINT, color: themeColors.hint }}>None</Text>
-                            ) : null}
-                            {data.people.length > PERSON_LIMIT
-                                ? data.people
-                                .slice(0, PERSON_LIMIT)
-                                .map(({ id, name }) => <UserIcon key={id} letter={name[0]} style={{ marginRight: 6 }} />)
-                                : data.people.map(({ id, name }) => <UserIcon key={id} letter={name[0]} style={{ marginRight: 6 }} />)}
-                            {data.people.length > PERSON_LIMIT ? (
-                                <Text style={{ ...Font.BODY, color: themeColors.foregroundColor }}>
-                                {' '}
-                                + {data.people.length - PERSON_LIMIT}
-                                </Text>
-                            ) : null} */}
+                            {data.expenseUsers.length === 0 && <Text hint>None</Text>}
+                            {data.expenseUsers.length > PERSON_LIMIT
+                                ? data.expenseUsers
+                                      .slice(0, PERSON_LIMIT)
+                                      .map(({ id, givenName }) => (
+                                          <UserIcon key={id} letter={givenName[0]} style={{ marginRight: 6 }} />
+                                      ))
+                                : data.expenseUsers.map(({ id, givenName }) => (
+                                      <UserIcon key={id} letter={givenName[0]} style={{ marginRight: 6 }} />
+                                  ))}
+
+                            {data.expenseUsers.length > PERSON_LIMIT && (
+                                <Text body>+ {data.expenseUsers.length - PERSON_LIMIT}</Text>
+                            )}
                         </View>
                     </View>
                 </View>
@@ -83,7 +90,7 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
                         <Icon assetName="price" size={17} />
                     </View>
                     <View style={styles.rightBox}>
-                        <Text subtext>${data.total.toFixed(2)}</Text>
+                        <Text subtext>${expense.total.toFixed(2)}</Text>
                     </View>
                 </View>
             </View>
