@@ -8,7 +8,7 @@ export interface IUsersApiClient {
     signOut(): void;
     requestFindUsersByPhoneNumber(phoneNumbers: string[]): Promise<IUserDto[]>;
     requestUsersByIds(ids: string[]): Promise<IUserDto[]>;
-    requestAddGuestUser(givenName: string): Promise<IUserDto>;
+    requestAddGuestUser(givenName: string, familyName: string, phoneNumber: string): Promise<IUserDto>;
 }
 
 export const IUsersApiClient = Symbol.for("IUsersApiClient");

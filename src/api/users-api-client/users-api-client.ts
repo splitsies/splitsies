@@ -77,9 +77,9 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
         }
     }
 
-    async requestAddGuestUser(givenName: string): Promise<IUserDto> {
+    async requestAddGuestUser(givenName: string, familyName: string, phoneNumber: string): Promise<IUserDto> {
         const url = `${this._config.users}/guests`;
-        const result = await this.postJson<IUserDto>(url, { givenName });
+        const result = await this.postJson<IUserDto>(url, { givenName, familyName, phoneNumber });
         return result.data;
     }
 }

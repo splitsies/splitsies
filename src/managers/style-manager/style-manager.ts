@@ -32,6 +32,8 @@ export class StyleManager implements IStyleManager {
         Assets.loadAssetsGroup("icons", {
             logoWhite: require("../../../assets/icons/logo_white.png"),
             logoBlack: require("../../../assets/icons/logo_black.png"),
+            logoGrey: require("../../../assets/icons/logo-grey.png"),
+            logoPrimary: require("../../../assets/icons/logo-primary.png"),
             location: require("../../../assets/icons/location.png"),
             calendar: require("../../../assets/icons/calendar.png"),
             price: require("../../../assets/icons/price.png"),
@@ -39,6 +41,7 @@ export class StyleManager implements IStyleManager {
             error: require("../../../assets/icons/error.png"),
             arrowBack: require("../../../assets/icons/arrow-back.png"),
             pencil: require("../../../assets/icons/pencil.png"),
+            addUser: require("../../../assets/icons/add-person.png"),
         });
     }
 }

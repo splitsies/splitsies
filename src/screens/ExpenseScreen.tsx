@@ -50,6 +50,8 @@ export const ExpenseScreen = ({ navigation }: Props) => {
             }),
         );
 
+        void _expenseManager.requestUsersForExpense(expense.id);
+
         return () => subscription.unsubscribe();
     });
 
@@ -148,12 +150,28 @@ export const ExpenseScreen = ({ navigation }: Props) => {
         setIsSelecting(!isSelecting);
     };
 
-    const onUserSelectionChanged = (userId: string, included: boolean) => {
+    const onUserSelectionChanged = async (user: IExpenseUserDetails, included: boolean): Promise<void> => {
+        let userId = user.id;
         if (included) {
+            if (!user.isRegistered && !user.id) {
+                // Adding a guest user
+                const addedUser = await _userManager.requestAddGuestUser(
+                    user.givenName,
+                    user.familyName,
+                    user.phoneNumber,
+                );
+                userId = addedUser.id;
+            }
+
             void _expenseManager.requestAddUserToExpense(userId, expense.id);
         } else {
             void _expenseManager.requestRemoveUserFromExpense(userId, expense.id);
         }
+    };
+
+    const onAddGuest = async (givenName: string, phoneNumber: string): Promise<void> => {
+        const user = await _userManager.requestAddGuestUser(givenName, "", phoneNumber);
+        return _expenseManager.requestAddUserToExpense(user.id, expense.id);
     };
 
     return (
@@ -208,7 +226,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                     actions={[
                         { label: isSelecting ? "Done" : "Select", onPress: onSelectAction },
                         { label: "Add", onPress: () => setIsAddingItem(true) },
-                        { label: "Share", onPress: () => setIsSelectingPeople(true) },
+                        { label: "Invite", onPress: () => setIsSelectingPeople(true) },
                     ]}
                 />
             </View>
@@ -242,6 +260,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
             <PeopleModal
                 visible={isSelectingPeople}
                 expenseUsers={expenseUsers}
+                onAddGuest={onAddGuest}
                 onCancel={() => setIsSelectingPeople(false)}
                 onUserSelectionChanged={onUserSelectionChanged}
             />
