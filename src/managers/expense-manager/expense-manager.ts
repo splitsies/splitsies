@@ -91,7 +91,9 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         const userIds = await this._api.getUserIdsForExpense(expenseId);
         const users = await this._userManager.requestUsersByIds(userIds);
 
-        this._currentExpenseUsers$.next(users.map((u) => this._expenseUserDetailsMapper.fromUserDto(u)));
+        this._currentExpenseUsers$.next(
+            users.map((u) => this._expenseUserDetailsMapper.fromUserDto(u)).sort(this.userSortCompare),
+        );
     }
 
     async requestAddUserToExpense(userId: string, expenseId: string): Promise<void> {
@@ -111,5 +113,13 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     private async onUserCredentialUpdated(userCredential: IUserCredential | null): Promise<void> {
         this._api.disconnectFromExpense();
         this._api.getAllExpenses(userCredential?.user.id ?? "");
+    }
+
+    private userSortCompare(user1: IExpenseUserDetails, user2: IExpenseUserDetails): number {
+        return user1.givenName.toUpperCase() > user2.givenName.toUpperCase()
+            ? 1
+            : user1.givenName.toUpperCase() < user2.givenName.toUpperCase()
+            ? -1
+            : 0;
     }
 }

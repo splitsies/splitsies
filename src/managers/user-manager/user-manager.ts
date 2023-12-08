@@ -1,5 +1,6 @@
 import {
     CreateUserRequest,
+    ExpenseUserDetails,
     IExpenseUserDetails,
     IExpenseUserDetailsMapper,
     IUserCredential,
@@ -13,7 +14,6 @@ import { lazyInject } from "../../utils/lazy-inject";
 import { BaseManager } from "../base-manager";
 import { resetGenericPassword, setGenericPassword, getGenericPassword, UserCredentials } from "react-native-keychain";
 import { IPersmissionRequester } from "../../utils/permission-requester/permission-requester-interface";
-
 import Contacts from "react-native-contacts";
 
 @injectable()
@@ -22,7 +22,7 @@ export class UserManager extends BaseManager implements IUserManager {
     private readonly _expenseUserDetailsMapper = lazyInject<IExpenseUserDetailsMapper>(IExpenseUserDetailsMapper);
     private readonly _permissionRequester = lazyInject<IPersmissionRequester>(IPersmissionRequester);
     private readonly _user$ = new BehaviorSubject<IUserCredential | null>(null);
-    private readonly _contactUsers$ = new BehaviorSubject<IUserDto[]>([]);
+    private readonly _contactUsers$ = new BehaviorSubject<IExpenseUserDetails[]>([]);
 
     constructor() {
         super();
@@ -63,7 +63,7 @@ export class UserManager extends BaseManager implements IUserManager {
         return this._user$.asObservable();
     }
 
-    get contactUsers$(): Observable<IUserDto[]> {
+    get contactUsers$(): Observable<IExpenseUserDetails[]> {
         return this._contactUsers$.asObservable();
     }
 
@@ -119,15 +119,30 @@ export class UserManager extends BaseManager implements IUserManager {
 
     async requestFindUsersByPhoneNumber(phoneNumbers: string[]): Promise<void> {
         const users = await this._client.requestFindUsersByPhoneNumber(phoneNumbers);
-        this._contactUsers$.next(users);
+        this._contactUsers$.next(
+            users.map((u) => this._expenseUserDetailsMapper.fromUserDto(u)).sort(this.userSortCompare),
+        );
     }
 
     async requestUsersByIds(ids: string[]): Promise<IUserDto[]> {
         return this._client.requestUsersByIds(ids);
     }
 
-    async requestAddGuestUser(givenName: string): Promise<IUserDto> {
-        return this._client.requestAddGuestUser(givenName);
+    async requestAddGuestUser(givenName: string, familyName: string, phoneNumber: string): Promise<IUserDto> {
+        const user = await this._client.requestAddGuestUser(givenName, familyName, phoneNumber);
+
+        // Replace the user stub in contactUsers with the newly created guest, or add the user if needed
+        const newUserDetails = this._expenseUserDetailsMapper.fromUserDto(user);
+        const details = this._contactUsers$.value;
+        const matchingUserIndex = details.findIndex((u) => u.phoneNumber === user.phoneNumber);
+
+        if (matchingUserIndex > -1) {
+            details.splice(matchingUserIndex, 1);
+        }
+
+        details.push(newUserDetails);
+        this._contactUsers$.next(details.sort(this.userSortCompare));
+        return user;
     }
 
     async requestUsersFromContacts(): Promise<void> {
@@ -139,15 +154,56 @@ export class UserManager extends BaseManager implements IUserManager {
         }
 
         try {
+            // Get contacts
             const contacts = await Contacts.getAll();
             const numbers: string[] = [];
             for (const c of contacts) {
                 numbers.push(...c.phoneNumbers.map((n) => n.number.replace(/\D/g, "")));
             }
 
-            void this.requestFindUsersByPhoneNumber(numbers);
+            // Do a search to find the ones existing as Splitsies users
+            const splitsiesUsers = await this._client.requestFindUsersByPhoneNumber(numbers);
+            const keyedByNumber = new Map<string, IUserDto>();
+
+            for (const u of splitsiesUsers) {
+                keyedByNumber.set(u.phoneNumber, u);
+            }
+
+            // Merge them together
+            const contactUsers: IExpenseUserDetails[] = [];
+
+            for (const c of contacts) {
+                const accountPhoneNumber = c.phoneNumbers
+                    .map((n) => n.number.replace(/\D/g, ""))
+                    .find((n) => keyedByNumber.has(n));
+                if (accountPhoneNumber && keyedByNumber.has(accountPhoneNumber)) {
+                    const user = keyedByNumber.get(accountPhoneNumber);
+                    contactUsers.push(this._expenseUserDetailsMapper.fromUserDto(user!));
+                    continue;
+                }
+
+                contactUsers.push(
+                    new ExpenseUserDetails(
+                        false,
+                        "",
+                        c.givenName,
+                        c.familyName,
+                        c.phoneNumbers[0].number.replace(/\D/g, ""),
+                    ),
+                );
+            }
+
+            this._contactUsers$.next(contactUsers.sort(this.userSortCompare));
         } catch (e) {
             console.error(e);
         }
+    }
+
+    private userSortCompare(user1: IExpenseUserDetails, user2: IExpenseUserDetails): number {
+        return user1.givenName.toUpperCase() > user2.givenName.toUpperCase()
+            ? 1
+            : user1.givenName.toUpperCase() < user2.givenName.toUpperCase()
+            ? -1
+            : 0;
     }
 }
