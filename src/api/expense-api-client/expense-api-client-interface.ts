@@ -1,8 +1,8 @@
-import { IExpense, IExpenseUpdate } from "@splitsies/shared-models";
+import { IExpense, IExpensePayload } from "@splitsies/shared-models";
 import { Observable } from "rxjs";
 
 export interface IExpenseApiClient {
-    readonly userExpenses$: Observable<IExpense[]>;
+    readonly userExpenses$: Observable<IExpensePayload[]>;
     readonly sessionExpense$: Observable<IExpense | null>;
     getAllExpenses(userId: string): Promise<void>;
     getExpense(expenseId: string): Promise<void>;

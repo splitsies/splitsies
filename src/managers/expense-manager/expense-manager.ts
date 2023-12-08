@@ -2,10 +2,10 @@ import { injectable } from "inversify";
 import { IExpenseManager } from "./expense-manager-interface";
 import {
     IExpense,
+    IExpensePayload,
     IExpenseUserDetails,
     IExpenseUserDetailsMapper,
     IUserCredential,
-    IUserDto,
 } from "@splitsies/shared-models";
 import { BehaviorSubject, Observable } from "rxjs";
 import { IExpenseApiClient } from "../../api/expense-api-client/expense-api-client-interface";
@@ -18,15 +18,15 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     private readonly _api = lazyInject<IExpenseApiClient>(IExpenseApiClient);
     private readonly _userManager = lazyInject<IUserManager>(IUserManager);
     private readonly _expenseUserDetailsMapper = lazyInject<IExpenseUserDetailsMapper>(IExpenseUserDetailsMapper);
-    private readonly _expenses$ = new BehaviorSubject<IExpense[]>([]);
+    private readonly _expenses$ = new BehaviorSubject<IExpensePayload[]>([]);
     private readonly _currentExpense$ = new BehaviorSubject<IExpense | null>(null);
     private readonly _currentExpenseUsers$ = new BehaviorSubject<IExpenseUserDetails[]>([]);
 
-    get expenses$(): Observable<IExpense[]> {
+    get expenses$(): Observable<IExpensePayload[]> {
         return this._expenses$.asObservable();
     }
 
-    get expenses(): IExpense[] {
+    get expenses(): IExpensePayload[] {
         return this._expenses$.value;
     }
 

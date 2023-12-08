@@ -1,28 +1,28 @@
-import { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { SafeAreaView, FlatList } from "react-native";
 import { ExpensePreview } from "../components/ExpensePreview";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { lazyInject } from "../utils/lazy-inject";
-import React from "react";
 import { View, Text } from "react-native-ui-lib";
+import { lastValueFrom, first } from "rxjs";
+import { IExpensePayload } from "@splitsies/shared-models";
+import { useInitialize } from "../hooks/use-initialize";
+import { ListSeparator } from "../components/ListSeparator";
 import type { RootStackScreenParams } from "./root-stack-screen-params";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { lastValueFrom, first } from "rxjs";
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 
 export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackScreenParams, "HomeScreen">) => {
-    const [expenses, setExpenses] = useState(_expenseManager.expenses);
+    const [expenses, setExpenses] = useState<IExpensePayload[]>(_expenseManager.expenses);
 
-    useEffect(() => onConnect(), []);
-
-    const onConnect = () => {
+    useInitialize(() => {
         const subscription = _expenseManager.expenses$.subscribe({
             next: (data) => setExpenses(data),
         });
 
         return () => subscription.unsubscribe();
-    };
+    });
 
     const onExpenseClick = async (expenseId: string) => {
         await _expenseManager.connectToExpense(expenseId);
@@ -30,39 +30,16 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackScree
         navigation.navigate("ExpenseScreen");
     };
 
-    const FlatListItemSeparator = () => {
-        return (
-            <View style={{ width: "100%" }} flex centerH>
-                <View
-                    style={{
-                        height: 1,
-                        width: "75%",
-                        backgroundColor: "#BBB",
-                        marginTop: 10,
-                        marginBottom: 10,
-                        opacity: 0.33,
-                    }}
-                />
-            </View>
-        );
-    };
-
-    const HeaderComponent = () => {
-        return (
+    return (
+        <SafeAreaView>
             <View marginT-40 marginL-20 marginB-15 centerV>
                 <Text letterHeading>Splitsies</Text>
             </View>
-        );
-    };
-
-    return (
-        <SafeAreaView>
             <FlatList
-                ListHeaderComponent={HeaderComponent}
-                ItemSeparatorComponent={FlatListItemSeparator}
+                ItemSeparatorComponent={ListSeparator}
                 renderItem={({ item }) => (
                     <ExpensePreview
-                        key={item.id}
+                        key={item.expense.id}
                         data={item}
                         onPress={onExpenseClick}
                         onLongPress={() => console.log("LONG")}

@@ -2,7 +2,14 @@ import { injectable } from "inversify";
 import { IExpenseApiClient } from "./expense-api-client-interface";
 import { IApiConfig } from "../../models/configuration/api-config/api-config-interface";
 import { BehaviorSubject, Observable } from "rxjs";
-import { IExpense, IExpenseDto, IExpenseMapper, IExpenseUpdateMapper } from "@splitsies/shared-models";
+import {
+    ExpensePayload,
+    IExpense,
+    IExpenseDto,
+    IExpenseMapper,
+    IExpensePayload,
+    IExpenseUpdateMapper,
+} from "@splitsies/shared-models";
 import { ClientBase } from "../client-base";
 import { lazyInject } from "../../utils/lazy-inject";
 import { IAuthProvider } from "../../providers/auth-provider/auth-provider-interface";
@@ -10,7 +17,7 @@ import { IAuthProvider } from "../../providers/auth-provider/auth-provider-inter
 @injectable()
 export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     private _connection!: WebSocket;
-    private readonly _userExpenses$ = new BehaviorSubject<IExpense[]>([]);
+    private readonly _userExpenses$ = new BehaviorSubject<IExpensePayload[]>([]);
     private readonly _sessionExpense$ = new BehaviorSubject<IExpense | null>(null);
     private readonly _config = lazyInject<IApiConfig>(IApiConfig);
     private readonly _authProvider = lazyInject<IAuthProvider>(IAuthProvider);
@@ -21,7 +28,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         super();
     }
 
-    get userExpenses$(): Observable<IExpense[]> {
+    get userExpenses$(): Observable<IExpensePayload[]> {
         return this._userExpenses$.asObservable();
     }
 
@@ -37,8 +44,8 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
 
         const uri = `${this._config.expense}?userId=${userId}`;
         try {
-            const expenses = await this.get<IExpenseDto[]>(uri, this._authProvider.provideAuthHeader());
-            this._userExpenses$.next(expenses.data.map((e) => this._expenseMappper.toDomainModel(e)));
+            const expenses = await this.get<IExpensePayload[]>(uri, this._authProvider.provideAuthHeader());
+            this._userExpenses$.next(expenses.data);
         } catch (e) {
             console.error(e);
         }
@@ -156,12 +163,15 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         this._sessionExpense$.next(expense);
 
         const expenses = [...this._userExpenses$.value];
-        const expenseIndex = expenses.findIndex((e) => e.id === expense.id);
+        const expenseIndex = expenses.findIndex((e) => e.expense.id === expense.id);
         if (expenseIndex === -1) {
             return;
         }
 
-        expenses[expenseIndex] = expense;
+        expenses[expenseIndex] = new ExpensePayload(
+            this._expenseMappper.toDtoModel(expense),
+            expenses[expenseIndex].expenseUsers,
+        );
         this._userExpenses$.next(expenses);
     }
 }
