@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { FlatList, SafeAreaView, StyleSheet } from "react-native";
-import { Checkbox, Icon, Modal, Text, TextField, TouchableOpacity, View } from "react-native-ui-lib";
+import { ActionBar, Checkbox, Icon, Modal, Text, TextField, TouchableOpacity, View } from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { useInitialize } from "../hooks/use-initialize";
@@ -23,6 +23,7 @@ type Props = {
 export const PeopleModal = ({ visible, onCancel, onAddGuest, expenseUsers, onUserSelectionChanged }: Props) => {
     const [contactUsers, setContactUsers] = useState<IExpenseUserDetails[]>([]);
     const [addGuestVisible, setAddGuestVisible] = useState<boolean>(false);
+    const [userViewFilter, setUserViewFilter] = useState<"contacts" | "guests">("contacts");
 
     useInitialize(() => {
         const subscription = _userManager.contactUsers$.subscribe({
@@ -45,7 +46,7 @@ export const PeopleModal = ({ visible, onCancel, onAddGuest, expenseUsers, onUse
         ) : (
             <FlatList
                 style={styles.list}
-                data={contactUsers}
+                data={userViewFilter === "contacts" ? contactUsers : expenseUsers.filter((u) => !u.phoneNumber)}
                 keyExtractor={(i) => i.id + i.phoneNumber}
                 ItemSeparatorComponent={ListSeparator}
                 renderItem={({ item: user }) => (
@@ -74,7 +75,7 @@ export const PeopleModal = ({ visible, onCancel, onAddGuest, expenseUsers, onUse
                                     <Text body numberOfLines={1} ellipsizeMode={"tail"}>
                                         {user.givenName + " " + user.familyName}
                                     </Text>
-                                    <Text hint>{user.phoneNumber}</Text>
+                                    <Text hint>{user.phoneNumber || "Guest"}</Text>
                                 </View>
 
                                 {!!user.id && (
@@ -110,7 +111,19 @@ export const PeopleModal = ({ visible, onCancel, onAddGuest, expenseUsers, onUse
                         </TouchableOpacity>
                     </View>
                 </View>
-                <View style={styles.body}>{loadContent()}</View>
+                <View style={styles.body}>
+                    {loadContent()}
+                    <ActionBar
+                        style={{ backgroundColor: "rgba(0,0,0,0)" }}
+                        keepRelative
+                        useSafeArea
+                        centered
+                        actions={[
+                            { label: "Contacts", onPress: () => setUserViewFilter("contacts") },
+                            { label: "Guests", onPress: () => setUserViewFilter("guests") },
+                        ]}
+                    />
+                </View>
             </SafeAreaView>
         </Modal>
     );
