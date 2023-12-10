@@ -110,6 +110,10 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         this._api.disconnectFromExpense();
     }
 
+    createExpense(base64Image?: string): Promise<boolean> {
+        return this._api.createExpense(base64Image);
+    }
+
     private async onUserCredentialUpdated(userCredential: IUserCredential | null): Promise<void> {
         this._api.disconnectFromExpense();
         this._api.getAllExpenses(userCredential?.user.id ?? "");

@@ -42,6 +42,8 @@ export class StyleManager implements IStyleManager {
             arrowBack: require("../../../assets/icons/arrow-back.png"),
             pencil: require("../../../assets/icons/pencil.png"),
             addUser: require("../../../assets/icons/add-person.png"),
+            camera: require("../../../assets/icons/camera.png"),
+            photoLibrary: require("../../../assets/icons/photo-library.png"),
         });
     }
 }

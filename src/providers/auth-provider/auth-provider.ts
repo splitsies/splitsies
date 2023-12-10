@@ -7,6 +7,10 @@ import { IUserManager } from "../../managers/user-manager/user-manager-interface
 export class AuthProvider implements IAuthProvider {
     private readonly _userManager = lazyInject<IUserManager>(IUserManager);
 
+    provideIdentity(): string {
+        return this._userManager.user?.user?.id ?? "";
+    }
+
     provideAuthToken(): string {
         return this._userManager.user?.authToken ?? "";
     }

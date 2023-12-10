@@ -19,6 +19,7 @@ export interface IExpenseManager {
     requestAddUserToExpense(userId: string, expenseId: string): Promise<void>;
     requestRemoveUserFromExpense(userId: string, expenseId: string): Promise<void>;
     requestUsersForExpense(expenseId: string): Promise<void>;
+    createExpense(base64Image?: string): Promise<boolean>;
 }
 
 export const IExpenseManager = Symbol.for("IExpenseManager");

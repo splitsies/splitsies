@@ -11,11 +11,13 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { HomeScreen } from "../screens/HomeScreen";
 import { LoginScreen } from "../screens/LoginScreen";
 import { ExpenseScreen } from "../screens/ExpenseScreen";
+import { ImageScreen } from "../screens/ImageScreen";
+import { CameraScreen } from "../screens/CameraScreen";
 
 lazyInject<IStyleManager>(IStyleManager).initialize();
 const _userManager = lazyInject<IUserManager>(IUserManager);
 
-const Stack = createNativeStackNavigator();
+const Stack = createNativeStackNavigator<RootStackScreenParams>();
 
 export const RootComponent = () => {
     const [initialRoute, setInitialRoute] = useState<"HomeScreen" | "LoginScreen">("LoginScreen");
@@ -54,6 +56,8 @@ export const RootComponent = () => {
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
             <Stack.Screen name="LoginScreen" component={LoginScreen} />
             <Stack.Screen name="ExpenseScreen" component={ExpenseScreen} />
+            <Stack.Screen name="CameraScreen" component={CameraScreen} />
+            <Stack.Screen name="ImageScreen" component={ImageScreen} />
         </Stack.Navigator>
     );
 };

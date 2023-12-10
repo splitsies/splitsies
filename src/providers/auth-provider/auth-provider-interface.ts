@@ -1,4 +1,5 @@
 export interface IAuthProvider {
+    provideIdentity(): string;
     provideAuthToken(): string;
     provideAuthHeader(): { Authorization: string };
 }

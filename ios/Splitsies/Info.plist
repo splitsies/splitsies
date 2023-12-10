@@ -35,6 +35,8 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>$(PRODUCT_NAME) needs access to your Camera.</string>
 	<key>NSContactsUsageDescription</key>
 	<string>$(PRODUCT_NAME) Users lookup</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -114,5 +116,7 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>$(PRODUCT_NAME) needs access to your Photos.</string>
 </dict>
 </plist>
