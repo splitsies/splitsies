@@ -152,6 +152,26 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
     }
 
+    async createExpense(base64Image: string = undefined): Promise<boolean> {
+        try {
+            const body = { userId: this._authProvider.provideIdentity(), image: base64Image };
+            const response = await this.postJson<IExpenseDto>(
+                this._config.expense,
+                body,
+                this._authProvider.provideAuthHeader(),
+            );
+
+            if (response.success) {
+                this.connectToExpense(response.data.id);
+            }
+
+            return true;
+        } catch (e) {
+            console.error(e);
+            return false;
+        }
+    }
+
     private async onExpenseConnection(promiseResolver: () => void, expenseId: string): Promise<void> {
         await this.getExpense(expenseId);
         promiseResolver();

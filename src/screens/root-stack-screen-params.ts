@@ -1,5 +1,9 @@
+import { IImage } from "../models/image/image-interface";
+
 export type RootStackScreenParams = {
-    LoginScreen: any;
-    HomeScreen: any;
-    ExpenseScreen: any;
+    LoginScreen: undefined;
+    HomeScreen: undefined;
+    ExpenseScreen: undefined;
+    CameraScreen: undefined;
+    ImageScreen: { image: IImage };
 };

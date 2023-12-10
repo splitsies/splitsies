@@ -26,6 +26,8 @@ import {
 } from "@splitsies/shared-models";
 import { IPersmissionRequester } from "../utils/permission-requester/permission-requester-interface";
 import { PermissionRequester } from "../utils/permission-requester/permission-requester";
+import { IImageConfiguration } from "../models/configuration/image-config/image-configuration-interface";
+import { ImageConfiguration } from "../models/configuration/image-config/image-configuration";
 const container = new Container();
 
 container.bind<IApiConfig>(IApiConfig).to(ApiConfig).inSingletonScope();
@@ -40,5 +42,6 @@ container.bind<IExpenseMapper>(IExpenseMapper).to(ExpenseMapper).inSingletonScop
 container.bind<IExpenseUpdateMapper>(IExpenseUpdateMapper).to(ExpenseUpdateMapper).inSingletonScope();
 container.bind<IExpenseUserDetailsMapper>(IExpenseUserDetailsMapper).to(ExpenseUserDetailsMapper).inSingletonScope();
 container.bind<IPersmissionRequester>(IPersmissionRequester).to(PermissionRequester).inSingletonScope();
+container.bind<IImageConfiguration>(IImageConfiguration).to(ImageConfiguration).inSingletonScope();
 
 export { container };

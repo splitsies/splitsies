@@ -177,7 +177,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
     return (
         <SafeAreaView style={styles.container}>
             <View padding-5>
-                <TouchableOpacity onPress={() => onBackPress()}>
+                <TouchableOpacity onPress={onBackPress}>
                     <Icon assetName="arrowBack" size={35} />
                 </TouchableOpacity>
             </View>

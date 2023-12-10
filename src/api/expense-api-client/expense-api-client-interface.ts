@@ -13,6 +13,7 @@ export interface IExpenseApiClient {
     addItemToExpense(id: string, name: string, price: number, owners: string[], isProportional: boolean): Promise<void>;
     addUserToExpense(userId: string, expenseId: string): Promise<void>;
     removeUserFromExpense(userId: string, expenseId: string): Promise<void>;
+    createExpense(base64Image?: string): Promise<boolean>;
 }
 
 export const IExpenseApiClient = Symbol.for("IExpenseApiClient");
