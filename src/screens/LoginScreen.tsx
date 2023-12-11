@@ -42,7 +42,9 @@ export const LoginScreen = ({ navigation }: Props) => {
         navigation.navigate("HomeScreen");
     };
 
-    const onSignUpClicked = () => {};
+    const onSignUpClicked = () => {
+        navigation.navigate("SignupScreen");
+    };
 
     return (
         <SafeAreaView style={styles.container}>
