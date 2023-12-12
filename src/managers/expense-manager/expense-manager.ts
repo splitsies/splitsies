@@ -21,6 +21,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     private readonly _expenses$ = new BehaviorSubject<IExpensePayload[]>([]);
     private readonly _currentExpense$ = new BehaviorSubject<IExpense | null>(null);
     private readonly _currentExpenseUsers$ = new BehaviorSubject<IExpenseUserDetails[]>([]);
+    private readonly _isPendingExpenseData$ = new BehaviorSubject<boolean>(false);
 
     get expenses$(): Observable<IExpensePayload[]> {
         return this._expenses$.asObservable();
@@ -44,6 +45,14 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     get currentExpenseUsers(): IExpenseUserDetails[] {
         return this._currentExpenseUsers$.value;
+    }
+
+    get isPendingExpenseData(): boolean {
+        return this._isPendingExpenseData$.value;
+    }
+
+    get isPendingExpenseData$(): Observable<boolean> {
+        return this._isPendingExpenseData$.asObservable();
     }
 
     constructor() {
@@ -115,8 +124,13 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     }
 
     private async onUserCredentialUpdated(userCredential: IUserCredential | null): Promise<void> {
-        this._api.disconnectFromExpense();
-        this._api.getAllExpenses(userCredential?.user.id ?? "");
+        this._isPendingExpenseData$.next(true);
+        try {
+            this._api.disconnectFromExpense();
+            await this._api.getAllExpenses(userCredential?.user.id ?? "");
+        } finally {
+            this._isPendingExpenseData$.next(false);
+        }
     }
 
     private userSortCompare(user1: IExpenseUserDetails, user2: IExpenseUserDetails): number {

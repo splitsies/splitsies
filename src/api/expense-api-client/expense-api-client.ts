@@ -7,6 +7,7 @@ import {
     IExpense,
     IExpenseDto,
     IExpenseMapper,
+    IExpenseMessage,
     IExpensePayload,
     IExpenseUpdateMapper,
 } from "@splitsies/shared-models";
@@ -21,7 +22,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     private readonly _sessionExpense$ = new BehaviorSubject<IExpense | null>(null);
     private readonly _config = lazyInject<IApiConfig>(IApiConfig);
     private readonly _authProvider = lazyInject<IAuthProvider>(IAuthProvider);
-    private readonly _expenseMappper = lazyInject<IExpenseMapper>(IExpenseMapper);
+    private readonly _expenseMapper = lazyInject<IExpenseMapper>(IExpenseMapper);
     private readonly _expenseUpdateMapper = lazyInject<IExpenseUpdateMapper>(IExpenseUpdateMapper);
 
     constructor() {
@@ -55,7 +56,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         const uri = `${this._config.expense}/${expenseId}`;
         try {
             const expense = await this.get<IExpenseDto>(uri, this._authProvider.provideAuthHeader());
-            this._sessionExpense$.next(this._expenseMappper.toDomainModel(expense.data));
+            this._sessionExpense$.next(this._expenseMapper.toDomainModel(expense.data));
         } catch (e) {
             console.error(e);
         }
@@ -181,8 +182,10 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     private async onMessage(e: WebSocketMessageEvent): Promise<void> {
-        const updatedExpense = JSON.parse(e.data) as IExpenseDto;
-        const expense = this._expenseMappper.toDomainModel(updatedExpense);
+        const message = JSON.parse(e.data) as IExpenseMessage;
+        const updatedExpense =
+            message.type === "expense" ? (message.data as IExpenseDto) : (message.data as IExpensePayload).expense;
+        const expense = this._expenseMapper.toDomainModel(updatedExpense);
         this._sessionExpense$.next(expense);
 
         const expenses = [...this._userExpenses$.value];
@@ -192,9 +195,20 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
 
         expenses[expenseIndex] = new ExpensePayload(
-            this._expenseMappper.toDtoModel(expense),
-            expenses[expenseIndex].expenseUsers,
+            this._expenseMapper.toDtoModel(expense),
+            message.type === "payload"
+                ? (message.data as IExpensePayload).expenseUsers
+                : expenses[expenseIndex].expenseUsers,
         );
-        this._userExpenses$.next(expenses);
+
+        this._userExpenses$.next(
+            expenses.sort((a, b) =>
+                a.expense.transactionDate < b.expense.transactionDate
+                    ? 1
+                    : a.expense.transactionDate > b.expense.transactionDate
+                    ? -1
+                    : 0,
+            ),
+        );
     }
 }

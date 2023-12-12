@@ -11,6 +11,9 @@ export interface IExpenseManager {
     readonly currentExpenseUsers: IExpenseUserDetails[];
     readonly currentExpenseUsers$: Observable<IExpenseUserDetails[]>;
 
+    readonly isPendingExpenseData: boolean;
+    readonly isPendingExpenseData$: Observable<boolean>;
+
     requestForUser(userId: string): Promise<void>;
     connectToExpense(expenseId: string): Promise<void>;
     updateExpense(expense: IExpense): Promise<void>;
