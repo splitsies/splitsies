@@ -18,6 +18,7 @@ export class StyleManager implements IStyleManager {
 
         Typography.loadTypographies({
             heading: { fontSize: 36, fontWeight: "600", fontFamily: "Avenir-Heavy" },
+            subheading: { fontSize: 24, fontWeight: "400", fontFamily: "Avenir-Heavy" },
             body: { fontSize: 14, fontFamily: "Avenir-Roman" },
             subtext: { fontSize: 12, fontFamily: "Avenir-Roman" },
             letter: { fontFamily: "ZillaSlab-Bold" },
