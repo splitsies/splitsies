@@ -42,14 +42,15 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
 
     async create(user: CreateUserRequest): Promise<void> {
         try {
-            const result = await this.postJson<IUserCredential>(this._config.users, user);
+            const result = await this.postJson<IUserCredential>(this._config.users, { user });
             if (!result.success) {
-                throw new Error();
+                console.error(result);
+                return;
             }
 
             this._user$.next(result.data);
         } catch {
-            throw new Error("Unable to authorize user");
+            throw new Error("Unable to create user");
         }
     }
 

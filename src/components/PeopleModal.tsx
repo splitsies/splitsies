@@ -113,16 +113,18 @@ export const PeopleModal = ({ visible, onCancel, onAddGuest, expenseUsers, onUse
                 </View>
                 <View style={styles.body}>
                     {loadContent()}
-                    <ActionBar
-                        style={{ backgroundColor: "rgba(0,0,0,0)" }}
-                        keepRelative
-                        useSafeArea
-                        centered
-                        actions={[
-                            { label: "Contacts", onPress: () => setUserViewFilter("contacts") },
-                            { label: "Guests", onPress: () => setUserViewFilter("guests") },
-                        ]}
-                    />
+                    {!addGuestVisible && (
+                        <ActionBar
+                            style={{ backgroundColor: "rgba(0,0,0,0)" }}
+                            keepRelative
+                            useSafeArea
+                            centered
+                            actions={[
+                                { label: "Contacts", onPress: () => setUserViewFilter("contacts") },
+                                { label: "Guests", onPress: () => setUserViewFilter("guests") },
+                            ]}
+                        />
+                    )}
                 </View>
             </SafeAreaView>
         </Modal>

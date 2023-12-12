@@ -152,7 +152,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
     }
 
-    async createExpense(base64Image: string = undefined): Promise<boolean> {
+    async createExpense(base64Image: string | undefined = undefined): Promise<boolean> {
         try {
             const body = { userId: this._authProvider.provideIdentity(), image: base64Image };
             const response = await this.postJson<IExpenseDto>(
@@ -162,7 +162,10 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
             );
 
             if (response.success) {
-                this.connectToExpense(response.data.id);
+                void this.getAllExpenses(this._authProvider.provideIdentity());
+                await this.connectToExpense(response.data.id);
+            } else {
+                return false;
             }
 
             return true;

@@ -13,6 +13,8 @@ import { LoginScreen } from "../screens/LoginScreen";
 import { ExpenseScreen } from "../screens/ExpenseScreen";
 import { ImageScreen } from "../screens/ImageScreen";
 import { CameraScreen } from "../screens/CameraScreen";
+import { SignupScreen } from "../screens/SignupScreen";
+import { useInitialize } from "../hooks/use-initialize";
 
 lazyInject<IStyleManager>(IStyleManager).initialize();
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -24,20 +26,21 @@ export const RootComponent = () => {
     const [userId, setUserId] = useState<string>("");
     const navigation = useNavigation<NavigationProp<RootStackScreenParams>>();
 
-    useEffect(() => onConnect(), []);
+    useInitialize(() => {
+        const subscription = new Subscription();
 
-    const onConnect = () => {
-        let subscription: Subscription;
         // TODO: Splash screen while we wait
         _userManager.initialized.then(() => {
             setInitialRoute(_userManager.user ? "HomeScreen" : "LoginScreen");
-            subscription = _userManager.user$.subscribe({
-                next: (credential) => onUserUpdated(credential),
-            });
+            subscription.add(
+                _userManager.user$.subscribe({
+                    next: (credential) => onUserUpdated(credential),
+                }),
+            );
         });
 
         return () => subscription?.unsubscribe();
-    };
+    });
 
     const onUserUpdated = (cred: IUserCredential | null) => {
         if (cred && cred.user.id === userId) return;
@@ -55,6 +58,7 @@ export const RootComponent = () => {
         >
             <Stack.Screen name="HomeScreen" component={HomeScreen} />
             <Stack.Screen name="LoginScreen" component={LoginScreen} />
+            <Stack.Screen name="SignupScreen" component={SignupScreen} />
             <Stack.Screen name="ExpenseScreen" component={ExpenseScreen} />
             <Stack.Screen name="CameraScreen" component={CameraScreen} />
             <Stack.Screen name="ImageScreen" component={ImageScreen} />
