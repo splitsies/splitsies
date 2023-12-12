@@ -1,4 +1,10 @@
-import { IExpense, IExpensePayload, IExpenseUserDetails } from "@splitsies/shared-models";
+import {
+    IExpense,
+    IExpenseJoinRequest,
+    IExpenseJoinRequestDto,
+    IExpensePayload,
+    IExpenseUserDetails,
+} from "@splitsies/shared-models";
 import { Observable } from "rxjs";
 
 export interface IExpenseManager {
@@ -23,6 +29,10 @@ export interface IExpenseManager {
     requestRemoveUserFromExpense(userId: string, expenseId: string): Promise<void>;
     requestUsersForExpense(expenseId: string): Promise<void>;
     createExpense(base64Image?: string): Promise<boolean>;
+    requestExpenseJoinRequests(): Promise<void>;
+    removeExpenseJoinRequest(expenseId: string): Promise<void>;
+    sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void>;
+    getJoinRequestsForExpense(expenseId: string): Promise<void>;
 }
 
 export const IExpenseManager = Symbol.for("IExpenseManager");

@@ -6,6 +6,8 @@ import {
     ExpensePayload,
     IExpense,
     IExpenseDto,
+    IExpenseJoinRequest,
+    IExpenseJoinRequestDto,
     IExpenseMapper,
     IExpenseMessage,
     IExpensePayload,
@@ -173,6 +175,59 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         } catch (e) {
             console.error(e);
             return false;
+        }
+    }
+
+    async getExpenseJoinRequests(): Promise<IExpenseJoinRequestDto[]> {
+        try {
+            const url = `${this._config.expense}/requests/${this._authProvider.provideIdentity()}`;
+            const response = await this.get<IExpenseJoinRequestDto[]>(url, this._authProvider.provideAuthHeader());
+
+            if (!response.success) {
+                console.error(`endpoint = ${url}, response - ${JSON.stringify(response, null, 2)}`);
+                return [];
+            }
+
+            return response.data;
+        } catch (e) {
+            console.error(e);
+            return [];
+        }
+    }
+
+    async removeExpenseJoinRequest(expenseId: string): Promise<void> {
+        try {
+            const url = `${this._config.expense}/${expenseId}/requests/${this._authProvider.provideIdentity()}`;
+            await this.delete(url, this._authProvider.provideAuthHeader());
+        } catch {
+            return;
+        }
+    }
+
+    async sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void> {
+        try {
+            const url = `${this._config.expense}/requests`;
+            await this.postJson<void>(
+                url,
+                {
+                    userId,
+                    expenseId,
+                    requestUserId: this._authProvider.provideIdentity(),
+                },
+                this._authProvider.provideAuthHeader(),
+            );
+        } catch (e) {
+            return;
+        }
+    }
+
+    async getJoinRequestsForExpense(expenseId: string): Promise<IExpenseJoinRequest[]> {
+        try {
+            const url = `${this._config.expense}/${expenseId}/requests`;
+            const response = await this.get<IExpenseJoinRequest[]>(url, this._authProvider.provideAuthHeader());
+            return response.data;
+        } catch (e) {
+            return [];
         }
     }
 

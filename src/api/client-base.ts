@@ -21,6 +21,12 @@ export abstract class ClientBase {
         });
 
         const dataResponse = await response.json();
+
+        if (!dataResponse.success) {
+            console.error(`endpoint = ${url}, response - ${JSON.stringify(response, null, 2)}`);
+            throw new Error();
+        }
+
         return this.parseResponse(dataResponse);
     }
 
@@ -35,6 +41,12 @@ export abstract class ClientBase {
         });
 
         const dataResponse = await response.json();
+
+        if (!dataResponse.success) {
+            console.error(`endpoint = ${url}, response - ${JSON.stringify(response, null, 2)}`);
+            throw new Error();
+        }
+
         return this.parseResponse(dataResponse);
     }
 
@@ -42,5 +54,12 @@ export abstract class ClientBase {
         const response = await fetch(url, {
             method: "DELETE",
         });
+
+        const dataResponse = this.parseResponse(response);
+
+        if (!dataResponse.success) {
+            console.error(`endpoint = ${url}, response - ${JSON.stringify(response, null, 2)}`);
+            throw new Error();
+        }
     }
 }
