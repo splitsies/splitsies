@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { SafeAreaView, FlatList, StyleSheet } from "react-native";
+import { SafeAreaView, FlatList, StyleSheet, ActivityIndicator } from "react-native";
 import { ExpensePreview } from "../components/ExpensePreview";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { lazyInject } from "../utils/lazy-inject";
 import { View, Text } from "react-native-ui-lib";
-import { lastValueFrom, first } from "rxjs";
+import { lastValueFrom, first, Subscription } from "rxjs";
 import { IExpensePayload } from "@splitsies/shared-models";
 import { useInitialize } from "../hooks/use-initialize";
 import { ListSeparator } from "../components/ListSeparator";
@@ -19,11 +19,21 @@ const _userManager = lazyInject<IUserManager>(IUserManager);
 export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackScreenParams, "HomeScreen">) => {
     const [expenses, setExpenses] = useState<IExpensePayload[]>(_expenseManager.expenses);
     const [userName, setUserName] = useState<string>(_userManager.user?.user.givenName ?? "");
+    const [isPendingData, setIsPendingData] = useState<boolean>(_expenseManager.isPendingExpenseData);
 
     useInitialize(() => {
-        const subscription = _expenseManager.expenses$.subscribe({
-            next: (data) => setExpenses(data),
-        });
+        const subscription = new Subscription();
+        subscription.add(
+            _expenseManager.expenses$.subscribe({
+                next: (data) => setExpenses(data),
+            }),
+        );
+
+        subscription.add(
+            _expenseManager.isPendingExpenseData$.subscribe({
+                next: (value) => setIsPendingData(value),
+            }),
+        );
 
         subscription.add(
             _userManager.user$.subscribe({
@@ -45,6 +55,10 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackScree
     };
 
     const provideContent = (): JSX.Element => {
+        if (isPendingData) {
+            return <ActivityIndicator size="large" />;
+        }
+
         if (expenses.length === 0) {
             return (
                 <View style={styles.welcomeMessageContainer}>
