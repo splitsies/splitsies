@@ -28,6 +28,8 @@ import { IPersmissionRequester } from "../utils/permission-requester/permission-
 import { PermissionRequester } from "../utils/permission-requester/permission-requester";
 import { IImageConfiguration } from "../models/configuration/image-config/image-configuration-interface";
 import { ImageConfiguration } from "../models/configuration/image-config/image-configuration";
+import { IRequestConfiguration } from "../models/configuration/request-config/request-configuration-interface";
+import { RequestConfiguration } from "../models/configuration/request-config/request-configuration";
 const container = new Container();
 
 container.bind<IApiConfig>(IApiConfig).to(ApiConfig).inSingletonScope();
@@ -43,5 +45,6 @@ container.bind<IExpenseUpdateMapper>(IExpenseUpdateMapper).to(ExpenseUpdateMappe
 container.bind<IExpenseUserDetailsMapper>(IExpenseUserDetailsMapper).to(ExpenseUserDetailsMapper).inSingletonScope();
 container.bind<IPersmissionRequester>(IPersmissionRequester).to(PermissionRequester).inSingletonScope();
 container.bind<IImageConfiguration>(IImageConfiguration).to(ImageConfiguration).inSingletonScope();
+container.bind<IRequestConfiguration>(IRequestConfiguration).to(RequestConfiguration).inSingletonScope();
 
 export { container };
