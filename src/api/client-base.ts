@@ -53,12 +53,15 @@ export abstract class ClientBase {
     async delete(url: string, headers: any = {}): Promise<void> {
         const response = await fetch(url, {
             method: "DELETE",
+            headers: {
+                ...headers,
+            },
         });
 
-        const dataResponse = this.parseResponse(response);
+        const dataResponse = await response.json();
 
         if (!dataResponse.success) {
-            console.error(`endpoint = ${url}, response - ${JSON.stringify(response, null, 2)}`);
+            console.error(`DELETE endpoint = ${url}, response - ${JSON.stringify(response, null, 2)}`);
             throw new Error();
         }
     }

@@ -19,7 +19,7 @@
     "@react-navigation/bottom-tabs": "^6.5.11",
     "@react-navigation/native": "^6.1.8",
     "@react-navigation/native-stack": "^6.9.14",
-    "@splitsies/shared-models": "/Users/kevin/source/splitsies/shared-models/splitsies-shared-models-0.0.20.tgz",
+    "@splitsies/shared-models": "^0.0.20",
     "http2": "^3.3.7",
     "inversify": "^6.0.1",
     "inversify-inject-decorators": "^3.1.0",

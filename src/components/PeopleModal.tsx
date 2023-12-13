@@ -1,6 +1,17 @@
 import React, { useCallback, useState } from "react";
 import { FlatList, SafeAreaView, StyleSheet } from "react-native";
-import { ActionBar, Button, Checkbox, Chip, Icon, Modal, Text, TextField, TouchableOpacity, View } from "react-native-ui-lib";
+import {
+    ActionBar,
+    Button,
+    Checkbox,
+    Chip,
+    Icon,
+    Modal,
+    Text,
+    TextField,
+    TouchableOpacity,
+    View,
+} from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { useInitialize } from "../hooks/use-initialize";
@@ -22,7 +33,14 @@ type Props = {
     onUserSelectionChanged: (user: IExpenseUserDetails) => void;
 };
 
-export const PeopleModal = ({ visible, pendingUserIds, onCancel, onAddGuest, expenseUsers, onUserSelectionChanged }: Props) => {
+export const PeopleModal = ({
+    visible,
+    pendingUserIds,
+    onCancel,
+    onAddGuest,
+    expenseUsers,
+    onUserSelectionChanged,
+}: Props) => {
     const [contactUsers, setContactUsers] = useState<IExpenseUserDetails[]>([]);
     const [addGuestVisible, setAddGuestVisible] = useState<boolean>(false);
     const [userViewFilter, setUserViewFilter] = useState<"contacts" | "guests">("contacts");
@@ -51,14 +69,14 @@ export const PeopleModal = ({ visible, pendingUserIds, onCancel, onAddGuest, exp
                 data={userViewFilter === "contacts" ? contactUsers : expenseUsers.filter((u) => !u.phoneNumber)}
                 keyExtractor={(i) => i.id + i.phoneNumber}
                 ItemSeparatorComponent={ListSeparator}
-                    renderItem={({ item: user }) => (
-                        <UserInviteListItem
-                            user={user}
-                            contactUsers={contactUsers}
-                            expenseUsers={expenseUsers}
-                            pendingUserIds={pendingUserIds}
-                            onInviteUser={() => onUserSelectionChanged(user)}
-                        />
+                renderItem={({ item: user }) => (
+                    <UserInviteListItem
+                        user={user}
+                        contactUsers={contactUsers}
+                        expenseUsers={expenseUsers}
+                        pendingUserIds={pendingUserIds}
+                        onInviteUser={() => onUserSelectionChanged(user)}
+                    />
                 )}
             />
         );
@@ -150,5 +168,5 @@ const styles = StyleSheet.create({
     },
     list: {
         width: "100%",
-    }
+    },
 });

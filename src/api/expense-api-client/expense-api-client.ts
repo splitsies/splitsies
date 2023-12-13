@@ -130,11 +130,11 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
 
     async getUserIdsForExpense(expenseId: string): Promise<string[]> {
         const url = `${this._config.expense}/${expenseId}/users`;
+
         try {
             const response = await this.get<string[]>(url, this._authProvider.provideAuthHeader());
             return response.data;
         } catch (e) {
-            console.error(e);
             return [];
         }
     }
@@ -188,15 +188,8 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         try {
             const url = `${this._config.expense}/requests/${this._authProvider.provideIdentity()}`;
             const response = await this.get<IExpenseJoinRequestDto[]>(url, this._authProvider.provideAuthHeader());
-
-            if (!response.success) {
-                console.error(`endpoint = ${url}, response - ${JSON.stringify(response, null, 2)}`);
-                return [];
-            }
-
             return response.data;
         } catch (e) {
-            console.error(e);
             return [];
         }
     }
@@ -222,7 +215,6 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
                 },
                 this._authProvider.provideAuthHeader(),
             );
-            console.log(`expense join sent status - ${response.statusCode}`);
         } catch (e) {
             return;
         }
@@ -232,11 +224,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         try {
             const url = `${this._config.expense}/${expenseId}/requests`;
             const response = await this.get<IExpenseJoinRequest[]>(url, this._authProvider.provideAuthHeader());
-            console.log({
-                sessionExpenseId: this._sessionExpense$?.value?.id,
-                expenseId: expenseId
-            });
-            
+
             if (this._sessionExpense$.value?.id === expenseId) {
                 this._sessionExpenseJoinRequests$.next(response.data);
             }
@@ -252,7 +240,6 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     private async onMessage(e: WebSocketMessageEvent): Promise<void> {
-        console.log({ e });
         const message = JSON.parse(e.data) as IExpenseMessage;
 
         if (message.type === "joinRequests") {
@@ -290,7 +277,6 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     private onJoinRequests(joinRequests: IExpenseJoinRequest[]): void {
-        console.log(joinRequests);
         this._sessionExpenseJoinRequests$.next(joinRequests);
     }
 }

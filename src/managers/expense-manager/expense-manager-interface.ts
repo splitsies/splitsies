@@ -20,7 +20,7 @@ export interface IExpenseManager {
     readonly isPendingExpenseData: boolean;
     readonly isPendingExpenseData$: Observable<boolean>;
 
-    readonly expenseJoinRequests$: Observable<IExpenseJoinRequestDto[]>
+    readonly expenseJoinRequests$: Observable<IExpenseJoinRequestDto[]>;
     readonly currentExpenseJoinRequests$: Observable<IExpenseJoinRequest[]>;
 
     requestForUser(userId: string): Promise<void>;
@@ -33,7 +33,7 @@ export interface IExpenseManager {
     requestUsersForExpense(expenseId: string): Promise<void>;
     createExpense(base64Image?: string): Promise<boolean>;
     requestExpenseJoinRequests(): Promise<void>;
-    removeExpenseJoinRequest(expenseId: string): Promise<void>;
+    removeExpenseJoinRequestForUser(expenseId: string): Promise<void>;
     sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void>;
     getJoinRequestsForExpense(expenseId: string): Promise<void>;
 }

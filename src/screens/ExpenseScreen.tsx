@@ -35,7 +35,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
     const [inProgressSelections, setInProgressSelections] = useState<string[]>([]);
     const [isSelectingPeople, setIsSelectingPeople] = useState<boolean>(false);
     const [pendingJoinRequests, setPendingJoinRequests] = useState<IExpenseJoinRequest[]>([]);
-        
+
     useInitialize(() => {
         const subscription = new Subscription();
 
@@ -47,20 +47,13 @@ export const ExpenseScreen = ({ navigation }: Props) => {
 
         subscription.add(
             _expenseManager.currentExpenseUsers$.subscribe({
-                next: (users) => {
-                    console.log(users);
-                    setExpenseUsers(users);
-                }
+                next: (users) => setExpenseUsers(users),
             }),
         );
 
         subscription.add(
             _expenseManager.currentExpenseJoinRequests$.subscribe({
-                next: requests => {
-
-                    console.log(requests);
-                    setPendingJoinRequests(requests);
-                }
+                next: (requests) => setPendingJoinRequests(requests),
             }),
         );
 
@@ -168,11 +161,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
         let userId = user.id;
         if (!user.isRegistered && !user.id) {
             // Adding a guest user
-            const addedUser = await _userManager.requestAddGuestUser(
-                user.givenName,
-                user.familyName,
-                user.phoneNumber,
-            );
+            const addedUser = await _userManager.requestAddGuestUser(user.givenName, user.familyName, user.phoneNumber);
 
             userId = addedUser.id;
         }
@@ -183,7 +172,6 @@ export const ExpenseScreen = ({ navigation }: Props) => {
         }
 
         void _expenseManager.sendExpenseJoinRequest(userId, expense.id);
-        
     };
 
     const onAddGuest = async (givenName: string, phoneNumber: string): Promise<void> => {
@@ -276,7 +264,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
 
             <PeopleModal
                 visible={isSelectingPeople}
-                pendingUserIds={pendingJoinRequests.map(r => r.userId)}
+                pendingUserIds={pendingJoinRequests.map((r) => r.userId)}
                 expenseUsers={expenseUsers}
                 onAddGuest={onAddGuest}
                 onCancel={() => setIsSelectingPeople(false)}

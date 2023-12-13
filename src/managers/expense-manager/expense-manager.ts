@@ -96,8 +96,10 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         });
 
         this._api.sessionExpenseJoinRequests$.subscribe({
-            next: (requests) => this._currentExpenseJoinRequests$.next(requests)
+            next: (requests) => this._currentExpenseJoinRequests$.next(requests),
         });
+
+        await this.requestExpenseJoinRequests();
     }
 
     async requestForUser(userId: string): Promise<void> {
@@ -111,18 +113,18 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     async requestUsersForExpense(expenseId: string): Promise<void> {
         const userIds = await this._api.getUserIdsForExpense(expenseId);
-        console.log(`users for expense=${expenseId}  are ${userIds.join(',')}`);
         const users = await this._userManager.requestUsersByIds(userIds);
 
-        this._currentExpenseUsers$.next(
-            users.map((u) => this._expenseUserDetailsMapper.fromUserDto(u)).sort(this.userSortCompare),
-        );
+        if (this.currentExpense?.id === expenseId) {
+            this._currentExpenseUsers$.next(
+                users.map((u) => this._expenseUserDetailsMapper.fromUserDto(u)).sort(this.userSortCompare),
+            );
+        }
     }
 
     async requestAddUserToExpense(userId: string, expenseId: string): Promise<void> {
-        console.log(`adding user ${userId} to expense ${expenseId}`);
         await this._api.addUserToExpense(userId, expenseId);
-        void this.requestUsersForExpense(expenseId);
+        await this.requestUsersForExpense(expenseId);
     }
 
     async requestRemoveUserFromExpense(userId: string, expenseId: string): Promise<void> {
@@ -140,11 +142,17 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     async requestExpenseJoinRequests(): Promise<void> {
         const requests = await this._api.getExpenseJoinRequests();
-        this._expenseJoinRequests$.next(requests);
+        this._expenseJoinRequests$.next(requests.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)));
     }
 
-    removeExpenseJoinRequest(expenseId: string): Promise<void> {
-        return this._api.removeExpenseJoinRequest(expenseId);
+    async removeExpenseJoinRequestForUser(expenseId: string): Promise<void> {
+        await this._api.removeExpenseJoinRequest(expenseId);
+        const requests = this._expenseJoinRequests$.value;
+        const requestIndex = requests.findIndex((r) => r.expense.expense.id === expenseId);
+        if (requestIndex === -1) return;
+
+        requests.splice(requestIndex, 1);
+        this._expenseJoinRequests$.next(requests);
     }
 
     sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void> {
