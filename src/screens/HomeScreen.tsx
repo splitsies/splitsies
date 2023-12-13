@@ -9,22 +9,23 @@ import { IExpensePayload } from "@splitsies/shared-models";
 import { useInitialize } from "../hooks/use-initialize";
 import { ListSeparator } from "../components/ListSeparator";
 import type { RootStackScreenParams } from "./root-stack-screen-params";
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { ScanButton } from "../components/ScanButton";
+import { HomeBar } from "../components/HomeBar";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { IRequestConfiguration } from "../models/configuration/request-config/request-configuration-interface";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
+import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _requestConfiguration = lazyInject<IRequestConfiguration>(IRequestConfiguration);
 
-export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackScreenParams, "HomeScreen">) => {
+export const HomeScreen = ({ navigation }: BottomTabScreenProps<RootStackScreenParams, "HomeScreen">) => {
     const [expenses, setExpenses] = useState<IExpensePayload[]>(_expenseManager.expenses);
     const [userName, setUserName] = useState<string>(_userManager.user?.user.givenName ?? "");
     const [isPendingData, setIsPendingData] = useState<boolean>(_expenseManager.isPendingExpenseData);
     const [isPendingConnection, setIsPendingConnection] = useState<boolean>(false);
+    const [currentTab, setCurrentTab] = useState<"feed" | "requests">("feed");
 
     useInitialize(() => {
         const subscription = new Subscription();
@@ -68,6 +69,14 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackScree
     const onScanClick = (): void => {
         navigation.navigate("CameraScreen");
     };
+
+    const onRequestsClick = (): void => {
+        setCurrentTab("requests");
+    }
+
+    const onFeedClick = (): void => {
+        setCurrentTab("feed");
+    }
 
     const provideContent = (): JSX.Element => {
         if (isPendingData) {
@@ -113,7 +122,9 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackScree
             </View>
             <View style={styles.body}>
                 {provideContent()}
-                <ScanButton onPress={onScanClick} />
+                <HomeBar onPress={onScanClick} onRequestsPress={function (): void {
+                    throw new Error("Function not implemented.");
+                } } />
             </View>
         </SafeAreaView>
     );

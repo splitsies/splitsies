@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { lazyInject } from "../utils/lazy-inject";
 import { RootStackScreenParams } from "./root-stack-screen-params";
 import { Subscription, filter } from "rxjs";
-import { IExpense, IExpenseItem, IExpenseUserDetails, IUserDto } from "@splitsies/shared-models";
+import { IExpense, IExpenseItem, IExpenseJoinRequest, IExpenseUserDetails, IUserDto } from "@splitsies/shared-models";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { View, TouchableOpacity, Text } from "react-native-ui-lib/core";
 import { ActionBar, Icon } from "react-native-ui-lib";
@@ -34,7 +34,8 @@ export const ExpenseScreen = ({ navigation }: Props) => {
     const [isAddingItem, setIsAddingItem] = useState<boolean>(false);
     const [inProgressSelections, setInProgressSelections] = useState<string[]>([]);
     const [isSelectingPeople, setIsSelectingPeople] = useState<boolean>(false);
-
+    const [pendingJoinRequests, setPendingJoinRequests] = useState<IExpenseJoinRequest[]>([]);
+        
     useInitialize(() => {
         const subscription = new Subscription();
 
@@ -46,7 +47,20 @@ export const ExpenseScreen = ({ navigation }: Props) => {
 
         subscription.add(
             _expenseManager.currentExpenseUsers$.subscribe({
-                next: (users) => setExpenseUsers(users),
+                next: (users) => {
+                    console.log(users);
+                    setExpenseUsers(users);
+                }
+            }),
+        );
+
+        subscription.add(
+            _expenseManager.currentExpenseJoinRequests$.subscribe({
+                next: requests => {
+
+                    console.log(requests);
+                    setPendingJoinRequests(requests);
+                }
             }),
         );
 
@@ -150,23 +164,26 @@ export const ExpenseScreen = ({ navigation }: Props) => {
         setIsSelecting(!isSelecting);
     };
 
-    const onUserSelectionChanged = async (user: IExpenseUserDetails, included: boolean): Promise<void> => {
+    const onUserInvited = async (user: IExpenseUserDetails): Promise<void> => {
         let userId = user.id;
-        if (included) {
-            if (!user.isRegistered && !user.id) {
-                // Adding a guest user
-                const addedUser = await _userManager.requestAddGuestUser(
-                    user.givenName,
-                    user.familyName,
-                    user.phoneNumber,
-                );
-                userId = addedUser.id;
-            }
+        if (!user.isRegistered && !user.id) {
+            // Adding a guest user
+            const addedUser = await _userManager.requestAddGuestUser(
+                user.givenName,
+                user.familyName,
+                user.phoneNumber,
+            );
 
-            void _expenseManager.requestAddUserToExpense(userId, expense.id);
-        } else {
-            void _expenseManager.requestRemoveUserFromExpense(userId, expense.id);
+            userId = addedUser.id;
         }
+
+        if (!user.isRegistered) {
+            await _expenseManager.requestAddUserToExpense(userId, expense.id);
+            return;
+        }
+
+        void _expenseManager.sendExpenseJoinRequest(userId, expense.id);
+        
     };
 
     const onAddGuest = async (givenName: string, phoneNumber: string): Promise<void> => {
@@ -259,10 +276,11 @@ export const ExpenseScreen = ({ navigation }: Props) => {
 
             <PeopleModal
                 visible={isSelectingPeople}
+                pendingUserIds={pendingJoinRequests.map(r => r.userId)}
                 expenseUsers={expenseUsers}
                 onAddGuest={onAddGuest}
                 onCancel={() => setIsSelectingPeople(false)}
-                onUserSelectionChanged={onUserSelectionChanged}
+                onUserSelectionChanged={onUserInvited}
             />
         </SafeAreaView>
     );

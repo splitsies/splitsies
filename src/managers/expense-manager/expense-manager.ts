@@ -94,6 +94,10 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         this._api.sessionExpense$.subscribe({
             next: (data) => this._currentExpense$.next(data),
         });
+
+        this._api.sessionExpenseJoinRequests$.subscribe({
+            next: (requests) => this._currentExpenseJoinRequests$.next(requests)
+        });
     }
 
     async requestForUser(userId: string): Promise<void> {
@@ -102,11 +106,12 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     async connectToExpense(expenseId: string): Promise<void> {
         await this._api.connectToExpense(expenseId);
-        return this.getJoinRequestsForExpense(expenseId);
+        await this.getJoinRequestsForExpense(expenseId);
     }
 
     async requestUsersForExpense(expenseId: string): Promise<void> {
         const userIds = await this._api.getUserIdsForExpense(expenseId);
+        console.log(`users for expense=${expenseId}  are ${userIds.join(',')}`);
         const users = await this._userManager.requestUsersByIds(userIds);
 
         this._currentExpenseUsers$.next(
@@ -115,6 +120,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     }
 
     async requestAddUserToExpense(userId: string, expenseId: string): Promise<void> {
+        console.log(`adding user ${userId} to expense ${expenseId}`);
         await this._api.addUserToExpense(userId, expenseId);
         void this.requestUsersForExpense(expenseId);
     }
@@ -146,8 +152,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     }
 
     async getJoinRequestsForExpense(expenseId: string): Promise<void> {
-        const requests = await this._api.getJoinRequestsForExpense(expenseId);
-        this._currentExpenseJoinRequests$.next(requests);
+        await this._api.getJoinRequestsForExpense(expenseId);
     }
 
     updateExpense(expense: IExpense): Promise<void> {

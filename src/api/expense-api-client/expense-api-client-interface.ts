@@ -4,6 +4,7 @@ import { Observable } from "rxjs";
 export interface IExpenseApiClient {
     readonly userExpenses$: Observable<IExpensePayload[]>;
     readonly sessionExpense$: Observable<IExpense | null>;
+    readonly sessionExpenseJoinRequests$: Observable<IExpenseJoinRequest[]>;
     getAllExpenses(userId: string): Promise<void>;
     getExpense(expenseId: string): Promise<void>;
     getUserIdsForExpense(expenseId: string): Promise<string[]>;

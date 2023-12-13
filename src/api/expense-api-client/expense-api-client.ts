@@ -22,6 +22,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     private _connection!: WebSocket;
     private readonly _userExpenses$ = new BehaviorSubject<IExpensePayload[]>([]);
     private readonly _sessionExpense$ = new BehaviorSubject<IExpense | null>(null);
+    private readonly _sessionExpenseJoinRequests$ = new BehaviorSubject<IExpenseJoinRequest[]>([]);
     private readonly _config = lazyInject<IApiConfig>(IApiConfig);
     private readonly _authProvider = lazyInject<IAuthProvider>(IAuthProvider);
     private readonly _expenseMapper = lazyInject<IExpenseMapper>(IExpenseMapper);
@@ -39,6 +40,10 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         return this._sessionExpense$.asObservable();
     }
 
+    get sessionExpenseJoinRequests$(): Observable<IExpenseJoinRequest[]> {
+        return this._sessionExpenseJoinRequests$.asObservable();
+    }
+
     async getAllExpenses(userId: string): Promise<void> {
         if (!userId) {
             this._userExpenses$.next([]);
@@ -50,7 +55,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
             const expenses = await this.get<IExpensePayload[]>(uri, this._authProvider.provideAuthHeader());
             this._userExpenses$.next(expenses.data);
         } catch (e) {
-            console.error(e);
+            return;
         }
     }
 
@@ -60,7 +65,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
             const expense = await this.get<IExpenseDto>(uri, this._authProvider.provideAuthHeader());
             this._sessionExpense$.next(this._expenseMapper.toDomainModel(expense.data));
         } catch (e) {
-            console.error(e);
+            return;
         }
     }
 
@@ -167,6 +172,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
             if (response.success) {
                 void this.getAllExpenses(this._authProvider.provideIdentity());
                 await this.connectToExpense(response.data.id);
+                await this.getJoinRequestsForExpense(response.data.id);
             } else {
                 return false;
             }
@@ -207,15 +213,16 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     async sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void> {
         try {
             const url = `${this._config.expense}/requests`;
-            await this.postJson<void>(
+            const response = await this.postJson<void>(
                 url,
                 {
                     userId,
                     expenseId,
-                    requestUserId: this._authProvider.provideIdentity(),
+                    requestingUserId: this._authProvider.provideIdentity(),
                 },
                 this._authProvider.provideAuthHeader(),
             );
+            console.log(`expense join sent status - ${response.statusCode}`);
         } catch (e) {
             return;
         }
@@ -225,6 +232,14 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         try {
             const url = `${this._config.expense}/${expenseId}/requests`;
             const response = await this.get<IExpenseJoinRequest[]>(url, this._authProvider.provideAuthHeader());
+            console.log({
+                sessionExpenseId: this._sessionExpense$?.value?.id,
+                expenseId: expenseId
+            });
+            
+            if (this._sessionExpense$.value?.id === expenseId) {
+                this._sessionExpenseJoinRequests$.next(response.data);
+            }
             return response.data;
         } catch (e) {
             return [];
@@ -237,7 +252,14 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     private async onMessage(e: WebSocketMessageEvent): Promise<void> {
+        console.log({ e });
         const message = JSON.parse(e.data) as IExpenseMessage;
+
+        if (message.type === "joinRequests") {
+            this.onJoinRequests(message.data as IExpenseJoinRequest[]);
+            return;
+        }
+
         const updatedExpense =
             message.type === "expense" ? (message.data as IExpenseDto) : (message.data as IExpensePayload).expense;
         const expense = this._expenseMapper.toDomainModel(updatedExpense);
@@ -265,5 +287,10 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
                     : 0,
             ),
         );
+    }
+
+    private onJoinRequests(joinRequests: IExpenseJoinRequest[]): void {
+        console.log(joinRequests);
+        this._sessionExpenseJoinRequests$.next(joinRequests);
     }
 }

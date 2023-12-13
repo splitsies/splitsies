@@ -130,18 +130,6 @@ export class UserManager extends BaseManager implements IUserManager {
 
     async requestAddGuestUser(givenName: string, familyName: string, phoneNumber: string): Promise<IUserDto> {
         const user = await this._client.requestAddGuestUser(givenName, familyName, phoneNumber);
-
-        // Replace the user stub in contactUsers with the newly created guest, or add the user if needed
-        const newUserDetails = this._expenseUserDetailsMapper.fromUserDto(user);
-        const details = this._contactUsers$.value;
-        const matchingUserIndex = details.findIndex((u) => u.phoneNumber === user.phoneNumber);
-
-        if (matchingUserIndex > -1) {
-            details.splice(matchingUserIndex, 1);
-        }
-
-        details.push(newUserDetails);
-        this._contactUsers$.next(details.sort(this.userSortCompare));
         return user;
     }
 

@@ -20,6 +20,9 @@ export interface IExpenseManager {
     readonly isPendingExpenseData: boolean;
     readonly isPendingExpenseData$: Observable<boolean>;
 
+    readonly expenseJoinRequests$: Observable<IExpenseJoinRequestDto[]>
+    readonly currentExpenseJoinRequests$: Observable<IExpenseJoinRequest[]>;
+
     requestForUser(userId: string): Promise<void>;
     connectToExpense(expenseId: string): Promise<void>;
     updateExpense(expense: IExpense): Promise<void>;
