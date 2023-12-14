@@ -1,30 +1,32 @@
 import React, { useState } from "react";
 import { SafeAreaView, FlatList, StyleSheet, ActivityIndicator } from "react-native";
-import { ExpensePreview } from "../components/ExpensePreview";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { lazyInject } from "../utils/lazy-inject";
 import { View, Text, LoaderScreen } from "react-native-ui-lib";
 import { lastValueFrom, first, Subscription, race, timer } from "rxjs";
-import { IExpensePayload } from "@splitsies/shared-models";
+import { IExpenseJoinRequest, IExpenseJoinRequestDto, IExpensePayload } from "@splitsies/shared-models";
 import { useInitialize } from "../hooks/use-initialize";
-import { ListSeparator } from "../components/ListSeparator";
 import type { RootStackScreenParams } from "./root-stack-screen-params";
-import type { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { ScanButton } from "../components/ScanButton";
+import { HomeBar } from "../components/HomeBar";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { IRequestConfiguration } from "../models/configuration/request-config/request-configuration-interface";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
+import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import { ExpenseFeed } from "../components/ExpenseFeed";
+import { RequestsFeed } from "../components/RequestsFeed";
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _requestConfiguration = lazyInject<IRequestConfiguration>(IRequestConfiguration);
 
-export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackScreenParams, "HomeScreen">) => {
+export const HomeScreen = ({ navigation }: BottomTabScreenProps<RootStackScreenParams, "HomeScreen">) => {
     const [expenses, setExpenses] = useState<IExpensePayload[]>(_expenseManager.expenses);
     const [userName, setUserName] = useState<string>(_userManager.user?.user.givenName ?? "");
     const [isPendingData, setIsPendingData] = useState<boolean>(_expenseManager.isPendingExpenseData);
     const [isPendingConnection, setIsPendingConnection] = useState<boolean>(false);
+    const [currentTab, setCurrentTab] = useState<"feed" | "requests">("feed");
+    const [joinRequests, setJoinRequests] = useState<IExpenseJoinRequestDto[]>([]);
 
     useInitialize(() => {
         const subscription = new Subscription();
@@ -43,6 +45,14 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackScree
         subscription.add(
             _userManager.user$.subscribe({
                 next: (user) => setUserName(user?.user.givenName ?? ""),
+            }),
+        );
+
+        subscription.add(
+            _expenseManager.expenseJoinRequests$.subscribe({
+                next: (requests) => {
+                    setJoinRequests([...requests]);
+                },
             }),
         );
 
@@ -69,40 +79,52 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackScree
         navigation.navigate("CameraScreen");
     };
 
+    const onRequestsClick = async (): Promise<void> => {
+        setCurrentTab("requests");
+
+        setIsPendingConnection(true);
+        await _expenseManager.requestExpenseJoinRequests();
+        setIsPendingConnection(false);
+    };
+
+    const onFeedClick = (): void => {
+        setCurrentTab("feed");
+    };
+
+    const onApproveRequest = async (joinRequest: IExpenseJoinRequestDto): Promise<void> => {
+        await _expenseManager.requestAddUserToExpense(joinRequest.userId, joinRequest.expense.expense.id);
+        await _expenseManager.removeExpenseJoinRequestForUser(joinRequest.expense.expense.id);
+    };
+
+    const onDenyRequest = async (joinRequest: IExpenseJoinRequestDto): Promise<void> => {
+        await _expenseManager.removeExpenseJoinRequestForUser(joinRequest.expense.expense.id);
+    };
+
+    const onRefreshRequests = async (): Promise<void> => {
+        _expenseManager.requestExpenseJoinRequests();
+    };
+
     const provideContent = (): JSX.Element => {
-        if (isPendingData) {
-            return <ActivityIndicator size="large" />;
+        switch (currentTab) {
+            case "feed":
+                return (
+                    <ExpenseFeed
+                        expenses={expenses}
+                        isPendingData={isPendingData}
+                        userName={userName}
+                        onExpenseClick={onExpenseClick}
+                    />
+                );
+            case "requests":
+                return (
+                    <RequestsFeed
+                        joinRequests={joinRequests}
+                        onApprove={onApproveRequest}
+                        onDeny={onDenyRequest}
+                        onRefresh={onRefreshRequests}
+                    />
+                );
         }
-
-        if (expenses.length === 0) {
-            return (
-                <View style={styles.welcomeMessageContainer}>
-                    <View style={styles.messageBox}>
-                        <Text subheading>Welcome, {userName}!</Text>
-                    </View>
-                    <View style={styles.hintBox}>
-                        <Text hint>Tap to scan a receipt</Text>
-                    </View>
-                </View>
-            );
-        }
-
-        return (
-            <View style={styles.listContainer}>
-                <FlatList
-                    ItemSeparatorComponent={ListSeparator}
-                    renderItem={({ item }) => (
-                        <ExpensePreview
-                            key={item.expense.id}
-                            data={item}
-                            onPress={onExpenseClick}
-                            onLongPress={() => console.log("LONG")}
-                        />
-                    )}
-                    data={expenses}
-                />
-            </View>
-        );
     };
 
     return (
@@ -113,7 +135,7 @@ export const HomeScreen = ({ navigation }: NativeStackScreenProps<RootStackScree
             </View>
             <View style={styles.body}>
                 {provideContent()}
-                <ScanButton onPress={onScanClick} />
+                <HomeBar onFeedPress={onFeedClick} onPress={onScanClick} onRequestsPress={onRequestsClick} />
             </View>
         </SafeAreaView>
     );

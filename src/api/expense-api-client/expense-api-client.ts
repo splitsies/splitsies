@@ -6,6 +6,8 @@ import {
     ExpensePayload,
     IExpense,
     IExpenseDto,
+    IExpenseJoinRequest,
+    IExpenseJoinRequestDto,
     IExpenseMapper,
     IExpenseMessage,
     IExpensePayload,
@@ -20,6 +22,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     private _connection!: WebSocket;
     private readonly _userExpenses$ = new BehaviorSubject<IExpensePayload[]>([]);
     private readonly _sessionExpense$ = new BehaviorSubject<IExpense | null>(null);
+    private readonly _sessionExpenseJoinRequests$ = new BehaviorSubject<IExpenseJoinRequest[]>([]);
     private readonly _config = lazyInject<IApiConfig>(IApiConfig);
     private readonly _authProvider = lazyInject<IAuthProvider>(IAuthProvider);
     private readonly _expenseMapper = lazyInject<IExpenseMapper>(IExpenseMapper);
@@ -37,6 +40,10 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         return this._sessionExpense$.asObservable();
     }
 
+    get sessionExpenseJoinRequests$(): Observable<IExpenseJoinRequest[]> {
+        return this._sessionExpenseJoinRequests$.asObservable();
+    }
+
     async getAllExpenses(userId: string): Promise<void> {
         if (!userId) {
             this._userExpenses$.next([]);
@@ -48,7 +55,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
             const expenses = await this.get<IExpensePayload[]>(uri, this._authProvider.provideAuthHeader());
             this._userExpenses$.next(expenses.data);
         } catch (e) {
-            console.error(e);
+            return;
         }
     }
 
@@ -58,7 +65,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
             const expense = await this.get<IExpenseDto>(uri, this._authProvider.provideAuthHeader());
             this._sessionExpense$.next(this._expenseMapper.toDomainModel(expense.data));
         } catch (e) {
-            console.error(e);
+            return;
         }
     }
 
@@ -123,11 +130,11 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
 
     async getUserIdsForExpense(expenseId: string): Promise<string[]> {
         const url = `${this._config.expense}/${expenseId}/users`;
+
         try {
             const response = await this.get<string[]>(url, this._authProvider.provideAuthHeader());
             return response.data;
         } catch (e) {
-            console.error(e);
             return [];
         }
     }
@@ -165,6 +172,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
             if (response.success) {
                 void this.getAllExpenses(this._authProvider.provideIdentity());
                 await this.connectToExpense(response.data.id);
+                await this.getJoinRequestsForExpense(response.data.id);
             } else {
                 return false;
             }
@@ -176,6 +184,56 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
     }
 
+    async getExpenseJoinRequests(): Promise<IExpenseJoinRequestDto[]> {
+        try {
+            const url = `${this._config.expense}/requests/${this._authProvider.provideIdentity()}`;
+            const response = await this.get<IExpenseJoinRequestDto[]>(url, this._authProvider.provideAuthHeader());
+            return response.data;
+        } catch (e) {
+            return [];
+        }
+    }
+
+    async removeExpenseJoinRequest(expenseId: string): Promise<void> {
+        try {
+            const url = `${this._config.expense}/${expenseId}/requests/${this._authProvider.provideIdentity()}`;
+            await this.delete(url, this._authProvider.provideAuthHeader());
+        } catch {
+            return;
+        }
+    }
+
+    async sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void> {
+        try {
+            const url = `${this._config.expense}/requests`;
+            const response = await this.postJson<void>(
+                url,
+                {
+                    userId,
+                    expenseId,
+                    requestingUserId: this._authProvider.provideIdentity(),
+                },
+                this._authProvider.provideAuthHeader(),
+            );
+        } catch (e) {
+            return;
+        }
+    }
+
+    async getJoinRequestsForExpense(expenseId: string): Promise<IExpenseJoinRequest[]> {
+        try {
+            const url = `${this._config.expense}/${expenseId}/requests`;
+            const response = await this.get<IExpenseJoinRequest[]>(url, this._authProvider.provideAuthHeader());
+
+            if (this._sessionExpense$.value?.id === expenseId) {
+                this._sessionExpenseJoinRequests$.next(response.data);
+            }
+            return response.data;
+        } catch (e) {
+            return [];
+        }
+    }
+
     private async onExpenseConnection(promiseResolver: () => void, expenseId: string): Promise<void> {
         await this.getExpense(expenseId);
         promiseResolver();
@@ -183,6 +241,12 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
 
     private async onMessage(e: WebSocketMessageEvent): Promise<void> {
         const message = JSON.parse(e.data) as IExpenseMessage;
+
+        if (message.type === "joinRequests") {
+            this.onJoinRequests(message.data as IExpenseJoinRequest[]);
+            return;
+        }
+
         const updatedExpense =
             message.type === "expense" ? (message.data as IExpenseDto) : (message.data as IExpensePayload).expense;
         const expense = this._expenseMapper.toDomainModel(updatedExpense);
@@ -210,5 +274,9 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
                     : 0,
             ),
         );
+    }
+
+    private onJoinRequests(joinRequests: IExpenseJoinRequest[]): void {
+        this._sessionExpenseJoinRequests$.next(joinRequests);
     }
 }

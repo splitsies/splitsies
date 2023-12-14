@@ -45,6 +45,7 @@ export class StyleManager implements IStyleManager {
             addUser: require("../../../assets/icons/add-person.png"),
             camera: require("../../../assets/icons/camera.png"),
             photoLibrary: require("../../../assets/icons/photo-library.png"),
+            checkCircle: require("../../../assets/icons/check-circle.png"),
         });
     }
 }

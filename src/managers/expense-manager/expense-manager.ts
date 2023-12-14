@@ -2,6 +2,8 @@ import { injectable } from "inversify";
 import { IExpenseManager } from "./expense-manager-interface";
 import {
     IExpense,
+    IExpenseJoinRequest,
+    IExpenseJoinRequestDto,
     IExpensePayload,
     IExpenseUserDetails,
     IExpenseUserDetailsMapper,
@@ -22,6 +24,8 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     private readonly _currentExpense$ = new BehaviorSubject<IExpense | null>(null);
     private readonly _currentExpenseUsers$ = new BehaviorSubject<IExpenseUserDetails[]>([]);
     private readonly _isPendingExpenseData$ = new BehaviorSubject<boolean>(false);
+    private readonly _expenseJoinRequests$ = new BehaviorSubject<IExpenseJoinRequestDto[]>([]);
+    private readonly _currentExpenseJoinRequests$ = new BehaviorSubject<IExpenseJoinRequest[]>([]);
 
     get expenses$(): Observable<IExpensePayload[]> {
         return this._expenses$.asObservable();
@@ -55,12 +59,16 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         return this._isPendingExpenseData$.asObservable();
     }
 
-    constructor() {
-        super();
+    get expenseJoinRequests$(): Observable<IExpenseJoinRequestDto[]> {
+        return this._expenseJoinRequests$.asObservable();
     }
 
-    updateExpense(expense: IExpense): Promise<void> {
-        return this._api.updateExpense(expense);
+    get currentExpenseJoinRequests$(): Observable<IExpenseJoinRequest[]> {
+        return this._currentExpenseJoinRequests$.asObservable();
+    }
+
+    constructor() {
+        super();
     }
 
     addItemToExpense(
@@ -86,6 +94,12 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         this._api.sessionExpense$.subscribe({
             next: (data) => this._currentExpense$.next(data),
         });
+
+        this._api.sessionExpenseJoinRequests$.subscribe({
+            next: (requests) => this._currentExpenseJoinRequests$.next(requests),
+        });
+
+        await this.requestExpenseJoinRequests();
     }
 
     async requestForUser(userId: string): Promise<void> {
@@ -94,20 +108,23 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     async connectToExpense(expenseId: string): Promise<void> {
         await this._api.connectToExpense(expenseId);
+        await this.getJoinRequestsForExpense(expenseId);
     }
 
     async requestUsersForExpense(expenseId: string): Promise<void> {
         const userIds = await this._api.getUserIdsForExpense(expenseId);
         const users = await this._userManager.requestUsersByIds(userIds);
 
-        this._currentExpenseUsers$.next(
-            users.map((u) => this._expenseUserDetailsMapper.fromUserDto(u)).sort(this.userSortCompare),
-        );
+        if (this.currentExpense?.id === expenseId) {
+            this._currentExpenseUsers$.next(
+                users.map((u) => this._expenseUserDetailsMapper.fromUserDto(u)).sort(this.userSortCompare),
+            );
+        }
     }
 
     async requestAddUserToExpense(userId: string, expenseId: string): Promise<void> {
         await this._api.addUserToExpense(userId, expenseId);
-        void this.requestUsersForExpense(expenseId);
+        await this.requestUsersForExpense(expenseId);
     }
 
     async requestRemoveUserFromExpense(userId: string, expenseId: string): Promise<void> {
@@ -121,6 +138,33 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     createExpense(base64Image?: string): Promise<boolean> {
         return this._api.createExpense(base64Image);
+    }
+
+    async requestExpenseJoinRequests(): Promise<void> {
+        const requests = await this._api.getExpenseJoinRequests();
+        this._expenseJoinRequests$.next(requests.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)));
+    }
+
+    async removeExpenseJoinRequestForUser(expenseId: string): Promise<void> {
+        await this._api.removeExpenseJoinRequest(expenseId);
+        const requests = this._expenseJoinRequests$.value;
+        const requestIndex = requests.findIndex((r) => r.expense.expense.id === expenseId);
+        if (requestIndex === -1) return;
+
+        requests.splice(requestIndex, 1);
+        this._expenseJoinRequests$.next(requests);
+    }
+
+    sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void> {
+        return this._api.sendExpenseJoinRequest(userId, expenseId);
+    }
+
+    async getJoinRequestsForExpense(expenseId: string): Promise<void> {
+        await this._api.getJoinRequestsForExpense(expenseId);
+    }
+
+    updateExpense(expense: IExpense): Promise<void> {
+        return this._api.updateExpense(expense);
     }
 
     private async onUserCredentialUpdated(userCredential: IUserCredential | null): Promise<void> {
