@@ -12,6 +12,7 @@ import {
     IExpenseMessage,
     IExpensePayload,
     IExpenseUpdateMapper,
+    IUserCredential,
 } from "@splitsies/shared-models";
 import { ClientBase } from "../client-base";
 import { lazyInject } from "../../utils/lazy-inject";
@@ -44,7 +45,8 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         return this._sessionExpenseJoinRequests$.asObservable();
     }
 
-    async getAllExpenses(userId: string): Promise<void> {
+    async getAllExpenses(userCred: IUserCredential | null = null): Promise<void> {
+        const userId = userCred?.user.id ?? this._authProvider.provideIdentity();
         if (!userId) {
             this._userExpenses$.next([]);
             return;

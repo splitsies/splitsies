@@ -102,8 +102,8 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         await this.requestExpenseJoinRequests();
     }
 
-    async requestForUser(userId: string): Promise<void> {
-        this._api.getAllExpenses(userId);
+    requestForUser(): Promise<void> {
+        return this._api.getAllExpenses();
     }
 
     async connectToExpense(expenseId: string): Promise<void> {
@@ -171,7 +171,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         this._isPendingExpenseData$.next(true);
         try {
             this._api.disconnectFromExpense();
-            await this._api.getAllExpenses(userCredential?.user.id ?? "");
+            await this._api.getAllExpenses(userCredential ?? undefined);
         } finally {
             this._isPendingExpenseData$.next(false);
         }

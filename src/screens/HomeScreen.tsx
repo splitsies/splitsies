@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { SafeAreaView, FlatList, StyleSheet, ActivityIndicator } from "react-native";
+import { SafeAreaView, StyleSheet, ActivityIndicator } from "react-native";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { lazyInject } from "../utils/lazy-inject";
-import { View, Text, LoaderScreen } from "react-native-ui-lib";
+import { View, Text } from "react-native-ui-lib";
 import { lastValueFrom, first, Subscription, race, timer } from "rxjs";
-import { IExpenseJoinRequest, IExpenseJoinRequestDto, IExpensePayload } from "@splitsies/shared-models";
+import { IExpenseJoinRequestDto, IExpensePayload } from "@splitsies/shared-models";
 import { useInitialize } from "../hooks/use-initialize";
 import type { RootStackScreenParams } from "./root-stack-screen-params";
 import { HomeBar } from "../components/HomeBar";
@@ -101,7 +101,11 @@ export const HomeScreen = ({ navigation }: BottomTabScreenProps<RootStackScreenP
     };
 
     const onRefreshRequests = async (): Promise<void> => {
-        _expenseManager.requestExpenseJoinRequests();
+        return _expenseManager.requestExpenseJoinRequests();
+    };
+
+    const onRefreshExpenses = async (): Promise<void> => {
+        return _expenseManager.requestForUser();
     };
 
     const provideContent = (): JSX.Element => {
@@ -113,6 +117,7 @@ export const HomeScreen = ({ navigation }: BottomTabScreenProps<RootStackScreenP
                         isPendingData={isPendingData}
                         userName={userName}
                         onExpenseClick={onExpenseClick}
+                        onRefresh={onRefreshExpenses}
                     />
                 );
             case "requests":

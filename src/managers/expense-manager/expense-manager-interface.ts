@@ -23,7 +23,7 @@ export interface IExpenseManager {
     readonly expenseJoinRequests$: Observable<IExpenseJoinRequestDto[]>;
     readonly currentExpenseJoinRequests$: Observable<IExpenseJoinRequest[]>;
 
-    requestForUser(userId: string): Promise<void>;
+    requestForUser(): Promise<void>;
     connectToExpense(expenseId: string): Promise<void>;
     updateExpense(expense: IExpense): Promise<void>;
     addItemToExpense(id: string, name: string, price: number, owners: string[], isProportional: boolean): Promise<void>;
