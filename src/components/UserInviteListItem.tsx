@@ -96,7 +96,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         flexGrow: 1,
         justifyContent: "space-between",
-        marginHorizontal: 10,
+        marginRight: 10,
     },
     nameContainer: {
         display: "flex",

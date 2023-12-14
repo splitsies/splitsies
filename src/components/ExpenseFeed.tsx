@@ -1,8 +1,8 @@
+import React, { useState } from "react";
 import { IExpensePayload } from "@splitsies/shared-models";
-import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
+import { ActivityIndicator, FlatList, RefreshControl, ScrollView, StyleSheet } from "react-native";
 import { Text, View } from "react-native-ui-lib";
 import { ListSeparator } from "./ListSeparator";
-import React from "react";
 import { ExpensePreview } from "./ExpensePreview";
 
 type Props = {
@@ -10,23 +10,35 @@ type Props = {
     expenses: IExpensePayload[];
     userName: string;
     onExpenseClick: (expenseId: string) => Promise<void>;
+    onRefresh: () => Promise<void>;
 };
 
-export const ExpenseFeed = ({ isPendingData, expenses, userName, onExpenseClick }: Props): JSX.Element => {
+export const ExpenseFeed = ({ isPendingData, expenses, userName, onExpenseClick, onRefresh }: Props): JSX.Element => {
+    const [refreshing, setRefreshing] = useState<boolean>(false);
+
+    const refresh = async (): Promise<void> => {
+        setRefreshing(true);
+        await onRefresh();
+        setRefreshing(false);
+    };
+
     if (isPendingData) {
         return <ActivityIndicator size="large" />;
     }
 
     if (expenses.length === 0) {
         return (
-            <View style={styles.welcomeMessageContainer}>
+            <ScrollView
+                style={styles.welcomeMessageContainer}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
+            >
                 <View style={styles.messageBox}>
                     <Text subheading>Welcome, {userName}!</Text>
                 </View>
                 <View style={styles.hintBox}>
                     <Text hint>Tap to scan a receipt</Text>
                 </View>
-            </View>
+            </ScrollView>
         );
     }
 
@@ -34,6 +46,7 @@ export const ExpenseFeed = ({ isPendingData, expenses, userName, onExpenseClick 
         <View style={styles.listContainer}>
             <FlatList
                 contentContainerStyle={{ paddingBottom: 40 }}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
                 ItemSeparatorComponent={ListSeparator}
                 renderItem={({ item }) => (
                     <ExpensePreview
