@@ -19,6 +19,8 @@ import { IColorConfiguration } from "../models/configuration/color-config/color-
 import { PeopleModal } from "../components/PeopleModal";
 import { ListSeparator } from "../components/ListSeparator";
 import { People } from "../components/People";
+import { ExpenseFooter } from "../components/ExpenseFooter";
+import { PeopleFooter } from "../components/PeopleFooter";
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -228,17 +230,11 @@ export const ExpenseScreen = ({ navigation }: Props) => {
             )}
 
             <View style={styles.footer}>
-                <ExpenseItem
-                    item={{ name: "Subtotal", price: expense.subtotal, owners: [] } as unknown as IExpenseItem}
-                />
-
-                {expense.items
-                    .filter((i) => i.isProportional)
-                    .map((pi) => (
-                        <ExpenseItem key={pi.id} item={pi} onPress={() => setSelectedItem(pi)} />
-                    ))}
-
-                <ExpenseItem item={{ name: "Total", price: expense.total, owners: [] } as unknown as IExpenseItem} />
+                {currentTab === "expense" ? (
+                    <ExpenseFooter expense={expense} onItemSelected={setSelectedItem} />
+                ) : (
+                    <PeopleFooter expense={expense} expenseUsers={expenseUsers} />
+                )}
 
                 <ActionBar
                     style={{ backgroundColor: "rgba(0,0,0,0)" }}
