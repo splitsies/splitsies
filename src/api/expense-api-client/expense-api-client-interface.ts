@@ -3,6 +3,7 @@ import {
     IExpenseJoinRequest,
     IExpenseJoinRequestDto,
     IExpensePayload,
+    IExpenseUserDetails,
     IUserCredential,
 } from "@splitsies/shared-models";
 import { Observable } from "rxjs";
@@ -10,6 +11,7 @@ import { Observable } from "rxjs";
 export interface IExpenseApiClient {
     readonly userExpenses$: Observable<IExpensePayload[]>;
     readonly sessionExpense$: Observable<IExpense | null>;
+    readonly sessionExpenseUsers$: Observable<IExpenseUserDetails[]>;
     readonly sessionExpenseJoinRequests$: Observable<IExpenseJoinRequest[]>;
     getAllExpenses(userCred?: IUserCredential): Promise<void>;
     getExpense(expenseId: string): Promise<void>;

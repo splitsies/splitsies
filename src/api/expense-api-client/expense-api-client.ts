@@ -12,6 +12,7 @@ import {
     IExpenseMessage,
     IExpensePayload,
     IExpenseUpdateMapper,
+    IExpenseUserDetails,
     IUserCredential,
 } from "@splitsies/shared-models";
 import { ClientBase } from "../client-base";
@@ -23,6 +24,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     private _connection!: WebSocket;
     private readonly _userExpenses$ = new BehaviorSubject<IExpensePayload[]>([]);
     private readonly _sessionExpense$ = new BehaviorSubject<IExpense | null>(null);
+    private readonly _sessionExpenseUsers$ = new BehaviorSubject<IExpenseUserDetails[]>([]);
     private readonly _sessionExpenseJoinRequests$ = new BehaviorSubject<IExpenseJoinRequest[]>([]);
     private readonly _config = lazyInject<IApiConfig>(IApiConfig);
     private readonly _authProvider = lazyInject<IAuthProvider>(IAuthProvider);
@@ -39,6 +41,10 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
 
     get sessionExpense$(): Observable<IExpense | null> {
         return this._sessionExpense$.asObservable();
+    }
+
+    get sessionExpenseUsers$(): Observable<IExpenseUserDetails[]> {
+        return this._sessionExpenseUsers$.asObservable();
     }
 
     get sessionExpenseJoinRequests$(): Observable<IExpenseJoinRequest[]> {
@@ -172,7 +178,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
             );
 
             if (response.success) {
-                void this.getAllExpenses(this._authProvider.provideIdentity());
+                void this.getAllExpenses();
                 await this.connectToExpense(response.data.id);
                 await this.getJoinRequestsForExpense(response.data.id);
             } else {
@@ -244,14 +250,21 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     private async onMessage(e: WebSocketMessageEvent): Promise<void> {
         const message = JSON.parse(e.data) as IExpenseMessage;
 
-        if (message.type === "joinRequests") {
-            this.onJoinRequests(message.data as IExpenseJoinRequest[]);
-            return;
+        switch (message.type) {
+            case "expense":
+                this.onExpenseMessage(message.data as IExpenseDto);
+                break;
+            case "joinRequests":
+                this.onJoinRequests(message.data as IExpenseJoinRequest[]);
+                break;
+            case "payload":
+                this.onPayloadMessage(message.data as IExpensePayload);
+                break;
         }
+    }
 
-        const updatedExpense =
-            message.type === "expense" ? (message.data as IExpenseDto) : (message.data as IExpensePayload).expense;
-        const expense = this._expenseMapper.toDomainModel(updatedExpense);
+    private onExpenseMessage(expenseDto: IExpenseDto): void {
+        const expense = this._expenseMapper.toDomainModel(expenseDto);
         this._sessionExpense$.next(expense);
 
         const expenses = [...this._userExpenses$.value];
@@ -262,9 +275,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
 
         expenses[expenseIndex] = new ExpensePayload(
             this._expenseMapper.toDtoModel(expense),
-            message.type === "payload"
-                ? (message.data as IExpensePayload).expenseUsers
-                : expenses[expenseIndex].expenseUsers,
+            expenses[expenseIndex].expenseUsers,
         );
 
         this._userExpenses$.next(
@@ -280,5 +291,31 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
 
     private onJoinRequests(joinRequests: IExpenseJoinRequest[]): void {
         this._sessionExpenseJoinRequests$.next(joinRequests);
+    }
+
+    private onPayloadMessage(expensePayload: IExpensePayload): void {
+        const updatedExpenseDto = expensePayload.expense;
+        const expense = this._expenseMapper.toDomainModel(updatedExpenseDto);
+
+        this._sessionExpense$.next(expense);
+        this._sessionExpenseUsers$.next(expensePayload.expenseUsers);
+
+        const expenses = [...this._userExpenses$.value];
+        const expenseIndex = expenses.findIndex((e) => e.expense.id === expense.id);
+        if (expenseIndex === -1) {
+            return;
+        }
+
+        expenses[expenseIndex] = expensePayload;
+
+        this._userExpenses$.next(
+            expenses.sort((a, b) =>
+                a.expense.transactionDate < b.expense.transactionDate
+                    ? 1
+                    : a.expense.transactionDate > b.expense.transactionDate
+                    ? -1
+                    : 0,
+            ),
+        );
     }
 }
