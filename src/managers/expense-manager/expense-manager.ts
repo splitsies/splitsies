@@ -95,6 +95,10 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
             next: (data) => this._currentExpense$.next(data),
         });
 
+        this._api.sessionExpenseUsers$.subscribe({
+            next: (users) => this._currentExpenseUsers$.next(users),
+        });
+
         this._api.sessionExpenseJoinRequests$.subscribe({
             next: (requests) => this._currentExpenseJoinRequests$.next(requests),
         });

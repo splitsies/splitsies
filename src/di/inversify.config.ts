@@ -30,6 +30,10 @@ import { IImageConfiguration } from "../models/configuration/image-config/image-
 import { ImageConfiguration } from "../models/configuration/image-config/image-configuration";
 import { IRequestConfiguration } from "../models/configuration/request-config/request-configuration-interface";
 import { RequestConfiguration } from "../models/configuration/request-config/request-configuration";
+import { IPriceCalculator } from "../utils/price-calculator/price-calculator-interface";
+import { PriceCalculator } from "../utils/price-calculator/price-calculator";
+import { IVenmoLinker } from "../utils/venmo-linker/venmo-linker-interface";
+import { VenmoLinker } from "../utils/venmo-linker/venmo-linker";
 const container = new Container();
 
 container.bind<IApiConfig>(IApiConfig).to(ApiConfig).inSingletonScope();
@@ -46,5 +50,7 @@ container.bind<IExpenseUserDetailsMapper>(IExpenseUserDetailsMapper).to(ExpenseU
 container.bind<IPersmissionRequester>(IPersmissionRequester).to(PermissionRequester).inSingletonScope();
 container.bind<IImageConfiguration>(IImageConfiguration).to(ImageConfiguration).inSingletonScope();
 container.bind<IRequestConfiguration>(IRequestConfiguration).to(RequestConfiguration).inSingletonScope();
+container.bind<IPriceCalculator>(IPriceCalculator).to(PriceCalculator).inSingletonScope();
+container.bind<IVenmoLinker>(IVenmoLinker).to(VenmoLinker).inSingletonScope();
 
 export { container };

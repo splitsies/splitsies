@@ -29,7 +29,7 @@ export const RequestsFeed = ({ joinRequests, onDeny, onApprove, onRefresh }: Pro
                     ))
                 ) : (
                     <View style={styles.messageContainer}>
-                        <Text hint>Doesn't look like there's anything here</Text>
+                        <Text hint>Doesn't look like there are any requests here</Text>
                     </View>
                 )}
             </ScrollView>

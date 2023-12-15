@@ -18,6 +18,7 @@ import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { PeopleModal } from "../components/PeopleModal";
 import { ListSeparator } from "../components/ListSeparator";
+import { People } from "../components/People";
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -35,6 +36,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
     const [inProgressSelections, setInProgressSelections] = useState<string[]>([]);
     const [isSelectingPeople, setIsSelectingPeople] = useState<boolean>(false);
     const [pendingJoinRequests, setPendingJoinRequests] = useState<IExpenseJoinRequest[]>([]);
+    const [currentTab, setCurrentTab] = useState<"expense" | "people">("expense");
 
     useInitialize(() => {
         const subscription = new Subscription();
@@ -133,28 +135,34 @@ export const ExpenseScreen = ({ navigation }: Props) => {
     }, [expense, selectedItem]);
 
     const onSelectAction = (): void => {
-        if (!isSelecting) {
-            const userExpenseIds = expense.items
-                .map((i) => (i.owners.find((u) => u.id === _userManager.userId) ? i.id : ""))
-                .filter((i) => !!i);
+        if (currentTab === "expense") {
+            if (!isSelecting) {
+                const userExpenseIds = expense.items
+                    .map((i) => (i.owners.find((u) => u.id === _userManager.userId) ? i.id : ""))
+                    .filter((i) => !!i);
 
-            setInProgressSelections(userExpenseIds);
-        } else {
-            for (const item of expense.items) {
-                const idIndex = item.owners.findIndex((u) => u.id === _userManager.userId);
-
-                if (idIndex !== -1 && !inProgressSelections.includes(item.id)) {
-                    item.owners.splice(idIndex, 1);
-                } else if (idIndex === -1 && inProgressSelections.includes(item.id)) {
-                    item.owners.push(_userManager.expenseUserDetails);
-                }
+                setInProgressSelections(userExpenseIds);
+            } else {
+                updateExpenseItemOwners(_userManager.userId, inProgressSelections);
+                setInProgressSelections([]);
             }
-
-            setInProgressSelections([]);
-            void _expenseManager.updateExpense(expense);
         }
 
         setIsSelecting(!isSelecting);
+    };
+
+    const updateExpenseItemOwners = (userId: string, selectedItemIds: string[]): void => {
+        for (const item of expense.items) {
+            const idIndex = item.owners.findIndex((u) => u.id === userId);
+            const userHasItem = idIndex !== -1;
+
+            if (userHasItem && !selectedItemIds.includes(item.id)) {
+                item.owners.splice(idIndex, 1);
+            } else if (!userHasItem && selectedItemIds.includes(item.id)) {
+                item.owners.push(expenseUsers.find((u) => u.id === userId)!);
+            }
+        }
+        void _expenseManager.updateExpense(expense);
     };
 
     const onUserInvited = async (user: IExpenseUserDetails): Promise<void> => {
@@ -162,7 +170,6 @@ export const ExpenseScreen = ({ navigation }: Props) => {
         if (!user.isRegistered && !user.id) {
             // Adding a guest user
             const addedUser = await _userManager.requestAddGuestUser(user.givenName, user.familyName, user.phoneNumber);
-
             userId = addedUser.id;
         }
 
@@ -194,21 +201,31 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                 <Text subtext>{format(expense.transactionDate)}</Text>
             </View>
 
-            <FlatList
-                style={styles.list}
-                data={expense.items.filter((i) => !i.isProportional)}
-                ItemSeparatorComponent={ListSeparator}
-                renderItem={({ item }) => (
-                    <ExpenseItem
-                        item={item}
-                        showOwners
-                        selected={inProgressSelections.includes(item.id)}
-                        selectable={isSelecting}
-                        onPress={() => setSelectedItem(item)}
-                        onSelect={onItemSelected}
-                    />
-                )}
-            />
+            {currentTab === "expense" ? (
+                <FlatList
+                    style={styles.list}
+                    data={expense.items.filter((i) => !i.isProportional)}
+                    ItemSeparatorComponent={ListSeparator}
+                    renderItem={({ item }) => (
+                        <ExpenseItem
+                            item={item}
+                            showOwners
+                            selected={inProgressSelections.includes(item.id)}
+                            selectable={isSelecting}
+                            onPress={() => setSelectedItem(item)}
+                            onSelect={onItemSelected}
+                        />
+                    )}
+                />
+            ) : (
+                <People
+                    people={expenseUsers}
+                    expense={expense}
+                    updateItemOwners={updateExpenseItemOwners}
+                    isSelecting={isSelecting}
+                    endSelectingMode={() => setIsSelecting(false)}
+                />
+            )}
 
             <View style={styles.footer}>
                 <ExpenseItem
@@ -231,6 +248,10 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                     actions={[
                         { label: isSelecting ? "Done" : "Select", onPress: onSelectAction },
                         { label: "Add", onPress: () => setIsAddingItem(true) },
+                        {
+                            label: currentTab === "people" ? "Expense" : "People",
+                            onPress: () => setCurrentTab(currentTab === "people" ? "expense" : "people"),
+                        },
                         { label: "Invite", onPress: () => setIsSelectingPeople(true) },
                     ]}
                 />
