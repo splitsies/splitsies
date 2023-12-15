@@ -28,17 +28,19 @@ export const ExpenseFeed = ({ isPendingData, expenses, userName, onExpenseClick,
 
     if (expenses.length === 0) {
         return (
-            <ScrollView
-                style={styles.welcomeMessageContainer}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
-            >
-                <View style={styles.messageBox}>
-                    <Text subheading>Welcome, {userName}!</Text>
-                </View>
+            <View style={styles.welcomeMessageContainer}>
+                <ScrollView
+                    contentContainerStyle={styles.welcomeMessageContainer}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
+                >
+                    <View style={styles.messageBox}>
+                        <Text subheading>Welcome, {userName}!</Text>
+                    </View>
+                </ScrollView>
                 <View style={styles.hintBox}>
                     <Text hint>Tap to scan a receipt</Text>
                 </View>
-            </ScrollView>
+            </View>
         );
     }
 
@@ -65,6 +67,7 @@ export const ExpenseFeed = ({ isPendingData, expenses, userName, onExpenseClick,
 const styles = StyleSheet.create({
     welcomeMessageContainer: {
         display: "flex",
+        flex: 1,
         flexGrow: 1,
     },
     listContainer: {
@@ -82,7 +85,6 @@ const styles = StyleSheet.create({
         display: "flex",
         width: "100%",
         alignItems: "center",
-        flex: 1,
         justifyContent: "flex-end",
         paddingBottom: 60,
     },

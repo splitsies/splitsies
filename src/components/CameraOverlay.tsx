@@ -18,10 +18,11 @@ const options = {
 
 type Props = {
     onBackPress: () => void;
+    onCapture: () => void;
     onImageSelected: (image: IImage) => void;
 };
 
-export const CameraOverlay = ({ onBackPress, onImageSelected }: Props) => {
+export const CameraOverlay = ({ onBackPress, onCapture, onImageSelected }: Props) => {
     const onLibraryOpened = (): void => {
         launchImageLibrary(options, (response) => {
             if (response.didCancel || response.errorCode || !response.assets?.[0]) return;
@@ -38,13 +39,15 @@ export const CameraOverlay = ({ onBackPress, onImageSelected }: Props) => {
 
     return (
         <View style={styles.background}>
-            <SafeAreaView style={styles.container}>
-                <View style={styles.backButton}>
-                    <TouchableOpacity onPress={onBackPress}>
-                        <Icon assetName="arrowBack" size={35} tintColor="white" />
-                    </TouchableOpacity>
-                </View>
-            </SafeAreaView>
+            <View style={styles.headerContainer}>
+                <SafeAreaView style={styles.container}>
+                    <View style={styles.backButton}>
+                        <TouchableOpacity onPress={onBackPress}>
+                            <Icon assetName="arrowBack" size={35} tintColor="white" />
+                        </TouchableOpacity>
+                    </View>
+                </SafeAreaView>
+            </View>
 
             <View style={styles.contentContainer}>
                 <SafeAreaView style={styles.buttonContainer}>
@@ -52,11 +55,11 @@ export const CameraOverlay = ({ onBackPress, onImageSelected }: Props) => {
                         <Icon assetName="photoLibrary" size={35} tintColor="white" />
                     </TouchableOpacity>
 
-                    {/* <TouchableOpacity onPress={props.onPress}>
-                    <Icon iconPack="MaterialCommunityIcons" name="circle-slice-8" color={Color.WHITE} size={Size.LARGE_ICON} />
+                    <TouchableOpacity onPress={onCapture}>
+                        <Icon assetName="capture" tintColor={_colorConfiguration.white} size={70} />
                     </TouchableOpacity>
 
-                    <View style={{ width: Size.ICON }} /> */}
+                    <View style={{ width: 35 }} />
                 </SafeAreaView>
             </View>
         </View>
@@ -65,24 +68,22 @@ export const CameraOverlay = ({ onBackPress, onImageSelected }: Props) => {
 
 const styles = StyleSheet.create({
     background: {
-        backgroundColor: "black",
+        display: "flex",
+        justifyContent: "space-between",
+        flexGrow: 1,
     },
     container: {
         display: "flex",
         paddingHorizontal: 10,
-        height: "100%",
         width: "100%",
         flexDirection: "column",
-        flexGrow: 1,
         justifyContent: "space-between",
-        backgroundColor: _colorConfiguration.darkOverlay,
     },
+    headerContainer: { backgroundColor: _colorConfiguration.darkOverlay, paddingVertical: 15 },
     contentContainer: {
-        position: "absolute",
-        bottom: 0,
         width: "100%",
-        paddingBottom: 60,
-        paddingTop: 40,
+        paddingBottom: 40,
+        paddingTop: 30,
         paddingHorizontal: 20,
         backgroundColor: _colorConfiguration.darkOverlay,
     },

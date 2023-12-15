@@ -61,7 +61,15 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         const uri = `${this._config.expense}?userId=${userId}`;
         try {
             const expenses = await this.get<IExpensePayload[]>(uri, this._authProvider.provideAuthHeader());
-            this._userExpenses$.next(expenses.data);
+            this._userExpenses$.next(
+                expenses.data.sort((a, b) =>
+                    a.expense.transactionDate < b.expense.transactionDate
+                        ? 1
+                        : a.expense.transactionDate > b.expense.transactionDate
+                        ? -1
+                        : 0,
+                ),
+            );
         } catch (e) {
             return;
         }
