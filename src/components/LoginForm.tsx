@@ -4,6 +4,7 @@ import { Icon, TextField } from "react-native-ui-lib";
 import { Text, View, Button } from "react-native-ui-lib/core";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
+import { SplitsiesTitle } from "./SplitsiesTitle";
 
 const _dimensions = Dimensions.get("screen");
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -20,12 +21,7 @@ export const LoginForm = ({ onLoginClicked, onSignUpClicked, validationError }: 
 
     return (
         <View style={styles.container}>
-            <View flex-2 row bottom centerH marginB-20>
-                <Icon assetName="logoBlack" size={50} />
-                <Text letterHeading black style={styles.logo}>
-                    plitsies
-                </Text>
-            </View>
+            <SplitsiesTitle center style={{ marginBottom: 20 }} />
 
             <View flex-2 style={styles.formContainer}>
                 <TextField
@@ -91,9 +87,6 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         justifyContent: "center",
         width: "100%",
-    },
-    logo: {
-        marginLeft: -10,
     },
     formContainer: {
         alignSelf: "stretch",

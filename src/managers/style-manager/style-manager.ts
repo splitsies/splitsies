@@ -19,11 +19,11 @@ export class StyleManager implements IStyleManager {
         Typography.loadTypographies({
             heading: { fontSize: 36, fontWeight: "600", fontFamily: "Avenir-Heavy" },
             subheading: { fontSize: 24, fontWeight: "400", fontFamily: "Avenir-Heavy" },
-            body: { fontSize: 14, fontFamily: "Avenir-Roman" },
-            subtext: { fontSize: 12, fontFamily: "Avenir-Roman" },
+            body: { fontSize: 15, fontFamily: "Avenir-Roman" },
+            subtext: { fontSize: 13, fontFamily: "Avenir-Roman" },
             letter: { fontFamily: "ZillaSlab-Bold" },
             letterHeading: { fontFamily: "ZillaSlab-Bold", fontSize: 36 },
-            hint: { fontSize: 13, fontFamily: "Avenir-Medium", color: this.colorConfiguration.greyFont },
+            hint: { fontSize: 14, fontFamily: "Avenir-Medium", color: this.colorConfiguration.greyFont },
         });
 
         ThemeManager.setComponentTheme("Text", {
@@ -47,6 +47,7 @@ export class StyleManager implements IStyleManager {
             photoLibrary: require("../../../assets/icons/photo-library.png"),
             checkCircle: require("../../../assets/icons/check-circle.png"),
             edit: require("../../../assets/icons/edit.png"),
+            capture: require("../../../assets/icons/capture.png"),
         });
     }
 }

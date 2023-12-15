@@ -14,6 +14,7 @@ import { IColorConfiguration } from "../models/configuration/color-config/color-
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { ExpenseFeed } from "../components/ExpenseFeed";
 import { RequestsFeed } from "../components/RequestsFeed";
+import { SplitsiesTitle } from "../components/SplitsiesTitle";
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -135,7 +136,7 @@ export const HomeScreen = ({ navigation }: BottomTabScreenProps<RootStackScreenP
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
-                <Text letterHeading>Splitsies</Text>
+                <SplitsiesTitle />
                 <ActivityIndicator color={_colorConfiguration.black} animating={isPendingConnection} hidesWhenStopped />
             </View>
             <View style={styles.body}>
