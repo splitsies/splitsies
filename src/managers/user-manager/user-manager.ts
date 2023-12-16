@@ -108,7 +108,6 @@ export class UserManager extends BaseManager implements IUserManager {
         setTimeout(async () => {
             const userCreds = (await getGenericPassword()) as UserCredentials;
             if (!userCreds) {
-                // TODO: login screen
                 this._client.signOut();
                 return;
             }
@@ -116,13 +115,6 @@ export class UserManager extends BaseManager implements IUserManager {
             this.requestAuthenticate(userCreds.username, userCreds.password);
         }, ttlMs);
     }
-
-    // async requestFindUsersByPhoneNumber(phoneNumbers: string[]): Promise<void> {
-    //     const users = await this._client.requestFindUsersByPhoneNumber(phoneNumbers);
-    //     this._contactUsers$.next(
-    //         users.map((u) => this._expenseUserDetailsMapper.fromUserDto(u)).sort(this.userSortCompare),
-    //     );
-    // }
 
     async requestUsersByIds(ids: string[]): Promise<IUserDto[]> {
         return this._client.requestUsersByIds(ids);
