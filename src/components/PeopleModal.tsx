@@ -1,17 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { FlatList, SafeAreaView, StyleSheet } from "react-native";
-import {
-    ActionBar,
-    Button,
-    Checkbox,
-    Chip,
-    Icon,
-    Modal,
-    Text,
-    TextField,
-    TouchableOpacity,
-    View,
-} from "react-native-ui-lib";
+import { ActionBar, Icon, Modal, TextField, TouchableOpacity, View } from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { useInitialize } from "../hooks/use-initialize";
@@ -44,6 +33,7 @@ export const PeopleModal = ({
     const [contactUsers, setContactUsers] = useState<IExpenseUserDetails[]>([]);
     const [addGuestVisible, setAddGuestVisible] = useState<boolean>(false);
     const [userViewFilter, setUserViewFilter] = useState<"contacts" | "guests">("contacts");
+    const [searchFilter, setSearchFilter] = useState<string>("");
 
     useInitialize(() => {
         const subscription = _userManager.contactUsers$.subscribe({
@@ -66,7 +56,17 @@ export const PeopleModal = ({
         ) : (
             <FlatList
                 style={styles.list}
-                data={userViewFilter === "contacts" ? contactUsers : expenseUsers.filter((u) => !u.phoneNumber)}
+                data={
+                    userViewFilter === "contacts"
+                        ? contactUsers.filter(
+                              (u) =>
+                                  `${u.givenName} ${u.familyName}`.toLowerCase().includes(searchFilter.toLowerCase()) ||
+                                  u.phoneNumber.includes(searchFilter),
+                          )
+                        : expenseUsers.filter(
+                              (u) => !u.phoneNumber && u.givenName.toLowerCase().includes(searchFilter.toLowerCase()),
+                          )
+                }
                 keyExtractor={(i) => i.id + i.phoneNumber}
                 ItemSeparatorComponent={ListSeparator}
                 renderItem={({ item: user }) => (
@@ -93,7 +93,13 @@ export const PeopleModal = ({
                     </View>
 
                     <View style={styles.inputContainer}>
-                        <TextField body placeholder="Search" style={styles.textInput} />
+                        <TextField
+                            body
+                            placeholder="Search"
+                            value={searchFilter}
+                            style={styles.textInput}
+                            onChangeText={setSearchFilter}
+                        />
                     </View>
 
                     <View style={styles.addUserContainer}>
@@ -139,6 +145,7 @@ const styles = StyleSheet.create({
     body: {
         display: "flex",
         flexGrow: 1,
+        flex: 1,
         width: "100%",
     },
     arrowContainer: {

@@ -108,20 +108,12 @@ export class UserManager extends BaseManager implements IUserManager {
         setTimeout(async () => {
             const userCreds = (await getGenericPassword()) as UserCredentials;
             if (!userCreds) {
-                // TODO: login screen
                 this._client.signOut();
                 return;
             }
 
             this.requestAuthenticate(userCreds.username, userCreds.password);
         }, ttlMs);
-    }
-
-    async requestFindUsersByPhoneNumber(phoneNumbers: string[]): Promise<void> {
-        const users = await this._client.requestFindUsersByPhoneNumber(phoneNumbers);
-        this._contactUsers$.next(
-            users.map((u) => this._expenseUserDetailsMapper.fromUserDto(u)).sort(this.userSortCompare),
-        );
     }
 
     async requestUsersByIds(ids: string[]): Promise<IUserDto[]> {
@@ -159,11 +151,25 @@ export class UserManager extends BaseManager implements IUserManager {
 
             // Merge them together
             const contactUsers: IExpenseUserDetails[] = [];
+            const visitedNumbers = new Set<string>();
 
             for (const c of contacts) {
+                if (!c.phoneNumbers[0]) {
+                    continue;
+                }
+
+                const number = c.phoneNumbers[0].number.replace(/\D/g, "").slice(-10);
+                if (!c.phoneNumbers[0] || visitedNumbers.has(number)) {
+                    continue;
+                }
+
+                console.log(`adding ${number} to visited`);
+                visitedNumbers.add(number);
+
                 const accountPhoneNumber = c.phoneNumbers
                     .map((n) => n.number.replace(/\D/g, ""))
-                    .find((n) => keyedByNumber.has(n));
+                    .find((n) => keyedByNumber.has(n.slice(-10)));
+
                 if (accountPhoneNumber && keyedByNumber.has(accountPhoneNumber)) {
                     const user = keyedByNumber.get(accountPhoneNumber);
                     contactUsers.push(this._expenseUserDetailsMapper.fromUserDto(user!));
@@ -176,7 +182,7 @@ export class UserManager extends BaseManager implements IUserManager {
                         "",
                         c.givenName,
                         c.familyName,
-                        c.phoneNumbers[0].number.replace(/\D/g, ""),
+                        c.phoneNumbers[0]?.number.replace(/\D/g, "") || "",
                     ),
                 );
             }
