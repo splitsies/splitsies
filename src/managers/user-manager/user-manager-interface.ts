@@ -11,7 +11,7 @@ export interface IUserManager extends IBaseManager {
     signOut(): Promise<void>;
     requestCreateUser(user: CreateUserRequest): Promise<boolean>;
     requestAuthenticate(username: string, password: string): Promise<boolean>;
-    requestFindUsersByPhoneNumber(phoneNumbers: string[]): Promise<void>;
+    // requestFindUsersByPhoneNumber(phoneNumbers: string[]): Promise<void>;
     requestUsersByIds(ids: string[]): Promise<IUserDto[]>;
     requestAddGuestUser(givenName: string, familyName: string, phoneNumber: string): Promise<IUserDto>;
     requestUsersFromContacts(): Promise<void>;
