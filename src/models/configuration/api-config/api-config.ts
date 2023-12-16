@@ -1,6 +1,8 @@
 import { injectable } from "inversify";
 import { IApiConfig } from "./api-config-interface";
-import config from "../../../config/api-local.config.json";
+import localConfig from "../../../config/api-local.config.json";
+import devPrConfig from "../../../config/api-dev-pr.config.json";
+import Config from "react-native-config";
 
 @injectable()
 export class ApiConfig implements IApiConfig {
@@ -9,8 +11,22 @@ export class ApiConfig implements IApiConfig {
     readonly users: string;
 
     constructor() {
+        const config = this.provideConfig();
+
         this.expense = config.expense;
         this.expenseSocket = config.expenseSocket;
         this.users = config.users;
+    }
+
+    private provideConfig() {
+        console.log(`Setting up ${Config.STAGE} API endpoints.`);
+        switch (Config.STAGE) {
+            case "local":
+                return localConfig;
+            case "dev-pr":
+                return devPrConfig;
+            default:
+                return localConfig;
+        }
     }
 }
