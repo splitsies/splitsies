@@ -15,6 +15,7 @@ import { ImageScreen } from "../screens/ImageScreen";
 import { CameraScreen } from "../screens/CameraScreen";
 import { SignupScreen } from "../screens/SignupScreen";
 import { useInitialize } from "../hooks/use-initialize";
+import SplashScreen from "react-native-splash-screen";
 
 lazyInject<IStyleManager>(IStyleManager).initialize();
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -37,6 +38,7 @@ export const RootComponent = () => {
                     next: (credential) => onUserUpdated(credential),
                 }),
             );
+            SplashScreen.hide();
         });
 
         return () => subscription?.unsubscribe();
