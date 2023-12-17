@@ -148,5 +148,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         backgroundColor: _colorConfiguration.primaryTranslucent,
         justifyContent: "center",
+        zIndex: -1,
     },
 });
