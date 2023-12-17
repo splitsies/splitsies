@@ -1,0 +1,9 @@
+{
+    "deepLinkUrl": "venmo://paycharge?txn=<TXN>&amount=<AMNT>&note=<NOTE>",
+    "placeholders": {
+        "txn": "<TXN>",
+        "amount": "<AMNT>",
+        "note": "<NOTE>"
+    },
+    "maxNoteLength": 280
+}
