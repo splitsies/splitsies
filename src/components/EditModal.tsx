@@ -28,7 +28,6 @@ type Props = {
 
 export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, proportional, onDelete }: Props) => {
     const [name, setName] = useState<string>(nameValue ?? "");
-    // const [priceV, setPrice] = useState<number>(priceValue ?? 0);
     const [isProportional, setIsProportional] = useState<boolean>(!!proportional);
     const priceField = useRef<TextInput>(null);
     const price = useRef<number>(priceValue ?? 0);
