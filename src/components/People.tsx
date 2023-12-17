@@ -3,12 +3,13 @@ import React, { useState } from "react";
 import { Carousel, PageControl, PageControlPosition } from "react-native-ui-lib";
 import { View } from "react-native-ui-lib/core";
 import { PersonalOrder } from "./PersonalOrder";
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { SelectItemsModal } from "./SelectItemsModal";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
+const _dimensions = Dimensions.get("window");
 
 type Props = {
     isSelecting: boolean;
@@ -38,7 +39,12 @@ export const People = ({ isSelecting, people, expense, updateItemOwners, endSele
     return (
         <View style={styles.container}>
             <View style={{ display: "flex", flex: 1 }}>
-                <Carousel onChangePage={onChangePage}>
+                <Carousel
+                    onChangePage={onChangePage}
+                    itemSpacings={20}
+                    containerStyle={{ width: "100%", alignItems: "center" }}
+                    pageWidth={_dimensions.width - 40}
+                >
                     {people.map((person) => (
                         <PersonalOrder key={person.id} person={person} expense={expense} />
                     ))}
@@ -70,6 +76,5 @@ const styles = StyleSheet.create({
         flex: 1,
         flexGrow: 1,
         paddingTop: 10,
-        paddingHorizontal: 20,
     },
 });

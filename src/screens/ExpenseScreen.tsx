@@ -248,7 +248,11 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                 )}
 
                 <ActionBar
-                    style={{ backgroundColor: "rgba(0,0,0,0)" }}
+                    style={{
+                        backgroundColor: "rgba(0,0,0,0)",
+                        borderTopColor: _colorConfiguration.greyFont,
+                        borderTopWidth: 1,
+                    }}
                     keepRelative
                     useSafeArea
                     centered
@@ -266,7 +270,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                             labelStyle: { fontSize: 13, fontFamily: "Avenir-Roman" },
                         },
                         {
-                            label: currentTab === "people" ? "Expense" : "People",
+                            label: currentTab === "people" ? "Items" : "People",
                             onPress: () => setCurrentTab(currentTab === "people" ? "expense" : "people"),
                             color: _colorConfiguration.black,
                             labelStyle: { fontSize: 13, fontFamily: "Avenir-Roman" },
@@ -333,5 +337,6 @@ const styles = StyleSheet.create({
         borderTopWidth: 1,
         paddingTop: 10,
         marginHorizontal: 10,
+        rowGap: 10,
     },
 });
