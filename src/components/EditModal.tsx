@@ -29,6 +29,10 @@ type Props = {
 export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, proportional, onDelete }: Props) => {
     const [name, setName] = useState<string>(nameValue ?? "");
     const [isProportional, setIsProportional] = useState<boolean>(!!proportional);
+
+    const [, updateState] = React.useState<any>();
+    const forceUpdate = React.useCallback(() => updateState({}), []);
+
     const priceField = useRef<TextInput>(null);
     const price = useRef<number>(priceValue ?? 0);
 
@@ -103,7 +107,10 @@ export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, pr
                                 color={_colorConfiguration.primary}
                                 value={price.current < 0}
                                 label="Discount"
-                                onValueChange={() => setPrice(-price.current)}
+                                onValueChange={() => {
+                                    setPrice(-price.current);
+                                    forceUpdate();
+                                }}
                             />
                         )}
                     </View>

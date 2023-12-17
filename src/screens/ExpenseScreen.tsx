@@ -190,13 +190,13 @@ export const ExpenseScreen = ({ navigation }: Props) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View padding-5>
+            <View paddingH-5 paddingT-20 marginH-10>
                 <TouchableOpacity onPress={onBackPress}>
                     <Icon assetName="arrowBack" size={35} />
                 </TouchableOpacity>
             </View>
 
-            <View centerH marginB-15>
+            <View centerH>
                 <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
                     <Text heading>{expense.name}</Text>
                 </TouchableOpacity>
@@ -208,9 +208,20 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                     style={styles.list}
                     data={expense.items.filter((i) => !i.isProportional)}
                     ItemSeparatorComponent={ListSeparator}
+                    ListFooterComponent={
+                        <TouchableOpacity onPress={() => setIsAddingItem(true)}>
+                            <View>
+                                <ListSeparator />
+                                <View style={{ width: "100%", marginVertical: 20, alignItems: "center" }}>
+                                    <Icon assetName="add" size={25} />
+                                </View>
+                            </View>
+                        </TouchableOpacity>
+                    }
                     renderItem={({ item }) => (
                         <ExpenseItem
                             item={item}
+                            style={{ marginVertical: 15 }}
                             showOwners
                             selected={inProgressSelections.includes(item.id)}
                             selectable={isSelecting}
@@ -242,13 +253,25 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                     useSafeArea
                     centered
                     actions={[
-                        { label: isSelecting ? "Done" : "Select", onPress: onSelectAction },
-                        { label: "Add", onPress: () => setIsAddingItem(true) },
+                        {
+                            label: isSelecting ? "Done" : "Select",
+                            onPress: onSelectAction,
+                            color: _colorConfiguration.black,
+                            labelStyle: { fontSize: 13, fontFamily: "Avenir-Roman" },
+                        },
+                        {
+                            label: "Invite",
+                            onPress: () => setIsSelectingPeople(true),
+                            color: _colorConfiguration.black,
+                            labelStyle: { fontSize: 13, fontFamily: "Avenir-Roman" },
+                        },
                         {
                             label: currentTab === "people" ? "Expense" : "People",
                             onPress: () => setCurrentTab(currentTab === "people" ? "expense" : "people"),
+
+                            color: _colorConfiguration.black,
+                            labelStyle: { fontSize: 13, fontFamily: "Avenir-Roman" },
                         },
-                        { label: "Invite", onPress: () => setIsSelectingPeople(true) },
                     ]}
                 />
             </View>

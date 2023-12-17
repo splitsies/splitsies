@@ -141,6 +141,7 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         width: "100%",
+        paddingVertical: 20,
     },
     body: {
         display: "flex",
