@@ -22,8 +22,8 @@ export class VenmoLinker implements IVenmoLinker {
     private buildTransactionNote(personalExpense: IExpense): string {
         let noteLines = [];
         noteLines.push("Thanks for going Splitsies™");
-        noteLines.push(`Total: $${personalExpense.total.toFixed(2)}`);
         noteLines.push(`${personalExpense.name} - ${this.dateToMMDDYYYY(personalExpense.transactionDate)}`);
+        noteLines.push(`Total: $${personalExpense.total.toFixed(2)}`);
         noteLines.push(
             ...personalExpense.items
                 .filter((i) => !i.isProportional)
@@ -44,11 +44,8 @@ export class VenmoLinker implements IVenmoLinker {
 
         if (note.length > this._configuration.maxNoteLength) {
             note = note.slice(0, this._configuration.maxNoteLength - 4);
-            console.log({ note, length: note.length });
             return note + "...";
         }
-
-        console.log({ note, length: note.length });
 
         return note;
     }
