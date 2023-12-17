@@ -1,7 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { Dimensions, Keyboard, KeyboardAvoidingView, StyleSheet, TouchableWithoutFeedback } from "react-native";
+import React, { useEffect, useRef, useState } from "react";
+import {
+    Dimensions,
+    Keyboard,
+    KeyboardAvoidingView,
+    StyleSheet,
+    TextInput,
+    TouchableWithoutFeedback,
+} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button, Checkbox, Modal, TextField, View } from "react-native-ui-lib";
+import { Button, Checkbox, Modal, TextField, TextFieldRef, View } from "react-native-ui-lib";
 import { EditResult } from "../models/edit-result";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
@@ -21,17 +28,25 @@ type Props = {
 
 export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, proportional, onDelete }: Props) => {
     const [name, setName] = useState<string>(nameValue ?? "");
-    const [price, setPrice] = useState<number>(priceValue ?? 0);
     const [isProportional, setIsProportional] = useState<boolean>(!!proportional);
+    const priceField = useRef<TextInput>(null);
+    const price = useRef<number>(priceValue ?? 0);
+
+    const setPrice = (newPrice: number): void => {
+        price.current = newPrice;
+        priceField.current?.setNativeProps({
+            text: `${price.current.toFixed(2)}`,
+        });
+    };
 
     useEffect(() => setName(nameValue ?? ""), [nameValue, visible]);
-    useEffect(() => setPrice(priceValue ?? 0), [priceValue, visible]);
+    useEffect(() => setPrice(priceValue ?? 0), [price, priceValue, visible]);
     useEffect(() => setIsProportional(proportional ?? false), [proportional, visible]);
 
     const onPriceChange = (value: string): void => {
         const expanded = value.replace(".", "");
-        const parsedPrice = parseFloat(expanded);
-        setPrice(parsedPrice / 100);
+        const parsedPrice = parseFloat(expanded) / 100;
+        setPrice(parsedPrice);
     };
 
     return (
@@ -50,13 +65,13 @@ export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, pr
                         )}
 
                         {priceValue != null && (
-                            <TextField
-                                body
+                            <TextInput
+                                ref={priceField}
+                                caretHidden
                                 placeholder="Price"
-                                value={`${price.toFixed(2)}`}
                                 inputMode="numeric"
                                 onChangeText={(text) => onPriceChange(text)}
-                                style={styles.textInput}
+                                style={[styles.textInput, { fontSize: 15, fontFamily: "Avenir-Roman" }]}
                             />
                         )}
 
@@ -65,7 +80,7 @@ export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, pr
                                 body
                                 label="Save"
                                 bg-primary
-                                onPress={() => onSave({ name, price, isProportional })}
+                                onPress={() => onSave({ name, price: price.current, isProportional })}
                             />
                             <Button body label="Cancel" bg-primary onPress={onCancel} />
                             {onDelete != null && <Button body label="Delete" bg-primary onPress={onDelete} />}
@@ -86,9 +101,9 @@ export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, pr
                             <Checkbox
                                 containerStyle={styles.textInput}
                                 color={_colorConfiguration.primary}
-                                value={price < 0}
+                                value={price.current < 0}
                                 label="Discount"
-                                onValueChange={() => setPrice(-price)}
+                                onValueChange={() => setPrice(-price.current)}
                             />
                         )}
                     </View>

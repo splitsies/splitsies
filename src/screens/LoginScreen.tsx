@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { SafeAreaView, StyleSheet } from "react-native";
 import { lazyInject } from "../utils/lazy-inject";
 import { RootStackScreenParams } from "./root-stack-screen-params";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";

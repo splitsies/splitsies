@@ -5,6 +5,7 @@ import { Text, View, Button } from "react-native-ui-lib/core";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { SplitsiesTitle } from "./SplitsiesTitle";
+import { SpTextInput } from "./SpTextInput";
 
 const _dimensions = Dimensions.get("screen");
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -24,27 +25,22 @@ export const LoginForm = ({ onLoginClicked, onSignUpClicked, validationError }: 
             <SplitsiesTitle center style={{ marginBottom: 20 }} />
 
             <View flex-2 style={styles.formContainer}>
-                <TextField
+                <SpTextInput
                     autoCapitalize="none"
                     value={email}
                     onChangeText={setEmail}
-                    fieldStyle={styles.textInput}
                     placeholder={"Email"}
-                    validate={["required", "email"]}
-                    validationMessage={["Required", "Email is invalid"]}
                     retainValidationSpace
                     body
                 />
 
-                <TextField
+                <SpTextInput
                     autoCapitalize="none"
                     value={password}
                     onChangeText={setPassword}
                     secureTextEntry
-                    style={styles.textInput}
+                    enableErrors
                     placeholder={"Password"}
-                    validate={["required", () => !!validationError]}
-                    validationMessage={["Required", validationError]}
                     body
                 />
 
@@ -68,6 +64,7 @@ export const LoginForm = ({ onLoginClicked, onSignUpClicked, validationError }: 
             <View flex-2 centerH>
                 <Button
                     style={styles.input}
+                    disabled={!email || !password}
                     body
                     marginT-15
                     label="Log in"

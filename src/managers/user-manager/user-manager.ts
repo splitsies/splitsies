@@ -163,7 +163,6 @@ export class UserManager extends BaseManager implements IUserManager {
                     continue;
                 }
 
-                console.log(`adding ${number} to visited`);
                 visitedNumbers.add(number);
 
                 const accountPhoneNumber = c.phoneNumbers
