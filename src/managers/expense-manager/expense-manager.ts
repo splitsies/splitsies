@@ -149,8 +149,8 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         this._expenseJoinRequests$.next(requests.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)));
     }
 
-    async removeExpenseJoinRequestForUser(expenseId: string): Promise<void> {
-        await this._api.removeExpenseJoinRequest(expenseId);
+    async removeExpenseJoinRequestForUser(expenseId: string, userId: string | undefined = undefined): Promise<void> {
+        await this._api.removeExpenseJoinRequest(expenseId, userId);
         const requests = this._expenseJoinRequests$.value;
         const requestIndex = requests.findIndex((r) => r.expense.expense.id === expenseId);
         if (requestIndex === -1) return;

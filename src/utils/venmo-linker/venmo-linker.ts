@@ -17,7 +17,7 @@ export class VenmoLinker implements IVenmoLinker {
 
     private buildTransactionNote(personalExpense: IExpense): string {
         let noteLines = [];
-        noteLines.push("Split™ with ❤️");
+        noteLines.push("Thanks for going Splitsies™");
         noteLines.push(`${personalExpense.name} - ${this.dateToMMDDYYYY(personalExpense.transactionDate)}`);
         noteLines.push(
             ...personalExpense.items

@@ -183,6 +183,10 @@ export const ExpenseScreen = ({ navigation }: Props) => {
         void _expenseManager.sendExpenseJoinRequest(userId, expense.id);
     };
 
+    const onUserUninvited = async (user: IExpenseUserDetails): Promise<void> => {
+        void _expenseManager.removeExpenseJoinRequestForUser(expense.id, user.id);
+    };
+
     const onAddGuest = async (givenName: string, phoneNumber: string): Promise<void> => {
         const user = await _userManager.requestAddGuestUser(givenName, "", phoneNumber);
         return _expenseManager.requestAddUserToExpense(user.id, expense.id);
@@ -307,11 +311,12 @@ export const ExpenseScreen = ({ navigation }: Props) => {
 
             <PeopleModal
                 visible={isSelectingPeople}
-                pendingUserIds={pendingJoinRequests.map((r) => r.userId)}
+                pendingJoinRequests={pendingJoinRequests}
                 expenseUsers={expenseUsers}
                 onAddGuest={onAddGuest}
                 onCancel={() => setIsSelectingPeople(false)}
                 onUserSelectionChanged={onUserInvited}
+                onRemoveRequest={onUserUninvited}
             />
         </SafeAreaView>
     );
@@ -336,7 +341,6 @@ const styles = StyleSheet.create({
         borderTopColor: _colorConfiguration.greyFont,
         borderTopWidth: 1,
         paddingTop: 10,
-        marginHorizontal: 10,
         rowGap: 10,
     },
 });

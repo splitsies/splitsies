@@ -5,7 +5,7 @@ import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { useInitialize } from "../hooks/use-initialize";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
-import { IExpenseUserDetails } from "@splitsies/shared-models";
+import { IExpenseJoinRequest, IExpenseUserDetails } from "@splitsies/shared-models";
 import { ListSeparator } from "./ListSeparator";
 import { AddGuestForm } from "./AddGuestForm";
 import { UserInviteListItem } from "./UserInviteListItem";
@@ -15,20 +15,22 @@ const _userManager = lazyInject<IUserManager>(IUserManager);
 
 type Props = {
     visible: boolean;
-    pendingUserIds: string[];
+    pendingJoinRequests: IExpenseJoinRequest[];
     expenseUsers: IExpenseUserDetails[];
     onAddGuest: (givenName: string, phoneNumber: string) => Promise<void>;
     onCancel: () => void;
     onUserSelectionChanged: (user: IExpenseUserDetails) => void;
+    onRemoveRequest: (user: IExpenseUserDetails) => void;
 };
 
 export const PeopleModal = ({
     visible,
-    pendingUserIds,
+    pendingJoinRequests,
     onCancel,
     onAddGuest,
     expenseUsers,
     onUserSelectionChanged,
+    onRemoveRequest,
 }: Props) => {
     const [contactUsers, setContactUsers] = useState<IExpenseUserDetails[]>([]);
     const [addGuestVisible, setAddGuestVisible] = useState<boolean>(false);
@@ -74,8 +76,9 @@ export const PeopleModal = ({
                         user={user}
                         contactUsers={contactUsers}
                         expenseUsers={expenseUsers}
-                        pendingUserIds={pendingUserIds}
+                        pendingJoinRequests={pendingJoinRequests}
                         onInviteUser={() => onUserSelectionChanged(user)}
+                        onUninviteUser={() => onRemoveRequest(user)}
                     />
                 )}
             />
@@ -149,13 +152,13 @@ const styles = StyleSheet.create({
         rowGap: 10,
         alignItems: "center",
         height: "100%",
-        marginHorizontal: 10,
     },
     header: {
         display: "flex",
         flexDirection: "row",
         width: "100%",
         paddingVertical: 20,
+        paddingHorizontal: 10,
     },
     body: {
         display: "flex",
@@ -190,5 +193,6 @@ const styles = StyleSheet.create({
     },
     list: {
         width: "100%",
+        paddingHorizontal: 10,
     },
 });
