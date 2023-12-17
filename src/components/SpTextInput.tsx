@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
         width: _dimensions.width * 0.75,
         paddingHorizontal: 15,
         backgroundColor: _colorConfiguration.primaryTranslucent,
-        zIndex: -1
+        zIndex: -1,
     },
     validationMessage: {
         paddingHorizontal: 20,

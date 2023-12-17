@@ -19,8 +19,6 @@ const styles = StyleSheet.create({
         height: 1,
         width: "100%",
         backgroundColor: _colorConfiguration.greyFont,
-        marginTop: 10,
-        marginBottom: 10,
         opacity: 0.33,
     },
 });

@@ -48,6 +48,7 @@ export class StyleManager implements IStyleManager {
             checkCircle: require("../../../assets/icons/check-circle.png"),
             edit: require("../../../assets/icons/edit.png"),
             capture: require("../../../assets/icons/capture.png"),
+            add: require("../../../assets/icons/add.png"),
         });
     }
 }

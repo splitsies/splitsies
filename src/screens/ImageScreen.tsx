@@ -42,8 +42,18 @@ export const ImageScreen = ({ navigation, route: { params: image } }: Props): JS
                     keepRelative
                     centered
                     actions={[
-                        { label: "Cancel", onPress: onBackPress },
-                        { label: "Confirm", onPress: onConfirm },
+                        {
+                            label: "Cancel",
+                            onPress: onBackPress,
+                            color: _colorConfiguration.white,
+                            labelStyle: { fontSize: 18, fontWeight: "600", fontFamily: "Avenir-Roman" },
+                        },
+                        {
+                            label: "Confirm",
+                            onPress: onConfirm,
+                            color: _colorConfiguration.white,
+                            labelStyle: { fontSize: 18, fontWeight: "600", fontFamily: "Avenir-Roman" },
+                        },
                     ]}
                 />
             </View>

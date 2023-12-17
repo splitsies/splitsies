@@ -58,6 +58,7 @@ export const SelectItemsModal = ({ user, expense, visible, onClose }: Props): JS
                         renderItem={({ item }) => (
                             <ExpenseItem
                                 item={item}
+                                style={{ marginVertical: 15 }}
                                 selectable
                                 selected={selections.includes(item.id)}
                                 onPress={() => {}}
@@ -85,7 +86,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         width: "100%",
         justifyContent: "space-between",
-        paddingBottom: 20,
+        paddingVertical: 20,
     },
     body: {
         display: "flex",
