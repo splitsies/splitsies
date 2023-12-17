@@ -34,6 +34,8 @@ import { IPriceCalculator } from "../utils/price-calculator/price-calculator-int
 import { PriceCalculator } from "../utils/price-calculator/price-calculator";
 import { IVenmoLinker } from "../utils/venmo-linker/venmo-linker-interface";
 import { VenmoLinker } from "../utils/venmo-linker/venmo-linker";
+import { IVenmoConfiguration } from "../models/configuration/venmo-configuration/venmo-configuration-interface";
+import { VenmoConfiguration } from "../models/configuration/venmo-configuration/venmo-configuration";
 const container = new Container();
 
 container.bind<IApiConfig>(IApiConfig).to(ApiConfig).inSingletonScope();
@@ -52,5 +54,6 @@ container.bind<IImageConfiguration>(IImageConfiguration).to(ImageConfiguration).
 container.bind<IRequestConfiguration>(IRequestConfiguration).to(RequestConfiguration).inSingletonScope();
 container.bind<IPriceCalculator>(IPriceCalculator).to(PriceCalculator).inSingletonScope();
 container.bind<IVenmoLinker>(IVenmoLinker).to(VenmoLinker).inSingletonScope();
+container.bind<IVenmoConfiguration>(IVenmoConfiguration).to(VenmoConfiguration).inSingletonScope();
 
 export { container };
