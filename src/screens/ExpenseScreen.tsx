@@ -268,7 +268,6 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                         {
                             label: currentTab === "people" ? "Expense" : "People",
                             onPress: () => setCurrentTab(currentTab === "people" ? "expense" : "people"),
-
                             color: _colorConfiguration.black,
                             labelStyle: { fontSize: 13, fontFamily: "Avenir-Roman" },
                         },

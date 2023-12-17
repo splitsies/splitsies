@@ -112,13 +112,27 @@ export const PeopleModal = ({
                     {loadContent()}
                     {!addGuestVisible && (
                         <ActionBar
-                            style={{ backgroundColor: "rgba(0,0,0,0)" }}
+                            style={{
+                                backgroundColor: "rgba(0,0,0,0)",
+                                borderTopColor: _colorConfiguration.greyFont,
+                                borderTopWidth: 1,
+                            }}
                             keepRelative
                             useSafeArea
                             centered
                             actions={[
-                                { label: "Contacts", onPress: () => setUserViewFilter("contacts") },
-                                { label: "Guests", onPress: () => setUserViewFilter("guests") },
+                                {
+                                    label: "Contacts",
+                                    onPress: () => setUserViewFilter("contacts"),
+                                    color: _colorConfiguration.black,
+                                    labelStyle: { fontSize: 13, fontFamily: "Avenir-Roman" },
+                                },
+                                {
+                                    label: "Guests",
+                                    onPress: () => setUserViewFilter("guests"),
+                                    color: _colorConfiguration.black,
+                                    labelStyle: { fontSize: 13, fontFamily: "Avenir-Roman" },
+                                },
                             ]}
                         />
                     )}

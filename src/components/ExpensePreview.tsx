@@ -103,6 +103,7 @@ const styles = StyleSheet.create({
         width: "100%",
         justifyContent: "center",
         paddingHorizontal: 20,
+        paddingVertical: 10,
     },
     rowContainer: {
         marginVertical: 1,
