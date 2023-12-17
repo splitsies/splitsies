@@ -38,65 +38,73 @@ export const LoginDetailsForm = ({ userDetails, onComplete }: Props) => {
     return (
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
             <View style={{ display: "flex", flexGrow: 1 }}>
-                <KeyboardAvoidingView style={{ display: "flex", flex: 2, rowGap: 20, justifyContent: "center" }}>
-                    <Text heading>Create an Account</Text>
+                <View style={{ display: "flex", flex: 2, rowGap: 10, justifyContent: "center" }}>
+                    <Text heading>About You</Text>
 
-                    <SpTextInput
-                        label="Email"
-                        floatingPlaceholder
-                        value={email}
-                        validate={["required", "email"]}
-                        validationMessage={["Email is required", "Please enter a valid email address"]}
-                        enableErrors
-                        validateOnBlur
-                        validateOnStart={shouldValidateOnStart()}
-                        validationMessagePosition="bottom"
-                        onChangeValidity={setEmailValid}
-                        placeholder="Email"
-                        onChangeText={setEmail}
-                    />
-                    <SpTextInput
-                        label="Password"
-                        secureTextEntry
-                        floatingPlaceholder
-                        value={password}
-                        validate={["required", isPasswordValid]}
-                        validationMessage={[
-                            "Password is required",
-                            "Password must contain 8+ characters, one capital letter, and one number",
-                        ]}
-                        enableErrors
-                        validateOnBlur
-                        validateOnStart={shouldValidateOnStart()}
-                        validationMessagePosition="bottom"
-                        onChangeValidity={setPasswordValid}
-                        placeholder="Password"
-                        onChangeText={setPassword}
-                    />
-                    <SpTextInput
-                        secureTextEntry
-                        label="Confirm Password"
-                        floatingPlaceholder
-                        value={confirmedPassword}
-                        validate={["required", passwordsMatch]}
-                        validationMessage={["Please confirm your password", "Passwords do not match"]}
-                        enableErrors
-                        validateOnBlur
-                        validateOnStart={shouldValidateOnStart()}
-                        validationMessagePosition="bottom"
-                        onChangeValidity={setConfirmedPasswordValid}
-                        placeholder="Confirm Password"
-                        onChangeText={setConfirmedPassword}
-                    />
-                </KeyboardAvoidingView>
+                    <KeyboardAvoidingView>
+                        <SpTextInput
+                            autoCapitalize="none"
+                            label="Email"
+                            value={email}
+                            validate={["required", "email"]}
+                            validationMessage={["Email is required", "Please enter a valid email address"]}
+                            enableErrors
+                            validateOnBlur
+                            validateOnStart={shouldValidateOnStart()}
+                            validationMessagePosition="bottom"
+                            onChangeValidity={setEmailValid}
+                            placeholder="Email"
+                            onChangeText={setEmail}
+                        />
+                    </KeyboardAvoidingView>
+
+                    <KeyboardAvoidingView>
+                        <SpTextInput
+                            autoCapitalize="none"
+                            label="Password"
+                            secureTextEntry
+                            value={password}
+                            validate={["required", isPasswordValid]}
+                            validationMessage={[
+                                "Password is required",
+                                "Password must contain 8+ characters, one capital letter, and one number",
+                            ]}
+                            enableErrors
+                            validateOnBlur
+                            validateOnStart={shouldValidateOnStart()}
+                            validationMessagePosition="bottom"
+                            onChangeValidity={setPasswordValid}
+                            placeholder="Password"
+                            onChangeText={setPassword}
+                        />
+                    </KeyboardAvoidingView>
+
+                    <KeyboardAvoidingView>
+                        <SpTextInput
+                            autoCapitalize="none"
+                            secureTextEntry
+                            label="Confirm Password"
+                            value={confirmedPassword}
+                            validate={["required", passwordsMatch]}
+                            validationMessage={["Please confirm your password", "Passwords do not match"]}
+                            enableErrors
+                            validateOnBlur
+                            validateOnStart={shouldValidateOnStart()}
+                            validationMessagePosition="bottom"
+                            onChangeValidity={setConfirmedPasswordValid}
+                            placeholder="Confirm Password"
+                            onChangeText={setConfirmedPassword}
+                        />
+                    </KeyboardAvoidingView>
+                </View>
 
                 <View style={{ display: "flex", flex: 1, justifyContent: "center", paddingBottom: 15 }}>
                     <Button
-                        label="Create"
                         body
                         bg-primary
+                        label="Continue"
                         disabled={!isFormValid()}
-                        onPress={() => void onComplete(email, password)}
+                        onPress={() => onComplete(email, password)}
                     />
                 </View>
             </View>

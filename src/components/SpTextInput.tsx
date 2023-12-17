@@ -1,5 +1,5 @@
 import React from "react";
-import { Dimensions, StyleSheet } from "react-native";
+import { Dimensions, StyleSheet, PixelRatio } from "react-native";
 import { TextField, TextFieldProps } from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
@@ -11,9 +11,10 @@ export const SpTextInput = (props: TextFieldProps): JSX.Element => {
     return (
         <TextField
             body
+            autoCapitalize={props.autoCapitalize}
             secureTextEntry={props.secureTextEntry}
             inputMode={props.inputMode}
-            floatingPlaceholder={props.floatingPlaceholder}
+            floatingPlaceholder
             floatingPlaceholderStyle={styles.label}
             floatOnFocus
             validate={props.validate}
@@ -37,21 +38,20 @@ export const SpTextInput = (props: TextFieldProps): JSX.Element => {
 
 const styles = StyleSheet.create({
     label: {
-        paddingBottom: 5,
-        paddingTop: 16,
-        paddingHorizontal: 15,
+        lineHeight: 50 * (1 / PixelRatio.getFontScale()),
+        marginBottom: 10,
+        paddingHorizontal: 20,
     },
     textInput: {
         height: 50,
         borderRadius: 25,
         width: _dimensions.width * 0.75,
         paddingHorizontal: 15,
-        borderColor: _colorConfiguration.dividerDark,
-        borderWidth: 1,
+        backgroundColor: _colorConfiguration.primaryTranslucent,
     },
     validationMessage: {
-        paddingHorizontal: 15,
-        paddingTop: 5,
+        paddingHorizontal: 20,
+        paddingTop: 2,
         maxWidth: _dimensions.width * 0.75,
     },
 });
