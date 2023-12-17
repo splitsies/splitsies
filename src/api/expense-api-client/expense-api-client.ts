@@ -210,9 +210,11 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
     }
 
-    async removeExpenseJoinRequest(expenseId: string): Promise<void> {
+    async removeExpenseJoinRequest(expenseId: string, userId: string | undefined = undefined): Promise<void> {
         try {
-            const url = `${this._config.expense}/${expenseId}/requests/${this._authProvider.provideIdentity()}`;
+            const url = `${this._config.expense}/${expenseId}/requests/${
+                userId ?? this._authProvider.provideIdentity()
+            }`;
             await this.delete(url, this._authProvider.provideAuthHeader());
         } catch {
             return;

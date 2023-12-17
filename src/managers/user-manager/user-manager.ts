@@ -122,6 +122,15 @@ export class UserManager extends BaseManager implements IUserManager {
 
     async requestAddGuestUser(givenName: string, familyName: string, phoneNumber: string): Promise<IUserDto> {
         const user = await this._client.requestAddGuestUser(givenName, familyName, phoneNumber);
+
+        if (user) {
+            const users = this._contactUsers$.value;
+            const idx = users.findIndex((u) => u.phoneNumber && u.phoneNumber === user.phoneNumber.slice(-10));
+            users.splice(idx, 1);
+            users.push(this._expenseUserDetailsMapper.fromUserDto(user));
+            this._contactUsers$.next(users.sort(this.userSortCompare));
+        }
+
         return user;
     }
 

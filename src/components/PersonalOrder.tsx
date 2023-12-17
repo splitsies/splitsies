@@ -2,7 +2,7 @@ import React, { useState, useContext, useEffect } from "react";
 import { StyleSheet, Alert, ScrollView } from "react-native";
 import { IExpense, IExpenseItem, IExpenseUserDetails, ExpenseItem as ExpenseItemModel } from "@splitsies/shared-models";
 import { Text, View } from "react-native-ui-lib/core";
-import { Button } from "react-native-ui-lib";
+import { Button, Icon } from "react-native-ui-lib";
 import { ExpenseItem } from "./ExpenseItem";
 import { lazyInject } from "../utils/lazy-inject";
 import { IPriceCalculator } from "../utils/price-calculator/price-calculator-interface";
@@ -56,11 +56,17 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
     const renderHeader = (): JSX.Element => {
         return (
             <View style={styles.header}>
+                <View style={styles.iconContainer}>
+                    {person.isRegistered && <Icon assetName="logoPrimary" size={35} />}
+                </View>
+
                 <View style={styles.nameContainer}>
                     <Text body numberOfLines={1} ellipsizeMode={"tail"}>
                         {person.givenName + (person.familyName ? " " + person.familyName : "")}
                     </Text>
                 </View>
+
+                <View style={styles.iconContainer} />
             </View>
         );
     };
@@ -142,8 +148,8 @@ const styles = StyleSheet.create({
         overflow: "visible",
         alignItems: "center",
         justifyContent: "center",
-        width: 40,
-        height: 40,
+        width: 35,
+        height: 35,
     },
     icon: {
         backgroundColor: _colorConfiguration.primary,

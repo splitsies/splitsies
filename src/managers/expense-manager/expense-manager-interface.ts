@@ -33,7 +33,7 @@ export interface IExpenseManager {
     requestUsersForExpense(expenseId: string): Promise<void>;
     createExpense(base64Image?: string): Promise<boolean>;
     requestExpenseJoinRequests(): Promise<void>;
-    removeExpenseJoinRequestForUser(expenseId: string): Promise<void>;
+    removeExpenseJoinRequestForUser(expenseId: string, userId?: string): Promise<void>;
     sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void>;
     getJoinRequestsForExpense(expenseId: string): Promise<void>;
 }

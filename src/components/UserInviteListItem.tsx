@@ -1,36 +1,75 @@
-import React, { useCallback } from "react";
-import { IExpenseUserDetails } from "@splitsies/shared-models";
+import React, { useCallback, useEffect, useState } from "react";
+import { IExpenseJoinRequest, IExpenseUserDetails } from "@splitsies/shared-models";
 import { Chip, Icon, Text, View } from "react-native-ui-lib";
 import { StyleSheet } from "react-native";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { lazyInject } from "../utils/lazy-inject";
+import { IAuthProvider } from "../providers/auth-provider/auth-provider-interface";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
+const _authProvider = lazyInject<IAuthProvider>(IAuthProvider);
 
 type Props = {
     user: IExpenseUserDetails;
     contactUsers: IExpenseUserDetails[];
     expenseUsers: IExpenseUserDetails[];
-    pendingUserIds: string[];
+    pendingJoinRequests: IExpenseJoinRequest[];
     onInviteUser: (user: IExpenseUserDetails) => void;
+    onUninviteUser: (user: IExpenseUserDetails) => void;
 };
+
+enum UserState {
+    AvailableToInvite,
+    AvailableAsGuest,
+    Invited,
+    Uninvitable,
+    Joined,
+}
 
 export const UserInviteListItem = ({
     user,
     contactUsers,
     expenseUsers,
-    pendingUserIds,
+    pendingJoinRequests,
     onInviteUser,
+    onUninviteUser,
 }: Props): JSX.Element => {
-    const computeButtonLabel = useCallback(
-        (user: IExpenseUserDetails) => {
-            if (expenseUsers.map((u) => u.id).includes(user.id)) return "";
-            if (pendingUserIds.includes(user.id)) return "Invited";
-            if (user.isRegistered) return "Invite";
-            return "Add as Guest";
-        },
-        [expenseUsers, contactUsers, pendingUserIds],
-    );
+    const [userState, setUserState] = useState<UserState>(UserState.AvailableAsGuest);
+
+    useEffect(() => {
+        let state = UserState.AvailableAsGuest;
+
+        if (
+            expenseUsers.map((u) => u.id).includes(user.id) ||
+            expenseUsers.some((u) => u.phoneNumber === user.phoneNumber)
+        ) {
+            state = UserState.Joined;
+        } else if (pendingJoinRequests.map((r) => r.userId).includes(user.id)) {
+            state =
+                pendingJoinRequests.find((r) => r.userId)?.requestingUserId === _authProvider.provideIdentity()
+                    ? UserState.Uninvitable
+                    : UserState.Invited;
+        } else if (user.isRegistered) {
+            state = UserState.AvailableToInvite;
+        }
+
+        setUserState(state);
+    }, [user, pendingJoinRequests, expenseUsers]);
+
+    const computeButtonLabel = () => {
+        switch (userState) {
+            case UserState.AvailableAsGuest:
+                return "Add as Guest";
+            case UserState.AvailableToInvite:
+                return "Invite";
+            case UserState.Uninvitable:
+                return "Uninvite";
+            case UserState.Invited:
+                return "Invited";
+            case UserState.Joined:
+                return "";
+        }
+    };
 
     return (
         <View style={styles.itemContainer}>
@@ -50,28 +89,32 @@ export const UserInviteListItem = ({
                     {!expenseUsers.map((u) => u.id).includes(user.id) && !!user.phoneNumber && (
                         <Chip
                             activeOpacity={0.5}
-                            disabled={pendingUserIds.includes(user.id)}
+                            disabled={userState === UserState.Invited}
                             labelStyle={[
                                 styles.buttonLabel,
                                 {
-                                    color: pendingUserIds.includes(user.id)
-                                        ? _colorConfiguration.greyFont
-                                        : _colorConfiguration.black,
+                                    color:
+                                        userState === UserState.Invited
+                                            ? _colorConfiguration.greyFont
+                                            : _colorConfiguration.black,
                                 },
                             ]}
                             containerStyle={{
                                 width: 120,
-                                borderColor: pendingUserIds.includes(user.id)
-                                    ? _colorConfiguration.primaryTranslucentLight
-                                    : _colorConfiguration.primary,
+                                borderColor:
+                                    userState === UserState.Invited || userState === UserState.Uninvitable
+                                        ? _colorConfiguration.primaryTranslucentLight
+                                        : _colorConfiguration.primary,
                             }}
                             backgroundColor={
-                                pendingUserIds.includes(user.id)
+                                userState === UserState.Invited || userState === UserState.Uninvitable
                                     ? _colorConfiguration.primaryTranslucentLight
                                     : _colorConfiguration.primary
                             }
-                            label={computeButtonLabel(user)}
-                            onPress={() => onInviteUser(user)}
+                            label={computeButtonLabel()}
+                            onPress={() =>
+                                userState === UserState.Uninvitable ? onUninviteUser(user) : onInviteUser(user)
+                            }
                         />
                     )}
 
