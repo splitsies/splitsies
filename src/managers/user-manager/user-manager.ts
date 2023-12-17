@@ -159,15 +159,15 @@ export class UserManager extends BaseManager implements IUserManager {
                 }
 
                 const number = c.phoneNumbers[0].number.replace(/\D/g, "").slice(-10);
-                if (!c.phoneNumbers[0] || visitedNumbers.has(number)) {
+                if (visitedNumbers.has(number)) {
                     continue;
                 }
 
                 visitedNumbers.add(number);
 
                 const accountPhoneNumber = c.phoneNumbers
-                    .map((n) => n.number.replace(/\D/g, ""))
-                    .find((n) => keyedByNumber.has(n.slice(-10)));
+                    .map((n) => n.number.replace(/\D/g, "").slice(-10))
+                    .find((n) => keyedByNumber.has(n));
 
                 if (accountPhoneNumber && keyedByNumber.has(accountPhoneNumber)) {
                     const user = keyedByNumber.get(accountPhoneNumber);
