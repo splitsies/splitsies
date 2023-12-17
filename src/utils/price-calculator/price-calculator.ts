@@ -26,7 +26,7 @@ export class PriceCalculator {
                     new ExpenseItem(
                         i.id,
                         i.name,
-                        i.price * (personalExpense.subtotal / (expense.total === 0 ? 1 : expense.total)),
+                        i.price * (personalExpense.subtotal / (expense.subtotal === 0 ? 1 : expense.subtotal)),
                         i.owners,
                         i.isProportional,
                     ),

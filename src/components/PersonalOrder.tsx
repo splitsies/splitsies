@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, Alert, ScrollView } from "react-native";
 import { IExpense, IExpenseItem, IExpenseUserDetails, ExpenseItem as ExpenseItemModel } from "@splitsies/shared-models";
 import { Text, View } from "react-native-ui-lib/core";
@@ -74,12 +74,15 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
     return (
         <View style={{ ...styles.container, ...style }}>
             {renderHeader()}
-            <ScrollView style={{ width: "100%" }}>
+            <ScrollView style={styles.orderContainer}>
                 {personalExpense.items
                     .filter((i) => !i.isProportional)
                     .map((item) => (
                         <ExpenseItem item={item} key={item.id} onPress={() => {}} />
                     ))}
+            </ScrollView>
+
+            <View style={{ borderTopWidth: 0.5, borderTopColor: _colorConfiguration.greyFont, paddingTop: 5 }}>
                 <ExpenseItem item={subtotalItem} key={"subtotal"} onPress={() => {}} />
                 {personalExpense.items
                     .filter((i) => i.isProportional)
@@ -87,7 +90,7 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                         <ExpenseItem item={item} key={item.id} onPress={() => {}} />
                     ))}
                 <ExpenseItem item={totalItem} key={"total"} onPress={() => {}} />
-            </ScrollView>
+            </View>
             <View style={styles.buttonContainer}>
                 <Button body bg-primary borderless style={styles.button} label="Pay" onPress={onPayPress} />
                 <Button body bg-primary borderless style={styles.button} label="Request" onPress={onRequestPress} />
@@ -105,6 +108,7 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         borderWidth: 0.5,
         padding: 15,
+        display: "flex",
         borderColor: _colorConfiguration.black,
     },
     itemContainer: {
@@ -120,11 +124,11 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         width: "100%",
-        padding: 10,
+        padding: 5,
     },
     orderContainer: {
-        flex: 2,
-        height: "100%",
+        flexGrow: 1,
+        flex: 1,
         width: "100%",
     },
     individualItemContainer: {
@@ -138,12 +142,10 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "flex-end",
         width: "100%",
-        flex: 1,
     },
     button: {
         width: 100,
     },
-
     iconContainer: {
         overflow: "visible",
         alignItems: "center",
