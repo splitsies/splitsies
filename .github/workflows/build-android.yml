@@ -1,0 +1,44 @@
+
+name: Build Android dev-pr
+
+on:
+  pull_request:
+    branches:
+      - main
+      
+jobs:
+  install-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install npm dependencies
+        run: |
+          npm install
+  build-android:
+    needs: install-and-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install npm dependencies
+        run: |
+          npm install
+
+      - name: Build Android .apk
+        run: |
+          cd android && ./gradlew assembleDevprRelease
+
+      - name: Build Android .aab
+        run: |
+          ./gradlew bundleDevprRelease
+
+      - name: Upload .apk Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: app-devpr-release.apk
+          path: android/app/build/outputs/apk/devpr/release/
+
+      - name: Upload .aab Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: app-devpr-release.aab
+          path: android/app/build/outputs/bundle/devprRelease/release/
