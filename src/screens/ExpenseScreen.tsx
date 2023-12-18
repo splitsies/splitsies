@@ -51,13 +51,13 @@ export const ExpenseScreen = ({ navigation }: Props) => {
 
         subscription.add(
             _expenseManager.currentExpenseUsers$.subscribe({
-                next: (users) => setExpenseUsers(users),
+                next: (users) => setExpenseUsers([...users]),
             }),
         );
 
         subscription.add(
             _expenseManager.currentExpenseJoinRequests$.subscribe({
-                next: (requests) => setPendingJoinRequests(requests),
+                next: (requests) => setPendingJoinRequests([...requests]),
             }),
         );
 
