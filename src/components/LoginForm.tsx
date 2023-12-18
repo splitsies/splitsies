@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Dimensions, StyleSheet } from "react-native";
-import { Icon, TextField } from "react-native-ui-lib";
+import { Dimensions, Keyboard, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import { Text, View, Button } from "react-native-ui-lib/core";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
@@ -21,60 +20,62 @@ export const LoginForm = ({ onLoginClicked, onSignUpClicked, validationError }: 
     const [password, setPassword] = useState<string>("");
 
     return (
-        <View style={styles.container}>
-            <SplitsiesTitle center style={{ marginBottom: 20 }} />
+        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+            <View style={styles.container}>
+                <SplitsiesTitle center style={{ marginBottom: 20 }} />
 
-            <View flex-2 style={styles.formContainer}>
-                <SpTextInput
-                    autoCapitalize="none"
-                    value={email}
-                    onChangeText={setEmail}
-                    placeholder={"Email"}
-                    retainValidationSpace
-                    body
-                />
+                <View flex-2 style={styles.formContainer}>
+                    <SpTextInput
+                        autoCapitalize="none"
+                        value={email}
+                        onChangeText={setEmail}
+                        placeholder={"Email"}
+                        retainValidationSpace
+                        body
+                    />
 
-                <SpTextInput
-                    autoCapitalize="none"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                    enableErrors
-                    placeholder={"Password"}
-                    body
-                />
+                    <SpTextInput
+                        autoCapitalize="none"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry
+                        enableErrors
+                        placeholder={"Password"}
+                        body
+                    />
 
-                {!!validationError && (
-                    <Text subtext danger style={{ width: _dimensions.width * 0.7 }}>
-                        {validationError}
-                    </Text>
-                )}
+                    {!!validationError && (
+                        <Text subtext danger style={{ width: _dimensions.width * 0.7 }}>
+                            {validationError}
+                        </Text>
+                    )}
 
-                <Button
-                    label="Don't have an account? Sign up"
-                    link
-                    body
-                    bg-primary
-                    size="small"
-                    marginT-15
-                    onPress={() => onSignUpClicked()}
-                />
+                    <Button
+                        label="Don't have an account? Sign up"
+                        link
+                        body
+                        bg-primary
+                        size="small"
+                        marginT-15
+                        onPress={() => onSignUpClicked()}
+                    />
+                </View>
+
+                <View flex-2 centerH>
+                    <Button
+                        style={styles.input}
+                        disabled={!email || !password}
+                        body
+                        marginT-15
+                        label="Log in"
+                        onPress={() => onLoginClicked(email, password)}
+                        bg-primary
+                        size="large"
+                        enableShadow
+                    />
+                </View>
             </View>
-
-            <View flex-2 centerH>
-                <Button
-                    style={styles.input}
-                    disabled={!email || !password}
-                    body
-                    marginT-15
-                    label="Log in"
-                    onPress={() => onLoginClicked(email, password)}
-                    bg-primary
-                    size="large"
-                    enableShadow
-                />
-            </View>
-        </View>
+        </TouchableWithoutFeedback>
     );
 };
 

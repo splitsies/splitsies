@@ -39,7 +39,7 @@ export const LoginDetailsForm = ({ userDetails, onComplete }: Props) => {
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
             <View style={{ display: "flex", flexGrow: 1 }}>
                 <View style={{ display: "flex", flex: 2, rowGap: 10, justifyContent: "center" }}>
-                    <Text heading>About You</Text>
+                    <Text heading>Login Details</Text>
 
                     <KeyboardAvoidingView>
                         <SpTextInput
