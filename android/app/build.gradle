@@ -74,14 +74,14 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.splitsies"
+    namespace "com.kchen.Splitsies"
     defaultConfig {
-        applicationId "com.splitsies"
+        applicationId "com.kchen.Splitsies"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
-        resValue "string", "build_config_package", "com.splitsies"
+        resValue "string", "build_config_package", "com.kchen.Splitsies"
     }
     signingConfigs {
         debug {
