@@ -3,6 +3,7 @@ import { IApiConfig } from "./api-config-interface";
 import localConfig from "../../../config/api-local.config.json";
 import devPrConfig from "../../../config/api-dev-pr.config.json";
 import stagingConfig from "../../../config/api-staging.config.json";
+import productionConfig from "../../../config/api-production.config.json";
 import Config from "react-native-config";
 
 @injectable()
@@ -28,6 +29,8 @@ export class ApiConfig implements IApiConfig {
                 return devPrConfig;
             case "staging":
                 return stagingConfig;
+            case "production":
+                return productionConfig;
             default:
                 return localConfig;
         }

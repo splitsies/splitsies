@@ -1,0 +1,5 @@
+{
+    "expense": "https://vrjjpfvylf.execute-api.us-east-1.amazonaws.com/production/expenses",
+    "expenseSocket": "wss://9ldl0hgd5a.execute-api.us-east-1.amazonaws.com/production",
+    "users": "https://i7dnchw88d.execute-api.us-east-1.amazonaws.com/production/users"
+}
