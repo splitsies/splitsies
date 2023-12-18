@@ -113,6 +113,10 @@ android {
             dimension "environment"
             versionNameSuffix '-dev-pr'
         }
+        staging {
+            dimension "environment"
+            versionNameSuffix '-staging'
+        }
     }
 }
 
@@ -139,7 +143,8 @@ dependencies {
 
 project.ext.envConfigFiles = [
 local: "./src/.env/.env.local",
-devpr: "./src/.env/.env.dev-pr"
+devpr: "./src/.env/.env.dev-pr",
+staging: "./src/.env/.env.staging"
 ]
 
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"

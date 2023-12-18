@@ -1,0 +1,5 @@
+{
+    "expense": "https://o2zb363ibd.execute-api.us-east-1.amazonaws.com/staging/expenses",
+    "expenseSocket": "wss://jpusln0lyf.execute-api.us-east-1.amazonaws.com/staging",
+    "users": "https://r540oi1tbi.execute-api.us-east-1.amazonaws.com/staging/users"
+}

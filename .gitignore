@@ -67,3 +67,4 @@ yarn-error.log
 
 # generated .env
 .env
+!.env/
