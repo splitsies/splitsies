@@ -99,6 +99,7 @@ export const PeopleModal = ({
                         <TextField
                             body
                             placeholder="Search"
+                            placeholderTextColor={_colorConfiguration.greyFont}
                             value={searchFilter}
                             style={styles.textInput}
                             onChangeText={setSearchFilter}

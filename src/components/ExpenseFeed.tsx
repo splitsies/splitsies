@@ -26,25 +26,41 @@ export const ExpenseFeed = ({ isPendingData, expenses, userName, onExpenseClick,
         return <ActivityIndicator size="large" />;
     }
 
-    if (expenses.length === 0) {
-        return (
-            <View style={styles.welcomeMessageContainer}>
-                <ScrollView
-                    contentContainerStyle={styles.welcomeMessageContainer}
-                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
-                >
-                    <View style={styles.messageBox}>
-                        <Text subheading>Welcome, {userName}!</Text>
-                    </View>
-                </ScrollView>
-                <View style={styles.hintBox}>
-                    <Text hint>Tap to scan a receipt</Text>
-                </View>
-            </View>
-        );
-    }
+    // if (expenses.length === 0) {
+    //     return (
+    //         <View style={styles.welcomeMessageContainer}>
+    //             <ScrollView
+    //                 contentContainerStyle={styles.welcomeMessageContainer}
+    //                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
+    //             >
+    //                 <View style={styles.messageBox}>
+    //                     <Text subheading>Welcome, {userName}!</Text>
+    //                 </View>
+    //             </ScrollView>
+    //             <View style={styles.hintBox}>
+    //                 <Text hint>Tap to scan a receipt</Text>
+    //             </View>
+    //         </View>
+    //     );
+    // }
 
-    return (
+    // console.log("returning feed");
+
+    return expenses.length === 0 ? (
+        <View style={styles.welcomeMessageContainer}>
+            <ScrollView
+                contentContainerStyle={styles.welcomeMessageContainer}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
+            >
+                <View style={styles.messageBox}>
+                    <Text subheading>Welcome, {userName}!</Text>
+                </View>
+            </ScrollView>
+            <View style={styles.hintBox}>
+                <Text hint>Tap to scan a receipt</Text>
+            </View>
+        </View>
+    ) : (
         <View style={styles.listContainer}>
             <FlatList
                 contentContainerStyle={{ paddingBottom: 40 }}
@@ -72,6 +88,7 @@ const styles = StyleSheet.create({
     },
     listContainer: {
         display: "flex",
+        flexGrow: 1,
         flex: 1,
     },
     messageBox: {
