@@ -115,6 +115,10 @@ android {
             dimension "environment"
             versionNameSuffix '-local'
         }
+        lan {
+            dimension "environment"
+            versionNameSuffix '-lan'
+        }
         devpr {
             dimension "environment"
             versionNameSuffix '-dev-pr'
@@ -152,6 +156,7 @@ dependencies {
 
 project.ext.envConfigFiles = [
 local: "./src/.env/.env.local",
+lan: "./src/.env/.env.lan",
 devpr: "./src/.env/.env.dev-pr",
 staging: "./src/.env/.env.staging",
 production: "./src/.env/.env.production"

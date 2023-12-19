@@ -68,3 +68,6 @@ yarn-error.log
 # generated .env
 .env
 !.env/
+
+# LAN config ignored since the IP address isn't static
+**/config/api-lan.config.json

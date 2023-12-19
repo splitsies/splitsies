@@ -5,6 +5,8 @@
   "scripts": {
     "android": "npm run android-emulator-ports && react-native run-android --mode localDebug",
     "ios": "react-native run-ios",
+    "android:lan": "react-native run-android --mode lanDebug",
+    "ios:lan": "react-native run-ios --scheme \"Splitsies LAN\"",
     "android:dev-pr": "react-native run-android --mode devprDebug",
     "ios:dev-pr": "react-native run-ios --scheme \"Splitsies dev-pr\"",
     "build-android:dev-pr": "cd android && ENVFILE=.env.dev-pr ./gradlew assembleRelease",

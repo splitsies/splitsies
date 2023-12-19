@@ -4,6 +4,7 @@ import localConfig from "../../../config/api-local.config.json";
 import devPrConfig from "../../../config/api-dev-pr.config.json";
 import stagingConfig from "../../../config/api-staging.config.json";
 import productionConfig from "../../../config/api-production.config.json";
+
 import Config from "react-native-config";
 
 @injectable()
@@ -25,6 +26,11 @@ export class ApiConfig implements IApiConfig {
         switch (Config.STAGE) {
             case "local":
                 return localConfig;
+            case "lan":
+                // require this one as a special case - since the file isn't in 
+                // git, it may not exist
+                const c = require("../../../config/api-lan.config.json");
+                return c;
             case "dev-pr":
                 return devPrConfig;
             case "staging":
