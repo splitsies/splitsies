@@ -10,10 +10,25 @@ From official React Native docs
 1. Grab the `com.kchen.Splitsies.keystore` file and drop it into the `android/app/` folder
 
 
-2. The keystore requires a password, which is defined outside the repository for security reasons. Follow the instructions in <href>https://reactnative.dev/docs/signed-apk-android#setting-up-gradle-variables</href> for the `~/.gradle/gradle.properties` with the following content:
-```
-SPLITSIES_UPLOAD_STORE_FILE=com.kchen.Splitsies.keystore
-SPLITSIES_UPLOAD_KEY_ALIAS=splitsies-play-store-key
-SPLITSIES_UPLOAD_STORE_PASSWORD=********
-SPLITSIES_UPLOAD_KEY_PASSWORD=********
-```
+1. The keystore requires a password, which is defined outside the repository for security reasons. Follow the instructions in <href>https://reactnative.dev/docs/signed-apk-android#setting-up-gradle-variables</href> for the `~/.gradle/gradle.properties` with the following content:
+    ```
+    SPLITSIES_UPLOAD_STORE_FILE=com.kchen.Splitsies.keystore
+    SPLITSIES_UPLOAD_KEY_ALIAS=splitsies-play-store-key
+    SPLITSIES_UPLOAD_STORE_PASSWORD=********
+    SPLITSIES_UPLOAD_KEY_PASSWORD=********
+    ```
+
+## Github Actions
+The code signing parameters are set as secrets on the GH repo and are required for the workflow to successfully sign a release build. The two parameters are:
+
+1. <strong>SIGNING_KEYSTORE</strong>
+
+    The base64 encoded of `com.kchen.Splitsies.keystore`. Can be generated on macOS with 
+    ```
+    base64 --i path/to/com.kchen.Splitsies.keystore --o ./keystore_base64.txt
+    ```
+    and setting the encoded base64 output as the GH secret.
+
+1. <strong>GRADLE_PROPERTIES</strong>
+
+    The gradle properties setup in `~/.gradle/gradle.properties`. The workflow will set these up in the `$GITHUB_ENV` before building.

@@ -31,19 +31,19 @@ jobs:
             echo "GRADLE_USER_HOME=${HOME}/.gradle" >> $GITHUB_ENV
             echo "${GRADLE_PROPERTIES}" > ~/.gradle/gradle.properties
 
-      - name: Build .apk
-        run: |
-          cd android && ./gradlew assembleDevprRelease
+    #   - name: Build .apk
+    #     run: |
+    #       cd android && ./gradlew assembleDevprRelease
 
       - name: Build .aab
         run: |
-          ./gradlew bundleDevprRelease
+          cd android && ./gradlew bundleDevprRelease
 
-      - name: Upload .apk Artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: app-devpr-release.apk
-          path: android/app/build/outputs/apk/devpr/release/
+    #   - name: Upload .apk Artifact
+    #     uses: actions/upload-artifact@v1
+    #     with:
+    #       name: app-devpr-release.apk
+    #       path: android/app/build/outputs/apk/devpr/release/
 
       - name: Upload .aab Artifact
         uses: actions/upload-artifact@v1
