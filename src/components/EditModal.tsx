@@ -62,6 +62,7 @@ export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, pr
                             <TextField
                                 body
                                 placeholder="Name"
+                                placeholderTextColor={_colorConfiguration.greyFont}
                                 value={name}
                                 onChangeText={(text) => setName(text)}
                                 style={styles.textInput}
@@ -73,6 +74,7 @@ export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, pr
                                 ref={priceField}
                                 caretHidden
                                 placeholder="Price"
+                                placeholderTextColor={_colorConfiguration.greyFont}
                                 inputMode="numeric"
                                 onChangeText={(text) => onPriceChange(text)}
                                 style={[styles.textInput, { fontSize: 15, fontFamily: "Avenir-Roman" }]}

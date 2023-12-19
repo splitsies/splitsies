@@ -33,7 +33,7 @@ export const HomeScreen = ({ navigation }: BottomTabScreenProps<RootStackScreenP
         const subscription = new Subscription();
         subscription.add(
             _expenseManager.expenses$.subscribe({
-                next: (data) => setExpenses(data),
+                next: (data) => setExpenses([...data]),
             }),
         );
 
@@ -88,8 +88,12 @@ export const HomeScreen = ({ navigation }: BottomTabScreenProps<RootStackScreenP
         setIsPendingConnection(false);
     };
 
-    const onFeedClick = (): void => {
+    const onFeedClick = async (): Promise<void> => {
         setCurrentTab("feed");
+
+        setIsPendingConnection(true);
+        await _expenseManager.requestForUser();
+        setIsPendingConnection(false);
     };
 
     const onApproveRequest = async (joinRequest: IExpenseJoinRequestDto): Promise<void> => {

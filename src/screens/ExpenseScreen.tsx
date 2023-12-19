@@ -217,7 +217,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                             <View>
                                 <ListSeparator />
                                 <View style={{ width: "100%", marginVertical: 20, alignItems: "center" }}>
-                                    <Icon assetName="add" size={25} />
+                                    <Icon assetName="add" size={25} tintColor="black" />
                                 </View>
                             </View>
                         </TouchableOpacity>
