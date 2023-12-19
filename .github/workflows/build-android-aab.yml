@@ -1,14 +1,13 @@
 
-name: Build Android aab dev-pr
+name: Build Android Release aab 
 
 on:
-  pull_request:
-    branches:
-      - main
-      
+    workflow_dispatch
+
 jobs:
   build-android:
     runs-on: ubuntu-latest
+    environment: production
     steps:
       - uses: actions/checkout@v3
       - name: Install npm dependencies
@@ -33,10 +32,10 @@ jobs:
 
       - name: Build .aab
         run: |
-          cd android && ./gradlew bundleDevprRelease
+          cd android && ./gradlew bundleProductionRelease
 
       - name: Upload .aab Artifact
         uses: actions/upload-artifact@v1
         with:
-          name: app-devpr-release.aab
-          path: android/app/build/outputs/bundle/devprRelease/
+          name: app-production-release.aab
+          path: android/app/build/outputs/bundle/productionRelease/

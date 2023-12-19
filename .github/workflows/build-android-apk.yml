@@ -1,11 +1,9 @@
 
-name: Build Android apk dev-pr
+name: Build Android Release apk
 
 on:
-  pull_request:
-    branches:
-      - main
-      
+    workflow_dispatch
+
 jobs:
   build-android:
     runs-on: ubuntu-latest
@@ -33,10 +31,10 @@ jobs:
 
       - name: Build .apk
         run: |
-          cd android && ./gradlew assembleDevprRelease
+          cd android && ./gradlew assembleProductionRelease
 
       - name: Upload .apk Artifact
         uses: actions/upload-artifact@v1
         with:
-          name: app-devpr-release.apk
-          path: android/app/build/outputs/apk/devpr/release/
+          name: app-production-release.apk
+          path: android/app/build/outputs/apk/production/release/
