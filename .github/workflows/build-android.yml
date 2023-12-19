@@ -7,15 +7,7 @@ on:
       - main
       
 jobs:
-  install-and-test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Install npm dependencies
-        run: |
-          npm install
   build-android:
-    needs: install-and-test
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -23,11 +15,27 @@ jobs:
         run: |
           npm install
 
-      - name: Build Android .apk
+      - name: Decode Keystore
+        env:
+            ENCODED_STRING: ${{ secrets.SIGNING_KEYSTORE }}
+ 
+        run: |
+           echo $ENCODED_STRING > keystore-b64.txt
+           base64 -d keystore-b64.txt > ./android/app/com.kchen.Splitsies.keystore
+
+      - name: Restore gradle.properties
+        env:
+            GRADLE_PROPERTIES: ${{ secrets.GRADLE_PROPERTIES }}
+        run: |
+            mkdir -p ~/.gradle/
+            echo "GRADLE_USER_HOME=${HOME}/.gradle" >> $GITHUB_ENV
+            echo "${GRADLE_PROPERTIES}" > ~/.gradle/gradle.properties
+
+      - name: Build .apk
         run: |
           cd android && ./gradlew assembleDevprRelease
 
-      - name: Build Android .aab
+      - name: Build .aab
         run: |
           ./gradlew bundleDevprRelease
 
