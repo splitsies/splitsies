@@ -1,5 +1,5 @@
 
-name: Build Android dev-pr
+name: Build Android apk dev-pr
 
 on:
   pull_request:
@@ -31,22 +31,12 @@ jobs:
             echo "GRADLE_USER_HOME=${HOME}/.gradle" >> $GITHUB_ENV
             echo "${GRADLE_PROPERTIES}" > ~/.gradle/gradle.properties
 
-    #   - name: Build .apk
-    #     run: |
-    #       cd android && ./gradlew assembleDevprRelease
-
-      - name: Build .aab
+      - name: Build .apk
         run: |
-          cd android && ./gradlew bundleDevprRelease
+          cd android && ./gradlew assembleDevprRelease
 
-    #   - name: Upload .apk Artifact
-    #     uses: actions/upload-artifact@v1
-    #     with:
-    #       name: app-devpr-release.apk
-    #       path: android/app/build/outputs/apk/devpr/release/
-
-      - name: Upload .aab Artifact
+      - name: Upload .apk Artifact
         uses: actions/upload-artifact@v1
         with:
-          name: app-devpr-release.aab
-          path: android/app/build/outputs/bundle/devprRelease/release/
+          name: app-devpr-release.apk
+          path: android/app/build/outputs/apk/devpr/release/
