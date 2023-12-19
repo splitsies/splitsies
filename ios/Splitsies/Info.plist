@@ -41,6 +41,8 @@
 	<string>$(PRODUCT_NAME) Users lookup</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>$(PRODUCT_NAME) needs access to your Photos.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>SFProDisplay-Black.otf</string>
@@ -116,7 +118,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-    <key>NSPhotoLibraryUsageDescription</key>
-    <string>$(PRODUCT_NAME) needs access to your Photos.</string>
 </dict>
 </plist>

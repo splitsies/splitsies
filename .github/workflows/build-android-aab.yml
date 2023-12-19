@@ -1,0 +1,41 @@
+
+name: Build Android Release aab 
+
+on:
+    workflow_dispatch
+
+jobs:
+  build-android:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install npm dependencies
+        run: |
+          npm install
+
+      - name: Decode Keystore
+        env:
+            ENCODED_STRING: ${{ secrets.SIGNING_KEYSTORE }}
+ 
+        run: |
+           echo $ENCODED_STRING > keystore-b64.txt
+           base64 -d keystore-b64.txt > ./android/app/com.kchen.Splitsies.keystore
+
+      - name: Restore gradle.properties
+        env:
+            GRADLE_PROPERTIES: ${{ secrets.GRADLE_PROPERTIES }}
+        run: |
+            mkdir -p ~/.gradle/
+            echo "GRADLE_USER_HOME=${HOME}/.gradle" >> $GITHUB_ENV
+            echo "${GRADLE_PROPERTIES}" > ~/.gradle/gradle.properties
+
+      - name: Build .aab
+        run: |
+          cd android && ./gradlew bundleProductionRelease
+
+      - name: Upload .aab Artifact
+        uses: actions/upload-artifact@v1
+        with:
+          name: app-production-release.aab
+          path: android/app/build/outputs/bundle/productionRelease/

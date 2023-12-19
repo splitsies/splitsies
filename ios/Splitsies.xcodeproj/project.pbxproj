@@ -721,6 +721,7 @@
 				DEVELOPMENT_TEAM = 6KH87N33A6;
 				ENABLE_BITCODE = NO;
 				INFOPLIST_FILE = Splitsies/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Splitsies;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -731,7 +732,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kchen.Splitsies;
 				PRODUCT_NAME = Splitsies;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -748,6 +749,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = 6KH87N33A6;
 				INFOPLIST_FILE = Splitsies/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Splitsies;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -758,7 +760,7 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_BUNDLE_IDENTIFIER = com.kchen.Splitsies;
 				PRODUCT_NAME = Splitsies;
 				SWIFT_VERSION = 5.0;
 				VERSIONING_SYSTEM = "apple-generic";

@@ -74,14 +74,14 @@ android {
 
     compileSdkVersion rootProject.ext.compileSdkVersion
 
-    namespace "com.splitsies"
+    namespace "com.kchen.Splitsies"
     defaultConfig {
-        applicationId "com.splitsies"
+        applicationId "com.kchen.Splitsies"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0"
-        resValue "string", "build_config_package", "com.splitsies"
+        resValue "string", "build_config_package", "com.kchen.Splitsies"
     }
     signingConfigs {
         debug {
@@ -90,15 +90,21 @@ android {
             keyAlias 'androiddebugkey'
             keyPassword 'android'
         }
+        release {
+            if (project.hasProperty('SPLITSIES_UPLOAD_STORE_FILE')) {
+                storeFile file(SPLITSIES_UPLOAD_STORE_FILE)
+                storePassword SPLITSIES_UPLOAD_STORE_PASSWORD
+                keyAlias SPLITSIES_UPLOAD_KEY_ALIAS
+                keyPassword SPLITSIES_UPLOAD_KEY_PASSWORD
+            }
+        }
     }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
         }
         release {
-            // Caution! In production, you need to generate your own keystore file.
-            // see https://reactnative.dev/docs/signed-apk-android.
-            signingConfig signingConfigs.debug
+            signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }

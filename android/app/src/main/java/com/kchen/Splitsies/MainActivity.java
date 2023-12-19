@@ -1,4 +1,4 @@
-package com.splitsies;
+package com.kchen.Splitsies;
 
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;
