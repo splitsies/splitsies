@@ -38,5 +38,5 @@ jobs:
       - name: Upload .apk Artifact
         uses: actions/upload-artifact@v1
         with:
-          name: app-devPr-release.apk
-          path: android/app/build/outputs/apk/devPr/release/
+          name: app-devpr-release.apk
+          path: android/app/build/outputs/apk/devpr/release/
