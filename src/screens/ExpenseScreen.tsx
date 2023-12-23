@@ -4,8 +4,8 @@ import { FlatList, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { lazyInject } from "../utils/lazy-inject";
 import { RootStackScreenParams } from "./root-stack-screen-params";
-import { Subscription, filter } from "rxjs";
-import { IExpense, IExpenseItem, IExpenseJoinRequest, IExpenseUserDetails, IUserDto } from "@splitsies/shared-models";
+import { Observable, filter } from "rxjs";
+import { IExpense, IExpenseItem, IExpenseUserDetails } from "@splitsies/shared-models";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { View, TouchableOpacity, Text } from "react-native-ui-lib/core";
 import { ActionBar, Icon } from "react-native-ui-lib";
@@ -21,6 +21,7 @@ import { ListSeparator } from "../components/ListSeparator";
 import { People } from "../components/People";
 import { ExpenseFooter } from "../components/ExpenseFooter";
 import { PeopleFooter } from "../components/PeopleFooter";
+import { useObservable } from "../hooks/use-observable";
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -29,41 +30,23 @@ const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration)
 type Props = NativeStackScreenProps<RootStackScreenParams, "ExpenseScreen">;
 
 export const ExpenseScreen = ({ navigation }: Props) => {
-    const [expense, setExpense] = useState<IExpense>(_expenseManager.currentExpense!);
-    const [expenseUsers, setExpenseUsers] = useState<IExpenseUserDetails[]>([]);
+    const expense = useObservable<IExpense>(
+        _expenseManager.currentExpense$.pipe(filter((e) => e != null)) as Observable<IExpense>,
+        _expenseManager.currentExpense!
+    );
+    const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, []);
+    const pendingJoinRequests = useObservable(_expenseManager.currentExpenseJoinRequests$, []);
+
     const [selectedItem, setSelectedItem] = useState<IExpenseItem | null>(null);
     const [editingTitle, setEditingTitle] = useState<boolean>(false);
     const [isSelecting, setIsSelecting] = useState<boolean>(false);
     const [isAddingItem, setIsAddingItem] = useState<boolean>(false);
     const [inProgressSelections, setInProgressSelections] = useState<string[]>([]);
     const [isSelectingPeople, setIsSelectingPeople] = useState<boolean>(false);
-    const [pendingJoinRequests, setPendingJoinRequests] = useState<IExpenseJoinRequest[]>([]);
     const [currentTab, setCurrentTab] = useState<"expense" | "people">("expense");
 
     useInitialize(() => {
-        const subscription = new Subscription();
-
-        subscription.add(
-            _expenseManager.currentExpense$.pipe(filter((e) => !!e)).subscribe({
-                next: (expense) => setExpense(expense!),
-            }),
-        );
-
-        subscription.add(
-            _expenseManager.currentExpenseUsers$.subscribe({
-                next: (users) => setExpenseUsers([...users]),
-            }),
-        );
-
-        subscription.add(
-            _expenseManager.currentExpenseJoinRequests$.subscribe({
-                next: (requests) => setPendingJoinRequests([...requests]),
-            }),
-        );
-
         void _expenseManager.requestUsersForExpense(expense.id);
-
-        return () => subscription.unsubscribe();
     });
 
     const onBackPress = useCallback(() => {

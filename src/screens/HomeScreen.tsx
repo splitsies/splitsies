@@ -15,6 +15,8 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { ExpenseFeed } from "../components/ExpenseFeed";
 import { RequestsFeed } from "../components/RequestsFeed";
 import { SplitsiesTitle } from "../components/SplitsiesTitle";
+import { useObservable } from "../hooks/use-observable";
+import { useObservableReducer } from "../hooks/use-observable-reducer";
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -22,43 +24,12 @@ const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration)
 const _requestConfiguration = lazyInject<IRequestConfiguration>(IRequestConfiguration);
 
 export const HomeScreen = ({ navigation }: BottomTabScreenProps<RootStackScreenParams, "HomeScreen">) => {
-    const [expenses, setExpenses] = useState<IExpensePayload[]>(_expenseManager.expenses);
-    const [userName, setUserName] = useState<string>(_userManager.user?.user.givenName ?? "");
-    const [isPendingData, setIsPendingData] = useState<boolean>(_expenseManager.isPendingExpenseData);
     const [isPendingConnection, setIsPendingConnection] = useState<boolean>(false);
     const [currentTab, setCurrentTab] = useState<"feed" | "requests">("feed");
-    const [joinRequests, setJoinRequests] = useState<IExpenseJoinRequestDto[]>([]);
-
-    useInitialize(() => {
-        const subscription = new Subscription();
-        subscription.add(
-            _expenseManager.expenses$.subscribe({
-                next: (data) => setExpenses([...data]),
-            }),
-        );
-
-        subscription.add(
-            _expenseManager.isPendingExpenseData$.subscribe({
-                next: (value) => setIsPendingData(value),
-            }),
-        );
-
-        subscription.add(
-            _userManager.user$.subscribe({
-                next: (user) => setUserName(user?.user.givenName ?? ""),
-            }),
-        );
-
-        subscription.add(
-            _expenseManager.expenseJoinRequests$.subscribe({
-                next: (requests) => {
-                    setJoinRequests([...requests]);
-                },
-            }),
-        );
-
-        return () => subscription.unsubscribe();
-    });
+    const expenses = useObservable(_expenseManager.expenses$, _expenseManager.expenses);
+    const userName = useObservableReducer(_userManager.user$, null, (userCred) => userCred?.user.givenName)
+    const isPendingData = useObservable(_expenseManager.isPendingExpenseData$, _expenseManager.isPendingExpenseData);
+    const joinRequests = useObservable(_expenseManager.expenseJoinRequests$, []);
 
     const onExpenseClick = async (expenseId: string) => {
         if (isPendingConnection) return;

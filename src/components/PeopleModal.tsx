@@ -9,6 +9,7 @@ import { IExpenseJoinRequest, IExpenseUserDetails } from "@splitsies/shared-mode
 import { ListSeparator } from "./ListSeparator";
 import { AddGuestForm } from "./AddGuestForm";
 import { UserInviteListItem } from "./UserInviteListItem";
+import { useObservable } from "../hooks/use-observable";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -32,19 +33,14 @@ export const PeopleModal = ({
     onUserSelectionChanged,
     onRemoveRequest,
 }: Props) => {
-    const [contactUsers, setContactUsers] = useState<IExpenseUserDetails[]>([]);
+    const contactUsers = useObservable(_userManager.contactUsers$, []);
+
     const [addGuestVisible, setAddGuestVisible] = useState<boolean>(false);
     const [userViewFilter, setUserViewFilter] = useState<"contacts" | "guests">("contacts");
     const [searchFilter, setSearchFilter] = useState<string>("");
 
     useInitialize(() => {
-        const subscription = _userManager.contactUsers$.subscribe({
-            next: (users) => setContactUsers(users),
-        });
-
         void _userManager.requestUsersFromContacts();
-
-        return () => subscription.unsubscribe();
     });
 
     const onSaveGuest = async (name: string): Promise<void> => {
