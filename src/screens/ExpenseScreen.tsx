@@ -32,7 +32,7 @@ type Props = NativeStackScreenProps<RootStackScreenParams, "ExpenseScreen">;
 export const ExpenseScreen = ({ navigation }: Props) => {
     const expense = useObservable<IExpense>(
         _expenseManager.currentExpense$.pipe(filter((e) => e != null)) as Observable<IExpense>,
-        _expenseManager.currentExpense!
+        _expenseManager.currentExpense!,
     );
     const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, []);
     const pendingJoinRequests = useObservable(_expenseManager.currentExpenseJoinRequests$, []);
@@ -51,7 +51,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
 
     const onBackPress = useCallback(() => {
         _expenseManager.disconnectFromExpense();
-        navigation.goBack();
+        navigation.navigate("RootScreen");
     }, [_expenseManager, navigation]);
 
     const onTitleSave = ({ name }: EditResult) => {

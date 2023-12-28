@@ -7,17 +7,17 @@ export const useObservable = <T>(observable: Observable<T>, initialValue: T): T 
 
     useInitialize(() => {
         const subscription = observable.subscribe({
-            next: data => {
+            next: (data) => {
                 if (Array.isArray(data)) {
                     setValue(Array.from(data) as T);
                 } else {
-                    setValue(data)
+                    setValue(data);
                 }
-            }
+            },
         });
-            
+
         return () => subscription.unsubscribe();
     });
-    
+
     return value;
-}
+};

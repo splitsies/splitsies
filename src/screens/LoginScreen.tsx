@@ -38,7 +38,7 @@ export const LoginScreen = ({ navigation }: Props) => {
             return;
         }
 
-        navigation.navigate("HomeScreen");
+        navigation.navigate("RootScreen");
     };
 
     const onSignUpClicked = () => {

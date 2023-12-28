@@ -5,12 +5,15 @@ import { Text, View } from "react-native-ui-lib";
 type propTypes = {
     letter: string;
     style: { [key: string]: any };
+    labelStyle?: { [key: string]: any };
 };
 
-export const UserIcon = ({ letter, style }: propTypes) => {
+export const UserIcon = ({ letter, style, labelStyle }: propTypes) => {
     return (
         <View style={[styles.container, style]} bg-primary>
-            <Text letter>{letter}</Text>
+            <Text letter style={labelStyle}>
+                {letter}
+            </Text>
         </View>
     );
 };
