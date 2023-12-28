@@ -67,7 +67,6 @@ export const RootComponent = () => {
                     headerShown: false,
                     drawerPosition: "right",
                     drawerActiveTintColor: _colorConfiguration.black,
-                    drawerInactiveTintColor: _colorConfiguration.greyFont,
                     drawerActiveBackgroundColor: _colorConfiguration.primaryTranslucentLight,
                     drawerLabelStyle: _styleManager.typography.body,
                 }}

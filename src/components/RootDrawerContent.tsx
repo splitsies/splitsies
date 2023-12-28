@@ -18,7 +18,7 @@ export const RootDrawerContent = (props: any) => {
             </DrawerContentScrollView>
 
             <SafeAreaView style={styles.versionContainer}>
-                <Text subtext>
+                <Text hint>
                     {pkg.name} v{pkg.version}
                     {getEnvironmentSuffix()}
                 </Text>
