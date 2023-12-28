@@ -32,8 +32,7 @@ const styles = StyleSheet.create({
         display: "flex",
         height: "100%",
         width: "100%",
-        paddingTop: 0,
-        marginTop: 0,
+        paddingVertical: 20,
     },
     scrollView: {
         display: "flex",
