@@ -9,6 +9,16 @@ import { ThemeManager } from "react-native-ui-lib";
 export class StyleManager implements IStyleManager {
     private readonly colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 
+    readonly typography = {
+        heading: { fontSize: 36, fontWeight: "600", fontFamily: "Avenir-Heavy" },
+        subheading: { fontSize: 24, fontWeight: "400", fontFamily: "Avenir-Heavy" },
+        body: { fontSize: 15, fontFamily: "Avenir-Roman" },
+        subtext: { fontSize: 13, fontFamily: "Avenir-Roman" },
+        letter: { fontFamily: "ZillaSlab-Bold" },
+        letterHeading: { fontFamily: "ZillaSlab-Bold", fontSize: 36 },
+        hint: { fontSize: 14, fontFamily: "Avenir-Medium", color: this.colorConfiguration.greyFont },
+    };
+
     initialize(): void {
         Colors.loadColors({
             primary: this.colorConfiguration.primary,
@@ -16,15 +26,7 @@ export class StyleManager implements IStyleManager {
             hint: this.colorConfiguration.greyFont,
         });
 
-        Typography.loadTypographies({
-            heading: { fontSize: 36, fontWeight: "600", fontFamily: "Avenir-Heavy" },
-            subheading: { fontSize: 24, fontWeight: "400", fontFamily: "Avenir-Heavy" },
-            body: { fontSize: 15, fontFamily: "Avenir-Roman" },
-            subtext: { fontSize: 13, fontFamily: "Avenir-Roman" },
-            letter: { fontFamily: "ZillaSlab-Bold" },
-            letterHeading: { fontFamily: "ZillaSlab-Bold", fontSize: 36 },
-            hint: { fontSize: 14, fontFamily: "Avenir-Medium", color: this.colorConfiguration.greyFont },
-        });
+        Typography.loadTypographies(this.typography);
 
         ThemeManager.setComponentTheme("Text", {
             body: true,
@@ -49,6 +51,7 @@ export class StyleManager implements IStyleManager {
             edit: require("../../../assets/icons/edit.png"),
             capture: require("../../../assets/icons/capture.png"),
             add: require("../../../assets/icons/add.png"),
+            more: require("../../../assets/icons/more.png"),
         });
     }
 }

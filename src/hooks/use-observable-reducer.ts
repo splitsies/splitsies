@@ -7,11 +7,11 @@ export const useObservableReducer = <T, U>(observable: Observable<T>, initialVal
 
     useInitialize(() => {
         const subscription = observable.subscribe({
-            next: data => setValue(reducer(data))
+            next: (data) => setValue(reducer(data)),
         });
-            
+
         return () => subscription.unsubscribe();
     });
-    
+
     return value;
-}
+};
