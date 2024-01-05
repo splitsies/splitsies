@@ -1,6 +1,6 @@
-import React, { useCallback, useState } from "react";
+import React, { useRef, useState } from "react";
 import { FlatList, SafeAreaView, StyleSheet } from "react-native";
-import { ActionBar, Icon, Modal, TextField, TouchableOpacity, View } from "react-native-ui-lib";
+import { ActionBar, Chip, Icon, Modal, TextField, TouchableOpacity, View } from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { useInitialize } from "../hooks/use-initialize";
@@ -10,9 +10,18 @@ import { ListSeparator } from "./ListSeparator";
 import { AddGuestForm } from "./AddGuestForm";
 import { UserInviteListItem } from "./UserInviteListItem";
 import { useObservable } from "../hooks/use-observable";
+import { CameraView } from "./CameraView";
+import { IQrPayload } from "../models/qr-payload/qr-payload-interface";
+import { Code } from "react-native-vision-camera";
+import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
+import { IImageConfiguration } from "../models/configuration/image-config/image-configuration-interface";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _userManager = lazyInject<IUserManager>(IUserManager);
+const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
+const _imageConfiguration = lazyInject<IImageConfiguration>(IImageConfiguration);
+
+let timeoutId: NodeJS.Timeout;
 
 type Props = {
     visible: boolean;
@@ -36,8 +45,10 @@ export const PeopleModal = ({
     const contactUsers = useObservable(_userManager.contactUsers$, []);
 
     const [addGuestVisible, setAddGuestVisible] = useState<boolean>(false);
+    const [codeScannerVisible, setCodeScannerVisible] = useState<boolean>(false);
     const [userViewFilter, setUserViewFilter] = useState<"contacts" | "guests">("contacts");
     const [searchFilter, setSearchFilter] = useState<string>("");
+    const [scannedUser, setScannedUser] = useState<IQrPayload | null>(null);
 
     useInitialize(() => {
         void _userManager.requestUsersFromContacts();
@@ -48,10 +59,87 @@ export const PeopleModal = ({
         setAddGuestVisible(false);
     };
 
+    const onAddPress = (): void => {
+        switch (userViewFilter) {
+            case "contacts":
+                setCodeScannerVisible(!codeScannerVisible);
+                break;
+            case "guests":
+                setAddGuestVisible(true);
+                break;
+        }
+    };
+
+    const onScannedUserAdded = () => {
+        console.log({ scannedUser, expense: _expenseManager.currentExpense });
+        if (!scannedUser || !_expenseManager.currentExpense) return;
+
+        console.log(`adding ${scannedUser.id} to  ${_expenseManager.currentExpense.id}`);
+        _expenseManager.requestAddUserToExpense(scannedUser.id, _expenseManager.currentExpense.id);
+    };
+
+    const onCodeScanned = (codes: Code[]): void => {
+        try {
+            const rawPayload = codes.find((c) => {
+                const parsed = JSON.parse(c.value ?? "") as IQrPayload;
+                return parsed.id !== undefined && parsed.familyName !== undefined && parsed.givenName !== undefined;
+            });
+
+            if (!rawPayload) return;
+
+            if (timeoutId) {
+                clearTimeout(timeoutId);
+            }
+            timeoutId = setTimeout(() => setScannedUser(null), _imageConfiguration.qrCodeTimeoutMs);
+            const payload = JSON.parse(rawPayload.value!) as IQrPayload;
+            setScannedUser(payload);
+        } catch (_) {}
+    };
+
+    const loadIconName = (): string => {
+        if (userViewFilter === "guests") return "addUser";
+        if (!codeScannerVisible) return "qrAdd";
+        return "close";
+    };
+
     const loadContent = (): JSX.Element => {
-        return addGuestVisible ? (
-            <AddGuestForm onSave={onSaveGuest} onCancel={() => setAddGuestVisible(false)} />
-        ) : (
+        if (addGuestVisible) {
+            return <AddGuestForm onSave={onSaveGuest} onCancel={() => setAddGuestVisible(false)} />;
+        }
+
+        if (codeScannerVisible) {
+            return (
+                <CameraView onCodeScanned={onCodeScanned}>
+                    <View
+                        style={{
+                            display: "flex",
+                            flex: 1,
+                            flexGrow: 1,
+                            justifyContent: "flex-end",
+                            alignItems: "center",
+                            paddingBottom: 20,
+                        }}
+                    >
+                        {scannedUser && (
+                            <Chip
+                                activeOpacity={0.5}
+                                disabled={expenseUsers.some((e) => e.id === scannedUser.id)}
+                                labelStyle={styles.buttonLabel}
+                                containerStyle={{
+                                    width: 120,
+                                    borderColor: _colorConfiguration.primary,
+                                }}
+                                backgroundColor={_colorConfiguration.primary}
+                                label={`Add ${scannedUser.givenName} ${scannedUser.familyName}`}
+                                onPress={onScannedUserAdded}
+                            />
+                        )}
+                    </View>
+                </CameraView>
+            );
+        }
+
+        return (
             <FlatList
                 style={styles.list}
                 data={
@@ -87,7 +175,7 @@ export const PeopleModal = ({
                 <View style={styles.header}>
                     <View style={styles.arrowContainer}>
                         <TouchableOpacity onPress={onCancel}>
-                            <Icon assetName="arrowBack" size={35} />
+                            <Icon assetName="arrowBack" size={27} />
                         </TouchableOpacity>
                     </View>
 
@@ -103,14 +191,14 @@ export const PeopleModal = ({
                     </View>
 
                     <View style={styles.addUserContainer}>
-                        <TouchableOpacity onPress={() => setAddGuestVisible(true)}>
-                            <Icon assetName="addUser" size={35} />
+                        <TouchableOpacity onPress={onAddPress}>
+                            <Icon assetName={loadIconName()} size={27} />
                         </TouchableOpacity>
                     </View>
                 </View>
                 <View style={styles.body}>
                     {loadContent()}
-                    {!addGuestVisible && (
+                    {!addGuestVisible && !codeScannerVisible && (
                         <ActionBar
                             style={{
                                 backgroundColor: "rgba(0,0,0,0)",
@@ -191,5 +279,10 @@ const styles = StyleSheet.create({
     list: {
         width: "100%",
         paddingHorizontal: 10,
+    },
+    buttonLabel: {
+        fontSize: 14,
+        lineHeight: 27,
+        fontFamily: "Avenir-Roman",
     },
 });

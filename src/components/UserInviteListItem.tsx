@@ -75,7 +75,7 @@ export const UserInviteListItem = ({
         <View style={styles.itemContainer}>
             <View style={styles.container}>
                 <View style={styles.logoContainer}>
-                    {user.id && <Icon assetName={user.isRegistered ? "logoPrimary" : "logoGrey"} size={35} />}
+                    {user.id && <Icon assetName={user.isRegistered ? "logoPrimary" : "logoGrey"} size={27} />}
                 </View>
 
                 <View style={styles.nameContainer}>

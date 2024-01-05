@@ -82,7 +82,7 @@ export const SignupScreen = ({ navigation }: Props): JSX.Element => {
         <SafeAreaView style={styles.container}>
             <View padding-5 style={{ display: "flex" }}>
                 <TouchableOpacity onPress={onBackPress}>
-                    <Icon assetName="arrowBack" size={35} />
+                    <Icon assetName="arrowBack" size={27} />
                 </TouchableOpacity>
             </View>
 

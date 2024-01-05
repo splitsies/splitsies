@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import { StyleSheet } from "react-native";
 import { View } from "react-native-ui-lib/core";
 import { useInitialize } from "../hooks/use-initialize";
@@ -11,6 +11,7 @@ import { CameraOverlay } from "../components/CameraOverlay";
 import { IImage } from "../models/image/image-interface";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { Image } from "../models/image/image";
+import { CameraView } from "../components/CameraView";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _permissionRequest = lazyInject<IPersmissionRequester>(IPersmissionRequester);
@@ -18,16 +19,7 @@ const _permissionRequest = lazyInject<IPersmissionRequester>(IPersmissionRequest
 type Props = NativeStackScreenProps<RootStackScreenParams, "CameraScreen">;
 
 export const CameraScreen = ({ navigation }: Props): JSX.Element => {
-    const device = useCameraDevice("back");
     const camera = useRef<Camera>(null);
-
-    useInitialize(() => {
-        _permissionRequest.requestCameraPersmission();
-    });
-
-    const onError = useCallback((error: CameraRuntimeError) => {
-        console.error(error);
-    }, []);
 
     const onBackPress = () => {
         navigation.goBack();
@@ -63,12 +55,8 @@ export const CameraScreen = ({ navigation }: Props): JSX.Element => {
     };
 
     return (
-        <View style={[StyleSheet.absoluteFill, { backgroundColor: _colorConfiguration.black }]}>
-            {device && (
-                <Camera ref={camera} onError={onError} style={StyleSheet.absoluteFill} device={device} photo isActive />
-            )}
-
+        <CameraView ref={camera}>
             <CameraOverlay onBackPress={onBackPress} onImageSelected={onImageSelected} onCapture={capture} />
-        </View>
+        </CameraView>
     );
 };

@@ -84,7 +84,13 @@ export const RootComponent = () => {
                 headerShown: false,
             }}
         >
-            <Stack.Screen name="RootScreen" component={Root} />
+            <Stack.Screen
+                name="RootScreen"
+                component={Root}
+                options={{
+                    gestureEnabled: false,
+                }}
+            />
             <Stack.Screen name="LoginScreen" component={LoginScreen} />
             <Stack.Screen name="SignupScreen" component={SignupScreen} />
             <Stack.Screen name="ExpenseScreen" component={ExpenseScreen} />
