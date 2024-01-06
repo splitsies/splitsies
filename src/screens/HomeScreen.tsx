@@ -1,29 +1,27 @@
 import React, { useState } from "react";
-import { SafeAreaView, StyleSheet, ActivityIndicator } from "react-native";
+import { SafeAreaView, StyleSheet } from "react-native";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { lazyInject } from "../utils/lazy-inject";
-import { Icon, View } from "react-native-ui-lib";
+import { View } from "react-native-ui-lib";
 import { lastValueFrom, first, race, timer } from "rxjs";
 import { IExpenseJoinRequestDto } from "@splitsies/shared-models";
 import { HomeBar } from "../components/HomeBar";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { IRequestConfiguration } from "../models/configuration/request-config/request-configuration-interface";
-import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { ExpenseFeed } from "../components/ExpenseFeed";
 import { RequestsFeed } from "../components/RequestsFeed";
-import { SplitsiesTitle } from "../components/SplitsiesTitle";
 import { useObservable } from "../hooks/use-observable";
 import { useObservableReducer } from "../hooks/use-observable-reducer";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackScreenParams, DrawerParamList } from "./root-stack-screen-params";
+import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-interface";
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
-const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _requestConfiguration = lazyInject<IRequestConfiguration>(IRequestConfiguration);
+const _viewModel = lazyInject<IHomeViewModel>(IHomeViewModel);
 
 type Props = CompositeScreenProps<
     NativeStackScreenProps<RootStackScreenParams>,
@@ -31,17 +29,14 @@ type Props = CompositeScreenProps<
 >;
 
 export const HomeScreen = ({ navigation }: Props) => {
-    const [isPendingConnection, setIsPendingConnection] = useState<boolean>(false);
     const [currentTab, setCurrentTab] = useState<"feed" | "requests">("feed");
     const expenses = useObservable(_expenseManager.expenses$, _expenseManager.expenses);
     const userName = useObservableReducer(_userManager.user$, "", (userCred) => userCred?.user.givenName ?? "");
-    const isPendingData = useObservable(_expenseManager.isPendingExpenseData$, _expenseManager.isPendingExpenseData);
     const joinRequests = useObservable(_expenseManager.expenseJoinRequests$, []);
 
     const onExpenseClick = async (expenseId: string) => {
-        if (isPendingConnection) return;
-
-        setIsPendingConnection(true);
+        if (_viewModel.pendingData) return;
+        _viewModel.setPendingData(true);
         void _expenseManager.connectToExpense(expenseId);
 
         const timedExpenseObserver = race(
@@ -50,7 +45,7 @@ export const HomeScreen = ({ navigation }: Props) => {
         );
 
         await lastValueFrom(timedExpenseObserver);
-        setIsPendingConnection(false);
+        _viewModel.setPendingData(false);
         navigation.navigate("ExpenseScreen");
     };
 
@@ -61,17 +56,17 @@ export const HomeScreen = ({ navigation }: Props) => {
     const onRequestsClick = async (): Promise<void> => {
         setCurrentTab("requests");
 
-        setIsPendingConnection(true);
+        _viewModel.setPendingData(true);
         await _expenseManager.requestExpenseJoinRequests();
-        setIsPendingConnection(false);
+        _viewModel.setPendingData(false);
     };
 
     const onFeedClick = async (): Promise<void> => {
         setCurrentTab("feed");
 
-        setIsPendingConnection(true);
+        _viewModel.setPendingData(true);
         await _expenseManager.requestForUser();
-        setIsPendingConnection(false);
+        _viewModel.setPendingData(false);
     };
 
     const onApproveRequest = async (joinRequest: IExpenseJoinRequestDto): Promise<void> => {
@@ -97,7 +92,6 @@ export const HomeScreen = ({ navigation }: Props) => {
                 return (
                     <ExpenseFeed
                         expenses={expenses}
-                        isPendingData={isPendingData}
                         userName={userName}
                         onExpenseClick={onExpenseClick}
                         onRefresh={onRefreshExpenses}
@@ -117,19 +111,6 @@ export const HomeScreen = ({ navigation }: Props) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <SplitsiesTitle />
-                <View row style={{ columnGap: 10 }}>
-                    <ActivityIndicator
-                        color={_colorConfiguration.black}
-                        animating={isPendingConnection}
-                        hidesWhenStopped
-                    />
-                    <TouchableOpacity onPress={navigation.openDrawer}>
-                        <Icon assetName="more" size={25} />
-                    </TouchableOpacity>
-                </View>
-            </View>
             <View style={styles.body}>
                 {provideContent()}
                 <HomeBar onFeedPress={onFeedClick} onPress={onScanClick} onRequestsPress={onRequestsClick} />

@@ -74,7 +74,6 @@ export const PeopleModal = ({
         console.log({ scannedUser, expense: _expenseManager.currentExpense });
         if (!scannedUser || !_expenseManager.currentExpense) return;
 
-        console.log(`adding ${scannedUser.id} to  ${_expenseManager.currentExpense.id}`);
         _expenseManager.requestAddUserToExpense(scannedUser.id, _expenseManager.currentExpense.id);
     };
 

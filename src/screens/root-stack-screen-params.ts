@@ -13,3 +13,14 @@ export type DrawerParamList = {
     Home: undefined;
     Profile: undefined;
 };
+
+export type ExpenseParamList = {
+    Items: undefined;
+    People: undefined;
+    Invite: undefined;
+}
+
+export type InviteParamList = {
+    Contacts: undefined;
+    Guests: undefined;
+}

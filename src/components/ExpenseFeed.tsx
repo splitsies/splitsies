@@ -1,19 +1,18 @@
 import React, { useState } from "react";
 import { IExpensePayload } from "@splitsies/shared-models";
-import { ActivityIndicator, FlatList, RefreshControl, ScrollView, StyleSheet } from "react-native";
+import { FlatList, RefreshControl, ScrollView, StyleSheet } from "react-native";
 import { Text, View } from "react-native-ui-lib";
 import { ListSeparator } from "./ListSeparator";
 import { ExpensePreview } from "./ExpensePreview";
 
 type Props = {
-    isPendingData: boolean;
     expenses: IExpensePayload[];
     userName: string;
     onExpenseClick: (expenseId: string) => Promise<void>;
     onRefresh: () => Promise<void>;
 };
 
-export const ExpenseFeed = ({ isPendingData, expenses, userName, onExpenseClick, onRefresh }: Props): JSX.Element => {
+export const ExpenseFeed = ({ expenses, userName, onExpenseClick, onRefresh }: Props): JSX.Element => {
     const [refreshing, setRefreshing] = useState<boolean>(false);
 
     const refresh = async (): Promise<void> => {
@@ -21,10 +20,6 @@ export const ExpenseFeed = ({ isPendingData, expenses, userName, onExpenseClick,
         await onRefresh();
         setRefreshing(false);
     };
-
-    if (isPendingData) {
-        return <ActivityIndicator size="large" />;
-    }
 
     return expenses.length === 0 ? (
         <View style={styles.welcomeMessageContainer}>
