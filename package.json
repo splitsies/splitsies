@@ -48,6 +48,11 @@
     "rxjs": "^7.8.1",
     "stream": "^0.0.2"
   },
+  "overrides": {
+    "react-native-qrcode-svg": {
+      "react-native-svg": "$react-native-svg"
+    }
+  },
   "prettier": "@splitsies/formatting",
   "devDependencies": {
     "@babel/core": "^7.20.0",
