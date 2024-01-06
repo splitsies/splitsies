@@ -43,7 +43,7 @@ export const CameraOverlay = ({ onBackPress, onCapture, onImageSelected }: Props
                 <SafeAreaView style={styles.container}>
                     <View style={styles.backButton}>
                         <TouchableOpacity onPress={onBackPress}>
-                            <Icon assetName="arrowBack" size={35} tintColor="white" />
+                            <Icon assetName="arrowBack" size={27} tintColor="white" />
                         </TouchableOpacity>
                     </View>
                 </SafeAreaView>
@@ -52,7 +52,7 @@ export const CameraOverlay = ({ onBackPress, onCapture, onImageSelected }: Props
             <View style={styles.contentContainer}>
                 <SafeAreaView style={styles.buttonContainer}>
                     <TouchableOpacity onPress={onLibraryOpened}>
-                        <Icon assetName="photoLibrary" size={35} tintColor="white" />
+                        <Icon assetName="photoLibrary" size={27} tintColor="white" />
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={onCapture}>

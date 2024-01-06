@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Dimensions, SafeAreaView, StyleSheet } from "react-native";
 import { lazyInject } from "../utils/lazy-inject";
@@ -10,7 +10,9 @@ import { useObservable } from "../hooks/use-observable";
 import { SpTextInput } from "../components/SpTextInput";
 import { SplitsiesTitle } from "../components/SplitsiesTitle";
 import { Button, Icon, TouchableOpacity, View } from "react-native-ui-lib";
-import { UserIcon } from "../components/UserIcon";
+import QRCode from "react-native-qrcode-svg";
+import { IQrPayload } from "../models/qr-payload/qr-payload-interface";
+import { QrPayload } from "../models/qr-payload/qr-payload";
 
 const _userManager = lazyInject<IUserManager>(IUserManager);
 const _dimensions = Dimensions.get("screen");
@@ -22,6 +24,14 @@ type Props = CompositeScreenProps<
 
 export const ProfileScreen = ({ navigation }: Props) => {
     const user = useObservable(_userManager.user$, _userManager.user);
+    const [payload, setPayload] = useState<IQrPayload>(
+        new QrPayload(user?.user.id || "", user?.user.givenName || "", user?.user.familyName || ""),
+    );
+
+    useEffect(() => {
+        if (!user) return;
+        setPayload(new QrPayload(user.user.id, user.user.givenName, user.user.familyName));
+    }, [user]);
 
     const onSignOut = () => {
         void _userManager.signOut();
@@ -39,11 +49,7 @@ export const ProfileScreen = ({ navigation }: Props) => {
             </View>
             <View style={{ display: "flex", flexGrow: 1 }}>
                 <View style={{ display: "flex", flex: 2, rowGap: 10, justifyContent: "center", alignItems: "center" }}>
-                    <UserIcon
-                        letter={user.user.givenName[0] + user.user.familyName[0] || ""}
-                        style={{ width: 100, height: 100, borderRadius: 50 }}
-                        labelStyle={{ fontSize: 40 }}
-                    />
+                    <QRCode value={JSON.stringify(payload)} />
                     <SpTextInput readonly value={user.user.givenName} placeholder="First Name" />
                     <SpTextInput readonly value={user.user.familyName} placeholder="Last Name" />
                     <SpTextInput readonly value={user.user.email} placeholder="Email" />

@@ -57,7 +57,7 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
         return (
             <View style={styles.header}>
                 <View style={styles.iconContainer}>
-                    {person.isRegistered && <Icon assetName="logoPrimary" size={35} />}
+                    {person.isRegistered && <Icon assetName="logoPrimary" size={27} />}
                 </View>
 
                 <View style={styles.nameContainer}>

@@ -52,6 +52,8 @@ export class StyleManager implements IStyleManager {
             capture: require("../../../assets/icons/capture.png"),
             add: require("../../../assets/icons/add.png"),
             more: require("../../../assets/icons/more.png"),
+            close: require("../../../assets/icons/close.png"),
+            qrAdd: require("../../../assets/icons/qr-add.png"),
         });
     }
 }

@@ -44,7 +44,7 @@ export const SelectItemsModal = ({ user, expense, visible, onClose }: Props): JS
                 <View style={styles.header}>
                     <View style={styles.arrowContainer}>
                         <TouchableOpacity onPress={() => onClose(selections)}>
-                            <Icon assetName="arrowBack" size={35} />
+                            <Icon assetName="arrowBack" size={27} />
                         </TouchableOpacity>
                     </View>
                     <Text heading>{user.givenName + " " + user.familyName}</Text>
