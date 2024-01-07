@@ -13,6 +13,7 @@ export class StyleManager implements IStyleManager {
         heading: { fontSize: 36, fontWeight: "600", fontFamily: "Avenir-Heavy" },
         subheading: { fontSize: 24, fontWeight: "400", fontFamily: "Avenir-Heavy" },
         body: { fontSize: 15, fontFamily: "Avenir-Roman" },
+        bodyBold: { fontSize: 16, fontWeight: "700", fontFamily: "Avenir-Roman" },
         subtext: { fontSize: 13, fontFamily: "Avenir-Roman" },
         letter: { fontFamily: "ZillaSlab-Bold" },
         letterHeading: { fontFamily: "ZillaSlab-Bold", fontSize: 36 },
@@ -54,6 +55,8 @@ export class StyleManager implements IStyleManager {
             more: require("../../../assets/icons/more.png"),
             close: require("../../../assets/icons/close.png"),
             qrAdd: require("../../../assets/icons/qr-add.png"),
+            menu: require("../../../assets/icons/menu.png"),
+            receipt: require("../../../assets/icons/receipt.png"),
         });
     }
 }

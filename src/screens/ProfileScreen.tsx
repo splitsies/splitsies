@@ -8,8 +8,7 @@ import { DrawerScreenProps } from "@react-navigation/drawer";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { useObservable } from "../hooks/use-observable";
 import { SpTextInput } from "../components/SpTextInput";
-import { SplitsiesTitle } from "../components/SplitsiesTitle";
-import { Button, Icon, TouchableOpacity, View } from "react-native-ui-lib";
+import { Button, View } from "react-native-ui-lib";
 import QRCode from "react-native-qrcode-svg";
 import { IQrPayload } from "../models/qr-payload/qr-payload-interface";
 import { QrPayload } from "../models/qr-payload/qr-payload";
@@ -39,14 +38,6 @@ export const ProfileScreen = ({ navigation }: Props) => {
 
     return user?.user ? (
         <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <SplitsiesTitle />
-                <View row style={{ columnGap: 10 }}>
-                    <TouchableOpacity onPress={navigation.openDrawer}>
-                        <Icon assetName="more" size={25} />
-                    </TouchableOpacity>
-                </View>
-            </View>
             <View style={{ display: "flex", flexGrow: 1 }}>
                 <View style={{ display: "flex", flex: 2, rowGap: 10, justifyContent: "center", alignItems: "center" }}>
                     <QRCode value={JSON.stringify(payload)} />

@@ -3,31 +3,32 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { FlatList, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { lazyInject } from "../utils/lazy-inject";
-import { RootStackScreenParams } from "./root-stack-screen-params";
+import { DrawerParamList, ExpenseParamList, RootStackScreenParams } from "./root-stack-screen-params";
 import { Observable, filter } from "rxjs";
-import { IExpense, IExpenseItem, IExpenseUserDetails } from "@splitsies/shared-models";
+import { IExpense, IExpenseItem } from "@splitsies/shared-models";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { View, TouchableOpacity, Text } from "react-native-ui-lib/core";
-import { ActionBar, Icon } from "react-native-ui-lib";
+import { Icon } from "react-native-ui-lib";
 import { format } from "../utils/format-date";
 import { ExpenseItem } from "../components/ExpenseItem";
 import { EditModal } from "../components/EditModal";
 import { EditResult } from "../models/edit-result";
-import { useInitialize } from "../hooks/use-initialize";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
-import { PeopleModal } from "../components/PeopleModal";
 import { ListSeparator } from "../components/ListSeparator";
-import { People } from "../components/People";
 import { ExpenseFooter } from "../components/ExpenseFooter";
-import { PeopleFooter } from "../components/PeopleFooter";
 import { useObservable } from "../hooks/use-observable";
+import { CompositeScreenProps } from "@react-navigation/native";
+import { DrawerScreenProps } from "@react-navigation/drawer";
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 
-type Props = NativeStackScreenProps<RootStackScreenParams, "ExpenseScreen">;
+type Props = CompositeScreenProps<
+    NativeStackScreenProps<RootStackScreenParams>,
+    DrawerScreenProps<DrawerParamList, "Home">
+>;
 
 export const ExpenseScreen = ({ navigation }: Props) => {
     const expense = useObservable<IExpense>(
@@ -35,19 +36,12 @@ export const ExpenseScreen = ({ navigation }: Props) => {
         _expenseManager.currentExpense!,
     );
     const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, []);
-    const pendingJoinRequests = useObservable(_expenseManager.currentExpenseJoinRequests$, []);
 
     const [selectedItem, setSelectedItem] = useState<IExpenseItem | null>(null);
     const [editingTitle, setEditingTitle] = useState<boolean>(false);
     const [isSelecting, setIsSelecting] = useState<boolean>(false);
     const [isAddingItem, setIsAddingItem] = useState<boolean>(false);
     const [inProgressSelections, setInProgressSelections] = useState<string[]>([]);
-    const [isSelectingPeople, setIsSelectingPeople] = useState<boolean>(false);
-    const [currentTab, setCurrentTab] = useState<"expense" | "people">("expense");
-
-    useInitialize(() => {
-        void _expenseManager.requestUsersForExpense(expense.id);
-    });
 
     const onBackPress = useCallback(() => {
         _expenseManager.disconnectFromExpense();
@@ -120,17 +114,17 @@ export const ExpenseScreen = ({ navigation }: Props) => {
     }, [expense, selectedItem]);
 
     const onSelectAction = (): void => {
-        if (currentTab === "expense") {
-            if (!isSelecting) {
-                const userExpenseIds = expense.items
-                    .map((i) => (i.owners.find((u) => u.id === _userManager.userId) ? i.id : ""))
-                    .filter((i) => !!i);
+        const isStartingSelection = !isSelecting;
 
-                setInProgressSelections(userExpenseIds);
-            } else {
-                updateExpenseItemOwners(_userManager.userId, inProgressSelections);
-                setInProgressSelections([]);
-            }
+        if (isStartingSelection) {
+            const userExpenseIds = expense.items
+                .map((i) => (i.owners.find((u) => u.id === _userManager.userId) ? i.id : ""))
+                .filter((i) => !!i);
+
+            setInProgressSelections(userExpenseIds);
+        } else {
+            updateExpenseItemOwners(_userManager.userId, inProgressSelections);
+            setInProgressSelections([]);
         }
 
         setIsSelecting(!isSelecting);
@@ -150,36 +144,15 @@ export const ExpenseScreen = ({ navigation }: Props) => {
         void _expenseManager.updateExpense(expense);
     };
 
-    const onUserInvited = async (user: IExpenseUserDetails): Promise<void> => {
-        let userId = user.id;
-        if (!user.isRegistered && !user.id) {
-            // Adding a guest user
-            const addedUser = await _userManager.requestAddGuestUser(user.givenName, user.familyName, user.phoneNumber);
-            userId = addedUser.id;
-        }
-
-        if (!user.isRegistered) {
-            await _expenseManager.requestAddUserToExpense(userId, expense.id);
-            return;
-        }
-
-        void _expenseManager.sendExpenseJoinRequest(userId, expense.id);
-    };
-
-    const onUserUninvited = async (user: IExpenseUserDetails): Promise<void> => {
-        void _expenseManager.removeExpenseJoinRequestForUser(expense.id, user.id);
-    };
-
-    const onAddGuest = async (givenName: string, phoneNumber: string): Promise<void> => {
-        const user = await _userManager.requestAddGuestUser(givenName, "", phoneNumber);
-        return _expenseManager.requestAddUserToExpense(user.id, expense.id);
-    };
-
     return (
         <SafeAreaView style={styles.container}>
-            <View paddingH-5 paddingT-20 marginH-10>
+            <View style={styles.header}>
                 <TouchableOpacity onPress={onBackPress}>
                     <Icon assetName="arrowBack" size={27} />
+                </TouchableOpacity>
+
+                <TouchableOpacity onPress={onSelectAction}>
+                    <Text bodyBold>{!isSelecting ? "Select" : "Done"}</Text>
                 </TouchableOpacity>
             </View>
 
@@ -190,80 +163,35 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                 <Text subtext>{format(expense.transactionDate)}</Text>
             </View>
 
-            {currentTab === "expense" ? (
-                <FlatList
-                    style={styles.list}
-                    data={expense.items.filter((i) => !i.isProportional)}
-                    ItemSeparatorComponent={ListSeparator}
-                    ListFooterComponent={
-                        <TouchableOpacity onPress={() => setIsAddingItem(true)}>
-                            <View>
-                                <ListSeparator />
-                                <View style={{ width: "100%", marginVertical: 20, alignItems: "center" }}>
-                                    <Icon assetName="add" size={25} tintColor="black" />
-                                </View>
+            <FlatList
+                style={styles.list}
+                data={expense.items.filter((i) => !i.isProportional)}
+                ItemSeparatorComponent={ListSeparator}
+                ListFooterComponent={
+                    <TouchableOpacity onPress={() => setIsAddingItem(true)}>
+                        <View>
+                            <ListSeparator />
+                            <View style={{ width: "100%", marginVertical: 20, alignItems: "center" }}>
+                                <Icon assetName="add" size={25} tintColor="black" />
                             </View>
-                        </TouchableOpacity>
-                    }
-                    renderItem={({ item }) => (
-                        <ExpenseItem
-                            item={item}
-                            style={{ marginVertical: 15 }}
-                            showOwners
-                            selected={inProgressSelections.includes(item.id)}
-                            selectable={isSelecting}
-                            onPress={() => setSelectedItem(item)}
-                            onSelect={onItemSelected}
-                        />
-                    )}
-                />
-            ) : (
-                <People
-                    people={expenseUsers}
-                    expense={expense}
-                    updateItemOwners={updateExpenseItemOwners}
-                    isSelecting={isSelecting}
-                    endSelectingMode={() => setIsSelecting(false)}
-                />
-            )}
+                        </View>
+                    </TouchableOpacity>
+                }
+                renderItem={({ item }) => (
+                    <ExpenseItem
+                        item={item}
+                        style={{ marginVertical: 15 }}
+                        showOwners
+                        selected={inProgressSelections.includes(item.id)}
+                        selectable={isSelecting}
+                        onPress={() => setSelectedItem(item)}
+                        onSelect={onItemSelected}
+                    />
+                )}
+            />
 
             <View style={styles.footer}>
-                {currentTab === "expense" ? (
-                    <ExpenseFooter expense={expense} onItemSelected={setSelectedItem} />
-                ) : (
-                    <PeopleFooter expense={expense} expenseUsers={expenseUsers} />
-                )}
-
-                <ActionBar
-                    style={{
-                        backgroundColor: "rgba(0,0,0,0)",
-                        borderTopColor: _colorConfiguration.greyFont,
-                        borderTopWidth: 1,
-                    }}
-                    keepRelative
-                    useSafeArea
-                    centered
-                    actions={[
-                        {
-                            label: isSelecting ? "Done" : "Select",
-                            onPress: onSelectAction,
-                            color: _colorConfiguration.black,
-                            labelStyle: { fontSize: 13, fontFamily: "Avenir-Roman" },
-                        },
-                        {
-                            label: "Invite",
-                            onPress: () => setIsSelectingPeople(true),
-                            color: _colorConfiguration.black,
-                            labelStyle: { fontSize: 13, fontFamily: "Avenir-Roman" },
-                        },
-                        {
-                            label: currentTab === "people" ? "Items" : "People",
-                            onPress: () => setCurrentTab(currentTab === "people" ? "expense" : "people"),
-                            color: _colorConfiguration.black,
-                            labelStyle: { fontSize: 13, fontFamily: "Avenir-Roman" },
-                        },
-                    ]}
-                />
+                <ExpenseFooter expense={expense} onItemSelected={setSelectedItem} />
             </View>
 
             <EditModal
@@ -291,16 +219,6 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                 proportional={false}
                 onCancel={() => setIsAddingItem(false)}
             />
-
-            <PeopleModal
-                visible={isSelectingPeople}
-                pendingJoinRequests={pendingJoinRequests}
-                expenseUsers={expenseUsers}
-                onAddGuest={onAddGuest}
-                onCancel={() => setIsSelectingPeople(false)}
-                onUserSelectionChanged={onUserInvited}
-                onRemoveRequest={onUserUninvited}
-            />
         </SafeAreaView>
     );
 };
@@ -309,6 +227,15 @@ const styles = StyleSheet.create({
     container: {
         display: "flex",
         flexGrow: 1,
+        width: "100%",
+    },
+    header: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        paddingLeft: 10,
+        paddingRight: 15,
+        paddingTop: 31,
         width: "100%",
     },
     itemContainer: {

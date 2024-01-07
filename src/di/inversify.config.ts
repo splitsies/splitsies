@@ -36,6 +36,10 @@ import { IVenmoLinker } from "../utils/venmo-linker/venmo-linker-interface";
 import { VenmoLinker } from "../utils/venmo-linker/venmo-linker";
 import { IVenmoConfiguration } from "../models/configuration/venmo-configuration/venmo-configuration-interface";
 import { VenmoConfiguration } from "../models/configuration/venmo-configuration/venmo-configuration";
+import { IInviteViewModel } from "../view-models/invite-view-model/invite-view-model-interface";
+import { InviteViewModel } from "../view-models/invite-view-model/invite-view-model";
+import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-interface";
+import { HomeViewModel } from "../view-models/home-view-model/home-view-model";
 const container = new Container();
 
 container.bind<IApiConfig>(IApiConfig).to(ApiConfig).inSingletonScope();
@@ -55,5 +59,6 @@ container.bind<IRequestConfiguration>(IRequestConfiguration).to(RequestConfigura
 container.bind<IPriceCalculator>(IPriceCalculator).to(PriceCalculator).inSingletonScope();
 container.bind<IVenmoLinker>(IVenmoLinker).to(VenmoLinker).inSingletonScope();
 container.bind<IVenmoConfiguration>(IVenmoConfiguration).to(VenmoConfiguration).inSingletonScope();
-
+container.bind<IInviteViewModel>(IInviteViewModel).to(InviteViewModel).inSingletonScope();
+container.bind<IHomeViewModel>(IHomeViewModel).to(HomeViewModel).inSingletonScope();
 export { container };
