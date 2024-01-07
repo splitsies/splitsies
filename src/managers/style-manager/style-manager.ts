@@ -35,7 +35,7 @@ export class StyleManager implements IStyleManager {
                 divider: this.colorConfiguration.divider,
             },
             dark: {
-                screenBG: Colors.grey10,
+                screenBG: Colors.grey1,
                 textColor: Colors.white,
                 primaryTranslucent: this.colorConfiguration.primaryTranslucentDark,
                 divider: this.colorConfiguration.dividerDark,

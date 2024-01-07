@@ -19,6 +19,7 @@ import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
 import { ScanUserModal } from "../components/ScanUserModal";
 import { IInviteViewModel } from "../view-models/invite-view-model/invite-view-model-interface";
 import { filter } from "rxjs";
+import { useThemeWatcher } from "../hooks/use-theme-watcher";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -34,6 +35,8 @@ type Props = CompositeScreenProps<
 >;
 
 export const ContactsScreen = ({ navigation }: Props) => {
+    useThemeWatcher();
+
     const contactUsers = useObservable(_userManager.contactUsers$, []);
     const pendingJoinRequests = useObservable(_expenseManager.currentExpenseJoinRequests$, []);
     const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, []);

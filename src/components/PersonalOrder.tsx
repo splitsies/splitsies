@@ -8,6 +8,7 @@ import { lazyInject } from "../utils/lazy-inject";
 import { IPriceCalculator } from "../utils/price-calculator/price-calculator-interface";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { IVenmoLinker } from "../utils/venmo-linker/venmo-linker-interface";
+import { useThemeWatcher } from "../hooks/use-theme-watcher";
 
 const _priceCalculator = lazyInject<IPriceCalculator>(IPriceCalculator);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -20,6 +21,7 @@ type Props = {
 };
 
 export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element => {
+    useThemeWatcher();
     const [personalExpense, setPersonalExpense] = useState<IExpense>(
         _priceCalculator.calculatePersonalExpense(person.id, expense),
     );
@@ -61,7 +63,7 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                 </View>
 
                 <View style={styles.nameContainer}>
-                    <Text body numberOfLines={1} ellipsizeMode={"tail"}>
+                    <Text body numberOfLines={1} ellipsizeMode={"tail"} color={Colors.textColor}>
                         {person.givenName + (person.familyName ? " " + person.familyName : "")}
                     </Text>
                 </View>

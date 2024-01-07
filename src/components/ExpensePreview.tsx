@@ -4,6 +4,7 @@ import { IExpense, IExpenseMapper, IExpensePayload } from "@splitsies/shared-mod
 import { Colors, Icon, Text, View } from "react-native-ui-lib";
 import { UserIcon } from "./UserIcon";
 import { lazyInject } from "../utils/lazy-inject";
+import { useThemeWatcher } from "../hooks/use-theme-watcher";
 
 const Locale = (
     Platform.OS === "ios"
@@ -27,6 +28,8 @@ interface propTypes {
  * @{@link propTypes}
  */
 export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
+    useThemeWatcher();
+
     const [expense, setExpense] = useState<IExpense>(_expenseMapper.toDomainModel(data.expense));
     const [peopleContainerWidth, setPeopleContainerWidth] = useState<number>(Dimensions.get("window").width);
     const PERSON_LIMIT = Math.floor((peopleContainerWidth - 20) / 36) - 1;
@@ -41,7 +44,7 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
                         <Icon assetName="location" size={17} tintColor={Colors.textColor} />
                     </View>
                     <View style={styles.rightBox}>
-                        <Text>{expense.name}</Text>
+                        <Text color={Colors.textColor}>{expense.name}</Text>
                     </View>
                 </View>
 
@@ -50,7 +53,7 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
                         <Icon assetName="calendar" size={17} tintColor={Colors.textColor} />
                     </View>
                     <View style={styles.rightBox}>
-                        <Text subtext>
+                        <Text subtext color={Colors.textColor}>
                             {expense.transactionDate
                                 .toLocaleString(Locale, DATE_OPTIONS)
                                 .replace(/\d{2}:\d{2}:\d{2}/, "")}
@@ -79,7 +82,9 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
                                   ))}
 
                             {data.expenseUsers.length > PERSON_LIMIT && (
-                                <Text body>+ {data.expenseUsers.length - PERSON_LIMIT}</Text>
+                                <Text body color={Colors.textColor}>
+                                    + {data.expenseUsers.length - PERSON_LIMIT}
+                                </Text>
                             )}
                         </View>
                     </View>
@@ -90,7 +95,9 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
                         <Icon assetName="price" size={17} tintColor={Colors.textColor} />
                     </View>
                     <View style={styles.rightBox}>
-                        <Text subtext>${expense.total.toFixed(2)}</Text>
+                        <Text subtext color={Colors.textColor}>
+                            ${expense.total.toFixed(2)}
+                        </Text>
                     </View>
                 </View>
             </View>

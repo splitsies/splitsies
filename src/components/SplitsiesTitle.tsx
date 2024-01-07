@@ -12,7 +12,7 @@ export const SplitsiesTitle = ({ center, style }: Props): JSX.Element => {
     return (
         <View flex-2 row bottom centerH={center} style={style}>
             <Icon assetName="logoBlack" size={50} tintColor={Colors.textColor} />
-            <Text letterHeading black style={styles.logo} color={Colors.textColor}>
+            <Text letterHeading style={styles.logo} color={Colors.textColor}>
                 plitsies
             </Text>
         </View>

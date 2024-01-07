@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { IExpenseJoinRequest, IExpenseUserDetails } from "@splitsies/shared-models";
-import { Chip, Icon, Text, View } from "react-native-ui-lib";
+import { Chip, Colors, Icon, Text, View } from "react-native-ui-lib";
 import { StyleSheet } from "react-native";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { lazyInject } from "../utils/lazy-inject";
 import { IAuthProvider } from "../providers/auth-provider/auth-provider-interface";
+import { useThemeWatcher } from "../hooks/use-theme-watcher";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _authProvider = lazyInject<IAuthProvider>(IAuthProvider);
@@ -34,6 +35,7 @@ export const UserInviteListItem = ({
     onInviteUser,
     onUninviteUser,
 }: Props): JSX.Element => {
+    useThemeWatcher();
     const [userState, setUserState] = useState<UserState>(UserState.AvailableAsGuest);
 
     useEffect(() => {
@@ -79,7 +81,7 @@ export const UserInviteListItem = ({
                 </View>
 
                 <View style={styles.nameContainer}>
-                    <Text body numberOfLines={1} ellipsizeMode={"tail"}>
+                    <Text body numberOfLines={1} ellipsizeMode={"tail"} color={Colors.textColor}>
                         {user.givenName + " " + user.familyName}
                     </Text>
                     <Text hint>{user.phoneNumber || "Guest"}</Text>

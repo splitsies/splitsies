@@ -8,19 +8,22 @@ import { GuestScreen } from "../screens/GuestsScreen";
 import { SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Colors, Icon, TextField } from "react-native-ui-lib";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
-import { CompositeScreenProps } from "@react-navigation/native";
+import { CompositeScreenProps, useNavigation } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackScreenParams, ExpenseParamList } from "../screens/root-stack-screen-params";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { IInviteViewModel } from "../view-models/invite-view-model/invite-view-model-interface";
 import { useObservable } from "../hooks/use-observable";
+import { IStyleManager } from "../managers/style-manager/style-manager-interface";
+import { useThemeWatcher } from "../hooks/use-theme-watcher";
 
 const Tab = createMaterialTopTabNavigator();
 const _userManager = lazyInject<IUserManager>(IUserManager);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _inviteViewModel = lazyInject<IInviteViewModel>(IInviteViewModel);
+const _styleManager = lazyInject<IStyleManager>(IStyleManager);
 
 type Props = CompositeScreenProps<
     NativeStackScreenProps<RootStackScreenParams>,
@@ -28,12 +31,13 @@ type Props = CompositeScreenProps<
 >;
 
 export const InviteNavigator = ({ navigation }: Props) => {
+    useThemeWatcher();
     const [searchFilter, setSearchFilter] = useState<string>("");
     const state = useObservable(_inviteViewModel.mode$, _inviteViewModel.mode);
 
     const onBackPress = useCallback(() => {
         _expenseManager.disconnectFromExpense();
-        navigation.navigate("RootScreen");
+        navigation.navigate("Items");
     }, [_expenseManager, navigation]);
 
     useInitialize(() => {
@@ -52,6 +56,7 @@ export const InviteNavigator = ({ navigation }: Props) => {
                 <View style={styles.inputContainer}>
                     <TextField
                         body
+                        bg-screenBG
                         placeholder="Search"
                         placeholderTextColor={_colorConfiguration.greyFont}
                         value={searchFilter}
@@ -74,6 +79,7 @@ export const InviteNavigator = ({ navigation }: Props) => {
             <Tab.Navigator
                 initialRouteName="Contacts"
                 screenOptions={{
+                    tabBarLabelStyle: _styleManager.typography.body,
                     tabBarIndicatorStyle: { backgroundColor: _colorConfiguration.primary },
                 }}
             >
@@ -105,7 +111,6 @@ const styles = StyleSheet.create({
     },
     textInput: {
         height: 50,
-        backgroundColor: Colors.screenBG,
         borderRadius: 25,
         paddingHorizontal: 15,
         borderWidth: 1,

@@ -16,7 +16,7 @@ function App(): JSX.Element {
 
     useEffect(() => {
         const scheme = colorScheme === "dark" ? "dark" : "light";
-        console.log({ scheme });
+
         Colors.setScheme(scheme);
         _themeViewModel.setTheme(scheme);
     }, [colorScheme]);

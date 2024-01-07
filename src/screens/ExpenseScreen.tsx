@@ -20,6 +20,7 @@ import { ExpenseFooter } from "../components/ExpenseFooter";
 import { useObservable } from "../hooks/use-observable";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { DrawerScreenProps } from "@react-navigation/drawer";
+import { useThemeWatcher } from "../hooks/use-theme-watcher";
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -31,6 +32,7 @@ type Props = CompositeScreenProps<
 >;
 
 export const ExpenseScreen = ({ navigation }: Props) => {
+    useThemeWatcher();
     const expense = useObservable<IExpense>(
         _expenseManager.currentExpense$.pipe(filter((e) => e != null)) as Observable<IExpense>,
         _expenseManager.currentExpense!,
@@ -145,22 +147,28 @@ export const ExpenseScreen = ({ navigation }: Props) => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
+        <View style={styles.container} bg-screenBG>
+            <SafeAreaView style={styles.header}>
                 <TouchableOpacity onPress={onBackPress}>
                     <Icon assetName="arrowBack" size={27} tintColor={Colors.textColor} />
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={onSelectAction}>
-                    <Text bodyBold>{!isSelecting ? "Select" : "Done"}</Text>
+                    <Text bodyBold color={Colors.textColor}>
+                        {!isSelecting ? "Select" : "Done"}
+                    </Text>
                 </TouchableOpacity>
-            </View>
+            </SafeAreaView>
 
             <View centerH>
                 <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
-                    <Text heading>{expense.name}</Text>
+                    <Text heading color={Colors.textColor}>
+                        {expense.name}
+                    </Text>
                 </TouchableOpacity>
-                <Text subtext>{format(expense.transactionDate)}</Text>
+                <Text subtext color={Colors.textColor}>
+                    {format(expense.transactionDate)}
+                </Text>
             </View>
 
             <FlatList
@@ -219,7 +227,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                 proportional={false}
                 onCancel={() => setIsAddingItem(false)}
             />
-        </SafeAreaView>
+        </View>
     );
 };
 
@@ -228,7 +236,6 @@ const styles = StyleSheet.create({
         display: "flex",
         flexGrow: 1,
         width: "100%",
-        backgroundColor: Colors.screenBG,
     },
     header: {
         display: "flex",

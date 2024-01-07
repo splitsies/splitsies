@@ -12,6 +12,7 @@ import { Button, Colors, View } from "react-native-ui-lib";
 import QRCode from "react-native-qrcode-svg";
 import { IQrPayload } from "../models/qr-payload/qr-payload-interface";
 import { QrPayload } from "../models/qr-payload/qr-payload";
+import { useThemeWatcher } from "../hooks/use-theme-watcher";
 
 const _userManager = lazyInject<IUserManager>(IUserManager);
 const _dimensions = Dimensions.get("screen");
@@ -22,6 +23,7 @@ type Props = CompositeScreenProps<
 >;
 
 export const ProfileScreen = ({ navigation }: Props) => {
+    useThemeWatcher();
     const user = useObservable(_userManager.user$, _userManager.user);
     const [payload, setPayload] = useState<IQrPayload>(
         new QrPayload(user?.user.id || "", user?.user.givenName || "", user?.user.familyName || ""),
