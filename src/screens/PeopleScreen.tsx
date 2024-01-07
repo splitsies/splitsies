@@ -10,7 +10,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackScreenParams, ExpenseParamList } from "./root-stack-screen-params";
 import { TouchableOpacity, View } from "react-native-ui-lib/core";
 import { SafeAreaView, StyleSheet } from "react-native";
-import { Icon, Text } from "react-native-ui-lib";
+import { Colors, Icon, Text } from "react-native-ui-lib";
 import { PeopleFooter } from "../components/PeopleFooter";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
@@ -54,7 +54,7 @@ export const PeopleScreen = ({ navigation }: Props): JSX.Element => {
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={onBackPress}>
-                    <Icon assetName="arrowBack" size={27} />
+                    <Icon assetName="arrowBack" size={27} tintColor={Colors.textColor} />
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => setIsSelecting(true)}>
@@ -82,6 +82,7 @@ const styles = StyleSheet.create({
         display: "flex",
         flexGrow: 1,
         width: "100%",
+        backgroundColor: Colors.screenBG,
     },
     header: {
         display: "flex",

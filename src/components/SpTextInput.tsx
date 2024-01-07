@@ -11,6 +11,7 @@ export const SpTextInput = (props: TextFieldProps): JSX.Element => {
     return (
         <TextField
             body
+            color="black"
             readonly={props.readonly}
             autoCapitalize={props.autoCapitalize}
             secureTextEntry={props.secureTextEntry}

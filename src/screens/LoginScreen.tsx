@@ -7,6 +7,7 @@ import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { Subscription } from "rxjs";
 import { IUserCredential } from "@splitsies/shared-models";
 import { LoginForm } from "../components/LoginForm";
+import { Colors } from "react-native-ui-lib";
 
 const _userManager = lazyInject<IUserManager>(IUserManager);
 
@@ -62,5 +63,6 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         justifyContent: "center",
         width: "100%",
+        backgroundColor: Colors.screenBG,
     },
 });

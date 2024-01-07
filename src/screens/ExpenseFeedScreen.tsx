@@ -55,7 +55,7 @@ export const ExpenseFeedScreen = ({ navigation }: Props): JSX.Element => {
     };
 
     return expenses.length === 0 ? (
-        <View style={styles.welcomeMessageContainer}>
+        <View style={styles.welcomeMessageContainer} bg-screenBG>
             <ScrollView
                 contentContainerStyle={styles.welcomeMessageContainer}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
@@ -69,7 +69,7 @@ export const ExpenseFeedScreen = ({ navigation }: Props): JSX.Element => {
             </View>
         </View>
     ) : (
-        <View style={styles.listContainer}>
+        <View style={styles.listContainer} bg-screenBG>
             <FlatList
                 contentContainerStyle={{ paddingBottom: 40 }}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}

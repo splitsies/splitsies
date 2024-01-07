@@ -46,7 +46,7 @@ export const RequestsFeedScreen = (_: Props): JSX.Element => {
     };
 
     return (
-        <View style={styles.scrollView}>
+        <View style={styles.scrollView} bg-screenBG>
             <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
                 {joinRequests.length > 0 ? (
                     joinRequests.map((r) => (

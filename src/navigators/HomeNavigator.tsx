@@ -7,7 +7,7 @@ import { lazyInject } from "../utils/lazy-inject";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { TouchableOpacity, View } from "react-native-ui-lib/core";
 import { ActivityIndicator, StyleSheet } from "react-native";
-import { Icon } from "react-native-ui-lib";
+import { Colors, Icon } from "react-native-ui-lib";
 import { SplitsiesTitle } from "../components/SplitsiesTitle";
 import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-interface";
 import { useObservable } from "../hooks/use-observable";
@@ -24,12 +24,12 @@ export const HomeNavigator = () => {
 
     const Header = ({ navigation }: any) => {
         return (
-            <View style={styles.header}>
+            <View style={styles.header} bg-screenBG>
                 <SplitsiesTitle />
                 <View row style={{ columnGap: 10 }}>
                     <ActivityIndicator color={_colorConfiguration.black} animating={pendingData} hidesWhenStopped />
                     <TouchableOpacity onPress={navigation.openDrawer}>
-                        <Icon assetName="menu" size={27} />
+                        <Icon assetName="menu" size={27} tintColor={Colors.textColor} />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -43,7 +43,7 @@ export const HomeNavigator = () => {
             screenOptions={{
                 drawerPosition: "right",
                 drawerActiveTintColor: _colorConfiguration.black,
-                drawerActiveBackgroundColor: _colorConfiguration.primaryTranslucentLight,
+                drawerActiveBackgroundColor: Colors.primaryTranslucent,
                 drawerLabelStyle: _styleManager.typography.body,
                 header: Header,
             }}
@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
-        marginHorizontal: 20,
-        marginVertical: 20,
+        paddingHorizontal: 20,
+        paddingVertical: 20,
     },
 });

@@ -23,8 +23,23 @@ export class StyleManager implements IStyleManager {
     initialize(): void {
         Colors.loadColors({
             primary: this.colorConfiguration.primary,
-            primaryTranslucent: this.colorConfiguration.primaryTranslucent,
+            primaryTranslucentLight: this.colorConfiguration.primaryTranslucentLight,
             hint: this.colorConfiguration.greyFont,
+        });
+
+        Colors.loadSchemes({
+            light: {
+                screenBG: Colors.white,
+                textColor: Colors.grey10,
+                primaryTranslucent: this.colorConfiguration.primaryTranslucentLight,
+                divider: this.colorConfiguration.divider,
+            },
+            dark: {
+                screenBG: Colors.grey10,
+                textColor: Colors.white,
+                primaryTranslucent: this.colorConfiguration.primaryTranslucentDark,
+                divider: this.colorConfiguration.dividerDark,
+            },
         });
 
         Typography.loadTypographies(this.typography);

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Alert, Keyboard, SafeAreaView, StyleSheet, TouchableWithoutFeedback } from "react-native";
-import { Icon, Wizard, WizardStepStates } from "react-native-ui-lib";
+import { Colors, Icon, Wizard, WizardStepStates } from "react-native-ui-lib";
 import { TouchableOpacity, View } from "react-native-ui-lib/core";
 import { RootStackScreenParams } from "./root-stack-screen-params";
 import { lazyInject } from "../utils/lazy-inject";
@@ -80,28 +80,28 @@ export const SignupScreen = ({ navigation }: Props): JSX.Element => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <View padding-5 style={{ display: "flex" }}>
+            <View style={styles.header}>
                 <TouchableOpacity onPress={onBackPress}>
-                    <Icon assetName="arrowBack" size={27} />
+                    <Icon assetName="arrowBack" size={27} tintColor={Colors.textColor} />
                 </TouchableOpacity>
-            </View>
 
-            <Wizard activeIndex={wizardIndex} containerStyle={styles.wizard} onActiveIndexChanged={setWizardIndex}>
-                <Wizard.Step
-                    color={_colorConfiguration.dividerDark}
-                    circleBackgroundColor={_colorConfiguration.primary}
-                    circleColor={_colorConfiguration.primary}
-                    state={provideWizardStepState(0)}
-                    label={"Personal Info"}
-                />
-                <Wizard.Step
-                    color={_colorConfiguration.dividerDark}
-                    circleBackgroundColor={_colorConfiguration.primary}
-                    circleColor={_colorConfiguration.primary}
-                    state={provideWizardStepState(1)}
-                    label={"Login Info"}
-                />
-            </Wizard>
+                <Wizard activeIndex={wizardIndex} containerStyle={styles.wizard} onActiveIndexChanged={setWizardIndex}>
+                    <Wizard.Step
+                        color={_colorConfiguration.dividerDark}
+                        circleBackgroundColor={_colorConfiguration.primary}
+                        circleColor={_colorConfiguration.primary}
+                        state={provideWizardStepState(0)}
+                        label={"Personal Info"}
+                    />
+                    <Wizard.Step
+                        color={_colorConfiguration.dividerDark}
+                        circleBackgroundColor={_colorConfiguration.primary}
+                        circleColor={_colorConfiguration.primary}
+                        state={provideWizardStepState(1)}
+                        label={"Login Info"}
+                    />
+                </Wizard>
+            </View>
 
             <View style={styles.stepContainer}>
                 <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -116,6 +116,17 @@ const styles = StyleSheet.create({
     container: {
         display: "flex",
         height: "100%",
+        width: "100%",
+        backgroundColor: Colors.screenBG,
+    },
+    header: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        paddingLeft: 10,
+        paddingRight: 15,
+        paddingTop: 20,
         width: "100%",
     },
     wizard: {

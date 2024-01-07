@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { StyleSheet, Alert, ScrollView } from "react-native";
 import { IExpense, IExpenseItem, IExpenseUserDetails, ExpenseItem as ExpenseItemModel } from "@splitsies/shared-models";
 import { Text, View } from "react-native-ui-lib/core";
-import { Button, Icon } from "react-native-ui-lib";
+import { Button, Colors, Icon } from "react-native-ui-lib";
 import { ExpenseItem } from "./ExpenseItem";
 import { lazyInject } from "../utils/lazy-inject";
 import { IPriceCalculator } from "../utils/price-calculator/price-calculator-interface";
@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         padding: 15,
         display: "flex",
-        borderColor: _colorConfiguration.black,
+        borderColor: Colors.textColor,
     },
     itemContainer: {
         paddingHorizontal: 10,

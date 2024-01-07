@@ -80,7 +80,7 @@ export const ContactsScreen = ({ navigation }: Props) => {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={styles.container} bg-screenBG>
             <SafeAreaView>
                 <View style={styles.body}>
                     <FlatList

@@ -8,7 +8,7 @@ import { Observable, filter } from "rxjs";
 import { IExpense, IExpenseItem } from "@splitsies/shared-models";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { View, TouchableOpacity, Text } from "react-native-ui-lib/core";
-import { Icon } from "react-native-ui-lib";
+import { Colors, Icon } from "react-native-ui-lib";
 import { format } from "../utils/format-date";
 import { ExpenseItem } from "../components/ExpenseItem";
 import { EditModal } from "../components/EditModal";
@@ -148,7 +148,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={onBackPress}>
-                    <Icon assetName="arrowBack" size={27} />
+                    <Icon assetName="arrowBack" size={27} tintColor={Colors.textColor} />
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={onSelectAction}>
@@ -172,7 +172,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                         <View>
                             <ListSeparator />
                             <View style={{ width: "100%", marginVertical: 20, alignItems: "center" }}>
-                                <Icon assetName="add" size={25} tintColor="black" />
+                                <Icon assetName="add" size={25} tintColor={Colors.textColor} />
                             </View>
                         </View>
                     </TouchableOpacity>
@@ -228,6 +228,7 @@ const styles = StyleSheet.create({
         display: "flex",
         flexGrow: 1,
         width: "100%",
+        backgroundColor: Colors.screenBG,
     },
     header: {
         display: "flex",

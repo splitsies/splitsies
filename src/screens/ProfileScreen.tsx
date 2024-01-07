@@ -8,7 +8,7 @@ import { DrawerScreenProps } from "@react-navigation/drawer";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { useObservable } from "../hooks/use-observable";
 import { SpTextInput } from "../components/SpTextInput";
-import { Button, View } from "react-native-ui-lib";
+import { Button, Colors, View } from "react-native-ui-lib";
 import QRCode from "react-native-qrcode-svg";
 import { IQrPayload } from "../models/qr-payload/qr-payload-interface";
 import { QrPayload } from "../models/qr-payload/qr-payload";
@@ -38,9 +38,13 @@ export const ProfileScreen = ({ navigation }: Props) => {
 
     return user?.user ? (
         <SafeAreaView style={styles.container}>
-            <View style={{ display: "flex", flexGrow: 1 }}>
+            <View style={{ display: "flex", flexGrow: 1 }} bg-screenBG>
                 <View style={{ display: "flex", flex: 2, rowGap: 10, justifyContent: "center", alignItems: "center" }}>
-                    <QRCode value={JSON.stringify(payload)} />
+                    <QRCode
+                        value={JSON.stringify(payload)}
+                        color={Colors.screenBG}
+                        backgroundColor={Colors.textColor}
+                    />
                     <SpTextInput readonly value={user.user.givenName} placeholder="First Name" />
                     <SpTextInput readonly value={user.user.familyName} placeholder="Last Name" />
                     <SpTextInput readonly value={user.user.email} placeholder="Email" />

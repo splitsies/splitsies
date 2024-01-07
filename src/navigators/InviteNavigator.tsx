@@ -6,7 +6,7 @@ import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { lazyInject } from "../utils/lazy-inject";
 import { GuestScreen } from "../screens/GuestsScreen";
 import { SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { Icon, TextField } from "react-native-ui-lib";
+import { Colors, Icon, TextField } from "react-native-ui-lib";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -41,11 +41,11 @@ export const InviteNavigator = ({ navigation }: Props) => {
     });
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <View style={styles.header}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.screenBG }}>
+            <View style={styles.header} bg-screenBG>
                 <View style={styles.arrowContainer}>
                     <TouchableOpacity onPress={onBackPress}>
-                        <Icon assetName="arrowBack" size={27} />
+                        <Icon assetName="arrowBack" size={27} tintColor={Colors.textColor} />
                     </TouchableOpacity>
                 </View>
 
@@ -62,7 +62,11 @@ export const InviteNavigator = ({ navigation }: Props) => {
 
                 <View style={styles.addUserContainer}>
                     <TouchableOpacity onPress={() => _inviteViewModel.setInviteMenuOpen(true)}>
-                        <Icon assetName={state === "contacts" ? "qrAdd" : "addUser"} size={27} />
+                        <Icon
+                            assetName={state === "contacts" ? "qrAdd" : "addUser"}
+                            size={27}
+                            tintColor={Colors.textColor}
+                        />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -101,7 +105,7 @@ const styles = StyleSheet.create({
     },
     textInput: {
         height: 50,
-        backgroundColor: "white",
+        backgroundColor: Colors.screenBG,
         borderRadius: 25,
         paddingHorizontal: 15,
         borderWidth: 1,

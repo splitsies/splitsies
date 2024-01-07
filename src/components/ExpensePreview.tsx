@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Dimensions, NativeModules, Platform, TouchableOpacity } from "react-native";
 import { IExpense, IExpenseMapper, IExpensePayload } from "@splitsies/shared-models";
-import { Icon, Text, View } from "react-native-ui-lib";
+import { Colors, Icon, Text, View } from "react-native-ui-lib";
 import { UserIcon } from "./UserIcon";
 import { lazyInject } from "../utils/lazy-inject";
 
@@ -38,7 +38,7 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
             <View style={[styles.container]}>
                 <View style={styles.rowContainer}>
                     <View style={styles.leftBox}>
-                        <Icon assetName="location" size={17} />
+                        <Icon assetName="location" size={17} tintColor={Colors.textColor} />
                     </View>
                     <View style={styles.rightBox}>
                         <Text>{expense.name}</Text>
@@ -47,7 +47,7 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
 
                 <View style={styles.rowContainer}>
                     <View style={styles.leftBox}>
-                        <Icon assetName="calendar" size={17} />
+                        <Icon assetName="calendar" size={17} tintColor={Colors.textColor} />
                     </View>
                     <View style={styles.rightBox}>
                         <Text subtext>
@@ -60,7 +60,7 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
 
                 <View style={styles.rowContainer}>
                     <View style={styles.leftBox}>
-                        <Icon assetName="people" size={17} />
+                        <Icon assetName="people" size={17} tintColor={Colors.textColor} />
                     </View>
                     <View style={styles.rightBox}>
                         <View
@@ -87,7 +87,7 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
 
                 <View style={styles.rowContainer}>
                     <View style={styles.leftBox}>
-                        <Icon assetName="price" size={17} />
+                        <Icon assetName="price" size={17} tintColor={Colors.textColor} />
                     </View>
                     <View style={styles.rightBox}>
                         <Text subtext>${expense.total.toFixed(2)}</Text>
