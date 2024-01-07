@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
+import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { ContactsScreen } from "../screens/ContactsScreen";
 import { useInitialize } from "../hooks/use-initialize";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
@@ -22,14 +22,12 @@ const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _inviteViewModel = lazyInject<IInviteViewModel>(IInviteViewModel);
 
-
 type Props = CompositeScreenProps<
     NativeStackScreenProps<RootStackScreenParams>,
     BottomTabScreenProps<ExpenseParamList, "Invite">
 >;
 
 export const InviteNavigator = ({ navigation }: Props) => {
-
     const [searchFilter, setSearchFilter] = useState<string>("");
     const state = useObservable(_inviteViewModel.mode$, _inviteViewModel.mode);
 
@@ -38,7 +36,9 @@ export const InviteNavigator = ({ navigation }: Props) => {
         navigation.navigate("RootScreen");
     }, [_expenseManager, navigation]);
 
-    useInitialize(() => { void _userManager.requestUsersFromContacts(); });
+    useInitialize(() => {
+        void _userManager.requestUsersFromContacts();
+    });
 
     return (
         <SafeAreaView style={{ flex: 1 }}>
@@ -67,7 +67,12 @@ export const InviteNavigator = ({ navigation }: Props) => {
                 </View>
             </View>
 
-            <Tab.Navigator initialRouteName="Contacts">
+            <Tab.Navigator
+                initialRouteName="Contacts"
+                screenOptions={{
+                    tabBarIndicatorStyle: { backgroundColor: _colorConfiguration.primary },
+                }}
+            >
                 <Tab.Screen name="Contacts" component={ContactsScreen} />
                 <Tab.Screen name="Guests" component={GuestScreen} />
             </Tab.Navigator>
@@ -108,4 +113,4 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         paddingRight: 5,
     },
-})
+});

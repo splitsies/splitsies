@@ -7,7 +7,7 @@ export class InviteViewModel implements IInviteViewModel {
     private readonly _mode = new BehaviorSubject<"contacts" | "guests">("contacts");
     private readonly _inviteMenuOpen = new BehaviorSubject<boolean>(false);
     private readonly _searchFilter = new BehaviorSubject<string>("");
-    
+
     get mode$(): Observable<"contacts" | "guests"> {
         return this._mode.asObservable();
     }
@@ -37,7 +37,7 @@ export class InviteViewModel implements IInviteViewModel {
     get searchFilter(): string {
         return this._searchFilter.value;
     }
-    setSearchFilter(value: string):void {
+    setSearchFilter(value: string): void {
         if (this.searchFilter === value) return;
         this._searchFilter.next(value);
     }

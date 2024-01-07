@@ -32,8 +32,8 @@ export const GuestScreen = ({ navigation }: Props) => {
     const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, []);
     const searchFilter = useObservable(_inviteViewModel.searchFilter$, _inviteViewModel.searchFilter);
     const addGuestVisible = useObservable(
-        _inviteViewModel.inviteMenuOpen$.pipe(filter(_ => _inviteViewModel.mode === "guests")),
-        _inviteViewModel.inviteMenuOpen
+        _inviteViewModel.inviteMenuOpen$.pipe(filter((_) => _inviteViewModel.mode === "guests")),
+        _inviteViewModel.inviteMenuOpen,
     );
 
     useFocusEffect(() => _inviteViewModel.setMode("guests"));
@@ -43,13 +43,17 @@ export const GuestScreen = ({ navigation }: Props) => {
         await _expenseManager.requestAddUserToExpense(user.id, _expenseManager.currentExpense!.id);
         _inviteViewModel.setInviteMenuOpen(false);
     };
-    
+
     return (
         <View style={styles.container}>
             <View style={styles.body}>
                 <FlatList
                     style={styles.list}
-                    data={expenseUsers.filter((u) => !u.phoneNumber && (!searchFilter || u.givenName.toLowerCase().includes(searchFilter.toLowerCase())))}
+                    data={expenseUsers.filter(
+                        (u) =>
+                            !u.phoneNumber &&
+                            (!searchFilter || u.givenName.toLowerCase().includes(searchFilter.toLowerCase())),
+                    )}
                     keyExtractor={(i) => i.id + i.phoneNumber}
                     ItemSeparatorComponent={ListSeparator}
                     renderItem={({ item: user }) => (
@@ -58,13 +62,13 @@ export const GuestScreen = ({ navigation }: Props) => {
                             contactUsers={contactUsers}
                             expenseUsers={expenseUsers}
                             pendingJoinRequests={pendingJoinRequests}
-                            onInviteUser={() => { }}
-                            onUninviteUser={() => { }}
+                            onInviteUser={() => {}}
+                            onUninviteUser={() => {}}
                         />
                     )}
                 />
             </View>
-        
+
             <Modal enableModalBlur visible={addGuestVisible} animationType="slide">
                 <AddGuestForm onSave={onSaveGuest} onCancel={() => _inviteViewModel.setInviteMenuOpen(false)} />
             </Modal>

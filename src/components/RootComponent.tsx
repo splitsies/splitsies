@@ -51,7 +51,6 @@ export const RootComponent = () => {
         setUserId(cred?.user.id ?? "");
         navigation.navigate(cred ? "RootScreen" : "LoginScreen");
     };
-    
 
     return (
         <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>

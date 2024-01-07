@@ -18,7 +18,6 @@ import { IColorConfiguration } from "../models/configuration/color-config/color-
 import { ListSeparator } from "../components/ListSeparator";
 import { ExpenseFooter } from "../components/ExpenseFooter";
 import { useObservable } from "../hooks/use-observable";
-import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { DrawerScreenProps } from "@react-navigation/drawer";
 
@@ -30,7 +29,6 @@ type Props = CompositeScreenProps<
     NativeStackScreenProps<RootStackScreenParams>,
     DrawerScreenProps<DrawerParamList, "Home">
 >;
-
 
 export const ExpenseScreen = ({ navigation }: Props) => {
     const expense = useObservable<IExpense>(
@@ -44,7 +42,6 @@ export const ExpenseScreen = ({ navigation }: Props) => {
     const [isSelecting, setIsSelecting] = useState<boolean>(false);
     const [isAddingItem, setIsAddingItem] = useState<boolean>(false);
     const [inProgressSelections, setInProgressSelections] = useState<string[]>([]);
-
 
     const onBackPress = useCallback(() => {
         _expenseManager.disconnectFromExpense();
@@ -155,7 +152,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={onSelectAction}>
-                    <Text body>{!isSelecting ? "Select" : "Done"}</Text>
+                    <Text bodyBold>{!isSelecting ? "Select" : "Done"}</Text>
                 </TouchableOpacity>
             </View>
 
@@ -236,7 +233,8 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         justifyContent: "space-between",
-        paddingHorizontal: 10,
+        paddingLeft: 10,
+        paddingRight: 15,
         paddingTop: 31,
         width: "100%",
     },

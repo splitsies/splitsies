@@ -38,8 +38,8 @@ export const ContactsScreen = ({ navigation }: Props) => {
     const pendingJoinRequests = useObservable(_expenseManager.currentExpenseJoinRequests$, []);
     const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, []);
     const codeScannerVisible = useObservable(
-        _inviteViewModel.inviteMenuOpen$.pipe(filter(_ => _inviteViewModel.mode === "contacts")),
-        _inviteViewModel.inviteMenuOpen
+        _inviteViewModel.inviteMenuOpen$.pipe(filter((_) => _inviteViewModel.mode === "contacts")),
+        _inviteViewModel.inviteMenuOpen,
     );
     const searchFilter = useObservable(_inviteViewModel.searchFilter$, _inviteViewModel.searchFilter);
     const [scannedUser, setScannedUser] = useState<IQrPayload | null>(null);
@@ -47,7 +47,9 @@ export const ContactsScreen = ({ navigation }: Props) => {
     useFocusEffect(() => _inviteViewModel.setMode("contacts"));
 
     const onUserInvited = async (user: IExpenseUserDetails): Promise<void> => {
-        if (!user.isRegistered || !user.id) { return; }
+        if (!user.isRegistered || !user.id) {
+            return;
+        }
         return _expenseManager.sendExpenseJoinRequest(user.id, _expenseManager.currentExpense!.id);
     };
 
@@ -60,7 +62,7 @@ export const ContactsScreen = ({ navigation }: Props) => {
         _expenseManager.requestAddUserToExpense(scannedUser.id, _expenseManager.currentExpense.id);
     };
 
-    const onCodeScanned = (codes: Code[]): void => {        
+    const onCodeScanned = (codes: Code[]): void => {
         const rawPayload = codes.find((c) => {
             try {
                 const parsed = JSON.parse(c.value ?? "") as IQrPayload;
@@ -74,17 +76,20 @@ export const ContactsScreen = ({ navigation }: Props) => {
 
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => setScannedUser(null), _imageConfiguration.qrCodeTimeoutMs);
-        setScannedUser(JSON.parse(rawPayload.value) as IQrPayload);        
+        setScannedUser(JSON.parse(rawPayload.value) as IQrPayload);
     };
 
     return (
         <View style={styles.container}>
-            <SafeAreaView >
+            <SafeAreaView>
                 <View style={styles.body}>
                     <FlatList
                         style={styles.list}
-                        data={contactUsers.filter((u) =>
-                            !searchFilter || `${u.givenName} ${u.familyName}`.toLowerCase().includes(searchFilter.toLowerCase()) || u.phoneNumber.includes(searchFilter),
+                        data={contactUsers.filter(
+                            (u) =>
+                                !searchFilter ||
+                                `${u.givenName} ${u.familyName}`.toLowerCase().includes(searchFilter.toLowerCase()) ||
+                                u.phoneNumber.includes(searchFilter),
                         )}
                         keyExtractor={(i) => i.id + i.phoneNumber}
                         ItemSeparatorComponent={ListSeparator}
@@ -102,7 +107,7 @@ export const ContactsScreen = ({ navigation }: Props) => {
                 </View>
             </SafeAreaView>
 
-            <ScanUserModal 
+            <ScanUserModal
                 visible={codeScannerVisible}
                 setVisible={(val) => _inviteViewModel.setInviteMenuOpen(val)}
                 scannedUser={scannedUser}

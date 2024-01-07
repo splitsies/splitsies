@@ -9,7 +9,7 @@ export interface IInviteViewModel {
     readonly inviteMenuOpen$: Observable<boolean>;
     setInviteMenuOpen(value: boolean): void;
 
-    readonly searchFilter: string
+    readonly searchFilter: string;
     readonly searchFilter$: Observable<string>;
     setSearchFilter(value: string): void;
 }

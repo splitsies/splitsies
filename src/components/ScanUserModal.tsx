@@ -18,14 +18,20 @@ type Props = {
     onScannedUserAdded: () => void;
     shouldDisableChip: boolean;
     onCodeScanned: (codes: Code[]) => void;
-}
+};
 
-export const ScanUserModal = ({ visible, setVisible, scannedUser, onScannedUserAdded, shouldDisableChip, onCodeScanned }: Props) => {
+export const ScanUserModal = ({
+    visible,
+    setVisible,
+    scannedUser,
+    onScannedUserAdded,
+    shouldDisableChip,
+    onCodeScanned,
+}: Props) => {
     return (
         <Modal visible={visible} animationType="slide">
             <CameraView onCodeScanned={onCodeScanned}>
                 <View style={styles.cameraOverlay}>
-
                     <SafeAreaView style={styles.headerContainer}>
                         <TouchableOpacity style={{ margin: 15 }} onPress={() => setVisible(false)}>
                             <Icon assetName="arrowBack" size={27} tintColor="white" />
@@ -45,7 +51,7 @@ export const ScanUserModal = ({ visible, setVisible, scannedUser, onScannedUserA
                             onPress={onScannedUserAdded}
                         />
                     )}
-                    
+
                     <Toast
                         body
                         centerMessage
@@ -59,7 +65,7 @@ export const ScanUserModal = ({ visible, setVisible, scannedUser, onScannedUserA
             </CameraView>
         </Modal>
     );
-}
+};
 
 const styles = StyleSheet.create({
     inputContainer: {

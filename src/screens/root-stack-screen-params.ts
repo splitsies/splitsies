@@ -18,9 +18,14 @@ export type ExpenseParamList = {
     Items: undefined;
     People: undefined;
     Invite: undefined;
-}
+};
 
 export type InviteParamList = {
     Contacts: undefined;
     Guests: undefined;
-}
+};
+
+export type FeedParamList = {
+    Expenses: undefined;
+    Requests: undefined;
+};

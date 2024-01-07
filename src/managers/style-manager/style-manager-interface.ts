@@ -5,6 +5,7 @@ export interface IStyleManager {
         heading: object;
         subheading: object;
         body: object;
+        bodyBold: object;
         subtext: object;
         letter: object;
         letterHeading: object;
