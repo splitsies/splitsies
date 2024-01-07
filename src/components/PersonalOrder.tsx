@@ -74,7 +74,7 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
     };
 
     return (
-        <View style={{ ...styles.container, ...style }}>
+        <View style={[styles.container, { borderColor: Colors.textColor, }, style]}>
             {renderHeader()}
             <ScrollView style={styles.orderContainer}>
                 {personalExpense.items
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
         borderWidth: 0.5,
         padding: 15,
         display: "flex",
-        borderColor: Colors.textColor,
+        
     },
     itemContainer: {
         paddingHorizontal: 10,
