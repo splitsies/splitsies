@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { IExpenseJoinRequestDto } from "@splitsies/shared-models";
 import { Text, View } from "react-native-ui-lib/core";
 import { JoinRequest } from "../components/JoinRequest";
@@ -25,11 +25,15 @@ export const RequestsFeedScreen = (_: Props): JSX.Element => {
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const joinRequests = useObservable(_expenseManager.expenseJoinRequests$, []);
 
-    useFocusEffect(() => {
+    useFocusEffect(useCallback(() => {
+        void onFocusAsync();
+    }, []));
+
+    const onFocusAsync = async (): Promise<void> => {
         _viewModel.setPendingData(true);
-        void _expenseManager.requestExpenseJoinRequests();
+        await _expenseManager.requestExpenseJoinRequests();
         _viewModel.setPendingData(false);
-    });
+    };
 
     const onApproveRequest = async (joinRequest: IExpenseJoinRequestDto): Promise<void> => {
         await _expenseManager.requestAddUserToExpense(joinRequest.userId, joinRequest.expense.expense.id);
@@ -46,7 +50,7 @@ export const RequestsFeedScreen = (_: Props): JSX.Element => {
     };
 
     return (
-        <View style={styles.scrollView}>
+        <View style={styles.scrollView} bg-screenBG>
             <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
                 {joinRequests.length > 0 ? (
                     joinRequests.map((r) => (

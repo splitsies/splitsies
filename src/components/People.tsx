@@ -1,6 +1,6 @@
 import { IExpense, IExpenseUserDetails } from "@splitsies/shared-models";
 import React, { useState } from "react";
-import { Carousel, PageControl, PageControlPosition } from "react-native-ui-lib";
+import { Carousel, Colors, PageControl, PageControlPosition } from "react-native-ui-lib";
 import { View } from "react-native-ui-lib/core";
 import { PersonalOrder } from "./PersonalOrder";
 import { Dimensions, StyleSheet } from "react-native";
@@ -54,7 +54,7 @@ export const People = ({ isSelecting, people, expense, updateItemOwners, endSele
             <View style={{ display: "flex" }}>
                 <PageControl
                     containerStyle={{ paddingVertical: 15 }}
-                    color={_colorConfiguration.black}
+                    color={Colors.textColor}
                     numOfPages={people.length}
                     currentPage={pageIndex}
                 />

@@ -23,7 +23,6 @@ export const FeedNavigator = () => {
             initialRouteName="Feed"
             screenOptions={{
                 headerShown: false,
-                tabBarStyle: styles.bar,
                 tabBarActiveTintColor: _colorConfiguration.primary,
                 tabBarLabelStyle: _styleManager.typography.subtext,
             }}
@@ -62,9 +61,6 @@ export const FeedNavigator = () => {
 };
 
 const styles = StyleSheet.create({
-    bar: {
-        height: 55,
-    },
     tab: {
         display: "flex",
         flex: 1,

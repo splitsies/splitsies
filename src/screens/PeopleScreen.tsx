@@ -10,10 +10,11 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackScreenParams, ExpenseParamList } from "./root-stack-screen-params";
 import { TouchableOpacity, View } from "react-native-ui-lib/core";
 import { SafeAreaView, StyleSheet } from "react-native";
-import { Icon, Text } from "react-native-ui-lib";
+import { Colors, Icon, Text } from "react-native-ui-lib";
 import { PeopleFooter } from "../components/PeopleFooter";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
+import { useThemeWatcher } from "../hooks/use-theme-watcher";
 
 type Props = CompositeScreenProps<
     NativeStackScreenProps<RootStackScreenParams>,
@@ -24,6 +25,7 @@ const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 
 export const PeopleScreen = ({ navigation }: Props): JSX.Element => {
+    useThemeWatcher();
     const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, _expenseManager.currentExpenseUsers);
     const expense = useObservable<IExpense>(
         _expenseManager.currentExpense$.pipe(filter((e) => !!e)) as Observable<IExpense>,
@@ -33,7 +35,7 @@ export const PeopleScreen = ({ navigation }: Props): JSX.Element => {
 
     const onBackPress = useCallback(() => {
         _expenseManager.disconnectFromExpense();
-        navigation.navigate("RootScreen");
+        navigation.navigate("Items");
     }, [_expenseManager, navigation]);
 
     const updateExpenseItemOwners = (userId: string, selectedItemIds: string[]): void => {
@@ -51,29 +53,33 @@ export const PeopleScreen = ({ navigation }: Props): JSX.Element => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
-                <TouchableOpacity onPress={onBackPress}>
-                    <Icon assetName="arrowBack" size={27} />
-                </TouchableOpacity>
+        <View style={{ flex: 1 }} bg-screenBG>
+            <SafeAreaView style={styles.container}>
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={onBackPress}>
+                        <Icon assetName="arrowBack" size={27} tintColor={Colors.textColor} />
+                    </TouchableOpacity>
 
-                <TouchableOpacity onPress={() => setIsSelecting(true)}>
-                    <Text bodyBold>Select</Text>
-                </TouchableOpacity>
-            </View>
+                    <TouchableOpacity onPress={() => setIsSelecting(true)}>
+                        <Text bodyBold color={Colors.textColor}>
+                            Select
+                        </Text>
+                    </TouchableOpacity>
+                </View>
 
-            <People
-                people={expenseUsers}
-                expense={expense}
-                updateItemOwners={updateExpenseItemOwners}
-                isSelecting={isSelecting}
-                endSelectingMode={() => setIsSelecting(false)}
-            />
+                <People
+                    people={expenseUsers}
+                    expense={expense}
+                    updateItemOwners={updateExpenseItemOwners}
+                    isSelecting={isSelecting}
+                    endSelectingMode={() => setIsSelecting(false)}
+                />
 
-            <View style={styles.footer}>
-                <PeopleFooter expense={expense} expenseUsers={expenseUsers} />
-            </View>
-        </SafeAreaView>
+                <View style={styles.footer}>
+                    <PeopleFooter expense={expense} expenseUsers={expenseUsers} />
+                </View>
+            </SafeAreaView>
+        </View>
     );
 };
 

@@ -36,7 +36,6 @@ export const ExpenseNavigator = (_: Props) => {
             initialRouteName="Items"
             screenOptions={{
                 headerShown: false,
-                tabBarStyle: styles.bar,
                 tabBarActiveTintColor: _colorConfiguration.primary,
                 tabBarLabelStyle: _styleManager.typography.subtext,
             }}
@@ -63,9 +62,3 @@ export const ExpenseNavigator = (_: Props) => {
         </Tab.Navigator>
     );
 };
-
-const styles = StyleSheet.create({
-    bar: {
-        height: 55,
-    },
-});

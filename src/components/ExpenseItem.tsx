@@ -1,10 +1,11 @@
 import React from "react";
 import { IExpenseItem } from "@splitsies/shared-models";
 import { StyleSheet } from "react-native";
-import { Checkbox } from "react-native-ui-lib";
+import { Checkbox, Colors } from "react-native-ui-lib";
 import { Text, TouchableOpacity, View } from "react-native-ui-lib/core";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
+import { useThemeWatcher } from "../hooks/use-theme-watcher";
 
 type Props = {
     item: IExpenseItem;
@@ -19,6 +20,7 @@ type Props = {
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 
 export const ExpenseItem = ({ item, selected, selectable, showOwners, style, onPress, onSelect }: Props) => {
+    useThemeWatcher();
     const ownerList = item.owners
         .map(
             (userDetails) => `${userDetails.givenName}${userDetails.familyName ? " " + userDetails.familyName[0] : ""}`,
@@ -45,7 +47,7 @@ export const ExpenseItem = ({ item, selected, selectable, showOwners, style, onP
                                     onValueChange={() => onSelect?.(item.id)}
                                 />
                             )}
-                            <Text body numberOfLines={1} ellipsizeMode={"tail"}>
+                            <Text body numberOfLines={1} ellipsizeMode={"tail"} color={Colors.textColor}>
                                 {item.name}
                             </Text>
                         </View>

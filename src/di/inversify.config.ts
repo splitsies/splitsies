@@ -40,6 +40,8 @@ import { IInviteViewModel } from "../view-models/invite-view-model/invite-view-m
 import { InviteViewModel } from "../view-models/invite-view-model/invite-view-model";
 import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-interface";
 import { HomeViewModel } from "../view-models/home-view-model/home-view-model";
+import { IThemeViewModel } from "../view-models/theme-view-model/theme-view-model-interface";
+import { ThemeViewModel } from "../view-models/theme-view-model/theme-view-model";
 const container = new Container();
 
 container.bind<IApiConfig>(IApiConfig).to(ApiConfig).inSingletonScope();
@@ -61,4 +63,5 @@ container.bind<IVenmoLinker>(IVenmoLinker).to(VenmoLinker).inSingletonScope();
 container.bind<IVenmoConfiguration>(IVenmoConfiguration).to(VenmoConfiguration).inSingletonScope();
 container.bind<IInviteViewModel>(IInviteViewModel).to(InviteViewModel).inSingletonScope();
 container.bind<IHomeViewModel>(IHomeViewModel).to(HomeViewModel).inSingletonScope();
+container.bind<IThemeViewModel>(IThemeViewModel).to(ThemeViewModel).inSingletonScope();
 export { container };

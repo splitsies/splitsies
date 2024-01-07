@@ -103,6 +103,7 @@ export const UserDetailsForm = ({ userDetails, onContinue }: Props) => {
                     </KeyboardAvoidingView>
                     <DateTimePicker
                         body
+                        color="black"
                         validate={["required"]}
                         floatingPlaceholder
                         floatingPlaceholderStyle={styles.label}
