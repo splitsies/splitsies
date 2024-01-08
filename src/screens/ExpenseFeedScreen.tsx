@@ -29,7 +29,7 @@ const _userManager = lazyInject<IUserManager>(IUserManager);
 const _requestConfiguration = lazyInject<IRequestConfiguration>(IRequestConfiguration);
 const _viewModel = lazyInject<IHomeViewModel>(IHomeViewModel);
 
-export const ExpenseFeedScreen = SpThemedComponent(({ navigation }: Props): JSX.Element => {
+export const ExpenseFeedScreen = SpThemedComponent((): JSX.Element => {
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const expenses = useObservable(_expenseManager.expenses$, _expenseManager.expenses);
     const userName = useObservableReducer(_userManager.user$, "", (userCred) => userCred?.user.givenName ?? "");
@@ -58,7 +58,6 @@ export const ExpenseFeedScreen = SpThemedComponent(({ navigation }: Props): JSX.
 
         await lastValueFrom(timedExpenseObserver);
         _viewModel.setPendingData(false);
-        navigation.navigate("ExpenseScreen");
     };
 
     const refresh = async (): Promise<void> => {
