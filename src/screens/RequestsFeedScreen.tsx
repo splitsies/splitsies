@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { IExpenseJoinRequestDto } from "@splitsies/shared-models";
 import { Text, View } from "react-native-ui-lib/core";
 import { JoinRequest } from "../components/JoinRequest";
@@ -12,6 +12,7 @@ import { RootStackScreenParams, DrawerParamList, FeedParamList } from "./root-st
 import { lazyInject } from "../utils/lazy-inject";
 import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-interface";
 import { useObservable } from "../hooks/use-observable";
+import { Container } from "../components/Container";
 
 type Props = CompositeScreenProps<
     CompositeScreenProps<NativeStackScreenProps<RootStackScreenParams>, DrawerScreenProps<DrawerParamList, "Home">>,
@@ -25,11 +26,17 @@ export const RequestsFeedScreen = (_: Props): JSX.Element => {
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const joinRequests = useObservable(_expenseManager.expenseJoinRequests$, []);
 
-    useFocusEffect(() => {
+    useFocusEffect(
+        useCallback(() => {
+            void onFocusAsync();
+        }, []),
+    );
+
+    const onFocusAsync = async (): Promise<void> => {
         _viewModel.setPendingData(true);
-        void _expenseManager.requestExpenseJoinRequests();
+        await _expenseManager.requestExpenseJoinRequests();
         _viewModel.setPendingData(false);
-    });
+    };
 
     const onApproveRequest = async (joinRequest: IExpenseJoinRequestDto): Promise<void> => {
         await _expenseManager.requestAddUserToExpense(joinRequest.userId, joinRequest.expense.expense.id);
@@ -46,7 +53,7 @@ export const RequestsFeedScreen = (_: Props): JSX.Element => {
     };
 
     return (
-        <View style={styles.scrollView}>
+        <Container>
             <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
                 {joinRequests.length > 0 ? (
                     joinRequests.map((r) => (
@@ -63,7 +70,7 @@ export const RequestsFeedScreen = (_: Props): JSX.Element => {
                     </View>
                 )}
             </ScrollView>
-        </View>
+        </Container>
     );
 };
 

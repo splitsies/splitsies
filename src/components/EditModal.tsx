@@ -8,10 +8,11 @@ import {
     TouchableWithoutFeedback,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { Button, Checkbox, Modal, TextField, TextFieldRef, View } from "react-native-ui-lib";
+import { Button, Checkbox, Colors, Modal, TextField, TextFieldRef, View } from "react-native-ui-lib";
 import { EditResult } from "../models/edit-result";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
+import { useThemeWatcher } from "../hooks/use-theme-watcher";
 
 const _dimensions = Dimensions.get("screen");
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -27,6 +28,7 @@ type Props = {
 };
 
 export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, proportional, onDelete }: Props) => {
+    useThemeWatcher();
     const [name, setName] = useState<string>(nameValue ?? "");
     const [isProportional, setIsProportional] = useState<boolean>(!!proportional);
 
@@ -65,7 +67,8 @@ export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, pr
                                 placeholderTextColor={_colorConfiguration.greyFont}
                                 value={name}
                                 onChangeText={(text) => setName(text)}
-                                style={styles.textInput}
+                                style={[styles.textInput, { backgroundColor: Colors.screenBG }]}
+                                color={Colors.textColor}
                             />
                         )}
 
@@ -77,7 +80,11 @@ export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, pr
                                 placeholderTextColor={_colorConfiguration.greyFont}
                                 inputMode="numeric"
                                 onChangeText={(text) => onPriceChange(text)}
-                                style={[styles.textInput, { fontSize: 15, fontFamily: "Avenir-Roman" }]}
+                                style={[
+                                    styles.textInput,
+                                    { fontSize: 15, fontFamily: "Avenir-Roman", backgroundColor: Colors.screenBG },
+                                ]}
+                                color={Colors.textColor}
                             />
                         )}
 
@@ -95,7 +102,7 @@ export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, pr
                     <View style={styles.optionsContainer}>
                         {proportional != null && (
                             <Checkbox
-                                containerStyle={styles.textInput}
+                                containerStyle={[styles.textInput, { backgroundColor: Colors.screenBG }]}
                                 color={_colorConfiguration.primary}
                                 value={isProportional}
                                 label="Proportional"
@@ -105,7 +112,7 @@ export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, pr
 
                         {priceValue != null && (
                             <Checkbox
-                                containerStyle={styles.textInput}
+                                containerStyle={[styles.textInput, { backgroundColor: Colors.screenBG }]}
                                 color={_colorConfiguration.primary}
                                 value={price.current < 0}
                                 label="Discount"
@@ -149,7 +156,6 @@ const styles = StyleSheet.create({
     },
     textInput: {
         height: 50,
-        backgroundColor: "white",
         borderRadius: 25,
         width: _dimensions.width * 0.75,
         paddingHorizontal: 15,

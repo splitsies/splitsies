@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { FlatList, SafeAreaView, StyleSheet } from "react-native";
 import { View } from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
@@ -19,6 +19,7 @@ import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
 import { ScanUserModal } from "../components/ScanUserModal";
 import { IInviteViewModel } from "../view-models/invite-view-model/invite-view-model-interface";
 import { filter } from "rxjs";
+import { useThemeWatcher } from "../hooks/use-theme-watcher";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -34,6 +35,8 @@ type Props = CompositeScreenProps<
 >;
 
 export const ContactsScreen = ({ navigation }: Props) => {
+    useThemeWatcher();
+
     const contactUsers = useObservable(_userManager.contactUsers$, []);
     const pendingJoinRequests = useObservable(_expenseManager.currentExpenseJoinRequests$, []);
     const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, []);
@@ -72,15 +75,17 @@ export const ContactsScreen = ({ navigation }: Props) => {
             }
         });
 
-        if (!rawPayload?.value) return;
+        if (!rawPayload?.value || (scannedUser && rawPayload.value === JSON.stringify(scannedUser))) return;
 
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => setScannedUser(null), _imageConfiguration.qrCodeTimeoutMs);
-        setScannedUser(JSON.parse(rawPayload.value) as IQrPayload);
+        const payload = JSON.parse(rawPayload.value) as IQrPayload;
+        console.log({ payload, now: Date.now() });
+        setScannedUser(payload);
     };
 
     return (
-        <View style={styles.container}>
+        <View style={styles.container} bg-screenBG>
             <SafeAreaView>
                 <View style={styles.body}>
                     <FlatList

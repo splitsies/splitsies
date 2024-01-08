@@ -1,12 +1,12 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { FlatList, RefreshControl, ScrollView, StyleSheet } from "react-native";
-import { Text, View } from "react-native-ui-lib";
+import { Colors, Text, View } from "react-native-ui-lib";
 import { ListSeparator } from "../components/ListSeparator";
 import { ExpensePreview } from "../components/ExpensePreview";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { DrawerParamList, FeedParamList, RootStackScreenParams } from "./root-stack-screen-params";
 import { DrawerScreenProps } from "@react-navigation/drawer";
-import { CompositeScreenProps } from "@react-navigation/native";
+import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { race, first, timer, lastValueFrom } from "rxjs";
 import { useObservable } from "../hooks/use-observable";
@@ -16,6 +16,8 @@ import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { IRequestConfiguration } from "../models/configuration/request-config/request-configuration-interface";
 import { lazyInject } from "../utils/lazy-inject";
 import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-interface";
+import { useThemeWatcher } from "../hooks/use-theme-watcher";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 type Props = CompositeScreenProps<
     CompositeScreenProps<NativeStackScreenProps<RootStackScreenParams>, DrawerScreenProps<DrawerParamList, "Home">>,
@@ -27,11 +29,22 @@ const _userManager = lazyInject<IUserManager>(IUserManager);
 const _requestConfiguration = lazyInject<IRequestConfiguration>(IRequestConfiguration);
 const _viewModel = lazyInject<IHomeViewModel>(IHomeViewModel);
 
-export const ExpenseFeedScreen = ({ navigation }: Props): JSX.Element => {
+export const ExpenseFeedScreen = SpThemedComponent(({ navigation }: Props): JSX.Element => {
     const [refreshing, setRefreshing] = useState<boolean>(false);
-
     const expenses = useObservable(_expenseManager.expenses$, _expenseManager.expenses);
     const userName = useObservableReducer(_userManager.user$, "", (userCred) => userCred?.user.givenName ?? "");
+
+    useFocusEffect(
+        useCallback(() => {
+            void onFocusAsync();
+        }, []),
+    );
+
+    const onFocusAsync = async (): Promise<void> => {
+        _viewModel.setPendingData(true);
+        await _expenseManager.requestForUser();
+        _viewModel.setPendingData(false);
+    };
 
     const onExpenseClick = async (expenseId: string) => {
         if (_viewModel.pendingData) return;
@@ -55,13 +68,15 @@ export const ExpenseFeedScreen = ({ navigation }: Props): JSX.Element => {
     };
 
     return expenses.length === 0 ? (
-        <View style={styles.welcomeMessageContainer}>
+        <View style={styles.welcomeMessageContainer} bg-screenBG>
             <ScrollView
                 contentContainerStyle={styles.welcomeMessageContainer}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
             >
                 <View style={styles.messageBox}>
-                    <Text subheading>Welcome, {userName}!</Text>
+                    <Text subheading color={Colors.textColor}>
+                        Welcome, {userName}!
+                    </Text>
                 </View>
             </ScrollView>
             <View style={styles.hintBox}>
@@ -69,7 +84,7 @@ export const ExpenseFeedScreen = ({ navigation }: Props): JSX.Element => {
             </View>
         </View>
     ) : (
-        <View style={styles.listContainer}>
+        <View style={styles.listContainer} bg-screenBG>
             <FlatList
                 contentContainerStyle={{ paddingBottom: 40 }}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
@@ -86,7 +101,7 @@ export const ExpenseFeedScreen = ({ navigation }: Props): JSX.Element => {
             />
         </View>
     );
-};
+});
 
 const styles = StyleSheet.create({
     welcomeMessageContainer: {

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { StyleSheet, Dimensions, NativeModules, Platform, TouchableOpacity } from "react-native";
 import { IExpense, IExpenseMapper, IExpensePayload } from "@splitsies/shared-models";
-import { Icon, Text, View } from "react-native-ui-lib";
+import { Colors, Icon, Text, View } from "react-native-ui-lib";
 import { UserIcon } from "./UserIcon";
 import { lazyInject } from "../utils/lazy-inject";
+import { useThemeWatcher } from "../hooks/use-theme-watcher";
 
 const Locale = (
     Platform.OS === "ios"
@@ -38,19 +39,19 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
             <View style={[styles.container]}>
                 <View style={styles.rowContainer}>
                     <View style={styles.leftBox}>
-                        <Icon assetName="location" size={17} />
+                        <Icon assetName="location" size={17} tintColor={Colors.textColor} />
                     </View>
                     <View style={styles.rightBox}>
-                        <Text>{expense.name}</Text>
+                        <Text color={Colors.textColor}>{expense.name}</Text>
                     </View>
                 </View>
 
                 <View style={styles.rowContainer}>
                     <View style={styles.leftBox}>
-                        <Icon assetName="calendar" size={17} />
+                        <Icon assetName="calendar" size={17} tintColor={Colors.textColor} />
                     </View>
                     <View style={styles.rightBox}>
-                        <Text subtext>
+                        <Text subtext color={Colors.textColor}>
                             {expense.transactionDate
                                 .toLocaleString(Locale, DATE_OPTIONS)
                                 .replace(/\d{2}:\d{2}:\d{2}/, "")}
@@ -60,7 +61,7 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
 
                 <View style={styles.rowContainer}>
                     <View style={styles.leftBox}>
-                        <Icon assetName="people" size={17} />
+                        <Icon assetName="people" size={17} tintColor={Colors.textColor} />
                     </View>
                     <View style={styles.rightBox}>
                         <View
@@ -79,7 +80,9 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
                                   ))}
 
                             {data.expenseUsers.length > PERSON_LIMIT && (
-                                <Text body>+ {data.expenseUsers.length - PERSON_LIMIT}</Text>
+                                <Text body color={Colors.textColor}>
+                                    + {data.expenseUsers.length - PERSON_LIMIT}
+                                </Text>
                             )}
                         </View>
                     </View>
@@ -87,10 +90,12 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
 
                 <View style={styles.rowContainer}>
                     <View style={styles.leftBox}>
-                        <Icon assetName="price" size={17} />
+                        <Icon assetName="price" size={17} tintColor={Colors.textColor} />
                     </View>
                     <View style={styles.rightBox}>
-                        <Text subtext>${expense.total.toFixed(2)}</Text>
+                        <Text subtext color={Colors.textColor}>
+                            ${expense.total.toFixed(2)}
+                        </Text>
                     </View>
                 </View>
             </View>

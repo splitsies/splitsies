@@ -45,7 +45,7 @@ export const GuestScreen = ({ navigation }: Props) => {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={styles.container} bg-screenBG>
             <View style={styles.body}>
                 <FlatList
                     style={styles.list}

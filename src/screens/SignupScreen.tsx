@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Alert, Keyboard, SafeAreaView, StyleSheet, TouchableWithoutFeedback } from "react-native";
-import { Icon, Wizard, WizardStepStates } from "react-native-ui-lib";
+import { Colors, Icon, Wizard, WizardStepStates } from "react-native-ui-lib";
 import { TouchableOpacity, View } from "react-native-ui-lib/core";
 import { RootStackScreenParams } from "./root-stack-screen-params";
 import { lazyInject } from "../utils/lazy-inject";
@@ -10,13 +10,15 @@ import { CreateUserRequest, IUserDto } from "@splitsies/shared-models";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { LoginDetailsForm } from "../components/LoginDetailsForm";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
+import { Container } from "../components/Container";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _userManager = lazyInject<IUserManager>(IUserManager);
 
 type Props = NativeStackScreenProps<RootStackScreenParams, "SignupScreen">;
 
-export const SignupScreen = ({ navigation }: Props): JSX.Element => {
+export const SignupScreen = SpThemedComponent(({ navigation }: Props): JSX.Element => {
     const [wizardIndex, setWizardIndex] = useState<number>(0);
     const [lastCompletedStepIndex, setLastCompletedStepIndex] = useState<number | null>(null);
     const [userDetails, setUserDetails] = useState<CreateUserRequest>({
@@ -79,38 +81,44 @@ export const SignupScreen = ({ navigation }: Props): JSX.Element => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View padding-5 style={{ display: "flex" }}>
-                <TouchableOpacity onPress={onBackPress}>
-                    <Icon assetName="arrowBack" size={27} />
-                </TouchableOpacity>
-            </View>
+        <Container>
+            <SafeAreaView style={styles.container}>
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={onBackPress}>
+                        <Icon assetName="arrowBack" size={27} tintColor={Colors.textColor} />
+                    </TouchableOpacity>
 
-            <Wizard activeIndex={wizardIndex} containerStyle={styles.wizard} onActiveIndexChanged={setWizardIndex}>
-                <Wizard.Step
-                    color={_colorConfiguration.dividerDark}
-                    circleBackgroundColor={_colorConfiguration.primary}
-                    circleColor={_colorConfiguration.primary}
-                    state={provideWizardStepState(0)}
-                    label={"Personal Info"}
-                />
-                <Wizard.Step
-                    color={_colorConfiguration.dividerDark}
-                    circleBackgroundColor={_colorConfiguration.primary}
-                    circleColor={_colorConfiguration.primary}
-                    state={provideWizardStepState(1)}
-                    label={"Login Info"}
-                />
-            </Wizard>
+                    <Wizard
+                        activeIndex={wizardIndex}
+                        containerStyle={styles.wizard}
+                        onActiveIndexChanged={setWizardIndex}
+                    >
+                        <Wizard.Step
+                            color={_colorConfiguration.black}
+                            circleBackgroundColor={_colorConfiguration.primary}
+                            circleColor={_colorConfiguration.primary}
+                            state={provideWizardStepState(0)}
+                            label={"Personal Info"}
+                        />
+                        <Wizard.Step
+                            color={_colorConfiguration.dividerDark}
+                            circleBackgroundColor={_colorConfiguration.primary}
+                            circleColor={_colorConfiguration.primary}
+                            state={provideWizardStepState(1)}
+                            label={"Login Info"}
+                        />
+                    </Wizard>
+                </View>
 
-            <View style={styles.stepContainer}>
-                <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-                    {provideWizardStepComponent(wizardIndex)}
-                </TouchableWithoutFeedback>
-            </View>
-        </SafeAreaView>
+                <View style={styles.stepContainer}>
+                    <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+                        {provideWizardStepComponent(wizardIndex)}
+                    </TouchableWithoutFeedback>
+                </View>
+            </SafeAreaView>
+        </Container>
     );
-};
+});
 
 const styles = StyleSheet.create({
     container: {
@@ -118,9 +126,22 @@ const styles = StyleSheet.create({
         height: "100%",
         width: "100%",
     },
+    header: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        paddingLeft: 10,
+        paddingRight: 15,
+        paddingTop: 20,
+        width: "100%",
+    },
     wizard: {
         backgroundColor: "rgba(0,0,0,0)",
         paddingHorizontal: 45,
+        borderWidth: 0,
+        borderColor: "rgba(0,0,0,0)",
+        elevation: 0,
     },
     stepContainer: {
         display: "flex",

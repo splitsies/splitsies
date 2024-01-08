@@ -8,7 +8,7 @@ import { Observable, filter } from "rxjs";
 import { IExpense, IExpenseItem } from "@splitsies/shared-models";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { View, TouchableOpacity, Text } from "react-native-ui-lib/core";
-import { Icon } from "react-native-ui-lib";
+import { Colors, Icon } from "react-native-ui-lib";
 import { format } from "../utils/format-date";
 import { ExpenseItem } from "../components/ExpenseItem";
 import { EditModal } from "../components/EditModal";
@@ -20,6 +20,7 @@ import { ExpenseFooter } from "../components/ExpenseFooter";
 import { useObservable } from "../hooks/use-observable";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { DrawerScreenProps } from "@react-navigation/drawer";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -30,7 +31,7 @@ type Props = CompositeScreenProps<
     DrawerScreenProps<DrawerParamList, "Home">
 >;
 
-export const ExpenseScreen = ({ navigation }: Props) => {
+export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
     const expense = useObservable<IExpense>(
         _expenseManager.currentExpense$.pipe(filter((e) => e != null)) as Observable<IExpense>,
         _expenseManager.currentExpense!,
@@ -145,22 +146,28 @@ export const ExpenseScreen = ({ navigation }: Props) => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <View style={styles.header}>
+        <View style={styles.container} bg-screenBG>
+            <SafeAreaView style={styles.header}>
                 <TouchableOpacity onPress={onBackPress}>
-                    <Icon assetName="arrowBack" size={27} />
+                    <Icon assetName="arrowBack" size={27} tintColor={Colors.textColor} />
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={onSelectAction}>
-                    <Text bodyBold>{!isSelecting ? "Select" : "Done"}</Text>
+                    <Text bodyBold color={Colors.textColor}>
+                        {!isSelecting ? "Select" : "Done"}
+                    </Text>
                 </TouchableOpacity>
-            </View>
+            </SafeAreaView>
 
             <View centerH>
                 <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
-                    <Text heading>{expense.name}</Text>
+                    <Text heading color={Colors.textColor}>
+                        {expense.name}
+                    </Text>
                 </TouchableOpacity>
-                <Text subtext>{format(expense.transactionDate)}</Text>
+                <Text subtext color={Colors.textColor}>
+                    {format(expense.transactionDate)}
+                </Text>
             </View>
 
             <FlatList
@@ -172,7 +179,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                         <View>
                             <ListSeparator />
                             <View style={{ width: "100%", marginVertical: 20, alignItems: "center" }}>
-                                <Icon assetName="add" size={25} tintColor="black" />
+                                <Icon assetName="add" size={25} tintColor={Colors.textColor} />
                             </View>
                         </View>
                     </TouchableOpacity>
@@ -219,9 +226,9 @@ export const ExpenseScreen = ({ navigation }: Props) => {
                 proportional={false}
                 onCancel={() => setIsAddingItem(false)}
             />
-        </SafeAreaView>
+        </View>
     );
-};
+});
 
 const styles = StyleSheet.create({
     container: {
@@ -237,9 +244,6 @@ const styles = StyleSheet.create({
         paddingRight: 15,
         paddingTop: 31,
         width: "100%",
-    },
-    itemContainer: {
-        justifyContent: "space-between",
     },
     list: {
         display: "flex",

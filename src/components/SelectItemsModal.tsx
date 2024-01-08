@@ -4,7 +4,8 @@ import { FlatList, SafeAreaView, StyleSheet } from "react-native";
 import { ListSeparator } from "./ListSeparator";
 import { ExpenseItem } from "./ExpenseItem";
 import { IExpense, IExpenseUserDetails } from "@splitsies/shared-models";
-import { Icon, Modal, Text, TouchableOpacity, View } from "react-native-ui-lib";
+import { Colors, Icon, Modal, Text, TouchableOpacity, View } from "react-native-ui-lib";
+import { useThemeWatcher } from "../hooks/use-theme-watcher";
 
 type Props = {
     user: IExpenseUserDetails;
@@ -14,6 +15,7 @@ type Props = {
 };
 
 export const SelectItemsModal = ({ user, expense, visible, onClose }: Props): JSX.Element => {
+    useThemeWatcher();
     const [selections, setSelections] = useState<string[]>(
         expense.items.filter((i) => i.owners.some((o) => o.id === user.id)).map((i) => i.id),
     );
@@ -39,15 +41,17 @@ export const SelectItemsModal = ({ user, expense, visible, onClose }: Props): JS
     );
 
     return (
-        <Modal enableModalBlur visible={visible} animationType="slide">
-            <SafeAreaView style={styles.container}>
+        <Modal enableModalBlur visible={visible} animationType="slide" style={{ backgroundColor: Colors.screenBG }}>
+            <SafeAreaView style={[styles.container, { backgroundColor: Colors.screenBG }]}>
                 <View style={styles.header}>
                     <View style={styles.arrowContainer}>
                         <TouchableOpacity onPress={() => onClose(selections)}>
-                            <Icon assetName="arrowBack" size={27} />
+                            <Icon assetName="arrowBack" size={27} tintColor={Colors.textColor} />
                         </TouchableOpacity>
                     </View>
-                    <Text heading>{user.givenName + " " + user.familyName}</Text>
+                    <Text heading color={Colors.textColor}>
+                        {user.givenName + " " + user.familyName}
+                    </Text>
                     <View style={styles.arrowContainer} />
                 </View>
                 <View style={styles.body}>
@@ -79,7 +83,7 @@ const styles = StyleSheet.create({
         rowGap: 10,
         alignItems: "center",
         height: "100%",
-        marginHorizontal: 10,
+        paddingHorizontal: 10,
     },
     header: {
         display: "flex",
@@ -87,6 +91,7 @@ const styles = StyleSheet.create({
         width: "100%",
         justifyContent: "space-between",
         paddingVertical: 20,
+        paddingHorizontal: 15,
     },
     body: {
         display: "flex",
