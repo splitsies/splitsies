@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { FlatList, SafeAreaView, StyleSheet } from "react-native";
 import { View } from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
@@ -75,11 +75,13 @@ export const ContactsScreen = ({ navigation }: Props) => {
             }
         });
 
-        if (!rawPayload?.value) return;
+        if (!rawPayload?.value || (scannedUser && rawPayload.value === JSON.stringify(scannedUser))) return;
 
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => setScannedUser(null), _imageConfiguration.qrCodeTimeoutMs);
-        setScannedUser(JSON.parse(rawPayload.value) as IQrPayload);
+        const payload = JSON.parse(rawPayload.value) as IQrPayload;
+        console.log({ payload, now: Date.now() });
+        setScannedUser(payload);
     };
 
     return (

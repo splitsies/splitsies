@@ -9,10 +9,11 @@ import {
     StyleSheet,
     TouchableWithoutFeedback,
 } from "react-native";
-import { DateTimePicker } from "react-native-ui-lib";
+import { Colors, DateTimePicker } from "react-native-ui-lib";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { lazyInject } from "../utils/lazy-inject";
 import { CreateUserRequest, IUserDto } from "@splitsies/shared-models";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 const _dimensions = Dimensions.get("screen");
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -22,7 +23,7 @@ type Props = {
     onContinue: (givenName: string, familyName: string, phoneNumber: string, dateOfBirth: Date) => void;
 };
 
-export const UserDetailsForm = ({ userDetails, onContinue }: Props) => {
+export const UserDetailsForm = SpThemedComponent(({ userDetails, onContinue }: Props) => {
     const [givenName, setGivenName] = useState<string>(userDetails.givenName);
     const [familyName, setFamilyName] = useState<string>(userDetails.familyName);
     const [phoneNumber, setPhoneNumber] = useState<string>(userDetails.phoneNumber);
@@ -52,7 +53,9 @@ export const UserDetailsForm = ({ userDetails, onContinue }: Props) => {
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
             <View style={{ display: "flex", flexGrow: 1 }}>
                 <View style={{ display: "flex", flex: 2, rowGap: 10, justifyContent: "center" }}>
-                    <Text heading>About You</Text>
+                    <Text heading color={Colors.textColor}>
+                        About You
+                    </Text>
 
                     <KeyboardAvoidingView>
                         <SpTextInput
@@ -134,7 +137,7 @@ export const UserDetailsForm = ({ userDetails, onContinue }: Props) => {
             </View>
         </TouchableWithoutFeedback>
     );
-};
+});
 
 const styles = StyleSheet.create({
     label: {

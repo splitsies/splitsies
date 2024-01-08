@@ -80,7 +80,10 @@ export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, pr
                                 placeholderTextColor={_colorConfiguration.greyFont}
                                 inputMode="numeric"
                                 onChangeText={(text) => onPriceChange(text)}
-                                style={[styles.textInput, { fontSize: 15, fontFamily: "Avenir-Roman", backgroundColor: Colors.screenBG  }]}
+                                style={[
+                                    styles.textInput,
+                                    { fontSize: 15, fontFamily: "Avenir-Roman", backgroundColor: Colors.screenBG },
+                                ]}
                                 color={Colors.textColor}
                             />
                         )}

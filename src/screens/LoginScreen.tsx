@@ -7,13 +7,14 @@ import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { Subscription } from "rxjs";
 import { IUserCredential } from "@splitsies/shared-models";
 import { LoginForm } from "../components/LoginForm";
-import { Colors } from "react-native-ui-lib";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
+import { Container } from "../components/Container";
 
 const _userManager = lazyInject<IUserManager>(IUserManager);
 
 type Props = NativeStackScreenProps<RootStackScreenParams, "LoginScreen">;
 
-export const LoginScreen = ({ navigation }: Props) => {
+export const LoginScreen = SpThemedComponent(({ navigation }: Props) => {
     const [validationError, setValidationError] = useState<string>("");
     const attempts = useRef<number>(0);
 
@@ -47,15 +48,17 @@ export const LoginScreen = ({ navigation }: Props) => {
     };
 
     return (
-        <SafeAreaView style={styles.container}>
-            <LoginForm
-                onLoginClicked={onLoginClicked}
-                onSignUpClicked={onSignUpClicked}
-                validationError={validationError}
-            />
-        </SafeAreaView>
+        <Container>
+            <SafeAreaView style={styles.container}>
+                <LoginForm
+                    onLoginClicked={onLoginClicked}
+                    onSignUpClicked={onSignUpClicked}
+                    validationError={validationError}
+                />
+            </SafeAreaView>
+        </Container>
     );
-};
+});
 
 const styles = StyleSheet.create({
     container: {
@@ -63,6 +66,5 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         justifyContent: "center",
         width: "100%",
-        backgroundColor: Colors.screenBG,
     },
 });

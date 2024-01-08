@@ -12,6 +12,7 @@ import { RootStackScreenParams, DrawerParamList, FeedParamList } from "./root-st
 import { lazyInject } from "../utils/lazy-inject";
 import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-interface";
 import { useObservable } from "../hooks/use-observable";
+import { Container } from "../components/Container";
 
 type Props = CompositeScreenProps<
     CompositeScreenProps<NativeStackScreenProps<RootStackScreenParams>, DrawerScreenProps<DrawerParamList, "Home">>,
@@ -25,9 +26,11 @@ export const RequestsFeedScreen = (_: Props): JSX.Element => {
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const joinRequests = useObservable(_expenseManager.expenseJoinRequests$, []);
 
-    useFocusEffect(useCallback(() => {
-        void onFocusAsync();
-    }, []));
+    useFocusEffect(
+        useCallback(() => {
+            void onFocusAsync();
+        }, []),
+    );
 
     const onFocusAsync = async (): Promise<void> => {
         _viewModel.setPendingData(true);
@@ -50,7 +53,7 @@ export const RequestsFeedScreen = (_: Props): JSX.Element => {
     };
 
     return (
-        <View style={styles.scrollView} bg-screenBG>
+        <Container>
             <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
                 {joinRequests.length > 0 ? (
                     joinRequests.map((r) => (
@@ -67,7 +70,7 @@ export const RequestsFeedScreen = (_: Props): JSX.Element => {
                     </View>
                 )}
             </ScrollView>
-        </View>
+        </Container>
     );
 };
 

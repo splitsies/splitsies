@@ -12,7 +12,7 @@ import { Button, Colors, View } from "react-native-ui-lib";
 import QRCode from "react-native-qrcode-svg";
 import { IQrPayload } from "../models/qr-payload/qr-payload-interface";
 import { QrPayload } from "../models/qr-payload/qr-payload";
-import { useThemeWatcher } from "../hooks/use-theme-watcher";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 const _userManager = lazyInject<IUserManager>(IUserManager);
 const _dimensions = Dimensions.get("screen");
@@ -22,8 +22,7 @@ type Props = CompositeScreenProps<
     DrawerScreenProps<DrawerParamList, "Profile">
 >;
 
-export const ProfileScreen = ({ navigation }: Props) => {
-    useThemeWatcher();
+export const ProfileScreen = SpThemedComponent(({ navigation }: Props) => {
     const user = useObservable(_userManager.user$, _userManager.user);
     const [payload, setPayload] = useState<IQrPayload>(
         new QrPayload(user?.user.id || "", user?.user.givenName || "", user?.user.familyName || ""),
@@ -42,11 +41,7 @@ export const ProfileScreen = ({ navigation }: Props) => {
         <SafeAreaView style={styles.container}>
             <View style={{ display: "flex", flexGrow: 1 }} bg-screenBG>
                 <View style={{ display: "flex", flex: 2, rowGap: 10, justifyContent: "center", alignItems: "center" }}>
-                    <QRCode
-                        value={JSON.stringify(payload)}
-                        color={Colors.screenBG}
-                        backgroundColor={Colors.textColor}
-                    />
+                    <QRCode value={JSON.stringify(payload)} color={Colors.black} backgroundColor={Colors.white} />
                     <SpTextInput readonly value={user.user.givenName} placeholder="First Name" />
                     <SpTextInput readonly value={user.user.familyName} placeholder="Last Name" />
                     <SpTextInput readonly value={user.user.email} placeholder="Email" />
@@ -65,7 +60,7 @@ export const ProfileScreen = ({ navigation }: Props) => {
             </View>
         </SafeAreaView>
     ) : null;
-};
+});
 
 const styles = StyleSheet.create({
     container: {

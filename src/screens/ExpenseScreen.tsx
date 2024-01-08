@@ -20,7 +20,7 @@ import { ExpenseFooter } from "../components/ExpenseFooter";
 import { useObservable } from "../hooks/use-observable";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { DrawerScreenProps } from "@react-navigation/drawer";
-import { useThemeWatcher } from "../hooks/use-theme-watcher";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -31,8 +31,7 @@ type Props = CompositeScreenProps<
     DrawerScreenProps<DrawerParamList, "Home">
 >;
 
-export const ExpenseScreen = ({ navigation }: Props) => {
-    useThemeWatcher();
+export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
     const expense = useObservable<IExpense>(
         _expenseManager.currentExpense$.pipe(filter((e) => e != null)) as Observable<IExpense>,
         _expenseManager.currentExpense!,
@@ -229,7 +228,7 @@ export const ExpenseScreen = ({ navigation }: Props) => {
             />
         </View>
     );
-};
+});
 
 const styles = StyleSheet.create({
     container: {
@@ -245,9 +244,6 @@ const styles = StyleSheet.create({
         paddingRight: 15,
         paddingTop: 31,
         width: "100%",
-    },
-    itemContainer: {
-        justifyContent: "space-between",
     },
     list: {
         display: "flex",

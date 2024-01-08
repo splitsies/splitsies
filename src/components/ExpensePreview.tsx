@@ -28,8 +28,6 @@ interface propTypes {
  * @{@link propTypes}
  */
 export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
-    useThemeWatcher();
-
     const [expense, setExpense] = useState<IExpense>(_expenseMapper.toDomainModel(data.expense));
     const [peopleContainerWidth, setPeopleContainerWidth] = useState<number>(Dimensions.get("window").width);
     const PERSON_LIMIT = Math.floor((peopleContainerWidth - 20) / 36) - 1;

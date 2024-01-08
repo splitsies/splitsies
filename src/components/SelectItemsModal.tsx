@@ -41,7 +41,7 @@ export const SelectItemsModal = ({ user, expense, visible, onClose }: Props): JS
     );
 
     return (
-        <Modal enableModalBlur visible={visible} animationType="slide" style={ {backgroundColor: Colors.screenBG }}>
+        <Modal enableModalBlur visible={visible} animationType="slide" style={{ backgroundColor: Colors.screenBG }}>
             <SafeAreaView style={[styles.container, { backgroundColor: Colors.screenBG }]}>
                 <View style={styles.header}>
                     <View style={styles.arrowContainer}>
@@ -49,7 +49,9 @@ export const SelectItemsModal = ({ user, expense, visible, onClose }: Props): JS
                             <Icon assetName="arrowBack" size={27} tintColor={Colors.textColor} />
                         </TouchableOpacity>
                     </View>
-                    <Text heading color={Colors.textColor}>{user.givenName + " " + user.familyName}</Text>
+                    <Text heading color={Colors.textColor}>
+                        {user.givenName + " " + user.familyName}
+                    </Text>
                     <View style={styles.arrowContainer} />
                 </View>
                 <View style={styles.body}>

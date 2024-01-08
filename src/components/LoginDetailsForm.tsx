@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import { Keyboard, KeyboardAvoidingView, TouchableWithoutFeedback } from "react-native";
-import { Button, Text, View } from "react-native-ui-lib/core";
+import { Button, Colors, Text, View } from "react-native-ui-lib/core";
 import { SpTextInput } from "./SpTextInput";
 import { CreateUserRequest } from "@splitsies/shared-models";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 type Props = {
     userDetails: CreateUserRequest;
     onComplete: (email: string, password: string) => Promise<void>;
 };
 
-export const LoginDetailsForm = ({ userDetails, onComplete }: Props) => {
+export const LoginDetailsForm = SpThemedComponent(({ userDetails, onComplete }: Props) => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [confirmedPassword, setConfirmedPassword] = useState<string>("");
@@ -39,7 +40,9 @@ export const LoginDetailsForm = ({ userDetails, onComplete }: Props) => {
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
             <View style={{ display: "flex", flexGrow: 1 }}>
                 <View style={{ display: "flex", flex: 2, rowGap: 10, justifyContent: "center" }}>
-                    <Text heading>Login Details</Text>
+                    <Text heading color={Colors.textColor}>
+                        Login Details
+                    </Text>
 
                     <KeyboardAvoidingView>
                         <SpTextInput
@@ -110,4 +113,4 @@ export const LoginDetailsForm = ({ userDetails, onComplete }: Props) => {
             </View>
         </TouchableWithoutFeedback>
     );
-};
+});
