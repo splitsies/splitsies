@@ -6,29 +6,66 @@ import { IColorConfiguration } from "../models/configuration/color-config/color-
 import { lazyInject } from "../utils/lazy-inject";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { TouchableOpacity, View } from "react-native-ui-lib/core";
-import { ActivityIndicator, SafeAreaView, StyleSheet } from "react-native";
+import { ActivityIndicator, Alert, SafeAreaView, StyleSheet } from "react-native";
 import { Colors, Icon } from "react-native-ui-lib";
 import { SplitsiesTitle } from "../components/SplitsiesTitle";
 import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-interface";
 import { useObservable } from "../hooks/use-observable";
 import { FeedNavigator } from "./FeedNavigator";
+import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
+import { useInitialize } from "../hooks/use-initialize";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackScreenParams } from "../screens/root-stack-screen-params";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
+const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _viewModel = lazyInject<IHomeViewModel>(IHomeViewModel);
 
 const Drawer = createDrawerNavigator();
 
-export const HomeNavigator = () => {
+type Props = NativeStackScreenProps<RootStackScreenParams, "RootScreen">;
+
+export const HomeNavigator = ({ navigation }: Props) => {
     const pendingData = useObservable(_viewModel.pendingData$, false);
 
+    useInitialize(() => {
+        const sub = _expenseManager.currentExpense$.subscribe({
+            next: (e) => {
+                navigation.navigate(!e ? "RootScreen" : "ExpenseScreen");
+            },
+        });
+
+        return () => sub.unsubscribe();
+    });
+
     const Header = ({ navigation }: any) => {
+        const onCreateExpense = async () => {
+            _viewModel.setPendingData(true);
+            await _expenseManager.createExpense();
+            _viewModel.setPendingData(false);
+        };
+
+        const onAddPress = () => {
+            Alert.alert(`Create an empty expense?`, "", [
+                { text: "Yes", onPress: () => void onCreateExpense() },
+                { text: "No", style: "cancel" },
+            ]);
+        };
+
         return (
             <SafeAreaView>
                 <View style={styles.header} bg-screenBG>
-                    <SplitsiesTitle />
+                    <View flex row style={{ columnGap: 10 }}>
+                        <SplitsiesTitle />
+                    </View>
                     <View row style={{ columnGap: 10 }}>
                         <ActivityIndicator color={Colors.textColor} animating={pendingData} hidesWhenStopped />
+
+                        <TouchableOpacity onPress={onAddPress}>
+                            <Icon assetName="add" size={27} tintColor={Colors.textColor} />
+                        </TouchableOpacity>
+
                         <TouchableOpacity onPress={navigation.openDrawer}>
                             <Icon assetName="menu" size={27} tintColor={Colors.textColor} />
                         </TouchableOpacity>
