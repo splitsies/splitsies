@@ -94,7 +94,7 @@ export const SignupScreen = SpThemedComponent(({ navigation }: Props): JSX.Eleme
                         onActiveIndexChanged={setWizardIndex}
                     >
                         <Wizard.Step
-                            color={_colorConfiguration.dividerDark}
+                            color={_colorConfiguration.black}
                             circleBackgroundColor={_colorConfiguration.primary}
                             circleColor={_colorConfiguration.primary}
                             state={provideWizardStepState(0)}
@@ -139,6 +139,9 @@ const styles = StyleSheet.create({
     wizard: {
         backgroundColor: "rgba(0,0,0,0)",
         paddingHorizontal: 45,
+        borderWidth: 0,
+        borderColor: "rgba(0,0,0,0)",
+        elevation: 0,
     },
     stepContainer: {
         display: "flex",
