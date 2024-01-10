@@ -36,7 +36,6 @@ export const InviteNavigator = ({ navigation }: Props) => {
     const state = useObservable(_inviteViewModel.mode$, _inviteViewModel.mode);
 
     const onBackPress = useCallback(() => {
-        _expenseManager.disconnectFromExpense();
         navigation.navigate("Items");
     }, [_expenseManager, navigation]);
 
