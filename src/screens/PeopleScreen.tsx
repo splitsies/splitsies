@@ -34,7 +34,6 @@ export const PeopleScreen = ({ navigation }: Props): JSX.Element => {
     const [isSelecting, setIsSelecting] = useState<boolean>(false);
 
     const onBackPress = useCallback(() => {
-        _expenseManager.disconnectFromExpense();
         navigation.navigate("Items");
     }, [_expenseManager, navigation]);
 

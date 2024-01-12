@@ -2,7 +2,8 @@
 name: Build Android Release apk
 
 on:
-    workflow_dispatch
+  release:
+    types: [created]
 
 jobs:
   build-android:

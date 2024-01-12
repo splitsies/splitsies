@@ -16,6 +16,7 @@ import { IExpenseManager } from "../managers/expense-manager/expense-manager-int
 import { useInitialize } from "../hooks/use-initialize";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackScreenParams } from "../screens/root-stack-screen-params";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
@@ -26,7 +27,7 @@ const Drawer = createDrawerNavigator();
 
 type Props = NativeStackScreenProps<RootStackScreenParams, "RootScreen">;
 
-export const HomeNavigator = ({ navigation }: Props) => {
+export const HomeNavigator = SpThemedComponent(({ navigation }: Props) => {
     const pendingData = useObservable(_viewModel.pendingData$, false);
 
     useInitialize(() => {
@@ -91,7 +92,7 @@ export const HomeNavigator = ({ navigation }: Props) => {
             <Drawer.Screen name="Profile" component={ProfileScreen} />
         </Drawer.Navigator>
     );
-};
+});
 
 const styles = StyleSheet.create({
     header: {
