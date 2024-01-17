@@ -1,14 +1,14 @@
 import React, { useState } from "react";
-import { Alert, ImageBackground, SafeAreaView, StyleSheet } from "react-native";
+import { Alert, ImageBackground, StyleSheet } from "react-native";
 import { View } from "react-native-ui-lib/core";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackScreenParams } from "./root-stack-screen-params";
+import { RootStackParamList } from "../types/params";
 import { ActionBar, LoaderScreen } from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 
-type Props = NativeStackScreenProps<RootStackScreenParams, "ImageScreen">;
+type Props = NativeStackScreenProps<RootStackParamList, "ImageScreen">;
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);

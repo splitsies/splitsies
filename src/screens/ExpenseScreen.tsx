@@ -3,7 +3,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { FlatList, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { lazyInject } from "../utils/lazy-inject";
-import { DrawerParamList, ExpenseParamList, RootStackScreenParams } from "./root-stack-screen-params";
+import { DrawerParamList, RootStackParamList } from "../types/params";
 import { Observable, filter } from "rxjs";
 import { IExpense, IExpenseItem } from "@splitsies/shared-models";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
@@ -21,13 +21,14 @@ import { useObservable } from "../hooks/use-observable";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
+import { Container } from "../components/Container";
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 
 type Props = CompositeScreenProps<
-    NativeStackScreenProps<RootStackScreenParams>,
+    NativeStackScreenProps<RootStackParamList>,
     DrawerScreenProps<DrawerParamList, "Home">
 >;
 
@@ -146,7 +147,7 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
     };
 
     return (
-        <View style={styles.container} bg-screenBG>
+        <Container>
             <SafeAreaView style={styles.header}>
                 <TouchableOpacity onPress={onBackPress}>
                     <Icon assetName="arrowBack" size={27} tintColor={Colors.textColor} />
@@ -226,7 +227,7 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                 proportional={false}
                 onCancel={() => setIsAddingItem(false)}
             />
-        </View>
+        </Container>
     );
 });
 

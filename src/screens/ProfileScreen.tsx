@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Dimensions, SafeAreaView, StyleSheet } from "react-native";
 import { lazyInject } from "../utils/lazy-inject";
-import { DrawerParamList, RootStackScreenParams } from "./root-stack-screen-params";
+import { DrawerParamList, RootStackParamList } from "../types/params";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import { CompositeScreenProps } from "@react-navigation/native";
@@ -13,12 +13,13 @@ import QRCode from "react-native-qrcode-svg";
 import { IQrPayload } from "../models/qr-payload/qr-payload-interface";
 import { QrPayload } from "../models/qr-payload/qr-payload";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
+import { Container } from "../components/Container";
 
 const _userManager = lazyInject<IUserManager>(IUserManager);
 const _dimensions = Dimensions.get("screen");
 
 type Props = CompositeScreenProps<
-    NativeStackScreenProps<RootStackScreenParams>,
+    NativeStackScreenProps<RootStackParamList>,
     DrawerScreenProps<DrawerParamList, "Profile">
 >;
 
@@ -38,8 +39,8 @@ export const ProfileScreen = SpThemedComponent(({ navigation }: Props) => {
     };
 
     return user?.user ? (
-        <SafeAreaView style={styles.container}>
-            <View style={{ display: "flex", flexGrow: 1 }} bg-screenBG>
+        <Container>
+            <SafeAreaView style={styles.container}>
                 <View style={{ display: "flex", flex: 2, rowGap: 10, justifyContent: "center", alignItems: "center" }}>
                     <QRCode value={JSON.stringify(payload)} color={Colors.black} backgroundColor={Colors.white} />
                     <SpTextInput readonly value={user.user.givenName} placeholder="First Name" />
@@ -57,8 +58,8 @@ export const ProfileScreen = SpThemedComponent(({ navigation }: Props) => {
                         />
                     </View>
                 </View>
-            </View>
-        </SafeAreaView>
+            </SafeAreaView>
+        </Container>
     ) : null;
 });
 

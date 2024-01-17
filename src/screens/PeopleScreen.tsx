@@ -7,7 +7,7 @@ import { IExpense } from "@splitsies/shared-models";
 import { Observable, filter } from "rxjs";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackScreenParams, ExpenseParamList } from "./root-stack-screen-params";
+import { RootStackParamList, ExpenseParamList } from "../types/params";
 import { TouchableOpacity, View } from "react-native-ui-lib/core";
 import { SafeAreaView, StyleSheet } from "react-native";
 import { Colors, Icon, Text } from "react-native-ui-lib";
@@ -15,9 +15,10 @@ import { PeopleFooter } from "../components/PeopleFooter";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
 import { useThemeWatcher } from "../hooks/use-theme-watcher";
+import { Container } from "../components/Container";
 
 type Props = CompositeScreenProps<
-    NativeStackScreenProps<RootStackScreenParams>,
+    NativeStackScreenProps<RootStackParamList>,
     MaterialTopTabScreenProps<ExpenseParamList, "People">
 >;
 
@@ -52,7 +53,7 @@ export const PeopleScreen = ({ navigation }: Props): JSX.Element => {
     };
 
     return (
-        <View style={{ flex: 1 }} bg-screenBG>
+        <Container>
             <SafeAreaView style={styles.container}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={onBackPress}>
@@ -78,7 +79,7 @@ export const PeopleScreen = ({ navigation }: Props): JSX.Element => {
                     <PeopleFooter expense={expense} expenseUsers={expenseUsers} />
                 </View>
             </SafeAreaView>
-        </View>
+        </Container>
     );
 };
 

@@ -4,7 +4,7 @@ import { IUserCredential } from "@splitsies/shared-models";
 import { useState } from "react";
 import { Subscription } from "rxjs";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
-import { RootStackScreenParams } from "../screens/root-stack-screen-params";
+import { RootStackParamList } from "../types/params";
 import { lazyInject } from "../utils/lazy-inject";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { LoginScreen } from "../screens/LoginScreen";
@@ -18,12 +18,12 @@ import SplashScreen from "react-native-splash-screen";
 
 const _userManager = lazyInject<IUserManager>(IUserManager);
 
-const Stack = createNativeStackNavigator<RootStackScreenParams>();
+const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator = () => {
     const [initialRoute, setInitialRoute] = useState<"RootScreen" | "LoginScreen">("LoginScreen");
     const [userId, setUserId] = useState<string>("");
-    const navigation = useNavigation<NavigationProp<RootStackScreenParams>>();
+    const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
     useInitialize(() => {
         const subscription = new Subscription();

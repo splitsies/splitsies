@@ -1,22 +1,13 @@
-import React, { useCallback, useRef, useState } from "react";
-import { StyleSheet } from "react-native";
-import { View } from "react-native-ui-lib/core";
-import { useInitialize } from "../hooks/use-initialize";
-import { lazyInject } from "../utils/lazy-inject";
-import { IPersmissionRequester } from "../utils/permission-requester/permission-requester-interface";
-import { useCameraDevice, Camera, CameraRuntimeError } from "react-native-vision-camera";
+import React, { useRef } from "react";
+import { Camera } from "react-native-vision-camera";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackScreenParams } from "./root-stack-screen-params";
+import { RootStackParamList } from "../types/params";
 import { CameraOverlay } from "../components/CameraOverlay";
 import { IImage } from "../models/image/image-interface";
-import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { Image } from "../models/image/image";
 import { CameraView } from "../components/CameraView";
 
-const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
-const _permissionRequest = lazyInject<IPersmissionRequester>(IPersmissionRequester);
-
-type Props = NativeStackScreenProps<RootStackScreenParams, "CameraScreen">;
+type Props = NativeStackScreenProps<RootStackParamList, "CameraScreen">;
 
 export const CameraScreen = ({ navigation }: Props): JSX.Element => {
     const camera = useRef<Camera>(null);

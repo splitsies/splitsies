@@ -15,7 +15,7 @@ import { FeedNavigator } from "./FeedNavigator";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { useInitialize } from "../hooks/use-initialize";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackScreenParams } from "../screens/root-stack-screen-params";
+import { RootStackParamList } from "../types/params";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -25,7 +25,7 @@ const _viewModel = lazyInject<IHomeViewModel>(IHomeViewModel);
 
 const Drawer = createDrawerNavigator();
 
-type Props = NativeStackScreenProps<RootStackScreenParams, "RootScreen">;
+type Props = NativeStackScreenProps<RootStackParamList, "RootScreen">;
 
 export const HomeNavigator = SpThemedComponent(({ navigation }: Props) => {
     const pendingData = useObservable(_viewModel.pendingData$, false);

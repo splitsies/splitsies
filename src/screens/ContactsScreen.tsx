@@ -12,7 +12,7 @@ import { IImageConfiguration } from "../models/configuration/image-config/image-
 import { ListSeparator } from "../components/ListSeparator";
 import { UserInviteListItem } from "../components/UserInviteListItem";
 import { IExpenseUserDetails } from "@splitsies/shared-models";
-import { InviteParamList, RootStackScreenParams } from "./root-stack-screen-params";
+import { InviteParamList, RootStackParamList } from "../types/params";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
 import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
@@ -20,6 +20,7 @@ import { ScanUserModal } from "../components/ScanUserModal";
 import { IInviteViewModel } from "../view-models/invite-view-model/invite-view-model-interface";
 import { filter } from "rxjs";
 import { useThemeWatcher } from "../hooks/use-theme-watcher";
+import { Container } from "../components/Container";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -30,7 +31,7 @@ const _inviteViewModel = lazyInject<IInviteViewModel>(IInviteViewModel);
 let timeoutId: NodeJS.Timeout;
 
 type Props = CompositeScreenProps<
-    NativeStackScreenProps<RootStackScreenParams>,
+    NativeStackScreenProps<RootStackParamList>,
     MaterialTopTabScreenProps<InviteParamList, "Contacts">
 >;
 
@@ -85,7 +86,7 @@ export const ContactsScreen = ({ navigation }: Props) => {
     };
 
     return (
-        <View style={styles.container} bg-screenBG>
+        <Container>
             <SafeAreaView>
                 <View style={styles.body}>
                     <FlatList
@@ -101,7 +102,6 @@ export const ContactsScreen = ({ navigation }: Props) => {
                         renderItem={({ item: user }) => (
                             <UserInviteListItem
                                 user={user}
-                                contactUsers={contactUsers}
                                 expenseUsers={expenseUsers}
                                 pendingJoinRequests={pendingJoinRequests}
                                 onInviteUser={() => onUserInvited(user)}
@@ -120,7 +120,7 @@ export const ContactsScreen = ({ navigation }: Props) => {
                 onCodeScanned={onCodeScanned}
                 shouldDisableChip={expenseUsers.some((e) => e.id === scannedUser?.id)}
             />
-        </View>
+        </Container>
     );
 };
 
