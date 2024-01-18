@@ -53,11 +53,11 @@ export const ScanUserModal = ({
     }, [expenseUsers, scannedUser]);
 
     return (
-        <Modal visible={visible} animationType="slide">
+        <Modal visible={visible} animationType="fade">
             <CameraView onCodeScanned={onCodeScanned}>
                 <View style={styles.cameraOverlay}>
                     <SafeAreaView style={styles.headerContainer}>
-                        <TouchableOpacity style={{ margin: 15 }} onPress={() => setVisible(false)}>
+                        <TouchableOpacity style={{ marginTop: 32, marginLeft: 10 }} onPress={() => setVisible(false)}>
                             <Icon assetName="arrowBack" size={27} tintColor="white" />
                         </TouchableOpacity>
                     </SafeAreaView>
@@ -127,7 +127,11 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingBottom: 80,
     },
-    headerContainer: { backgroundColor: _colorConfiguration.darkOverlay, padding: 30, width: "100%" },
+    headerContainer: {
+        backgroundColor: _colorConfiguration.darkOverlay,
+        paddingLeft: 90,
+        width: "100%",
+    },
     toast: {
         width: "100%",
         alignItems: "center",
