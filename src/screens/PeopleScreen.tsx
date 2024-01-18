@@ -26,7 +26,6 @@ const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 
 export const PeopleScreen = SpThemedComponent(({ navigation }: Props): JSX.Element => {
-    
     const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, _expenseManager.currentExpenseUsers);
     const expense = useObservable<IExpense>(
         _expenseManager.currentExpense$.pipe(filter((e) => !!e)) as Observable<IExpense>,
@@ -52,8 +51,9 @@ export const PeopleScreen = SpThemedComponent(({ navigation }: Props): JSX.Eleme
         void _expenseManager.updateExpense(expense);
     };
 
-    return !expense
-        ? <View /> : (
+    return !expense ? (
+        <View />
+    ) : (
         <Container>
             <SafeAreaView style={styles.container}>
                 <View style={styles.header}>

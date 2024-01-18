@@ -26,7 +26,13 @@ enum UserState {
     Joined,
 }
 
-export const UserInviteListItem = ({ user, expenseUsers, pendingJoinRequests, onInviteUser, onUninviteUser }: Props): JSX.Element => {
+export const UserInviteListItem = ({
+    user,
+    expenseUsers,
+    pendingJoinRequests,
+    onInviteUser,
+    onUninviteUser,
+}: Props): JSX.Element => {
     useThemeWatcher();
     const [userState, setUserState] = useState<UserState>(UserState.AvailableAsGuest);
 

@@ -12,11 +12,9 @@ type Props = {
 export const Container = SpThemedComponent(({ children, useSafeArea, style }: Props): JSX.Element => {
     return useSafeArea ? (
         <View bg-screenBG flex-1 style={style}>
-            <SafeAreaView>
-                {children}
-            </SafeAreaView>
-        </View> 
-        ) : (
+            <SafeAreaView>{children}</SafeAreaView>
+        </View>
+    ) : (
         <View bg-screenBG flex-1 style={style}>
             {children}
         </View>

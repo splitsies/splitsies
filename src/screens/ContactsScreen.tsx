@@ -27,7 +27,6 @@ const _inviteViewModel = lazyInject<IInviteViewModel>(IInviteViewModel);
 
 let timeoutId: NodeJS.Timeout;
 export const ContactsScreen = SpThemedComponent(() => {
-
     const contactUsers = useObservable(_userManager.contactUsers$, []);
     const pendingJoinRequests = useObservable(_expenseManager.currentExpenseJoinRequests$, []);
     const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, []);
