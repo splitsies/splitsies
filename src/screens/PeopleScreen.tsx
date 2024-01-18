@@ -14,8 +14,8 @@ import { Colors, Icon, Text } from "react-native-ui-lib";
 import { PeopleFooter } from "../components/PeopleFooter";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
-import { useThemeWatcher } from "../hooks/use-theme-watcher";
 import { Container } from "../components/Container";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 type Props = CompositeScreenProps<
     NativeStackScreenProps<RootStackParamList>,
@@ -25,8 +25,8 @@ type Props = CompositeScreenProps<
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 
-export const PeopleScreen = ({ navigation }: Props): JSX.Element => {
-    useThemeWatcher();
+export const PeopleScreen = SpThemedComponent(({ navigation }: Props): JSX.Element => {
+    
     const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, _expenseManager.currentExpenseUsers);
     const expense = useObservable<IExpense>(
         _expenseManager.currentExpense$.pipe(filter((e) => !!e)) as Observable<IExpense>,
@@ -52,7 +52,8 @@ export const PeopleScreen = ({ navigation }: Props): JSX.Element => {
         void _expenseManager.updateExpense(expense);
     };
 
-    return (
+    return !expense
+        ? <View /> : (
         <Container>
             <SafeAreaView style={styles.container}>
                 <View style={styles.header}>
@@ -81,7 +82,7 @@ export const PeopleScreen = ({ navigation }: Props): JSX.Element => {
             </SafeAreaView>
         </Container>
     );
-};
+});
 
 const styles = StyleSheet.create({
     container: {
