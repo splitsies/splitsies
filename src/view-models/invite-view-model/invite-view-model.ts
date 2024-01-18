@@ -26,7 +26,6 @@ export class InviteViewModel implements IInviteViewModel {
         return this._inviteMenuOpen.value;
     }
     setInviteMenuOpen(value: boolean): void {
-        console.log({ value });
         if (this.inviteMenuOpen === value) return;
         this._inviteMenuOpen.next(value);
     }

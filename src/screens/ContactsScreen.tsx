@@ -71,7 +71,6 @@ export const ContactsScreen = SpThemedComponent(() => {
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => setScannedUser(null), _imageConfiguration.qrCodeTimeoutMs);
         const payload = JSON.parse(rawPayload.value) as IQrPayload;
-        console.log({ payload, now: Date.now() });
         setScannedUser(payload);
     };
 
