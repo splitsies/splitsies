@@ -169,7 +169,7 @@ export class UserManager extends BaseManager implements IUserManager {
                 }
 
                 const number = formatPhoneNumber(c.phoneNumbers[0].number);
-                
+
                 if (visitedNumbers.has(number)) {
                     continue;
                 }

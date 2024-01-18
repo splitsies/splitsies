@@ -9,7 +9,7 @@ const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration)
 export const ListSeparator = (): JSX.Element => {
     return (
         <View style={{ width: "100%" }} flex centerH>
-            <View style={styles.separator} />
+            <View style={styles.separator} bg-divider />
         </View>
     );
 };
@@ -18,7 +18,5 @@ const styles = StyleSheet.create({
     separator: {
         height: 1,
         width: "100%",
-        backgroundColor: _colorConfiguration.greyFont,
-        opacity: 0.33,
     },
 });
