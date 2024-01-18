@@ -8,9 +8,9 @@ import { GuestScreen } from "../screens/GuestsScreen";
 import { SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Colors, Icon, TextField } from "react-native-ui-lib";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
-import { CompositeScreenProps, useNavigation } from "@react-navigation/native";
+import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackScreenParams, ExpenseParamList } from "../screens/root-stack-screen-params";
+import { RootStackParamList, ExpenseParamList } from "../types/params";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { IInviteViewModel } from "../view-models/invite-view-model/invite-view-model-interface";
@@ -26,7 +26,7 @@ const _inviteViewModel = lazyInject<IInviteViewModel>(IInviteViewModel);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
 
 type Props = CompositeScreenProps<
-    NativeStackScreenProps<RootStackScreenParams>,
+    NativeStackScreenProps<RootStackParamList>,
     BottomTabScreenProps<ExpenseParamList, "Invite">
 >;
 

@@ -8,14 +8,14 @@ import { DrawerScreenProps } from "@react-navigation/drawer";
 import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
-import { RootStackScreenParams, DrawerParamList, FeedParamList } from "./root-stack-screen-params";
+import { RootStackParamList, DrawerParamList, FeedParamList } from "../types/params";
 import { lazyInject } from "../utils/lazy-inject";
 import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-interface";
 import { useObservable } from "../hooks/use-observable";
 import { Container } from "../components/Container";
 
 type Props = CompositeScreenProps<
-    CompositeScreenProps<NativeStackScreenProps<RootStackScreenParams>, DrawerScreenProps<DrawerParamList, "Home">>,
+    CompositeScreenProps<NativeStackScreenProps<RootStackParamList>, DrawerScreenProps<DrawerParamList, "Home">>,
     BottomTabScreenProps<FeedParamList, "Requests">
 >;
 

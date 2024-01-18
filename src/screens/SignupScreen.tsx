@@ -3,7 +3,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { Alert, Keyboard, SafeAreaView, StyleSheet, TouchableWithoutFeedback } from "react-native";
 import { Colors, Icon, Wizard, WizardStepStates } from "react-native-ui-lib";
 import { TouchableOpacity, View } from "react-native-ui-lib/core";
-import { RootStackScreenParams } from "./root-stack-screen-params";
+import { RootStackParamList } from "../types/params";
 import { lazyInject } from "../utils/lazy-inject";
 import { UserDetailsForm } from "../components/UserDetailsForm";
 import { CreateUserRequest, IUserDto } from "@splitsies/shared-models";
@@ -16,7 +16,7 @@ import { SpThemedComponent } from "../hocs/SpThemedComponent";
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _userManager = lazyInject<IUserManager>(IUserManager);
 
-type Props = NativeStackScreenProps<RootStackScreenParams, "SignupScreen">;
+type Props = NativeStackScreenProps<RootStackParamList, "SignupScreen">;
 
 export const SignupScreen = SpThemedComponent(({ navigation }: Props): JSX.Element => {
     const [wizardIndex, setWizardIndex] = useState<number>(0);

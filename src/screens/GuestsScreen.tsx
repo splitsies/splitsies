@@ -1,5 +1,5 @@
 import React from "react";
-import { FlatList, SafeAreaView, StyleSheet } from "react-native";
+import { FlatList, StyleSheet } from "react-native";
 import { Modal, View } from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
@@ -12,9 +12,10 @@ import { UserInviteListItem } from "../components/UserInviteListItem";
 import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
 import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackScreenParams, InviteParamList } from "./root-stack-screen-params";
+import { RootStackParamList, InviteParamList } from "../types/params";
 import { IInviteViewModel } from "../view-models/invite-view-model/invite-view-model-interface";
 import { filter } from "rxjs";
+import { Container } from "../components/Container";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -22,12 +23,11 @@ const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _inviteViewModel = lazyInject<IInviteViewModel>(IInviteViewModel);
 
 type Props = CompositeScreenProps<
-    NativeStackScreenProps<RootStackScreenParams>,
+    NativeStackScreenProps<RootStackParamList>,
     MaterialTopTabScreenProps<InviteParamList, "Contacts">
 >;
 
 export const GuestScreen = ({ navigation }: Props) => {
-    const contactUsers = useObservable(_userManager.contactUsers$, []);
     const pendingJoinRequests = useObservable(_expenseManager.currentExpenseJoinRequests$, []);
     const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, []);
     const searchFilter = useObservable(_inviteViewModel.searchFilter$, _inviteViewModel.searchFilter);
@@ -45,7 +45,7 @@ export const GuestScreen = ({ navigation }: Props) => {
     };
 
     return (
-        <View style={styles.container} bg-screenBG>
+        <Container sytle={styles.container}>
             <View style={styles.body}>
                 <FlatList
                     style={styles.list}
@@ -59,7 +59,6 @@ export const GuestScreen = ({ navigation }: Props) => {
                     renderItem={({ item: user }) => (
                         <UserInviteListItem
                             user={user}
-                            contactUsers={contactUsers}
                             expenseUsers={expenseUsers}
                             pendingJoinRequests={pendingJoinRequests}
                             onInviteUser={() => {}}
@@ -72,7 +71,7 @@ export const GuestScreen = ({ navigation }: Props) => {
             <Modal enableModalBlur visible={addGuestVisible} animationType="slide">
                 <AddGuestForm onSave={onSaveGuest} onCancel={() => _inviteViewModel.setInviteMenuOpen(false)} />
             </Modal>
-        </View>
+        </Container>
     );
 };
 

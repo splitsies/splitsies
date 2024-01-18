@@ -1,6 +1,6 @@
 import { IImage } from "../models/image/image-interface";
 
-export type RootStackScreenParams = {
+export type RootStackParamList = {
     LoginScreen: undefined;
     SignupScreen: undefined;
     RootScreen: undefined;

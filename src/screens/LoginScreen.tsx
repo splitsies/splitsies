@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { SafeAreaView, StyleSheet } from "react-native";
 import { lazyInject } from "../utils/lazy-inject";
-import { RootStackScreenParams } from "./root-stack-screen-params";
+import { RootStackParamList } from "../types/params";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { Subscription } from "rxjs";
 import { IUserCredential } from "@splitsies/shared-models";
@@ -12,7 +12,7 @@ import { Container } from "../components/Container";
 
 const _userManager = lazyInject<IUserManager>(IUserManager);
 
-type Props = NativeStackScreenProps<RootStackScreenParams, "LoginScreen">;
+type Props = NativeStackScreenProps<RootStackParamList, "LoginScreen">;
 
 export const LoginScreen = SpThemedComponent(({ navigation }: Props) => {
     const [validationError, setValidationError] = useState<string>("");

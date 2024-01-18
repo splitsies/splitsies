@@ -1,5 +1,5 @@
-import React, { useCallback, useState } from "react";
-import { FlatList, SafeAreaView, StyleSheet } from "react-native";
+import React, { useState } from "react";
+import { FlatList, StyleSheet } from "react-native";
 import { View } from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
@@ -12,14 +12,12 @@ import { IImageConfiguration } from "../models/configuration/image-config/image-
 import { ListSeparator } from "../components/ListSeparator";
 import { UserInviteListItem } from "../components/UserInviteListItem";
 import { IExpenseUserDetails } from "@splitsies/shared-models";
-import { InviteParamList, RootStackScreenParams } from "./root-stack-screen-params";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
-import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect } from "@react-navigation/native";
 import { ScanUserModal } from "../components/ScanUserModal";
 import { IInviteViewModel } from "../view-models/invite-view-model/invite-view-model-interface";
 import { filter } from "rxjs";
-import { useThemeWatcher } from "../hooks/use-theme-watcher";
+import { Container } from "../components/Container";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -28,15 +26,7 @@ const _imageConfiguration = lazyInject<IImageConfiguration>(IImageConfiguration)
 const _inviteViewModel = lazyInject<IInviteViewModel>(IInviteViewModel);
 
 let timeoutId: NodeJS.Timeout;
-
-type Props = CompositeScreenProps<
-    NativeStackScreenProps<RootStackScreenParams>,
-    MaterialTopTabScreenProps<InviteParamList, "Contacts">
->;
-
-export const ContactsScreen = ({ navigation }: Props) => {
-    useThemeWatcher();
-
+export const ContactsScreen = SpThemedComponent(() => {
     const contactUsers = useObservable(_userManager.contactUsers$, []);
     const pendingJoinRequests = useObservable(_expenseManager.currentExpenseJoinRequests$, []);
     const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, []);
@@ -80,37 +70,33 @@ export const ContactsScreen = ({ navigation }: Props) => {
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => setScannedUser(null), _imageConfiguration.qrCodeTimeoutMs);
         const payload = JSON.parse(rawPayload.value) as IQrPayload;
-        console.log({ payload, now: Date.now() });
         setScannedUser(payload);
     };
 
     return (
-        <View style={styles.container} bg-screenBG>
-            <SafeAreaView>
-                <View style={styles.body}>
-                    <FlatList
-                        style={styles.list}
-                        data={contactUsers.filter(
-                            (u) =>
-                                !searchFilter ||
-                                `${u.givenName} ${u.familyName}`.toLowerCase().includes(searchFilter.toLowerCase()) ||
-                                u.phoneNumber.includes(searchFilter),
-                        )}
-                        keyExtractor={(i) => i.id + i.phoneNumber}
-                        ItemSeparatorComponent={ListSeparator}
-                        renderItem={({ item: user }) => (
-                            <UserInviteListItem
-                                user={user}
-                                contactUsers={contactUsers}
-                                expenseUsers={expenseUsers}
-                                pendingJoinRequests={pendingJoinRequests}
-                                onInviteUser={() => onUserInvited(user)}
-                                onUninviteUser={() => onUserUninvited(user)}
-                            />
-                        )}
-                    />
-                </View>
-            </SafeAreaView>
+        <Container style={styles.container}>
+            <View style={styles.body}>
+                <FlatList
+                    style={styles.list}
+                    data={contactUsers.filter(
+                        (u) =>
+                            !searchFilter ||
+                            `${u.givenName} ${u.familyName}`.toLowerCase().includes(searchFilter.toLowerCase()) ||
+                            u.phoneNumber.includes(searchFilter),
+                    )}
+                    keyExtractor={(i) => i.id + i.phoneNumber}
+                    ItemSeparatorComponent={ListSeparator}
+                    renderItem={({ item: user }) => (
+                        <UserInviteListItem
+                            user={user}
+                            expenseUsers={expenseUsers}
+                            pendingJoinRequests={pendingJoinRequests}
+                            onInviteUser={() => onUserInvited(user)}
+                            onUninviteUser={() => onUserUninvited(user)}
+                        />
+                    )}
+                />
+            </View>
 
             <ScanUserModal
                 visible={codeScannerVisible}
@@ -120,9 +106,9 @@ export const ContactsScreen = ({ navigation }: Props) => {
                 onCodeScanned={onCodeScanned}
                 shouldDisableChip={expenseUsers.some((e) => e.id === scannedUser?.id)}
             />
-        </View>
+        </Container>
     );
-};
+});
 
 const styles = StyleSheet.create({
     container: {
@@ -133,43 +119,11 @@ const styles = StyleSheet.create({
         height: "100%",
         paddingTop: 10,
     },
-    header: {
-        display: "flex",
-        flexDirection: "row",
-        width: "100%",
-        paddingVertical: 20,
-        paddingHorizontal: 10,
-    },
     body: {
         display: "flex",
         flexGrow: 1,
         flex: 1,
         width: "100%",
-    },
-    arrowContainer: {
-        display: "flex",
-        height: 50,
-        justifyContent: "center",
-        paddingRight: 5,
-    },
-    addUserContainer: {
-        display: "flex",
-        height: 50,
-        justifyContent: "center",
-        paddingLeft: 5,
-    },
-    inputContainer: {
-        display: "flex",
-        flex: 1,
-        height: 50,
-    },
-    textInput: {
-        height: 50,
-        backgroundColor: "white",
-        borderRadius: 25,
-        paddingHorizontal: 15,
-        borderWidth: 1,
-        borderColor: _colorConfiguration.divider,
     },
     list: {
         width: "100%",
@@ -188,5 +142,4 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingBottom: 20,
     },
-    headerContainer: { backgroundColor: _colorConfiguration.darkOverlay, padding: 30, width: "100%" },
 });

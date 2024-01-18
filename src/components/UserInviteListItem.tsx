@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IExpenseJoinRequest, IExpenseUserDetails } from "@splitsies/shared-models";
 import { Chip, Colors, Icon, Text, View } from "react-native-ui-lib";
 import { StyleSheet } from "react-native";
@@ -12,7 +12,6 @@ const _authProvider = lazyInject<IAuthProvider>(IAuthProvider);
 
 type Props = {
     user: IExpenseUserDetails;
-    contactUsers: IExpenseUserDetails[];
     expenseUsers: IExpenseUserDetails[];
     pendingJoinRequests: IExpenseJoinRequest[];
     onInviteUser: (user: IExpenseUserDetails) => void;
@@ -29,7 +28,6 @@ enum UserState {
 
 export const UserInviteListItem = ({
     user,
-    contactUsers,
     expenseUsers,
     pendingJoinRequests,
     onInviteUser,

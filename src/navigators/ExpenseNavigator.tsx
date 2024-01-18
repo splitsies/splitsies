@@ -10,18 +10,17 @@ import { Observable, filter } from "rxjs";
 import { IExpense } from "@splitsies/shared-models";
 import { InviteNavigator } from "./InviteNavigator";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackScreenParams } from "../screens/root-stack-screen-params";
+import { RootStackParamList } from "../types/params";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { Icon } from "react-native-ui-lib";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
-import { StyleSheet } from "react-native";
 
 const Tab = createBottomTabNavigator();
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
 
-type Props = NativeStackScreenProps<RootStackScreenParams, "ExpenseScreen">;
+type Props = NativeStackScreenProps<RootStackParamList, "ExpenseScreen">;
 
 export const ExpenseNavigator = (_: Props) => {
     const expense = useObservable<IExpense>(

@@ -4,7 +4,7 @@ import { Colors, Text, View } from "react-native-ui-lib";
 import { ListSeparator } from "../components/ListSeparator";
 import { ExpensePreview } from "../components/ExpensePreview";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import { DrawerParamList, FeedParamList, RootStackScreenParams } from "./root-stack-screen-params";
+import { DrawerParamList, FeedParamList, RootStackParamList } from "../types/params";
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -18,9 +18,10 @@ import { lazyInject } from "../utils/lazy-inject";
 import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-interface";
 import { useThemeWatcher } from "../hooks/use-theme-watcher";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
+import { Container } from "../components/Container";
 
 type Props = CompositeScreenProps<
-    CompositeScreenProps<NativeStackScreenProps<RootStackScreenParams>, DrawerScreenProps<DrawerParamList, "Home">>,
+    CompositeScreenProps<NativeStackScreenProps<RootStackParamList>, DrawerScreenProps<DrawerParamList, "Home">>,
     BottomTabScreenProps<FeedParamList, "Expenses">
 >;
 
@@ -67,7 +68,7 @@ export const ExpenseFeedScreen = SpThemedComponent((): JSX.Element => {
     };
 
     return expenses.length === 0 ? (
-        <View style={styles.welcomeMessageContainer} bg-screenBG>
+        <Container>
             <ScrollView
                 contentContainerStyle={styles.welcomeMessageContainer}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
@@ -81,9 +82,9 @@ export const ExpenseFeedScreen = SpThemedComponent((): JSX.Element => {
             <View style={styles.hintBox}>
                 <Text hint>Tap to scan a receipt</Text>
             </View>
-        </View>
+        </Container>
     ) : (
-        <View style={styles.listContainer} bg-screenBG>
+        <Container>
             <FlatList
                 contentContainerStyle={{ paddingBottom: 40 }}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
@@ -98,21 +99,11 @@ export const ExpenseFeedScreen = SpThemedComponent((): JSX.Element => {
                 )}
                 data={expenses}
             />
-        </View>
+        </Container>
     );
 });
 
 const styles = StyleSheet.create({
-    welcomeMessageContainer: {
-        display: "flex",
-        flex: 1,
-        flexGrow: 1,
-    },
-    listContainer: {
-        display: "flex",
-        flexGrow: 1,
-        flex: 1,
-    },
     messageBox: {
         display: "flex",
         width: "100%",

@@ -7,6 +7,7 @@ import { Dimensions, StyleSheet } from "react-native";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { SelectItemsModal } from "./SelectItemsModal";
+import { Container } from "./Container";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _dimensions = Dimensions.get("window");
@@ -37,7 +38,7 @@ export const People = ({ isSelecting, people, expense, updateItemOwners, endSele
     };
 
     return (
-        <View style={styles.container}>
+        <Container style={styles.container}>
             <View style={{ display: "flex", flex: 1 }}>
                 <Carousel
                     onChangePage={onChangePage}
@@ -66,15 +67,12 @@ export const People = ({ isSelecting, people, expense, updateItemOwners, endSele
                 expense={expense}
                 onClose={onCloseSelectItems}
             />
-        </View>
+        </Container>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        display: "flex",
-        flex: 1,
-        flexGrow: 1,
         paddingTop: 10,
     },
 });
