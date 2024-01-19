@@ -2,15 +2,20 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
-import { Icon, TouchableOpacity, View } from "react-native-ui-lib";
+import { Colors, Icon, TouchableOpacity, View } from "react-native-ui-lib";
 import { RequestsFeedScreen } from "../screens/RequestsFeedScreen";
 import { ExpenseFeedScreen } from "../screens/ExpenseFeedScreen";
 import { StyleSheet } from "react-native";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
+import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+import Camera from "../../assets/icons/camera.svg";
+import Receipt from "../../assets/icons/receipt.svg";
+import People from "../../assets/icons/people.svg";
 
 const Tab = createBottomTabNavigator();
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
+const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
 // TODO: Hack, satisfy the unused component param
 const C = () => {
@@ -31,7 +36,7 @@ export const FeedNavigator = () => {
                 name="Feed"
                 component={ExpenseFeedScreen}
                 options={{
-                    tabBarIcon: ({ color, size }) => <Icon assetName="receipt" tintColor={color} size={size} />,
+                    tabBarIcon: ({ color, size }) => <Receipt width={size} height={size} fill={color} />,
                 }}
             />
             <Tab.Screen
@@ -45,7 +50,11 @@ export const FeedNavigator = () => {
                             onPress={() => navigation.navigate("CameraScreen")}
                         >
                             <View style={styles.cameraButton}>
-                                <Icon assetName="camera" size={30} />
+                                <Camera
+                                    width={_uiConfig.sizes.largeIcon}
+                                    height={_uiConfig.sizes.largeIcon}
+                                    fill={_colorConfiguration.black}
+                                />
                             </View>
                         </TouchableOpacity>
                     ),
@@ -54,7 +63,7 @@ export const FeedNavigator = () => {
             <Tab.Screen
                 name="Requests"
                 component={RequestsFeedScreen}
-                options={{ tabBarIcon: ({ color, size }) => <Icon assetName="people" tintColor={color} size={size} /> }}
+                options={{ tabBarIcon: ({ color, size }) => <People width={size} height={size} fill={color} /> }}
             />
         </Tab.Navigator>
     );

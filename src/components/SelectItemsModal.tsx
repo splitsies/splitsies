@@ -6,6 +6,12 @@ import { ExpenseItem } from "./ExpenseItem";
 import { IExpense, IExpenseUserDetails } from "@splitsies/shared-models";
 import { Colors, Icon, Modal, Text, TouchableOpacity, View } from "react-native-ui-lib";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
+import { lazyInject } from "../utils/lazy-inject";
+import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+
+import ArrowBack from "../../assets/icons/arrow-back.svg";
+
+const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
 type Props = {
     user: IExpenseUserDetails;
@@ -49,7 +55,11 @@ export const SelectItemsModal = SpThemedComponent(({ user, expense, visible, onC
                     <View style={styles.header}>
                         <View style={styles.arrowContainer}>
                             <TouchableOpacity onPress={() => onClose(selections)}>
-                                <Icon assetName="arrowBack" size={27} tintColor={Colors.textColor} />
+                                <ArrowBack
+                                    width={_uiConfig.sizes.icon}
+                                    height={_uiConfig.sizes.icon}
+                                    fill={Colors.textColor}
+                                />
                             </TouchableOpacity>
                         </View>
                         <Text heading color={Colors.textColor}>

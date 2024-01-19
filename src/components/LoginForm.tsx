@@ -71,7 +71,6 @@ export const LoginForm = ({ onLoginClicked, onSignUpClicked, validationError }: 
                         onPress={() => onLoginClicked(email, password)}
                         bg-primary
                         size="large"
-                        enableShadow
                     />
                 </View>
             </View>

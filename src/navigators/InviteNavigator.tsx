@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { lazy, useCallback, useState } from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { ContactsScreen } from "../screens/ContactsScreen";
 import { useInitialize } from "../hooks/use-initialize";
@@ -18,12 +18,19 @@ import { useObservable } from "../hooks/use-observable";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { useThemeWatcher } from "../hooks/use-theme-watcher";
 
+import ArrowBack from "../../assets/icons/arrow-back.svg";
+import QrAdd from "../../assets/icons/qr-add.svg";
+import AddPerson from "../../assets/icons/add-person.svg";
+
+import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+
 const Tab = createMaterialTopTabNavigator();
 const _userManager = lazyInject<IUserManager>(IUserManager);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _inviteViewModel = lazyInject<IInviteViewModel>(IInviteViewModel);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
+const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
 type Props = CompositeScreenProps<
     NativeStackScreenProps<RootStackParamList>,
@@ -48,7 +55,7 @@ export const InviteNavigator = ({ navigation }: Props) => {
             <View style={styles.header} bg-screenBG>
                 <View style={styles.arrowContainer}>
                     <TouchableOpacity onPress={onBackPress}>
-                        <Icon assetName="arrowBack" size={27} tintColor={Colors.textColor} />
+                        <ArrowBack height={_uiConfig.sizes.icon} width={_uiConfig.sizes.icon} fill={Colors.textColor} />
                     </TouchableOpacity>
                 </View>
 
@@ -66,11 +73,15 @@ export const InviteNavigator = ({ navigation }: Props) => {
 
                 <View style={styles.addUserContainer}>
                     <TouchableOpacity onPress={() => _inviteViewModel.setInviteMenuOpen(true)}>
-                        <Icon
-                            assetName={state === "contacts" ? "qrAdd" : "addUser"}
-                            size={27}
-                            tintColor={Colors.textColor}
-                        />
+                        {state === "contacts" ? (
+                            <QrAdd height={_uiConfig.sizes.icon} width={_uiConfig.sizes.icon} fill={Colors.textColor} />
+                        ) : (
+                            <AddPerson
+                                height={_uiConfig.sizes.icon}
+                                width={_uiConfig.sizes.icon}
+                                fill={Colors.textColor}
+                            />
+                        )}
                     </TouchableOpacity>
                 </View>
             </View>

@@ -6,9 +6,13 @@ import { IImageConfiguration } from "../models/configuration/image-config/image-
 import { launchImageLibrary, MediaType, PhotoQuality } from "react-native-image-picker";
 import { IImage } from "../models/image/image-interface";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
+import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+import ArrowBack from "../../assets/icons/arrow-back.svg";
+import PhotoLibrary from "../../assets/icons/photo-library.svg";
 
 const _imageConfiguration = lazyInject<IImageConfiguration>(IImageConfiguration);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
+const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
 const options = {
     mediaType: "photo" as MediaType,
@@ -43,7 +47,11 @@ export const CameraOverlay = ({ onBackPress, onCapture, onImageSelected }: Props
                 <SafeAreaView style={styles.container}>
                     <View style={styles.backButton}>
                         <TouchableOpacity onPress={onBackPress}>
-                            <Icon assetName="arrowBack" size={27} tintColor="white" />
+                            <ArrowBack
+                                width={_uiConfig.sizes.icon}
+                                height={_uiConfig.sizes.icon}
+                                fill={_colorConfiguration.white}
+                            />
                         </TouchableOpacity>
                     </View>
                 </SafeAreaView>
@@ -52,7 +60,11 @@ export const CameraOverlay = ({ onBackPress, onCapture, onImageSelected }: Props
             <View style={styles.contentContainer}>
                 <SafeAreaView style={styles.buttonContainer}>
                     <TouchableOpacity onPress={onLibraryOpened}>
-                        <Icon assetName="photoLibrary" size={27} tintColor="white" />
+                        <PhotoLibrary
+                            width={_uiConfig.sizes.icon}
+                            height={_uiConfig.sizes.icon}
+                            fill={_colorConfiguration.white}
+                        />
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={onCapture}>

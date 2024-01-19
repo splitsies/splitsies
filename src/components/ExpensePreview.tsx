@@ -4,7 +4,12 @@ import { IExpense, IExpenseMapper, IExpensePayload } from "@splitsies/shared-mod
 import { Colors, Icon, Text, View } from "react-native-ui-lib";
 import { UserIcon } from "./UserIcon";
 import { lazyInject } from "../utils/lazy-inject";
-import { useThemeWatcher } from "../hooks/use-theme-watcher";
+import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
+import Location from "../../assets/icons/location.svg";
+import Calendar from "../../assets/icons/calendar.svg";
+import People from "../../assets/icons/people.svg";
+import Price from "../../assets/icons/price.svg";
 
 const Locale = (
     Platform.OS === "ios"
@@ -17,6 +22,9 @@ type DateTimeFormatOptions = { weekday: "long"; year: "numeric"; month: "long"; 
 const DATE_OPTIONS: DateTimeFormatOptions = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
 
 const _expenseMapper = lazyInject<IExpenseMapper>(IExpenseMapper);
+const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
+
+const iconSize = _uiConfig.sizes.smallIcon;
 
 interface propTypes {
     data: IExpensePayload;
@@ -27,7 +35,7 @@ interface propTypes {
 /**
  * @{@link propTypes}
  */
-export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
+export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress }: propTypes) => {
     const [expense, setExpense] = useState<IExpense>(_expenseMapper.toDomainModel(data.expense));
     const [peopleContainerWidth, setPeopleContainerWidth] = useState<number>(Dimensions.get("window").width);
     const PERSON_LIMIT = Math.floor((peopleContainerWidth - 20) / 36) - 1;
@@ -39,7 +47,7 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
             <View style={[styles.container]}>
                 <View style={styles.rowContainer}>
                     <View style={styles.leftBox}>
-                        <Icon assetName="location" size={17} tintColor={Colors.textColor} />
+                        <Location width={iconSize} height={iconSize} fill={Colors.textColor} />
                     </View>
                     <View style={styles.rightBox}>
                         <Text color={Colors.textColor}>{expense.name}</Text>
@@ -48,7 +56,7 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
 
                 <View style={styles.rowContainer}>
                     <View style={styles.leftBox}>
-                        <Icon assetName="calendar" size={17} tintColor={Colors.textColor} />
+                        <Calendar width={iconSize} height={iconSize} fill={Colors.textColor} />
                     </View>
                     <View style={styles.rightBox}>
                         <Text subtext color={Colors.textColor}>
@@ -61,7 +69,7 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
 
                 <View style={styles.rowContainer}>
                     <View style={styles.leftBox}>
-                        <Icon assetName="people" size={17} tintColor={Colors.textColor} />
+                        <People width={iconSize} height={iconSize} fill={Colors.textColor} />
                     </View>
                     <View style={styles.rightBox}>
                         <View
@@ -90,7 +98,7 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
 
                 <View style={styles.rowContainer}>
                     <View style={styles.leftBox}>
-                        <Icon assetName="price" size={17} tintColor={Colors.textColor} />
+                        <Price width={iconSize} height={iconSize} fill={Colors.textColor} />
                     </View>
                     <View style={styles.rightBox}>
                         <Text subtext color={Colors.textColor}>
@@ -101,7 +109,7 @@ export const ExpensePreview = ({ data, onPress, onLongPress }: propTypes) => {
             </View>
         </TouchableOpacity>
     );
-};
+});
 
 const styles = StyleSheet.create({
     container: {

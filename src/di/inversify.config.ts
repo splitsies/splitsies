@@ -42,6 +42,8 @@ import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-i
 import { HomeViewModel } from "../view-models/home-view-model/home-view-model";
 import { IThemeViewModel } from "../view-models/theme-view-model/theme-view-model-interface";
 import { ThemeViewModel } from "../view-models/theme-view-model/theme-view-model";
+import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+import { UiConfiguration } from "../models/configuration/ui-configuration/ui-configuration";
 const container = new Container();
 
 container.bind<IApiConfig>(IApiConfig).to(ApiConfig).inSingletonScope();
@@ -64,4 +66,5 @@ container.bind<IVenmoConfiguration>(IVenmoConfiguration).to(VenmoConfiguration).
 container.bind<IInviteViewModel>(IInviteViewModel).to(InviteViewModel).inSingletonScope();
 container.bind<IHomeViewModel>(IHomeViewModel).to(HomeViewModel).inSingletonScope();
 container.bind<IThemeViewModel>(IThemeViewModel).to(ThemeViewModel).inSingletonScope();
+container.bind<IUiConfiguration>(IUiConfiguration).to(UiConfiguration).inSingletonScope();
 export { container };

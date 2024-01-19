@@ -17,11 +17,17 @@ import { useInitialize } from "../hooks/use-initialize";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/params";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
+import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+import Add from "../../assets/icons/add.svg";
+import Menu from "../../assets/icons/menu.svg";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _viewModel = lazyInject<IHomeViewModel>(IHomeViewModel);
+const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
+
+const icon = _uiConfig.sizes.icon;
 
 const Drawer = createDrawerNavigator();
 
@@ -64,11 +70,11 @@ export const HomeNavigator = SpThemedComponent(({ navigation }: Props) => {
                         <ActivityIndicator color={Colors.textColor} animating={pendingData} hidesWhenStopped />
 
                         <TouchableOpacity onPress={onAddPress}>
-                            <Icon assetName="add" size={27} tintColor={Colors.textColor} />
+                            <Add width={icon} height={icon} fill={Colors.textColor} />
                         </TouchableOpacity>
 
                         <TouchableOpacity onPress={navigation.openDrawer}>
-                            <Icon assetName="menu" size={27} tintColor={Colors.textColor} />
+                            <Menu width={icon} height={icon} fill={Colors.textColor} />
                         </TouchableOpacity>
                     </View>
                 </View>

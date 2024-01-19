@@ -13,8 +13,12 @@ import { IColorConfiguration } from "../models/configuration/color-config/color-
 import { Container } from "../components/Container";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
+import ArrowBack from "../../assets/icons/arrow-back.svg";
+import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _userManager = lazyInject<IUserManager>(IUserManager);
+const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
 type Props = NativeStackScreenProps<RootStackParamList, "SignupScreen">;
 
@@ -85,7 +89,7 @@ export const SignupScreen = SpThemedComponent(({ navigation }: Props): JSX.Eleme
             <SafeAreaView style={styles.container}>
                 <View style={styles.header}>
                     <TouchableOpacity onPress={onBackPress}>
-                        <Icon assetName="arrowBack" size={27} tintColor={Colors.textColor} />
+                        <ArrowBack width={_uiConfig.sizes.icon} height={_uiConfig.sizes.icon} fill={Colors.textColor} />
                     </TouchableOpacity>
 
                     <Wizard
