@@ -1,8 +1,8 @@
 export interface IUiConfiguration {
-    readonly sizes: { 
+    readonly sizes: {
         smallIcon: number;
-        icon: number,
+        icon: number;
         largeIcon: number;
-    }
+    };
 }
 export const IUiConfiguration = Symbol.for("IUiConfiguration");

@@ -36,7 +36,7 @@ export const FeedNavigator = () => {
                 name="Feed"
                 component={ExpenseFeedScreen}
                 options={{
-                    tabBarIcon: ({ color, size }) => <Receipt width={size} height={size} fill={color} />
+                    tabBarIcon: ({ color, size }) => <Receipt width={size} height={size} fill={color} />,
                 }}
             />
             <Tab.Screen
@@ -50,7 +50,11 @@ export const FeedNavigator = () => {
                             onPress={() => navigation.navigate("CameraScreen")}
                         >
                             <View style={styles.cameraButton}>
-                                <Camera width={_uiConfig.sizes.largeIcon} height={_uiConfig.sizes.largeIcon} fill={_colorConfiguration.black} />
+                                <Camera
+                                    width={_uiConfig.sizes.largeIcon}
+                                    height={_uiConfig.sizes.largeIcon}
+                                    fill={_colorConfiguration.black}
+                                />
                             </View>
                         </TouchableOpacity>
                     ),

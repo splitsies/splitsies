@@ -14,7 +14,6 @@ import { ExpenseItem } from "../components/ExpenseItem";
 import { EditModal } from "../components/EditModal";
 import { EditResult } from "../models/edit-result";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
-import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { ListSeparator } from "../components/ListSeparator";
 import { ExpenseFooter } from "../components/ExpenseFooter";
 import { useObservable } from "../hooks/use-observable";
@@ -22,10 +21,13 @@ import { CompositeScreenProps } from "@react-navigation/native";
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
 import { Container } from "../components/Container";
+import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+import ArrowBack from "../../assets/icons/arrow-back.svg";
+import Add from "../../assets/icons/add.svg";
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
-const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
+const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
 type Props = CompositeScreenProps<
     NativeStackScreenProps<RootStackParamList>,
@@ -150,7 +152,7 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
         <Container>
             <SafeAreaView style={styles.header}>
                 <TouchableOpacity onPress={onBackPress}>
-                    <Icon assetName="arrowBack" size={27} tintColor={Colors.textColor} />
+                    <ArrowBack width={_uiConfig.sizes.icon} height={_uiConfig.sizes.icon} fill={Colors.textColor} />
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={onSelectAction}>
@@ -180,7 +182,11 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                         <View>
                             <ListSeparator />
                             <View style={{ width: "100%", marginVertical: 20, alignItems: "center" }}>
-                                <Icon assetName="add" size={25} tintColor={Colors.textColor} />
+                                <Add
+                                    width={_uiConfig.sizes.icon}
+                                    height={_uiConfig.sizes.icon}
+                                    fill={Colors.textColor}
+                                />
                             </View>
                         </View>
                     </TouchableOpacity>

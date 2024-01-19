@@ -15,6 +15,10 @@ import { IColorConfiguration } from "../models/configuration/color-config/color-
 import { Icon } from "react-native-ui-lib";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 
+import Receipt from "../../assets/icons/receipt.svg";
+import People from "../../assets/icons/people.svg";
+import AddPerson from "../../assets/icons/add-person.svg";
+
 const Tab = createBottomTabNavigator();
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -43,20 +47,18 @@ export const ExpenseNavigator = (_: Props) => {
                 name="Items"
                 component={ExpenseScreen}
                 options={{
-                    tabBarIcon: ({ color, size }) => <Icon assetName="receipt" tintColor={color} size={size} />,
+                    tabBarIcon: ({ color, size }) => <Receipt width={size} height={size} fill={color} />,
                 }}
             />
             <Tab.Screen
                 name="People"
                 component={PeopleScreen}
-                options={{ tabBarIcon: ({ color, size }) => <Icon assetName="people" tintColor={color} size={size} /> }}
+                options={{ tabBarIcon: ({ color, size }) => <People width={size} height={size} fill={color} /> }}
             />
             <Tab.Screen
                 name="Invite"
                 component={InviteNavigator}
-                options={{
-                    tabBarIcon: ({ color, size }) => <Icon assetName="addUser" tintColor={color} size={size} />,
-                }}
+                options={{ tabBarIcon: ({ color, size }) => <AddPerson width={size} height={size} fill={color} /> }}
             />
         </Tab.Navigator>
     );

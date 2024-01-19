@@ -9,12 +9,13 @@ import { Code } from "react-native-vision-camera";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { useObservable } from "../hooks/use-observable";
-import { useObservableReducer } from "../hooks/use-observable-reducer";
-import { IExpenseUserDetails } from "@splitsies/shared-models";
+import ArrowBack from "../../assets/icons/arrow-back.svg";
+import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
+const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
 type Props = {
     visible: boolean;
@@ -57,8 +58,11 @@ export const ScanUserModal = ({
             <CameraView onCodeScanned={onCodeScanned}>
                 <View style={styles.cameraOverlay}>
                     <SafeAreaView style={styles.headerContainer}>
-                        <TouchableOpacity style={{ marginTop: 32, marginLeft: 10 }} onPress={() => setVisible(false)}>
-                            <Icon assetName="arrowBack" size={27} tintColor="white" />
+                        <TouchableOpacity
+                            style={{ marginTop: 32, marginLeft: 10, marginBottom: 20 }}
+                            onPress={() => setVisible(false)}
+                        >
+                            <ArrowBack width={_uiConfig.sizes.icon} height={_uiConfig.sizes.icon} fill={Colors.white} />
                         </TouchableOpacity>
                     </SafeAreaView>
 
@@ -130,6 +134,7 @@ const styles = StyleSheet.create({
     headerContainer: {
         backgroundColor: _colorConfiguration.darkOverlay,
         paddingLeft: 90,
+        paddingBottom: 20,
         width: "100%",
     },
     toast: {

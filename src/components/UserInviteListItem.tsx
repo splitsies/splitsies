@@ -6,9 +6,12 @@ import { IColorConfiguration } from "../models/configuration/color-config/color-
 import { lazyInject } from "../utils/lazy-inject";
 import { IAuthProvider } from "../providers/auth-provider/auth-provider-interface";
 import { useThemeWatcher } from "../hooks/use-theme-watcher";
+import CheckCircle from "../../assets/icons/check-circle.svg";
+import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _authProvider = lazyInject<IAuthProvider>(IAuthProvider);
+const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
 type Props = {
     user: IExpenseUserDetails;
@@ -119,7 +122,11 @@ export const UserInviteListItem = ({
                     )}
 
                     {expenseUsers.map((u) => u.id).includes(user.id) && (
-                        <Icon assetName="checkCircle" size={30} tintColor={_colorConfiguration.primary} />
+                        <CheckCircle
+                            width={_uiConfig.sizes.icon}
+                            height={_uiConfig.sizes.icon}
+                            fill={_colorConfiguration.primary}
+                        />
                     )}
                 </View>
             </View>
