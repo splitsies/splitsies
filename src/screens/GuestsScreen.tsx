@@ -68,7 +68,7 @@ export const GuestScreen = ({ navigation }: Props) => {
                 />
             </View>
 
-            <Modal enableModalBlur visible={addGuestVisible} animationType="slide">
+            <Modal enableModalBlur visible={addGuestVisible} transparent animationType="fade">
                 <AddGuestForm onSave={onSaveGuest} onCancel={() => _inviteViewModel.setInviteMenuOpen(false)} />
             </Modal>
         </Container>
@@ -120,7 +120,6 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         paddingHorizontal: 15,
         borderWidth: 1,
-        borderColor: _colorConfiguration.divider,
     },
     list: {
         width: "100%",

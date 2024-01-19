@@ -3,6 +3,7 @@ import { Dimensions, KeyboardAvoidingView, StyleSheet } from "react-native";
 import { Button, TextField, View } from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
+import { Container } from "./Container";
 
 const _dimensions = Dimensions.get("screen");
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -16,10 +17,12 @@ export const AddGuestForm = ({ onSave, onCancel }: Props) => {
     const [name, setName] = useState<string>("");
 
     return (
-        <View style={styles.container}>
+        <Container>
             <KeyboardAvoidingView style={styles.inputContainer}>
                 <TextField
                     body
+                    bg-screenBG
+                    placeholderTextColor={_colorConfiguration.greyFont}
                     placeholder="Name"
                     value={name}
                     autoFocus
@@ -32,7 +35,7 @@ export const AddGuestForm = ({ onSave, onCancel }: Props) => {
                     <Button body label="Cancel" bg-primary onPress={onCancel} />
                 </View>
             </KeyboardAvoidingView>
-        </View>
+        </Container>
     );
 };
 
@@ -54,7 +57,6 @@ const styles = StyleSheet.create({
     },
     textInput: {
         height: 50,
-        backgroundColor: "white",
         borderRadius: 25,
         width: _dimensions.width * 0.75,
         paddingHorizontal: 15,

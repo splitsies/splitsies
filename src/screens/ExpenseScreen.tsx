@@ -199,6 +199,7 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
             />
 
             <View style={styles.footer}>
+                <ListSeparator />
                 <ExpenseFooter expense={expense} onItemSelected={setSelectedItem} />
             </View>
 
@@ -253,9 +254,7 @@ const styles = StyleSheet.create({
     },
     footer: {
         display: "flex",
-        borderTopColor: _colorConfiguration.greyFont,
-        borderTopWidth: 1,
-        paddingTop: 10,
         rowGap: 10,
+        paddingVertical: 10,
     },
 });

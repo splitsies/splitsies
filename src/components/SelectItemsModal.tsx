@@ -5,7 +5,7 @@ import { ListSeparator } from "./ListSeparator";
 import { ExpenseItem } from "./ExpenseItem";
 import { IExpense, IExpenseUserDetails } from "@splitsies/shared-models";
 import { Colors, Icon, Modal, Text, TouchableOpacity, View } from "react-native-ui-lib";
-import { useThemeWatcher } from "../hooks/use-theme-watcher";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 type Props = {
     user: IExpenseUserDetails;
@@ -14,14 +14,16 @@ type Props = {
     onClose: (itemIds: string[]) => void;
 };
 
-export const SelectItemsModal = ({ user, expense, visible, onClose }: Props): JSX.Element => {
-    useThemeWatcher();
+export const SelectItemsModal = SpThemedComponent(({ user, expense, visible, onClose }: Props): JSX.Element => {
     const [selections, setSelections] = useState<string[]>(
-        expense.items.filter((i) => i.owners.some((o) => o.id === user.id)).map((i) => i.id),
+        user ? expense.items.filter((i) => i.owners.some((o) => o.id === user.id)).map((i) => i.id) : [],
     );
 
     useEffect(() => {
-        setSelections(expense.items.filter((i) => i.owners.some((o) => o.id === user.id)).map((i) => i.id));
+        const selectedItemIds = user
+            ? expense.items.filter((i) => i.owners.some((o) => o.id === user.id)).map((i) => i.id)
+            : [];
+        setSelections(selectedItemIds);
     }, [expense, user]);
 
     const onItemSelected = useCallback(
@@ -42,39 +44,42 @@ export const SelectItemsModal = ({ user, expense, visible, onClose }: Props): JS
 
     return (
         <Modal enableModalBlur visible={visible} animationType="slide" style={{ backgroundColor: Colors.screenBG }}>
-            <SafeAreaView style={[styles.container, { backgroundColor: Colors.screenBG }]}>
-                <View style={styles.header}>
-                    <View style={styles.arrowContainer}>
-                        <TouchableOpacity onPress={() => onClose(selections)}>
-                            <Icon assetName="arrowBack" size={27} tintColor={Colors.textColor} />
-                        </TouchableOpacity>
+            {user && (
+                <SafeAreaView style={[styles.container, { backgroundColor: Colors.screenBG }]}>
+                    <View style={styles.header}>
+                        <View style={styles.arrowContainer}>
+                            <TouchableOpacity onPress={() => onClose(selections)}>
+                                <Icon assetName="arrowBack" size={27} tintColor={Colors.textColor} />
+                            </TouchableOpacity>
+                        </View>
+                        <Text heading color={Colors.textColor}>
+                            {user.givenName + " " + user.familyName}
+                        </Text>
+                        <View style={styles.arrowContainer} />
                     </View>
-                    <Text heading color={Colors.textColor}>
-                        {user.givenName + " " + user.familyName}
-                    </Text>
-                    <View style={styles.arrowContainer} />
-                </View>
-                <View style={styles.body}>
-                    <FlatList
-                        style={styles.list}
-                        data={expense.items.filter((i) => !i.isProportional)}
-                        ItemSeparatorComponent={ListSeparator}
-                        renderItem={({ item }) => (
-                            <ExpenseItem
-                                item={item}
-                                style={{ marginVertical: 15 }}
-                                selectable
-                                selected={selections.includes(item.id)}
-                                onPress={() => {}}
-                                onSelect={onItemSelected}
-                            />
-                        )}
-                    />
-                </View>
-            </SafeAreaView>
+
+                    <View style={styles.body}>
+                        <FlatList
+                            style={styles.list}
+                            data={expense.items.filter((i) => !i.isProportional)}
+                            ItemSeparatorComponent={ListSeparator}
+                            renderItem={({ item }) => (
+                                <ExpenseItem
+                                    item={item}
+                                    style={{ marginVertical: 15 }}
+                                    selectable
+                                    selected={selections.includes(item.id)}
+                                    onPress={() => {}}
+                                    onSelect={onItemSelected}
+                                />
+                            )}
+                        />
+                    </View>
+                </SafeAreaView>
+            )}
         </Modal>
     );
-};
+});
 
 const styles = StyleSheet.create({
     container: {

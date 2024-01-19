@@ -16,6 +16,7 @@ import { IColorConfiguration } from "../models/configuration/color-config/color-
 import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
 import { Container } from "../components/Container";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
+import { ListSeparator } from "../components/ListSeparator";
 
 type Props = CompositeScreenProps<
     NativeStackScreenProps<RootStackParamList>,
@@ -23,7 +24,6 @@ type Props = CompositeScreenProps<
 >;
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
-const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 
 export const PeopleScreen = SpThemedComponent(({ navigation }: Props): JSX.Element => {
     const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, _expenseManager.currentExpenseUsers);
@@ -77,6 +77,7 @@ export const PeopleScreen = SpThemedComponent(({ navigation }: Props): JSX.Eleme
                 />
 
                 <View style={styles.footer}>
+                    <ListSeparator />
                     <PeopleFooter expense={expense} expenseUsers={expenseUsers} />
                 </View>
             </SafeAreaView>
@@ -101,9 +102,7 @@ const styles = StyleSheet.create({
     },
     footer: {
         display: "flex",
-        borderTopColor: _colorConfiguration.greyFont,
-        borderTopWidth: 1,
-        paddingTop: 10,
         rowGap: 10,
+        paddingVertical: 10,
     },
 });

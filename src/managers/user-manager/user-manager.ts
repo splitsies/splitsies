@@ -15,6 +15,7 @@ import { BaseManager } from "../base-manager";
 import { resetGenericPassword, setGenericPassword, getGenericPassword, UserCredentials } from "react-native-keychain";
 import { IPersmissionRequester } from "../../utils/permission-requester/permission-requester-interface";
 import Contacts from "react-native-contacts";
+import { formatPhoneNumber } from "../../utils/format-phone-number";
 
 @injectable()
 export class UserManager extends BaseManager implements IUserManager {
@@ -147,7 +148,7 @@ export class UserManager extends BaseManager implements IUserManager {
             const contacts = await Contacts.getAll();
             const numbers: string[] = [];
             for (const c of contacts) {
-                numbers.push(...c.phoneNumbers.map((n) => n.number.replace(/\D/g, "")));
+                numbers.push(...c.phoneNumbers.map((n) => formatPhoneNumber(n.number)));
             }
 
             // Do a search to find the ones existing as Splitsies users
@@ -163,11 +164,12 @@ export class UserManager extends BaseManager implements IUserManager {
             const visitedNumbers = new Set<string>();
 
             for (const c of contacts) {
-                if (!c.phoneNumbers[0]) {
+                if (!c.phoneNumbers[0] || !c.phoneNumbers.length) {
                     continue;
                 }
 
-                const number = c.phoneNumbers[0].number.replace(/\D/g, "").slice(-10);
+                const number = formatPhoneNumber(c.phoneNumbers[0].number);
+
                 if (visitedNumbers.has(number)) {
                     continue;
                 }
@@ -175,7 +177,7 @@ export class UserManager extends BaseManager implements IUserManager {
                 visitedNumbers.add(number);
 
                 const accountPhoneNumber = c.phoneNumbers
-                    .map((n) => n.number.replace(/\D/g, "").slice(-10))
+                    .map((n) => formatPhoneNumber(n.number))
                     .find((n) => keyedByNumber.has(n));
 
                 if (accountPhoneNumber && keyedByNumber.has(accountPhoneNumber)) {
@@ -190,7 +192,7 @@ export class UserManager extends BaseManager implements IUserManager {
                         "",
                         c.givenName,
                         c.familyName,
-                        c.phoneNumbers[0]?.number.replace(/\D/g, "") || "",
+                        c.phoneNumbers[0] ? formatPhoneNumber(c.phoneNumbers[0].number) : "",
                     ),
                 );
             }
