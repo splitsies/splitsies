@@ -203,6 +203,10 @@ export class UserManager extends BaseManager implements IUserManager {
         }
     }
 
+    requestFindUsers(search: string, reset: boolean): Promise<IExpenseUserDetails[]> {
+        return this._client.requestFindUsers(search, reset);
+    }
+
     private userSortCompare(user1: IExpenseUserDetails, user2: IExpenseUserDetails): number {
         return user1.givenName.toUpperCase() > user2.givenName.toUpperCase()
             ? 1

@@ -1,38 +1,54 @@
-import React, { useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { FlatList, StyleSheet } from "react-native";
-import { View } from "react-native-ui-lib";
+import { Text, View } from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
-import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { useObservable } from "../hooks/use-observable";
-import { IQrPayload } from "../models/qr-payload/qr-payload-interface";
-import { Code } from "react-native-vision-camera";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
-import { IImageConfiguration } from "../models/configuration/image-config/image-configuration-interface";
 import { ListSeparator } from "../components/ListSeparator";
 import { UserInviteListItem } from "../components/UserInviteListItem";
 import { IExpenseUserDetails } from "@splitsies/shared-models";
 import { useFocusEffect } from "@react-navigation/native";
-import { ScanUserModal } from "../components/ScanUserModal";
 import { IInviteViewModel } from "../view-models/invite-view-model/invite-view-model-interface";
-import { filter } from "rxjs";
 import { Container } from "../components/Container";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
+import { debounce } from "../utils/debounce";
 
-const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _userManager = lazyInject<IUserManager>(IUserManager);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
-const _imageConfiguration = lazyInject<IImageConfiguration>(IImageConfiguration);
 const _inviteViewModel = lazyInject<IInviteViewModel>(IInviteViewModel);
 
-let timeoutId: NodeJS.Timeout;
-export const ContactsScreen = SpThemedComponent(() => {
-    const contactUsers = useObservable(_userManager.contactUsers$, []);
+export const SearchScreen = SpThemedComponent(() => {
     const pendingJoinRequests = useObservable(_expenseManager.currentExpenseJoinRequests$, []);
     const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, []);
     const searchFilter = useObservable(_inviteViewModel.searchFilter$, _inviteViewModel.searchFilter);
+    const [users, setUsers] = useState<IExpenseUserDetails[]>([]);
+    const fetchingPage = useRef<boolean>(false);
 
-    useFocusEffect(() => _inviteViewModel.setMode("contacts"));
+    useFocusEffect(() => _inviteViewModel.setMode("search"));
+
+    const search = useCallback(
+        debounce(async (search: string) => {
+            if (_inviteViewModel.mode !== "search") return;
+            setUsers(await _userManager.requestFindUsers(search, true));
+        }, 500),
+        [],
+    );
+
+    const fetchPage = async (): Promise<void> => {
+        if (fetchingPage.current) return;
+        fetchingPage.current = true;
+        const newList = [
+            ...users,
+            ...(await _userManager.requestFindUsers(searchFilter, false)).filter(
+                (u) => !users.find((us) => us.id === u.id),
+            ),
+        ];
+        setUsers(newList);
+        fetchingPage.current = false;
+    };
+
+    useEffect(() => search(searchFilter), [searchFilter]);
 
     const onUserInvited = async (user: IExpenseUserDetails): Promise<void> => {
         if (!user.isRegistered || !user.id) {
@@ -48,26 +64,28 @@ export const ContactsScreen = SpThemedComponent(() => {
     return (
         <Container style={styles.container}>
             <View style={styles.body}>
-                <FlatList
-                    style={styles.list}
-                    data={contactUsers.filter(
-                        (u) =>
-                            !searchFilter ||
-                            `${u.givenName} ${u.familyName}`.toLowerCase().includes(searchFilter.toLowerCase()) ||
-                            u.phoneNumber.includes(searchFilter),
-                    )}
-                    keyExtractor={(i) => i.id + i.phoneNumber}
-                    ItemSeparatorComponent={ListSeparator}
-                    renderItem={({ item: user }) => (
-                        <UserInviteListItem
-                            user={user}
-                            expenseUsers={expenseUsers}
-                            pendingJoinRequests={pendingJoinRequests}
-                            onInviteUser={() => onUserInvited(user)}
-                            onUninviteUser={() => onUserUninvited(user)}
-                        />
-                    )}
-                />
+                {searchFilter === "" || users.length > 0 ? (
+                    <FlatList
+                        style={styles.list}
+                        data={users}
+                        keyExtractor={(i) => i.id + i.phoneNumber}
+                        ItemSeparatorComponent={ListSeparator}
+                        onEndReached={(_) => void fetchPage()}
+                        renderItem={({ item: user }) => (
+                            <UserInviteListItem
+                                user={user}
+                                expenseUsers={expenseUsers}
+                                pendingJoinRequests={pendingJoinRequests}
+                                onInviteUser={() => onUserInvited(user)}
+                                onUninviteUser={() => onUserUninvited(user)}
+                            />
+                        )}
+                    />
+                ) : (
+                    <View centerH paddingT-10>
+                        <Text hint>No results</Text>
+                    </View>
+                )}
             </View>
         </Container>
     );
