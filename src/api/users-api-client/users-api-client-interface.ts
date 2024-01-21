@@ -6,10 +6,11 @@ import {
     IUserDto,
 } from "@splitsies/shared-models";
 import { Observable } from "rxjs";
+import { ICreateUserResult } from "../../models/create-user-result/create-user-result-interface";
 
 export interface IUsersApiClient {
     readonly user$: Observable<IUserCredential | null>;
-    create(user: CreateUserRequest): Promise<void>;
+    create(user: CreateUserRequest): Promise<ICreateUserResult>;
     authenticate(username: string, password: string): Promise<void>;
     signOut(): void;
     requestFindUsersByPhoneNumber(phoneNumbers: string[]): Promise<IUserDto[]>;

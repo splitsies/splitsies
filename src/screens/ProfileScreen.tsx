@@ -43,6 +43,7 @@ export const ProfileScreen = SpThemedComponent(({ navigation }: Props) => {
             <SafeAreaView style={styles.container}>
                 <View style={{ display: "flex", flex: 2, rowGap: 10, justifyContent: "center", alignItems: "center" }}>
                     <QRCode value={JSON.stringify(payload)} color={Colors.black} backgroundColor={Colors.white} />
+                    <SpTextInput readonly value={user.user.username} placeholder="Username" />
                     <SpTextInput readonly value={user.user.givenName} placeholder="First Name" />
                     <SpTextInput readonly value={user.user.familyName} placeholder="Last Name" />
                     <SpTextInput readonly value={user.user.email} placeholder="Email" />

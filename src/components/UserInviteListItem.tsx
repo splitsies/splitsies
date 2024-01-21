@@ -17,6 +17,7 @@ type Props = {
     user: IExpenseUserDetails;
     expenseUsers: IExpenseUserDetails[];
     pendingJoinRequests: IExpenseJoinRequest[];
+    showUsername?: boolean;
     onInviteUser: (user: IExpenseUserDetails) => void;
     onUninviteUser: (user: IExpenseUserDetails) => void;
 };
@@ -33,6 +34,7 @@ export const UserInviteListItem = ({
     user,
     expenseUsers,
     pendingJoinRequests,
+    showUsername,
     onInviteUser,
     onUninviteUser,
 }: Props): JSX.Element => {
@@ -85,7 +87,11 @@ export const UserInviteListItem = ({
                     <Text body numberOfLines={1} ellipsizeMode={"tail"} color={Colors.textColor}>
                         {user.givenName + " " + user.familyName}
                     </Text>
-                    <Text hint>{user.phoneNumber || "Guest"}</Text>
+                    {showUsername ? (
+                        <Text hint>@{user.username}</Text>
+                    ) : (
+                        <Text hint>{user.phoneNumber || "Guest"}</Text>
+                    )}
                 </View>
 
                 <View style={styles.buttonContainer}>
