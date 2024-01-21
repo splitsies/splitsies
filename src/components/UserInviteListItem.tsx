@@ -134,7 +134,6 @@ export const UserInviteListItem = ({
                                     ? _colorConfiguration.primaryTranslucentLight
                                     : _colorConfiguration.primary
                             }
-                            // leftElement={(<ActivityIndicator animating hidesWhenStopped color={Colors.black} size="small" style={{ paddingLeft: 5 }} />)}
                             label={computeButtonLabel()}
                             onPress={onChipPress}
                         />
