@@ -14,6 +14,7 @@ export interface IUserManager extends IBaseManager {
     requestUsersByIds(ids: string[]): Promise<IUserDto[]>;
     requestAddGuestUser(givenName: string, familyName: string, phoneNumber: string): Promise<IUserDto>;
     requestUsersFromContacts(): Promise<void>;
+    requestFindUsers(search: string, reset: boolean): Promise<IExpenseUserDetails[]>;
 }
 
 export const IUserManager = Symbol.for("IUserManager");

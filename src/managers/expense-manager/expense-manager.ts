@@ -112,7 +112,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     async connectToExpense(expenseId: string): Promise<void> {
         await this._api.connectToExpense(expenseId);
-        await this.getJoinRequestsForExpense(expenseId);
+        void this.getJoinRequestsForExpense(expenseId);
     }
 
     async requestUsersForExpense(expenseId: string): Promise<void> {

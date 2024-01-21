@@ -23,6 +23,12 @@ import QrAdd from "../../assets/icons/qr-add.svg";
 import AddPerson from "../../assets/icons/add-person.svg";
 
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+import { SearchScreen } from "../screens/SearchScreen";
+import { Code } from "react-native-vision-camera";
+import { filter } from "rxjs";
+import { ScanUserModal } from "../components/ScanUserModal";
+import { IQrPayload } from "../models/qr-payload/qr-payload-interface";
+import { IImageConfiguration } from "../models/configuration/image-config/image-configuration-interface";
 
 const Tab = createMaterialTopTabNavigator();
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -31,16 +37,26 @@ const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration)
 const _inviteViewModel = lazyInject<IInviteViewModel>(IInviteViewModel);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
+const _imageConfiguration = lazyInject<IImageConfiguration>(IImageConfiguration);
 
 type Props = CompositeScreenProps<
     NativeStackScreenProps<RootStackParamList>,
     BottomTabScreenProps<ExpenseParamList, "Invite">
 >;
 
+let timeoutId: NodeJS.Timeout;
+
 export const InviteNavigator = ({ navigation }: Props) => {
     useThemeWatcher();
-    const [searchFilter, setSearchFilter] = useState<string>("");
+    const searchFilter = useObservable(_inviteViewModel.searchFilter$, _inviteViewModel.searchFilter);
     const state = useObservable(_inviteViewModel.mode$, _inviteViewModel.mode);
+    const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, []);
+    const codeScannerVisible = useObservable(
+        _inviteViewModel.inviteMenuOpen$.pipe(filter((_) => _inviteViewModel.mode !== "guests")),
+        _inviteViewModel.inviteMenuOpen,
+    );
+
+    const [scannedUser, setScannedUser] = useState<IQrPayload | null>(null);
 
     const onBackPress = useCallback(() => {
         navigation.navigate("Items");
@@ -49,6 +65,29 @@ export const InviteNavigator = ({ navigation }: Props) => {
     useInitialize(() => {
         void _userManager.requestUsersFromContacts();
     });
+
+    const onScannedUserAdded = () => {
+        if (!scannedUser || !_expenseManager.currentExpense) return;
+        _expenseManager.requestAddUserToExpense(scannedUser.id, _expenseManager.currentExpense.id);
+    };
+
+    const onCodeScanned = (codes: Code[]): void => {
+        const rawPayload = codes.find((c) => {
+            try {
+                const parsed = JSON.parse(c.value ?? "") as IQrPayload;
+                return parsed.id !== undefined && parsed.familyName !== undefined && parsed.givenName !== undefined;
+            } catch {
+                return false;
+            }
+        });
+
+        if (!rawPayload?.value || (scannedUser && rawPayload.value === JSON.stringify(scannedUser))) return;
+
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => setScannedUser(null), _imageConfiguration.qrCodeTimeoutMs);
+        const payload = JSON.parse(rawPayload.value) as IQrPayload;
+        setScannedUser(payload);
+    };
 
     return (
         <SafeAreaView style={{ flex: 1, backgroundColor: Colors.screenBG }}>
@@ -62,25 +101,26 @@ export const InviteNavigator = ({ navigation }: Props) => {
                 <View style={styles.inputContainer}>
                     <TextField
                         body
+                        autoCapitalize="none"
                         bg-screenBG
                         placeholder="Search"
                         placeholderTextColor={_colorConfiguration.greyFont}
                         value={searchFilter}
                         style={styles.textInput}
-                        onChangeText={setSearchFilter}
+                        onChangeText={(text) => _inviteViewModel.setSearchFilter(text)}
                     />
                 </View>
 
                 <View style={styles.addUserContainer}>
                     <TouchableOpacity onPress={() => _inviteViewModel.setInviteMenuOpen(true)}>
-                        {state === "contacts" ? (
-                            <QrAdd height={_uiConfig.sizes.icon} width={_uiConfig.sizes.icon} fill={Colors.textColor} />
-                        ) : (
+                        {state === "guests" ? (
                             <AddPerson
                                 height={_uiConfig.sizes.icon}
                                 width={_uiConfig.sizes.icon}
                                 fill={Colors.textColor}
                             />
+                        ) : (
+                            <QrAdd height={_uiConfig.sizes.icon} width={_uiConfig.sizes.icon} fill={Colors.textColor} />
                         )}
                     </TouchableOpacity>
                 </View>
@@ -95,7 +135,17 @@ export const InviteNavigator = ({ navigation }: Props) => {
             >
                 <Tab.Screen name="Contacts" component={ContactsScreen} />
                 <Tab.Screen name="Guests" component={GuestScreen} />
+                <Tab.Screen name="Search" component={SearchScreen} />
             </Tab.Navigator>
+
+            <ScanUserModal
+                visible={codeScannerVisible}
+                setVisible={(val: boolean) => _inviteViewModel.setInviteMenuOpen(val)}
+                scannedUser={scannedUser}
+                onScannedUserAdded={onScannedUserAdded}
+                onCodeScanned={onCodeScanned}
+                shouldDisableChip={expenseUsers.some((e) => e.id === scannedUser?.id)}
+            />
         </SafeAreaView>
     );
 };
