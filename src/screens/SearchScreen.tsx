@@ -31,6 +31,7 @@ export const SearchScreen = SpThemedComponent(() => {
         debounce(async (search: string) => {
             if (_inviteViewModel.mode !== "search") return;
             setUsers(await _userManager.requestFindUsers(search, true));
+            setFetchingPage(false);
         }, 500),
         [],
     );
@@ -51,7 +52,6 @@ export const SearchScreen = SpThemedComponent(() => {
     useEffect(() => {
         setFetchingPage(true);
         search(searchFilter);
-        setFetchingPage(false);
     }, [searchFilter]);
 
     const onUserInvited = async (user: IExpenseUserDetails): Promise<void> => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal, View, SafeAreaView, TouchableOpacity, StyleSheet } from "react-native";
-import { Icon, Chip, Toast, Colors, Text } from "react-native-ui-lib";
+import { Chip, Toast, Colors, Text } from "react-native-ui-lib";
 import { CameraView } from "./CameraView";
 import { IQrPayload } from "../models/qr-payload/qr-payload-interface";
 import { lazyInject } from "../utils/lazy-inject";
@@ -133,7 +133,6 @@ const styles = StyleSheet.create({
     },
     headerContainer: {
         backgroundColor: _colorConfiguration.darkOverlay,
-        paddingLeft: 90,
         paddingBottom: 20,
         width: "100%",
     },
