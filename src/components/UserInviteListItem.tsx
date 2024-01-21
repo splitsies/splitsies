@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { IExpenseJoinRequest, IExpenseUserDetails } from "@splitsies/shared-models";
 import { Chip, Colors, Icon, Text, View } from "react-native-ui-lib";
-import { StyleSheet } from "react-native";
+import { ActivityIndicator, StyleSheet } from "react-native";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { lazyInject } from "../utils/lazy-inject";
 import { IAuthProvider } from "../providers/auth-provider/auth-provider-interface";
@@ -40,9 +40,12 @@ export const UserInviteListItem = ({
 }: Props): JSX.Element => {
     useThemeWatcher();
     const [userState, setUserState] = useState<UserState>(UserState.AvailableAsGuest);
+    const [awaitingResponse, setAwaitingResponse] = useState<boolean>(false);
 
     useEffect(() => {
         let state = UserState.AvailableAsGuest;
+
+        setAwaitingResponse(false);
 
         if (
             expenseUsers.map((u) => u.id).includes(user.id) ||
@@ -76,6 +79,16 @@ export const UserInviteListItem = ({
         }
     };
 
+    const onChipPress = () => {
+        if (userState === UserState.Uninvitable) {
+            onUninviteUser(user);
+        } else {
+            onInviteUser(user);
+        }
+
+        setAwaitingResponse(true);
+    };
+
     return (
         <View style={styles.itemContainer}>
             <View style={styles.container}>
@@ -95,10 +108,11 @@ export const UserInviteListItem = ({
                 </View>
 
                 <View style={styles.buttonContainer}>
+                    <ActivityIndicator animating={awaitingResponse} hidesWhenStopped color={Colors.textColor} />
                     {!expenseUsers.map((u) => u.id).includes(user.id) && !!user.phoneNumber && (
                         <Chip
                             activeOpacity={0.5}
-                            disabled={userState === UserState.Invited}
+                            disabled={userState === UserState.Invited || awaitingResponse}
                             labelStyle={[
                                 styles.buttonLabel,
                                 {
@@ -109,7 +123,7 @@ export const UserInviteListItem = ({
                                 },
                             ]}
                             containerStyle={{
-                                width: 120,
+                                minWidth: 120,
                                 borderColor:
                                     userState === UserState.Invited || userState === UserState.Uninvitable
                                         ? _colorConfiguration.primaryTranslucentLight
@@ -120,10 +134,9 @@ export const UserInviteListItem = ({
                                     ? _colorConfiguration.primaryTranslucentLight
                                     : _colorConfiguration.primary
                             }
+                            // leftElement={(<ActivityIndicator animating hidesWhenStopped color={Colors.black} size="small" style={{ paddingLeft: 5 }} />)}
                             label={computeButtonLabel()}
-                            onPress={() =>
-                                userState === UserState.Uninvitable ? onUninviteUser(user) : onInviteUser(user)
-                            }
+                            onPress={onChipPress}
                         />
                     )}
 
@@ -169,6 +182,7 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         alignItems: "center",
+        columnGap: 10,
     },
     buttonLabel: {
         fontSize: 14,

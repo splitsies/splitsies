@@ -126,9 +126,8 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         }
     }
 
-    async requestAddUserToExpense(userId: string, expenseId: string): Promise<void> {
-        await this._api.addUserToExpense(userId, expenseId);
-        await this.requestUsersForExpense(expenseId);
+    requestAddUserToExpense(userId: string, expenseId: string): Promise<void> {
+        return this._api.addUserToExpense(userId, expenseId);
     }
 
     async requestRemoveUserFromExpense(userId: string, expenseId: string): Promise<void> {

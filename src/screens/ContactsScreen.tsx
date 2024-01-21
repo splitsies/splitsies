@@ -1,31 +1,22 @@
-import React, { useState } from "react";
+import React from "react";
 import { FlatList, StyleSheet } from "react-native";
 import { View } from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
-import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { useObservable } from "../hooks/use-observable";
-import { IQrPayload } from "../models/qr-payload/qr-payload-interface";
-import { Code } from "react-native-vision-camera";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
-import { IImageConfiguration } from "../models/configuration/image-config/image-configuration-interface";
 import { ListSeparator } from "../components/ListSeparator";
 import { UserInviteListItem } from "../components/UserInviteListItem";
 import { IExpenseUserDetails } from "@splitsies/shared-models";
 import { useFocusEffect } from "@react-navigation/native";
-import { ScanUserModal } from "../components/ScanUserModal";
 import { IInviteViewModel } from "../view-models/invite-view-model/invite-view-model-interface";
-import { filter } from "rxjs";
 import { Container } from "../components/Container";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
-const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _userManager = lazyInject<IUserManager>(IUserManager);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
-const _imageConfiguration = lazyInject<IImageConfiguration>(IImageConfiguration);
 const _inviteViewModel = lazyInject<IInviteViewModel>(IInviteViewModel);
 
-let timeoutId: NodeJS.Timeout;
 export const ContactsScreen = SpThemedComponent(() => {
     const contactUsers = useObservable(_userManager.contactUsers$, []);
     const pendingJoinRequests = useObservable(_expenseManager.currentExpenseJoinRequests$, []);
@@ -35,9 +26,21 @@ export const ContactsScreen = SpThemedComponent(() => {
     useFocusEffect(() => _inviteViewModel.setMode("contacts"));
 
     const onUserInvited = async (user: IExpenseUserDetails): Promise<void> => {
-        if (!user.isRegistered || !user.id) {
-            return;
+        if (!user.isRegistered) {
+            let userId = user.id;
+            if (!user.id) {
+                const createdGuest = await _userManager.requestAddGuestUser(
+                    user.givenName,
+                    user.familyName,
+                    user.phoneNumber,
+                );
+                if (!createdGuest) return;
+                userId = createdGuest.id;
+            }
+
+            return _expenseManager.requestAddUserToExpense(userId, _expenseManager.currentExpense!.id);
         }
+
         return _expenseManager.sendExpenseJoinRequest(user.id, _expenseManager.currentExpense!.id);
     };
 
