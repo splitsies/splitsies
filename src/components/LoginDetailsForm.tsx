@@ -7,15 +7,17 @@ import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 type Props = {
     userDetails: CreateUserRequest;
-    onComplete: (email: string, password: string) => Promise<void>;
+    onComplete: (email: string, username: string, password: string) => Promise<void>;
 };
 
 export const LoginDetailsForm = SpThemedComponent(({ userDetails, onComplete }: Props) => {
     const [email, setEmail] = useState<string>("");
+    const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [confirmedPassword, setConfirmedPassword] = useState<string>("");
 
     const [emailValid, setEmailValid] = useState<boolean>(false);
+    const [usernameValid, setUsernameValid] = useState<boolean>(false);
     const [passwordValid, setPasswordValid] = useState<boolean>(false);
     const [confirmedPasswordValid, setConfirmedPasswordValid] = useState<boolean>(false);
 
@@ -24,12 +26,17 @@ export const LoginDetailsForm = SpThemedComponent(({ userDetails, onComplete }: 
     };
 
     const isFormValid = (): boolean => {
-        return emailValid && passwordValid && confirmedPasswordValid;
+        return emailValid && passwordValid && confirmedPasswordValid && usernameValid;
     };
 
     const isPasswordValid = (password: string): boolean => {
         const re = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/;
         return password.length >= 8 && re.test(password);
+    };
+
+    const isUsernameValid = (username: string): boolean => {
+        const re = /^[a-zA-Z0-9\-]*$/;
+        return re.test(username);
     };
 
     const passwordsMatch = (confirmedPassword: string): boolean => {
@@ -58,6 +65,26 @@ export const LoginDetailsForm = SpThemedComponent(({ userDetails, onComplete }: 
                             onChangeValidity={setEmailValid}
                             placeholder="Email"
                             onChangeText={setEmail}
+                        />
+                    </KeyboardAvoidingView>
+
+                    <KeyboardAvoidingView>
+                        <SpTextInput
+                            autoCapitalize="none"
+                            label="Username"
+                            value={username}
+                            validate={["required", isUsernameValid]}
+                            validationMessage={[
+                                "Username is required",
+                                "Username must contain only alphanumeric characters and hyphens",
+                            ]}
+                            enableErrors
+                            validateOnBlur
+                            validateOnStart={shouldValidateOnStart()}
+                            validationMessagePosition="bottom"
+                            onChangeValidity={setUsernameValid}
+                            placeholder="Username"
+                            onChangeText={setUsername}
                         />
                     </KeyboardAvoidingView>
 
@@ -107,7 +134,7 @@ export const LoginDetailsForm = SpThemedComponent(({ userDetails, onComplete }: 
                         bg-primary
                         label="Continue"
                         disabled={!isFormValid()}
-                        onPress={() => onComplete(email, password)}
+                        onPress={() => onComplete(email, username, password)}
                     />
                 </View>
             </View>

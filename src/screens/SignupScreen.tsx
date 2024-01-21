@@ -32,6 +32,7 @@ export const SignupScreen = SpThemedComponent(({ navigation }: Props): JSX.Eleme
         email: "",
         dateOfBirth: "",
         password: "",
+        username: "",
     });
 
     const onBackPress = (): void => {
@@ -51,12 +52,18 @@ export const SignupScreen = SpThemedComponent(({ navigation }: Props): JSX.Eleme
         setWizardIndex(wizardIndex + 1);
     };
 
-    const onLoginDetailsCompleted = async (email: string, password: string): Promise<void> => {
-        const updatedUserDetails = { ...userDetails, email, password };
+    const onLoginDetailsCompleted = async (email: string, username: string, password: string): Promise<void> => {
+        const updatedUserDetails = { ...userDetails, email, password, username };
         setUserDetails(updatedUserDetails);
 
         const result = await _userManager.requestCreateUser(updatedUserDetails);
-        if (!result) {
+        if (!result.success) {
+            console.log({ result });
+            if (result.error) {
+                Alert.alert("Error", result.error);
+                return;
+            }
+
             Alert.alert("Error", "Unable to create an account. Please try again later.");
         }
     };

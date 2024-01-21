@@ -12,6 +12,8 @@ import { IApiConfig } from "../../models/configuration/api-config/api-config-int
 import { ClientBase } from "../client-base";
 import { BehaviorSubject, Observable, ReplaySubject } from "rxjs";
 import { lazyInject } from "../../utils/lazy-inject";
+import { ICreateUserResult } from "../../models/create-user-result/create-user-result-interface";
+import { CreateUserResult } from "../../models/create-user-result/create-user-result";
 
 @injectable()
 export class UsersApiClient extends ClientBase implements IUsersApiClient {
@@ -48,17 +50,18 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
         }
     }
 
-    async create(user: CreateUserRequest): Promise<void> {
+    async create(user: CreateUserRequest): Promise<ICreateUserResult> {
         try {
             const result = await this.postJson<IUserCredential>(this._config.users, { user });
             if (!result.success) {
-                console.error(result);
-                return;
+                console.error({ yes: result });
+                return new CreateUserResult(false, result.data as unknown as string);
             }
 
             this._user$.next(result.data);
-        } catch {
-            throw new Error("Unable to create user");
+            return new CreateUserResult(true, null);
+        } catch (e) {
+            return new CreateUserResult(false, e.message as unknown as string);
         }
     }
 
@@ -113,7 +116,8 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
                 this._scanPageKeys.delete(pageKey);
             }
 
-            return result.data.result.map((u) => this._expenseUserDetailsMapper.fromUserDto(u));
+            const res = result.data.result.map((u) => this._expenseUserDetailsMapper.fromUserDto(u));
+            return res;
         } catch (e) {
             console.error(e);
             return [];

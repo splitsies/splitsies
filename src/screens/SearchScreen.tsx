@@ -23,7 +23,7 @@ export const SearchScreen = SpThemedComponent(() => {
     const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, []);
     const searchFilter = useObservable(_inviteViewModel.searchFilter$, _inviteViewModel.searchFilter);
     const [users, setUsers] = useState<IExpenseUserDetails[]>([]);
-    const fetchingPage = useRef<boolean>(false);
+    const [fetchingPage, setFetchingPage] = useState<boolean>(false);
 
     useFocusEffect(() => _inviteViewModel.setMode("search"));
 
@@ -36,8 +36,8 @@ export const SearchScreen = SpThemedComponent(() => {
     );
 
     const fetchPage = async (): Promise<void> => {
-        if (fetchingPage.current) return;
-        fetchingPage.current = true;
+        if (fetchingPage) return;
+        setFetchingPage(true);
         const newList = [
             ...users,
             ...(await _userManager.requestFindUsers(searchFilter, false)).filter(
@@ -45,10 +45,14 @@ export const SearchScreen = SpThemedComponent(() => {
             ),
         ];
         setUsers(newList);
-        fetchingPage.current = false;
+        setFetchingPage(false);
     };
 
-    useEffect(() => search(searchFilter), [searchFilter]);
+    useEffect(() => {
+        setFetchingPage(true);
+        search(searchFilter);
+        setFetchingPage(false);
+    }, [searchFilter]);
 
     const onUserInvited = async (user: IExpenseUserDetails): Promise<void> => {
         if (!user.isRegistered || !user.id) {
@@ -64,7 +68,7 @@ export const SearchScreen = SpThemedComponent(() => {
     return (
         <Container style={styles.container}>
             <View style={styles.body}>
-                {searchFilter === "" || users.length > 0 ? (
+                {fetchingPage || searchFilter === "" || users.length > 0 ? (
                     <FlatList
                         style={styles.list}
                         data={users}
@@ -78,6 +82,7 @@ export const SearchScreen = SpThemedComponent(() => {
                                 pendingJoinRequests={pendingJoinRequests}
                                 onInviteUser={() => onUserInvited(user)}
                                 onUninviteUser={() => onUserUninvited(user)}
+                                showUsername
                             />
                         )}
                     />

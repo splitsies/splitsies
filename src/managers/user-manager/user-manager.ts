@@ -16,6 +16,8 @@ import { resetGenericPassword, setGenericPassword, getGenericPassword, UserCrede
 import { IPersmissionRequester } from "../../utils/permission-requester/permission-requester-interface";
 import Contacts from "react-native-contacts";
 import { formatPhoneNumber } from "../../utils/format-phone-number";
+import { ICreateUserResult } from "../../models/create-user-result/create-user-result-interface";
+import { CreateUserResult } from "../../models/create-user-result/create-user-result";
 
 @injectable()
 export class UserManager extends BaseManager implements IUserManager {
@@ -72,13 +74,16 @@ export class UserManager extends BaseManager implements IUserManager {
         return this.user?.user.id ?? "";
     }
 
-    async requestCreateUser(user: CreateUserRequest): Promise<boolean> {
+    async requestCreateUser(user: CreateUserRequest): Promise<ICreateUserResult> {
         try {
-            await this._client.create(user);
-            await setGenericPassword(user.email, user.password);
-            return true;
+            const result = await this._client.create(user);
+            if (result.success) {
+                await setGenericPassword(user.email, user.password);
+            }
+
+            return result;
         } catch {
-            return false;
+            return new CreateUserResult(false, null);
         }
     }
 
@@ -189,6 +194,7 @@ export class UserManager extends BaseManager implements IUserManager {
                 contactUsers.push(
                     new ExpenseUserDetails(
                         false,
+                        "",
                         "",
                         c.givenName,
                         c.familyName,

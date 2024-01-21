@@ -26,7 +26,7 @@ export abstract class ClientBase {
 
         if (!dataResponse.success) {
             console.error(`endpoint = ${url}, response - ${JSON.stringify(response, null, 2)}`);
-            throw new Error();
+            throw new Error(dataResponse.data);
         }
 
         return this.parseResponse(dataResponse);
@@ -46,7 +46,7 @@ export abstract class ClientBase {
 
         if (!dataResponse.success) {
             console.error(`endpoint = ${url}, response - ${JSON.stringify(response, null, 2)}`);
-            throw new Error();
+            throw new Error(dataResponse.data);
         }
 
         return this.parseResponse(dataResponse);
