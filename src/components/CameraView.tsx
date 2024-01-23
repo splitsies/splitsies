@@ -1,4 +1,4 @@
-import React, { MutableRefObject, forwardRef, useCallback, useEffect, useRef, useState } from "react";
+import React, { MutableRefObject, forwardRef, useCallback, useRef, useState } from "react";
 import { StyleSheet } from "react-native";
 import { View } from "react-native-ui-lib/core";
 import { useInitialize } from "../hooks/use-initialize";
@@ -27,6 +27,13 @@ export const CameraView = forwardRef<Camera, Props>(({ children, onCodeScanned }
     const [focusPosition, setFocusPosition] = useState<Point | null>(null);
     const camera = useRef<Camera>(null);
 
+    useInitialize(() => {
+        setIsActive(true);
+        _permissionRequest.requestCameraPersmission();
+
+        return () => setIsActive(false);
+    });
+
     const codeScanner = useCodeScanner({
         codeTypes: ["qr"],
         onCodeScanned: onCodeScanned ?? (() => {}),
@@ -51,13 +58,6 @@ export const CameraView = forwardRef<Camera, Props>(({ children, onCodeScanned }
 
     const gesture = Gesture.Tap().onEnd(({ x, y }) => {
         runOnJS(focus)({ x, y });
-    });
-
-    useInitialize(() => {
-        setIsActive(true);
-        _permissionRequest.requestCameraPersmission();
-
-        return () => setIsActive(false);
     });
 
     const onError = useCallback((error: CameraRuntimeError) => {
