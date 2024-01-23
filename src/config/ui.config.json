@@ -3,5 +3,9 @@
         "smallIcon": 17, 
         "icon": 27,
         "largeIcon": 30
+    },
+    "durations": {
+        "focusThrottleMs": 500,
+        "searchDebounceMs": 500
     }
 }

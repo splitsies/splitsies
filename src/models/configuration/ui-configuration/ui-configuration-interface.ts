@@ -4,5 +4,10 @@ export interface IUiConfiguration {
         icon: number;
         largeIcon: number;
     };
+
+    readonly durations: {
+        focusThrottleMs: number;
+        searchDebounceMs: number;
+    };
 }
 export const IUiConfiguration = Symbol.for("IUiConfiguration");
