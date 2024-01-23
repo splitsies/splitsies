@@ -11,6 +11,7 @@ import { IExpenseManager } from "../managers/expense-manager/expense-manager-int
 import { useObservable } from "../hooks/use-observable";
 import ArrowBack from "../../assets/icons/arrow-back.svg";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
@@ -57,14 +58,21 @@ export const ScanUserModal = ({
         <Modal visible={visible} animationType="fade">
             <CameraView onCodeScanned={onCodeScanned}>
                 <View style={styles.cameraOverlay}>
-                    <SafeAreaView style={styles.headerContainer}>
-                        <TouchableOpacity
-                            style={{ marginTop: 32, marginLeft: 10, marginBottom: 20 }}
-                            onPress={() => setVisible(false)}
-                        >
-                            <ArrowBack width={_uiConfig.sizes.icon} height={_uiConfig.sizes.icon} fill={Colors.white} />
-                        </TouchableOpacity>
-                    </SafeAreaView>
+                    {/* GestureDetector usage here is a workaround to block the tap from bubbling up and focusing the camera */}
+                    <GestureDetector gesture={Gesture.Tap()}>
+                        <SafeAreaView style={styles.headerContainer}>
+                            <TouchableOpacity
+                                style={{ marginTop: 32, marginLeft: 10, marginBottom: 20 }}
+                                onPress={() => setVisible(false)}
+                            >
+                                <ArrowBack
+                                    width={_uiConfig.sizes.icon}
+                                    height={_uiConfig.sizes.icon}
+                                    fill={Colors.white}
+                                />
+                            </TouchableOpacity>
+                        </SafeAreaView>
+                    </GestureDetector>
 
                     <Toast
                         body

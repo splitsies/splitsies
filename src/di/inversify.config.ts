@@ -44,6 +44,8 @@ import { IThemeViewModel } from "../view-models/theme-view-model/theme-view-mode
 import { ThemeViewModel } from "../view-models/theme-view-model/theme-view-model";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 import { UiConfiguration } from "../models/configuration/ui-configuration/ui-configuration";
+import { ICameraViewModel } from "../view-models/camera-view-model/camera-view-model-interface";
+import { CameraViewModel } from "../view-models/camera-view-model/camera-view-model";
 const container = new Container();
 
 container.bind<IApiConfig>(IApiConfig).to(ApiConfig).inSingletonScope();

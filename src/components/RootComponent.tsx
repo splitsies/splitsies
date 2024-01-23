@@ -7,6 +7,7 @@ import { RootNavigator } from "../navigators/RootNavigator";
 import { useColorScheme } from "react-native";
 import { IThemeViewModel } from "../view-models/theme-view-model/theme-view-model-interface";
 import { useObservable } from "../hooks/use-observable";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 const _themeViewModel = lazyInject<IThemeViewModel>(IThemeViewModel);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
@@ -34,7 +35,9 @@ export const RootComponent = () => {
 
     return (
         <NavigationContainer theme={theme}>
-            <RootNavigator />
+            <GestureHandlerRootView style={{ flex: 1 }}>
+                <RootNavigator />
+            </GestureHandlerRootView>
         </NavigationContainer>
     );
 };

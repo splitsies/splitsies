@@ -9,6 +9,7 @@ import { IColorConfiguration } from "../models/configuration/color-config/color-
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 import ArrowBack from "../../assets/icons/arrow-back.svg";
 import PhotoLibrary from "../../assets/icons/photo-library.svg";
+import { Gesture, GestureDetector } from "react-native-gesture-handler";
 
 const _imageConfiguration = lazyInject<IImageConfiguration>(IImageConfiguration);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -43,37 +44,42 @@ export const CameraOverlay = ({ onBackPress, onCapture, onImageSelected }: Props
 
     return (
         <View style={styles.background}>
-            <View style={styles.headerContainer}>
-                <SafeAreaView style={styles.container}>
-                    <View style={styles.backButton}>
-                        <TouchableOpacity onPress={onBackPress}>
-                            <ArrowBack
+            {/* GestureDetector usage here is a workaround to block the tap from bubbling up and focusing the camera */}
+            <GestureDetector gesture={Gesture.Tap()}>
+                <View style={styles.headerContainer}>
+                    <SafeAreaView style={styles.container}>
+                        <View style={styles.backButton}>
+                            <TouchableOpacity onPress={onBackPress}>
+                                <ArrowBack
+                                    width={_uiConfig.sizes.icon}
+                                    height={_uiConfig.sizes.icon}
+                                    fill={_colorConfiguration.white}
+                                />
+                            </TouchableOpacity>
+                        </View>
+                    </SafeAreaView>
+                </View>
+            </GestureDetector>
+
+            <GestureDetector gesture={Gesture.Tap()}>
+                <View style={styles.contentContainer}>
+                    <SafeAreaView style={styles.buttonContainer}>
+                        <TouchableOpacity onPress={onLibraryOpened}>
+                            <PhotoLibrary
                                 width={_uiConfig.sizes.icon}
                                 height={_uiConfig.sizes.icon}
                                 fill={_colorConfiguration.white}
                             />
                         </TouchableOpacity>
-                    </View>
-                </SafeAreaView>
-            </View>
 
-            <View style={styles.contentContainer}>
-                <SafeAreaView style={styles.buttonContainer}>
-                    <TouchableOpacity onPress={onLibraryOpened}>
-                        <PhotoLibrary
-                            width={_uiConfig.sizes.icon}
-                            height={_uiConfig.sizes.icon}
-                            fill={_colorConfiguration.white}
-                        />
-                    </TouchableOpacity>
+                        <TouchableOpacity onPress={onCapture}>
+                            <Icon assetName="capture" tintColor={_colorConfiguration.white} size={70} />
+                        </TouchableOpacity>
 
-                    <TouchableOpacity onPress={onCapture}>
-                        <Icon assetName="capture" tintColor={_colorConfiguration.white} size={70} />
-                    </TouchableOpacity>
-
-                    <View style={{ width: 35 }} />
-                </SafeAreaView>
-            </View>
+                        <View style={{ width: 35 }} />
+                    </SafeAreaView>
+                </View>
+            </GestureDetector>
         </View>
     );
 };
