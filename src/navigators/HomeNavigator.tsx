@@ -7,7 +7,7 @@ import { lazyInject } from "../utils/lazy-inject";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { TouchableOpacity, View } from "react-native-ui-lib/core";
 import { ActivityIndicator, Alert, SafeAreaView, StyleSheet } from "react-native";
-import { Colors, Icon } from "react-native-ui-lib";
+import { Colors } from "react-native-ui-lib";
 import { SplitsiesTitle } from "../components/SplitsiesTitle";
 import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-interface";
 import { useObservable } from "../hooks/use-observable";
@@ -20,10 +20,12 @@ import { SpThemedComponent } from "../hocs/SpThemedComponent";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 import Add from "../../assets/icons/add.svg";
 import Menu from "../../assets/icons/menu.svg";
+import { IUserManager } from "../managers/user-manager/user-manager-interface";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
+const _userManager = lazyInject<IUserManager>(IUserManager);
 const _viewModel = lazyInject<IHomeViewModel>(IHomeViewModel);
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
@@ -39,6 +41,7 @@ export const HomeNavigator = SpThemedComponent(({ navigation }: Props) => {
     useInitialize(() => {
         const sub = _expenseManager.currentExpense$.subscribe({
             next: (e) => {
+                if (!_userManager.user) return;
                 navigation.navigate(!e ? "RootScreen" : "ExpenseScreen");
             },
         });

@@ -38,20 +38,21 @@ export const RootNavigator = () => {
             SplashScreen.hide();
         });
 
-        return () => subscription?.unsubscribe();
+        return () => subscription.unsubscribe();
     });
 
     const onUserUpdated = (cred: IUserCredential | null) => {
         if (cred && cred.user.id === userId) return;
-
         setUserId(cred?.user.id ?? "");
-        navigation.navigate(cred ? "RootScreen" : "LoginScreen");
+        const screen = cred ? "RootScreen" : "LoginScreen";
+        setInitialRoute(screen);
+        navigation.navigate(screen);
     };
 
     return (
         <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
-            <Stack.Screen name="RootScreen" component={HomeNavigator} options={{ gestureEnabled: false }} />
             <Stack.Screen name="LoginScreen" component={LoginScreen} />
+            <Stack.Screen name="RootScreen" component={HomeNavigator} options={{ gestureEnabled: false }} />
             <Stack.Screen name="SignupScreen" component={SignupScreen} />
             <Stack.Screen name="ExpenseScreen" component={ExpenseNavigator} />
             <Stack.Screen name="CameraScreen" component={CameraScreen} />
