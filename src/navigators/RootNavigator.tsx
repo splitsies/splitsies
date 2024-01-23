@@ -54,7 +54,7 @@ export const RootNavigator = () => {
             <Stack.Screen name="LoginScreen" component={LoginScreen} />
             <Stack.Screen name="RootScreen" component={HomeNavigator} options={{ gestureEnabled: false }} />
             <Stack.Screen name="SignupScreen" component={SignupScreen} />
-            <Stack.Screen name="ExpenseScreen" component={ExpenseNavigator} />
+            <Stack.Screen name="ExpenseScreen" component={ExpenseNavigator} options={{ gestureEnabled: false }} />
             <Stack.Screen name="CameraScreen" component={CameraScreen} />
             <Stack.Screen name="ImageScreen" component={ImageScreen} />
         </Stack.Navigator>

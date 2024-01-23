@@ -8,7 +8,7 @@ import { Observable, filter } from "rxjs";
 import { IExpense, IExpenseItem } from "@splitsies/shared-models";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { View, TouchableOpacity, Text } from "react-native-ui-lib/core";
-import { Colors, Icon } from "react-native-ui-lib";
+import { Colors, DateTimePicker } from "react-native-ui-lib";
 import { format } from "../utils/format-date";
 import { ExpenseItem } from "../components/ExpenseItem";
 import { EditModal } from "../components/EditModal";
@@ -148,6 +148,11 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
         void _expenseManager.updateExpense(expense);
     };
 
+    const onExpenseDateUpdated = (date: Date): void => {
+        const updated = { ...expense, transactionDate: date };
+        void _expenseManager.updateExpense(updated);
+    };
+
     return (
         <Container>
             <SafeAreaView style={styles.header}>
@@ -168,9 +173,16 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                         {expense.name}
                     </Text>
                 </TouchableOpacity>
-                <Text subtext color={Colors.textColor}>
-                    {format(expense.transactionDate)}
-                </Text>
+
+                <DateTimePicker
+                    subtext
+                    color={Colors.textColor}
+                    maximumDate={new Date()}
+                    dateTimeFormatter={(date) => format(date)}
+                    mode="date"
+                    value={expense.transactionDate}
+                    onChange={onExpenseDateUpdated}
+                />
             </View>
 
             <FlatList
