@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { Dimensions, KeyboardAvoidingView, StyleSheet } from "react-native";
-import { Button, TextField, View } from "react-native-ui-lib";
+import { ActivityIndicator, Dimensions, KeyboardAvoidingView, StyleSheet } from "react-native";
+import { Button, Colors, TextField, View } from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { Container } from "./Container";
@@ -15,23 +15,35 @@ type Props = {
 
 export const AddGuestForm = ({ onSave, onCancel }: Props) => {
     const [name, setName] = useState<string>("");
+    const [pending, setPending] = useState<boolean>(false);
 
     return (
         <Container>
             <KeyboardAvoidingView style={styles.inputContainer}>
-                <TextField
-                    body
-                    bg-screenBG
-                    placeholderTextColor={_colorConfiguration.greyFont}
-                    placeholder="Name"
-                    value={name}
-                    autoFocus
-                    onChangeText={(text) => setName(text)}
-                    style={styles.textInput}
-                />
+                <View style={styles.textContainer}>
+                    <TextField
+                        body
+                        bg-screenBG
+                        placeholderTextColor={_colorConfiguration.greyFont}
+                        placeholder="Name"
+                        value={name}
+                        autoFocus
+                        style={styles.textInput}
+                        onChangeText={(text) => setName(text)}
+                    />
+                    {pending && <ActivityIndicator color={Colors.textColor} />}
+                </View>
 
                 <View row style={styles.buttons}>
-                    <Button body label="Save" bg-primary onPress={() => onSave(name)} />
+                    <Button
+                        body
+                        label="Save"
+                        bg-primary
+                        onPress={() => {
+                            setPending(true);
+                            onSave(name);
+                        }}
+                    />
                     <Button body label="Cancel" bg-primary onPress={onCancel} />
                 </View>
             </KeyboardAvoidingView>
@@ -55,13 +67,19 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         alignItems: "center",
     },
-    textInput: {
+    textContainer: {
         height: 50,
         borderRadius: 25,
         width: _dimensions.width * 0.75,
         paddingHorizontal: 15,
         borderColor: _colorConfiguration.divider,
         borderWidth: 1,
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    textInput: {
+        height: 50,
     },
     buttons: {
         display: "flex",
