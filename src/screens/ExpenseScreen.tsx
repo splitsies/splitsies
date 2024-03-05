@@ -169,7 +169,7 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
 
             <View centerH>
                 <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
-                    <Text heading color={Colors.textColor}>
+                    <Text heading color={Colors.textColor} style={styles.headerLabel}>
                         {expense.name}
                     </Text>
                 </TouchableOpacity>
@@ -264,6 +264,11 @@ const styles = StyleSheet.create({
         paddingRight: 15,
         paddingTop: 31,
         width: "100%",
+    },
+    headerLabel: {
+        textAlign: "center",
+        minWidth: 200,
+        minHeight: 30,
     },
     list: {
         display: "flex",
