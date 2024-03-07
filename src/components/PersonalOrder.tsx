@@ -1,18 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { StyleSheet, Alert, ScrollView } from "react-native";
 import { IExpense, IExpenseItem, IExpenseUserDetails, ExpenseItem as ExpenseItemModel } from "@splitsies/shared-models";
 import { Text, View } from "react-native-ui-lib/core";
-import { Button, Colors, Icon } from "react-native-ui-lib";
+import { Button, Colors, Icon, Toast } from "react-native-ui-lib";
 import { ExpenseItem } from "./ExpenseItem";
 import { lazyInject } from "../utils/lazy-inject";
 import { IPriceCalculator } from "../utils/price-calculator/price-calculator-interface";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { IVenmoLinker } from "../utils/venmo-linker/venmo-linker-interface";
 import { useThemeWatcher } from "../hooks/use-theme-watcher";
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+import Copy from "../../assets/icons/copy.svg";
+import { ITransactionNoteBuilder } from "../utils/transaction-note-builder/transaction-note-builder-interface";
+import { IClipboardUtility } from "../utils/clipboard-utility/clipboard-utility-interface";
+import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 
 const _priceCalculator = lazyInject<IPriceCalculator>(IPriceCalculator);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _venmoLinker = lazyInject<IVenmoLinker>(IVenmoLinker);
+const _transactionNoteBuilder = lazyInject<ITransactionNoteBuilder>(ITransactionNoteBuilder);
+const _clipboardUtility = lazyInject<IClipboardUtility>(IClipboardUtility);
+const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
+const _styleManager = lazyInject<IStyleManager>(IStyleManager);
+
+const icon = _uiConfig.sizes.smallIcon;
 
 type Props = {
     person: IExpenseUserDetails;
@@ -33,6 +45,8 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
     const [totalItem, setTotalItem] = useState<IExpenseItem>(
         new ExpenseItemModel("", "Total", personalExpense.total, [], false),
     );
+
+    const [toastVisible, setToastVisible] = useState<boolean>(false);
 
     useEffect(() => {
         const updatedPersonalExpense = _priceCalculator.calculatePersonalExpense(person.id, expense);
@@ -55,6 +69,11 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
         ]);
     };
 
+    const onCopyPress = useCallback((): void => {
+        _clipboardUtility.copyToClipboard(_transactionNoteBuilder.build(expense));
+        setToastVisible(true);
+    }, []);
+
     const renderHeader = (): JSX.Element => {
         return (
             <View style={styles.header}>
@@ -68,7 +87,11 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                     </Text>
                 </View>
 
-                <View style={styles.iconContainer} />
+                <View style={styles.iconContainer}>
+                    <TouchableOpacity onPress={onCopyPress}>
+                        <Copy width={icon} height={icon} fill={Colors.textColor} />
+                    </TouchableOpacity>
+                </View>
             </View>
         );
     };
@@ -97,6 +120,21 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                 <Button body bg-primary borderless style={styles.button} label="Pay" onPress={onPayPress} />
                 <Button body bg-primary borderless style={styles.button} label="Request" onPress={onRequestPress} />
             </View>
+            <Toast
+                body
+                centerMessage
+                swipeable
+                style={{ borderRadius: 35 }}
+                messageStyle={_styleManager.typography.body}
+                visible={toastVisible}
+                position={"bottom"}
+                autoDismiss={3000}
+                backgroundColor={_colorConfiguration.black}
+                message="Note copied to clipboard"
+                onDismiss={() => {
+                    setToastVisible(false);
+                }}
+            />
         </View>
     );
 };
