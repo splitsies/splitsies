@@ -14,7 +14,8 @@
     "start": "react-native start",
     "test": "jest",
     "format": "prettier --write \"**/*.ts*\"",
-    "android-emulator-ports": "adb reverse tcp:6001 tcp:6001 && adb reverse tcp:14624 tcp:14624 && adb reverse tcp:14623 tcp:14623"
+    "android-emulator-ports": "adb reverse tcp:6001 tcp:6001 && adb reverse tcp:14624 tcp:14624 && adb reverse tcp:14623 tcp:14623",
+    "clear-shared-models": "npm cache clean --force && rm -rf ./node_modules/@splitsies/shared-models && rm -rf ./package-lock.json"
   },
   "dependencies": {
     "@react-native-community/blur": "^4.3.2",
@@ -26,7 +27,7 @@
     "@react-navigation/material-top-tabs": "^6.6.5",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.14",
-    "@splitsies/shared-models": "^0.0.23",
+    "@splitsies/shared-models": "^0.0.24",
     "http2": "^3.3.7",
     "inversify": "^6.0.1",
     "inversify-inject-decorators": "^3.1.0",

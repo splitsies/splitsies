@@ -18,9 +18,11 @@ import { IStyleManager } from "../managers/style-manager/style-manager-interface
 import { StyleManager } from "../managers/style-manager/style-manager";
 import {
     ExpenseMapper,
+    ExpenseMessageParametersMapper,
     ExpenseUpdateMapper,
     ExpenseUserDetailsMapper,
     IExpenseMapper,
+    IExpenseMessageParametersMapper,
     IExpenseUpdateMapper,
     IExpenseUserDetailsMapper,
 } from "@splitsies/shared-models";
@@ -69,4 +71,8 @@ container.bind<IInviteViewModel>(IInviteViewModel).to(InviteViewModel).inSinglet
 container.bind<IHomeViewModel>(IHomeViewModel).to(HomeViewModel).inSingletonScope();
 container.bind<IThemeViewModel>(IThemeViewModel).to(ThemeViewModel).inSingletonScope();
 container.bind<IUiConfiguration>(IUiConfiguration).to(UiConfiguration).inSingletonScope();
+container
+    .bind<IExpenseMessageParametersMapper>(IExpenseMessageParametersMapper)
+    .to(ExpenseMessageParametersMapper)
+    .inSingletonScope();
 export { container };
