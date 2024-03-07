@@ -70,9 +70,9 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
     };
 
     const onCopyPress = useCallback((): void => {
-        _clipboardUtility.copyToClipboard(_transactionNoteBuilder.build(expense));
+        _clipboardUtility.copyToClipboard(_transactionNoteBuilder.build(personalExpense));
         setToastVisible(true);
-    }, []);
+    }, [personalExpense]);
 
     const renderHeader = (): JSX.Element => {
         return (
