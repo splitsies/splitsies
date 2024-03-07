@@ -87,9 +87,9 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                     </Text>
                 </View>
 
-                <View style={styles.iconContainer}>
+                <View style={styles.iconContainer} style={{backgroundColor: Colors.primary, padding: 7, borderRadius: 20 }}>
                     <TouchableOpacity onPress={onCopyPress}>
-                        <Copy width={icon} height={icon} fill={Colors.textColor} />
+                        <Copy width={icon} height={icon} fill={Colors.white} />
                     </TouchableOpacity>
                 </View>
             </View>
@@ -124,12 +124,12 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                 body
                 centerMessage
                 swipeable
-                style={{ borderRadius: 35 }}
+                style={{ borderRadius: 35, margin: 14 }}
                 messageStyle={_styleManager.typography.body}
                 visible={toastVisible}
                 position={"bottom"}
-                autoDismiss={3000}
-                backgroundColor={_colorConfiguration.black}
+                autoDismiss={1000}
+                backgroundColor={_colorConfiguration.primary}
                 message="Note copied to clipboard"
                 onDismiss={() => {
                     setToastVisible(false);
