@@ -53,26 +53,24 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
     }, [_expenseManager, navigation]);
 
     const onTitleSave = ({ name }: EditResult) => {
-        const updated = { ...expense, name } as IExpense;
-        void _expenseManager.updateExpense(updated);
+        _expenseManager.updateExpenseName(expense.id, name ?? "");
         setEditingTitle(false);
     };
 
     const onItemSave = useCallback(
         ({ name, price, isProportional }: EditResult) => {
-            const updatedItem = { ...selectedItem, name, price, isProportional } as IExpenseItem;
             if (!selectedItem) {
                 return;
             }
 
-            const itemIndex = expense.items.indexOf(selectedItem);
-            if (itemIndex === -1) {
-                expense.items.push(updatedItem);
-            } else {
-                expense.items[itemIndex] = updatedItem;
-            }
+            _expenseManager.updateItemDetails(
+                expense.id,
+                selectedItem,
+                name ?? selectedItem.name,
+                price ?? selectedItem.price,
+                isProportional ?? selectedItem.isProportional,
+            );
 
-            void _expenseManager.updateExpense(expense);
             setSelectedItem(null);
         },
         [expense, selectedItem],
@@ -80,11 +78,8 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
 
     const onItemAdded = useCallback(
         ({ name, price, isProportional }: EditResult) => {
-            if (!name || !price) {
-                return;
-            }
-
-            void _expenseManager.addItemToExpense(expense.id, name, price, [], !!isProportional);
+            if (!name || !price) return;
+            _expenseManager.addItem(expense.id, name, price, [], !!isProportional);
             setIsAddingItem(false);
         },
         [expense],
@@ -95,7 +90,6 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
             const itemIndex = inProgressSelections.indexOf(itemId);
 
             if (itemIndex === -1) {
-                inProgressSelections.push(itemId);
                 setInProgressSelections([...inProgressSelections, itemId]);
             } else {
                 setInProgressSelections(inProgressSelections.filter((id) => id !== itemId));
@@ -112,8 +106,7 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
             return;
         }
 
-        expense.items.splice(itemIndex, 1);
-        void _expenseManager.updateExpense(expense);
+        _expenseManager.removeItem(expense.id, expense.items[itemIndex]);
         setSelectedItem(null);
     }, [expense, selectedItem]);
 
@@ -121,6 +114,7 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
         const isStartingSelection = !isSelecting;
 
         if (isStartingSelection) {
+            // if we're starting selection, populate the in progress selections with current selections
             const userExpenseIds = expense.items
                 .map((i) => (i.owners.find((u) => u.id === _userManager.userId) ? i.id : ""))
                 .filter((i) => !!i);
@@ -135,22 +129,13 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
     };
 
     const updateExpenseItemOwners = (userId: string, selectedItemIds: string[]): void => {
-        for (const item of expense.items) {
-            const idIndex = item.owners.findIndex((u) => u.id === userId);
-            const userHasItem = idIndex !== -1;
-
-            if (userHasItem && !selectedItemIds.includes(item.id)) {
-                item.owners.splice(idIndex, 1);
-            } else if (!userHasItem && selectedItemIds.includes(item.id)) {
-                item.owners.push(expenseUsers.find((u) => u.id === userId)!);
-            }
-        }
-        void _expenseManager.updateExpense(expense);
+        const user = expenseUsers.find((u) => u.id === userId);
+        if (!user) return;
+        _expenseManager.updateItemSelections(expense.id, user, selectedItemIds);
     };
 
     const onExpenseDateUpdated = (date: Date): void => {
-        const updated = { ...expense, transactionDate: date };
-        void _expenseManager.updateExpense(updated);
+        _expenseManager.updateExpenseTransactionDate(expense.id, date);
     };
 
     return (

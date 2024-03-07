@@ -40,17 +40,9 @@ export const PeopleScreen = SpThemedComponent(({ navigation }: Props): JSX.Eleme
     }, [_expenseManager, navigation]);
 
     const updateExpenseItemOwners = (userId: string, selectedItemIds: string[]): void => {
-        for (const item of expense.items) {
-            const idIndex = item.owners.findIndex((u) => u.id === userId);
-            const userHasItem = idIndex !== -1;
-
-            if (userHasItem && !selectedItemIds.includes(item.id)) {
-                item.owners.splice(idIndex, 1);
-            } else if (!userHasItem && selectedItemIds.includes(item.id)) {
-                item.owners.push(expenseUsers.find((u) => u.id === userId)!);
-            }
-        }
-        void _expenseManager.updateExpense(expense);
+        const user = expenseUsers.find((u) => u.id === userId);
+        if (!user) return;
+        _expenseManager.updateItemSelections(expense.id, user, selectedItemIds);
     };
 
     return !expense ? (

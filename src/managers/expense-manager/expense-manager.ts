@@ -2,6 +2,7 @@ import { injectable } from "inversify";
 import { IExpenseManager } from "./expense-manager-interface";
 import {
     IExpense,
+    IExpenseItem,
     IExpenseJoinRequest,
     IExpenseJoinRequestDto,
     IExpensePayload,
@@ -69,16 +70,6 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     constructor() {
         super();
-    }
-
-    addItemToExpense(
-        id: string,
-        name: string,
-        price: number,
-        owners: string[],
-        isProportional: boolean,
-    ): Promise<void> {
-        return this._api.addItemToExpense(id, name, price, owners, isProportional);
     }
 
     protected async initialize(): Promise<void> {
@@ -166,8 +157,40 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         await this._api.getJoinRequestsForExpense(expenseId);
     }
 
-    updateExpense(expense: IExpense): Promise<void> {
-        return this._api.updateExpense(expense);
+    addItem(
+        expenseId: string,
+        itemName: string,
+        itemPrice: number,
+        itemOwners: IExpenseUserDetails[],
+        isItemProportional: boolean,
+    ): void {
+        this._api.addItem(expenseId, itemName, itemPrice, itemOwners, isItemProportional);
+    }
+
+    removeItem(expenseId: string, item: IExpenseItem): void {
+        this._api.removeItem(expenseId, item);
+    }
+
+    updateItemSelections(expenseId: string, user: IExpenseUserDetails, selectedItemIds: string[]): void {
+        this._api.updateItemSelections(expenseId, user, selectedItemIds);
+    }
+
+    updateItemDetails(
+        expenseId: string,
+        item: IExpenseItem,
+        itemName: string,
+        itemPrice: number,
+        isItemProportional: boolean,
+    ): void {
+        this._api.updateItemDetails(expenseId, item, itemName, itemPrice, isItemProportional);
+    }
+
+    updateExpenseName(expenseId: string, expenseName: string): void {
+        this._api.updateExpenseName(expenseId, expenseName);
+    }
+
+    updateExpenseTransactionDate(expenseId: string, transactionDate: Date): void {
+        this._api.updateExpenseTransactionDate(expenseId, transactionDate);
     }
 
     private async onUserCredentialUpdated(userCredential: IUserCredential | null): Promise<void> {

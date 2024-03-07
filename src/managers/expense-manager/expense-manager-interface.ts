@@ -1,5 +1,6 @@
 import {
     IExpense,
+    IExpenseItem,
     IExpenseJoinRequest,
     IExpenseJoinRequestDto,
     IExpensePayload,
@@ -25,8 +26,6 @@ export interface IExpenseManager {
 
     requestForUser(): Promise<void>;
     connectToExpense(expenseId: string): Promise<void>;
-    updateExpense(expense: IExpense): Promise<void>;
-    addItemToExpense(id: string, name: string, price: number, owners: string[], isProportional: boolean): Promise<void>;
     disconnectFromExpense(): void;
     requestAddUserToExpense(userId: string, expenseId: string): Promise<void>;
     requestRemoveUserFromExpense(userId: string, expenseId: string): Promise<void>;
@@ -36,6 +35,24 @@ export interface IExpenseManager {
     removeExpenseJoinRequestForUser(expenseId: string, userId?: string): Promise<void>;
     sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void>;
     getJoinRequestsForExpense(expenseId: string): Promise<void>;
+    addItem(
+        expenseId: string,
+        itemName: string,
+        itemPrice: number,
+        itemOwners: IExpenseUserDetails[],
+        isItemProportional: boolean,
+    ): void;
+    removeItem(expenseId: string, item: IExpenseItem): void;
+    updateItemSelections(expenseId: string, user: IExpenseUserDetails, selectedItemIds: string[]): void;
+    updateItemDetails(
+        expenseId: string,
+        item: IExpenseItem,
+        itemName: string,
+        itemPrice: number,
+        isItemProportional: boolean,
+    ): void;
+    updateExpenseName(expenseId: string, expenseName: string): void;
+    updateExpenseTransactionDate(expenseId: string, transactionDate: Date): void;
 }
 
 export const IExpenseManager = Symbol.for("IExpenseManager");

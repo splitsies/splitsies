@@ -3,13 +3,16 @@ import { IExpenseApiClient } from "./expense-api-client-interface";
 import { IApiConfig } from "../../models/configuration/api-config/api-config-interface";
 import { BehaviorSubject, Observable } from "rxjs";
 import {
+    ExpenseMessageParameters,
     ExpensePayload,
     IExpense,
     IExpenseDto,
+    IExpenseItem,
     IExpenseJoinRequest,
     IExpenseJoinRequestDto,
     IExpenseMapper,
     IExpenseMessage,
+    IExpenseMessageParametersMapper,
     IExpensePayload,
     IExpenseUpdateMapper,
     IExpenseUserDetails,
@@ -29,7 +32,9 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     private readonly _config = lazyInject<IApiConfig>(IApiConfig);
     private readonly _authProvider = lazyInject<IAuthProvider>(IAuthProvider);
     private readonly _expenseMapper = lazyInject<IExpenseMapper>(IExpenseMapper);
-    private readonly _expenseUpdateMapper = lazyInject<IExpenseUpdateMapper>(IExpenseUpdateMapper);
+    private readonly _expenseMessageParametersMapper = lazyInject<IExpenseMessageParametersMapper>(
+        IExpenseMessageParametersMapper,
+    );
 
     constructor() {
         super();
@@ -83,37 +88,6 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         } catch (e) {
             return;
         }
-    }
-
-    async updateExpense(expense: IExpense): Promise<void> {
-        const { id } = expense;
-        const update = this._expenseUpdateMapper.toDtoModel(expense);
-
-        this._connection.send(
-            JSON.stringify({
-                id,
-                method: "update",
-                expense: update,
-            }),
-        );
-    }
-
-    async addItemToExpense(
-        id: string,
-        name: string,
-        price: number,
-        owners: string[],
-        isProportional: boolean,
-    ): Promise<void> {
-        const item = { name, price, owners, isProportional };
-
-        const payload = JSON.stringify({
-            id,
-            method: "addItem",
-            item,
-        });
-
-        this._connection.send(payload);
     }
 
     async connectToExpense(expenseId: string): Promise<void> {
@@ -250,6 +224,65 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         } catch (e) {
             return [];
         }
+    }
+
+    addItem(
+        expenseId: string,
+        itemName: string,
+        itemPrice: number,
+        itemOwners: IExpenseUserDetails[],
+        isItemProportional: boolean,
+    ): void {
+        const params = this._expenseMessageParametersMapper.toDtoModel(
+            new ExpenseMessageParameters({ expenseId, itemName, itemPrice, itemOwners, isItemProportional }),
+        );
+        this._connection.send(JSON.stringify({ id: expenseId, method: "addItem", params }));
+    }
+
+    removeItem(expenseId: string, item: IExpenseItem): void {
+        const params = this._expenseMessageParametersMapper.toDtoModel(
+            new ExpenseMessageParameters({ expenseId, item }),
+        );
+
+        this._connection.send(JSON.stringify({ id: expenseId, method: "removeItem", params }));
+    }
+
+    updateItemSelections(expenseId: string, user: IExpenseUserDetails, selectedItemIds: string[]): void {
+        const params = this._expenseMessageParametersMapper.toDtoModel(
+            new ExpenseMessageParameters({ expenseId, user, selectedItemIds }),
+        );
+
+        this._connection.send(JSON.stringify({ id: expenseId, method: "updateItemSelections", params }));
+    }
+
+    updateItemDetails(
+        expenseId: string,
+        item: IExpenseItem,
+        itemName: string,
+        itemPrice: number,
+        isItemProportional: boolean,
+    ): void {
+        const params = this._expenseMessageParametersMapper.toDtoModel(
+            new ExpenseMessageParameters({ expenseId, item, itemName, itemPrice, isItemProportional }),
+        );
+
+        this._connection.send(JSON.stringify({ id: expenseId, method: "updateItemDetails", params }));
+    }
+
+    updateExpenseName(expenseId: string, expenseName: string): void {
+        const params = this._expenseMessageParametersMapper.toDtoModel(
+            new ExpenseMessageParameters({ expenseId, expenseName }),
+        );
+
+        this._connection.send(JSON.stringify({ id: expenseId, method: "updateExpenseName", params }));
+    }
+
+    updateExpenseTransactionDate(expenseId: string, transactionDate: Date): void {
+        const params = this._expenseMessageParametersMapper.toDtoModel(
+            new ExpenseMessageParameters({ expenseId, transactionDate }),
+        );
+
+        this._connection.send(JSON.stringify({ id: expenseId, method: "updateTransactionDate", params }));
     }
 
     private async onExpenseConnection(promiseResolver: () => void, expenseId: string): Promise<void> {
