@@ -75,6 +75,7 @@ export const SelectItemsModal = SpThemedComponent(({ user, expense, visible, onC
                             ItemSeparatorComponent={ListSeparator}
                             renderItem={({ item }) => (
                                 <ExpenseItem
+                                    showOwners
                                     item={item}
                                     style={{ marginVertical: 15 }}
                                     selectable
