@@ -123,7 +123,6 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     async requestRemoveUserFromExpense(userId: string, expenseId: string): Promise<void> {
         await this._api.removeUserFromExpense(userId, expenseId);
-        void this.requestUsersForExpense(expenseId);
     }
 
     disconnectFromExpense(): void {

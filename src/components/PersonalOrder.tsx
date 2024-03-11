@@ -11,10 +11,11 @@ import { IVenmoLinker } from "../utils/venmo-linker/venmo-linker-interface";
 import { useThemeWatcher } from "../hooks/use-theme-watcher";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
-import Copy from "../../assets/icons/copy.svg";
 import { ITransactionNoteBuilder } from "../utils/transaction-note-builder/transaction-note-builder-interface";
 import { IClipboardUtility } from "../utils/clipboard-utility/clipboard-utility-interface";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
+import { RemovePersonButton } from "./RemovePersonButton";
+import Copy from "../../assets/icons/copy.svg";
 
 const _priceCalculator = lazyInject<IPriceCalculator>(IPriceCalculator);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -87,10 +88,16 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                     </Text>
                 </View>
 
-                <View style={styles.iconContainer} style={{backgroundColor: Colors.primary, padding: 7, borderRadius: 20 }}>
-                    <TouchableOpacity onPress={onCopyPress}>
-                        <Copy width={icon} height={icon} fill={Colors.white} />
+                <View
+                    style={[styles.iconContainer, { flexDirection: "row", columnGap: 5, justifyContent: "flex-end" }]}
+                >
+                    <TouchableOpacity
+                        onPress={onCopyPress}
+                        style={{ backgroundColor: Colors.primary, padding: 7, borderRadius: 20 }}
+                    >
+                        <Copy width={icon} height={icon} fill={Colors.bgColor} />
                     </TouchableOpacity>
+                    <RemovePersonButton person={person} expense={expense} />
                 </View>
             </View>
         );
@@ -181,9 +188,10 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "flex-end",
         width: "100%",
+        marginTop: 5,
     },
     button: {
-        width: 100,
+        minWidth: 100,
     },
     iconContainer: {
         overflow: "visible",

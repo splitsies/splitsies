@@ -4,14 +4,12 @@ import { Chip, Colors, Icon, Text, View } from "react-native-ui-lib";
 import { ActivityIndicator, StyleSheet } from "react-native";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { lazyInject } from "../utils/lazy-inject";
-import { IAuthProvider } from "../providers/auth-provider/auth-provider-interface";
 import { useThemeWatcher } from "../hooks/use-theme-watcher";
-import CheckCircle from "../../assets/icons/check-circle.svg";
-import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+import { RemovePersonButton } from "./RemovePersonButton";
+import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
-const _authProvider = lazyInject<IAuthProvider>(IAuthProvider);
-const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
+const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 
 type Props = {
     user: IExpenseUserDetails;
@@ -52,11 +50,6 @@ export const UserInviteListItem = ({
             expenseUsers.some((u) => u.phoneNumber === user.phoneNumber)
         ) {
             state = UserState.Joined;
-        } else if (pendingJoinRequests.map((r) => r.userId).includes(user.id)) {
-            state =
-                pendingJoinRequests.find((r) => r.userId)?.requestingUserId === _authProvider.provideIdentity()
-                    ? UserState.Uninvitable
-                    : UserState.Invited;
         } else if (user.isRegistered) {
             state = UserState.AvailableToInvite;
         }
@@ -70,10 +63,6 @@ export const UserInviteListItem = ({
                 return "Add as Guest";
             case UserState.AvailableToInvite:
                 return "Invite";
-            case UserState.Uninvitable:
-                return "Uninvite";
-            case UserState.Invited:
-                return "Invited";
             case UserState.Joined:
                 return "";
         }
@@ -140,11 +129,7 @@ export const UserInviteListItem = ({
                     )}
 
                     {expenseUsers.map((u) => u.id).includes(user.id) && (
-                        <CheckCircle
-                            width={_uiConfig.sizes.icon}
-                            height={_uiConfig.sizes.icon}
-                            fill={_colorConfiguration.primary}
-                        />
+                        <RemovePersonButton person={user} expense={_expenseManager.currentExpense} />
                     )}
                 </View>
             </View>

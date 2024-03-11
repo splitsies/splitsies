@@ -42,7 +42,9 @@ target 'Splitsies' do
     #
     # Note that if you have use_frameworks! enabled, Flipper will not work and
     # you should disable the next line.
-    :flipper_configuration => flipper_config,
+
+    # TODO: Upgrade react native. Flipper disabled due to xcode 15.3 breaking dependency
+    # :flipper_configuration => flipper_config,
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/.."
   )

@@ -14,7 +14,6 @@ import {
     IExpenseMessage,
     IExpenseMessageParametersMapper,
     IExpensePayload,
-    IExpenseUpdateMapper,
     IExpenseUserDetails,
     IUserCredential,
 } from "@splitsies/shared-models";
@@ -99,6 +98,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
                 this._connection = new WebSocket(socketUri);
                 this._connection.onopen = () => void this.onExpenseConnection(res, expenseId);
                 this._connection.onmessage = (e) => this.onMessage(e);
+                this._connection.onclose = () => this.disconnectFromExpense();
             } catch (e) {
                 console.error(e);
                 rej(e);
@@ -339,6 +339,25 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     private onPayloadMessage(expensePayload: IExpensePayload): void {
         const updatedExpenseDto = expensePayload.expense;
         const expense = this._expenseMapper.toDomainModel(updatedExpenseDto);
+
+        if (!expensePayload.expenseUsers.find((u) => u.id === this._authProvider.provideIdentity())) {
+            // user was removed from the current expense
+            this._sessionExpense$.next(null);
+            this._sessionExpenseUsers$.next([]);
+            const expenses = this._userExpenses$.value.filter((e) => e.expense.id !== expense.id);
+            this._userExpenses$.next(
+                expenses.sort((a, b) =>
+                    a.expense.transactionDate < b.expense.transactionDate
+                        ? 1
+                        : a.expense.transactionDate > b.expense.transactionDate
+                        ? -1
+                        : 0,
+                ),
+            );
+
+            this.disconnectFromExpense();
+            return;
+        }
 
         this._sessionExpense$.next(expense);
         this._sessionExpenseUsers$.next(expensePayload.expenseUsers);

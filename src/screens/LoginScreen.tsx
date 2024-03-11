@@ -9,6 +9,10 @@ import { IUserCredential } from "@splitsies/shared-models";
 import { LoginForm } from "../components/LoginForm";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
 import { Container } from "../components/Container";
+import { useInitialize } from "../hooks/use-initialize";
+import { Text, View } from "react-native-ui-lib";
+import pkg from "../../package.json";
+import Config from "react-native-config";
 
 const _userManager = lazyInject<IUserManager>(IUserManager);
 
@@ -18,7 +22,12 @@ export const LoginScreen = SpThemedComponent(({ navigation }: Props) => {
     const [validationError, setValidationError] = useState<string>("");
     const attempts = useRef<number>(0);
 
-    useEffect(() => onConnect(), []);
+    useInitialize(() => onConnect());
+
+    const getEnvironmentSuffix = (): string => {
+        const env = Config.STAGE;
+        return env === "production" ? "" : `-${env}`;
+    };
 
     const onConnect = () => {
         const subscription = new Subscription();
@@ -56,6 +65,12 @@ export const LoginScreen = SpThemedComponent(({ navigation }: Props) => {
                     validationError={validationError}
                 />
             </SafeAreaView>
+            <View style={styles.versionContainer}>
+                <Text hint>
+                    {pkg.name} v{pkg.version}
+                    {getEnvironmentSuffix()}
+                </Text>
+            </View>
         </Container>
     );
 });
@@ -66,5 +81,10 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         justifyContent: "center",
         width: "100%",
+    },
+    versionContainer: {
+        width: "100%",
+        alignItems: "center",
+        marginBottom: 10,
     },
 });

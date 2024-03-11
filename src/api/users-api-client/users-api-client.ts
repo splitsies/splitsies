@@ -10,7 +10,7 @@ import {
 } from "@splitsies/shared-models";
 import { IApiConfig } from "../../models/configuration/api-config/api-config-interface";
 import { ClientBase } from "../client-base";
-import { BehaviorSubject, Observable, ReplaySubject } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { lazyInject } from "../../utils/lazy-inject";
 import { ICreateUserResult } from "../../models/create-user-result/create-user-result-interface";
 import { CreateUserResult } from "../../models/create-user-result/create-user-result";
@@ -97,11 +97,11 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
 
     async requestFindUsers(search: string, reset: boolean): Promise<IExpenseUserDetails[]> {
         const pageKey = "requestFindUsers";
-        if (!search) return [];
-
         if (reset && this._scanPageKeys.has(pageKey)) {
             this._scanPageKeys.delete(pageKey);
         }
+
+        if (!search) return [];
 
         let url = `${this._config.users}?filter=${encodeURIComponent(search)}`;
         if (this._scanPageKeys.has(pageKey)) {
@@ -112,8 +112,6 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
             const result = await this.get<IScanResult<IUserDto>>(url);
             if (result.data.lastEvaluatedKey) {
                 this._scanPageKeys.set(pageKey, result.data.lastEvaluatedKey);
-            } else {
-                this._scanPageKeys.delete(pageKey);
             }
 
             const res = result.data.result.map((u) => this._expenseUserDetailsMapper.fromUserDto(u));
