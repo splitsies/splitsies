@@ -66,15 +66,24 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
     }
 
     async requestFindUsersByPhoneNumber(phoneNumbers: string[]): Promise<IUserDto[]> {
+        const users: IUserDto[] = [];
         const url = `${this._config.users}?phoneNumbers=${phoneNumbers.join(",")}`;
+        let result = undefined;
+        let lastKey = undefined;
 
-        try {
-            const result = await this.get<IUserDto[]>(url);
-            return result.data;
-        } catch (e) {
-            console.error(e);
-            return [];
-        }
+        const timeout = Date.now() + 15000;
+        do {
+            if (Date.now() > timeout) break;
+            try {
+                result = await this.get<IScanResult<IUserDto>>(url + (lastKey ? `&lastKey=${lastKey}` : ""));
+                lastKey = result.data.lastEvaluatedKey;
+                users.push(...result.data.result);
+            } catch (e) {
+                console.error(e);
+                return users;
+            }
+        } while (result?.data?.lastEvaluatedKey);
+        return users;
     }
 
     async requestUsersByIds(ids: string[]): Promise<IUserDto[]> {
