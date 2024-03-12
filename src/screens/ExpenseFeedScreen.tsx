@@ -16,7 +16,6 @@ import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { IRequestConfiguration } from "../models/configuration/request-config/request-configuration-interface";
 import { lazyInject } from "../utils/lazy-inject";
 import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-interface";
-import { useThemeWatcher } from "../hooks/use-theme-watcher";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
 import { Container } from "../components/Container";
 
