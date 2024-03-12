@@ -58,7 +58,6 @@ export const SignupScreen = SpThemedComponent(({ navigation }: Props): JSX.Eleme
 
         const result = await _userManager.requestCreateUser(updatedUserDetails);
         if (!result.success) {
-            console.log({ result });
             if (result.error) {
                 Alert.alert("Error", result.error);
                 return;

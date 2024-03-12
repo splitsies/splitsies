@@ -2,6 +2,7 @@ import { injectable } from "inversify";
 import { IUsersApiClient } from "./users-api-client-interface";
 import {
     CreateUserRequest,
+    IDataResponse,
     IExpenseUserDetails,
     IExpenseUserDetailsMapper,
     IScanResult,
@@ -73,27 +74,40 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
 
         const timeout = Date.now() + 15000;
         do {
-            if (Date.now() > timeout) break;
             try {
                 result = await this.get<IScanResult<IUserDto>>(url + (lastKey ? `&lastKey=${lastKey}` : ""));
-                lastKey = result.data.lastEvaluatedKey;
+                lastKey = result?.data?.lastEvaluatedKey
+                    ? encodeURIComponent(JSON.stringify(result?.data?.lastEvaluatedKey))
+                    : undefined;
                 users.push(...result.data.result);
             } catch (e) {
                 console.error(e);
                 return users;
             }
-        } while (result?.data?.lastEvaluatedKey);
+        } while (result?.data?.lastEvaluatedKey && Date.now() < timeout);
         return users;
     }
 
     async requestUsersByIds(ids: string[]): Promise<IUserDto[]> {
-        const url = `${this._config.users}?ids=${ids.join(",")}`;
-
         try {
-            const result = await this.get<IUserDto[]>(url);
-            return result.data;
+            const url = `${this._config.users}?ids=${ids.join(",")}`;
+            const timeout = Date.now() + 15000;
+            const users: IUserDto[] = [];
+            let response: IDataResponse<IScanResult<IUserDto>>;
+            let lastKey = undefined;
+
+            do {
+                response = await this.get<IScanResult<IUserDto>>(url + (lastKey ? `&lastKey=${lastKey}` : ""));
+                lastKey = response?.data?.lastEvaluatedKey
+                    ? encodeURIComponent(JSON.stringify(response?.data?.lastEvaluatedKey))
+                    : undefined;
+                if (!response?.success) continue;
+                users.push(...response.data.result);
+            } while (response?.data?.lastEvaluatedKey && Date.now() < timeout);
+
+            return users;
         } catch (e) {
-            console.error(e);
+            console.error(`Error on request: ${e}`);
             return [];
         }
     }
