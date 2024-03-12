@@ -84,7 +84,7 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
                 console.error(e);
                 return users;
             }
-        } while (result?.data?.lastEvaluatedKey && Date.now() > timeout);
+        } while (result?.data?.lastEvaluatedKey && Date.now() < timeout);
         return users;
     }
 
@@ -103,7 +103,7 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
                     : undefined;
                 if (!response?.success) continue;
                 users.push(...response.data.result);
-            } while (response?.data?.lastEvaluatedKey && Date.now() > timeout);
+            } while (response?.data?.lastEvaluatedKey && Date.now() < timeout);
 
             return users;
         } catch (e) {
