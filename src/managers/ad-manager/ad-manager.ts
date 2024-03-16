@@ -2,10 +2,9 @@ import { injectable } from "inversify";
 import { IAdManager } from "./ad-manager-interface";
 import { lazyInject } from "../../utils/lazy-inject";
 import { IPersmissionRequester } from "../../utils/permission-requester/permission-requester-interface";
-import mobileAds, { AdShowOptions } from "react-native-google-mobile-ads";
+import mobileAds from "react-native-google-mobile-ads";
 import { IAdConfiguration } from "../../models/configuration/ad-configuration/ad-configuration-interface";
 import { InterstitialAd, AdEventType } from "react-native-google-mobile-ads";
-import { Alert } from "react-native";
 
 @injectable()
 export class AdManager implements IAdManager {
@@ -14,15 +13,12 @@ export class AdManager implements IAdManager {
 
     async initialize(): Promise<void> {
         await this._permissionRequester.requestAppTrackingTransparency();
-
         await mobileAds().setRequestConfiguration({
             // An array of test device IDs to allow.
             testDeviceIdentifiers: ["EMULATOR"],
         });
 
         const adapterStatuses = await mobileAds().initialize();
-
-        console.log("Adapter statuses complete", adapterStatuses);
     }
 
     /**
