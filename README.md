@@ -2,7 +2,9 @@ This is a new [**React Native**](https://reactnative.dev) project, bootstrapped 
 
 # Getting Started
 
-## Step 0: Dependencies
+## Step 0: Dependencies and Excluded Configurations
+
+See `docs/ad-setup.md` for including the configured ad ID to your local environment before starting up.
 
 ```
 npm install --include=dev

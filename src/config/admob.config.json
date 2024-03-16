@@ -1,0 +1,10 @@
+{
+    "ios": {
+        "appId": "ca-app-pub-7645186126631310~4943876272",
+        "interstitialId": "ca-app-pub-7645186126631310/6591768355"
+    },
+    "android": {
+        "appId": "ca-app-pub-7645186126631310~6060343363",
+        "interstitialId": "ca-app-pub-7645186126631310/8074518216"
+    }
+}
