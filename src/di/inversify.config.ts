@@ -46,12 +46,14 @@ import { IThemeViewModel } from "../view-models/theme-view-model/theme-view-mode
 import { ThemeViewModel } from "../view-models/theme-view-model/theme-view-model";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 import { UiConfiguration } from "../models/configuration/ui-configuration/ui-configuration";
-import { ICameraViewModel } from "../view-models/camera-view-model/camera-view-model-interface";
-import { CameraViewModel } from "../view-models/camera-view-model/camera-view-model";
 import { ITransactionNoteBuilder } from "../utils/transaction-note-builder/transaction-note-builder-interface";
 import { TransactionNoteBuilder } from "../utils/transaction-note-builder/transaction-note-builder";
 import { IClipboardUtility } from "../utils/clipboard-utility/clipboard-utility-interface";
 import { ClipboardUtility } from "../utils/clipboard-utility/clipboard-utility";
+import { IAdManager } from "../managers/ad-manager/ad-manager-interface";
+import { AdManager } from "../managers/ad-manager/ad-manager";
+import { IAdConfiguration } from "../models/configuration/ad-configuration/ad-configuration-interface";
+import { AdConfiguration } from "../models/configuration/ad-configuration/ad-configuration";
 const container = new Container();
 
 container.bind<IApiConfig>(IApiConfig).to(ApiConfig).inSingletonScope();
@@ -82,4 +84,6 @@ container
 
 container.bind<ITransactionNoteBuilder>(ITransactionNoteBuilder).to(TransactionNoteBuilder).inSingletonScope();
 container.bind<IClipboardUtility>(IClipboardUtility).to(ClipboardUtility).inSingletonScope();
+container.bind<IAdManager>(IAdManager).to(AdManager).inSingletonScope();
+container.bind<IAdConfiguration>(IAdConfiguration).to(AdConfiguration).inSingletonScope();
 export { container };

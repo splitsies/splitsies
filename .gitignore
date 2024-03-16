@@ -71,3 +71,5 @@ yarn-error.log
 
 # LAN config ignored since the IP address isn't static
 **/config/api-lan.config.json
+**/config/admob.config.json
+**/app.json

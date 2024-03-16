@@ -8,6 +8,7 @@ export interface IUiConfiguration {
     readonly durations: {
         focusThrottleMs: number;
         searchDebounceMs: number;
+        adBufferMs: number;
     };
 }
 export const IUiConfiguration = Symbol.for("IUiConfiguration");

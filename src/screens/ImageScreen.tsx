@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Alert, ImageBackground, StyleSheet } from "react-native";
 import { View } from "react-native-ui-lib/core";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -7,11 +7,14 @@ import { ActionBar, LoaderScreen } from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
-
+import { IAdManager } from "../managers/ad-manager/ad-manager-interface";
+import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 type Props = NativeStackScreenProps<RootStackParamList, "ImageScreen">;
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
+const _adManager = lazyInject<IAdManager>(IAdManager);
+const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
 export const ImageScreen = ({ navigation, route: { params: image } }: Props): JSX.Element => {
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
@@ -22,11 +25,13 @@ export const ImageScreen = ({ navigation, route: { params: image } }: Props): JS
 
     const onConfirm = async (): Promise<void> => {
         setIsProcessing(true);
+        const ad = await _adManager.generateInterstitialAd();
         const result = await _expenseManager.createExpense(image.image.base64);
         setIsProcessing(false);
 
         if (result) {
-            navigation.navigate("ExpenseScreen");
+            if (ad?.loaded) ad.show();
+            setTimeout(() => navigation.navigate("ExpenseScreen"), _uiConfig.durations.adBufferMs);
         } else {
             Alert.alert("Processing Error", "Unable to read the receipt. Please try again with another image.", [
                 { text: "OK", onPress: onBackPress },
