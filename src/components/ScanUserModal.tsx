@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Modal, View, SafeAreaView, TouchableOpacity, StyleSheet } from "react-native";
-import { Chip, Toast, Colors, Text } from "react-native-ui-lib";
+import { Chip, Toast, Colors } from "react-native-ui-lib";
 import { CameraView } from "./CameraView";
 import { IQrPayload } from "../models/qr-payload/qr-payload-interface";
 import { lazyInject } from "../utils/lazy-inject";
@@ -8,10 +8,12 @@ import { IColorConfiguration } from "../models/configuration/color-config/color-
 import { Code } from "react-native-vision-camera";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
-import { useObservable } from "../hooks/use-observable";
 import ArrowBack from "../../assets/icons/arrow-back.svg";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { IExpenseUserDetails } from "@splitsies/shared-models";
+import { useObservableReducer } from "../hooks/use-observable-reducer";
+import { IExpense } from "../models/expense/expense-interface";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
@@ -35,7 +37,10 @@ export const ScanUserModal = ({
     shouldDisableChip,
     onCodeScanned,
 }: Props) => {
-    const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, []);
+    const expenseUsers = useObservableReducer<IExpense | null, IExpenseUserDetails[]>(
+        _expenseManager.currentExpense$,
+        [],
+        (e) => e?.users ?? []);
 
     const [chipLabel, setChipLabel] = useState<string>("");
 

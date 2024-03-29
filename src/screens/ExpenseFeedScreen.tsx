@@ -69,7 +69,6 @@ export const ExpenseFeedScreen = SpThemedComponent((): JSX.Element => {
     return expenses.length === 0 ? (
         <Container>
             <ScrollView
-                contentContainerStyle={styles.welcomeMessageContainer}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
             >
                 <View style={styles.messageBox}>
@@ -90,7 +89,7 @@ export const ExpenseFeedScreen = SpThemedComponent((): JSX.Element => {
                 ItemSeparatorComponent={ListSeparator}
                 renderItem={({ item }) => (
                     <ExpensePreview
-                        key={item.expense.id}
+                        key={item.id}
                         data={item}
                         onPress={onExpenseClick}
                         onLongPress={() => console.log("LONG")}

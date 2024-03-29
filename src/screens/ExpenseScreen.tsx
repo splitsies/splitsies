@@ -5,7 +5,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { lazyInject } from "../utils/lazy-inject";
 import { DrawerParamList, RootStackParamList } from "../types/params";
 import { Observable, filter } from "rxjs";
-import { IExpense, IExpenseItem } from "@splitsies/shared-models";
+import { IExpenseItem } from "@splitsies/shared-models";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { View, TouchableOpacity, Text } from "react-native-ui-lib/core";
 import { Colors, DateTimePicker } from "react-native-ui-lib";
@@ -24,6 +24,7 @@ import { Container } from "../components/Container";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 import ArrowBack from "../../assets/icons/arrow-back.svg";
 import Add from "../../assets/icons/add.svg";
+import { IExpense } from "../models/expense/expense-interface";
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -39,7 +40,7 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
         _expenseManager.currentExpense$.pipe(filter((e) => e != null)) as Observable<IExpense>,
         _expenseManager.currentExpense!,
     );
-    const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, []);
+    // const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, []);
 
     const [selectedItem, setSelectedItem] = useState<IExpenseItem | null>(null);
     const [editingTitle, setEditingTitle] = useState<boolean>(false);
@@ -129,7 +130,7 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
     };
 
     const updateExpenseItemOwners = (userId: string, selectedItemIds: string[]): void => {
-        const user = expenseUsers.find((u) => u.id === userId);
+        const user = expense.users.find((u) => u.id === userId);
         if (!user) return;
         _expenseManager.updateItemSelections(expense.id, user, selectedItemIds);
     };

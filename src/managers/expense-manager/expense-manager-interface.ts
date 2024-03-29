@@ -1,16 +1,15 @@
 import {
-    IExpense,
     IExpenseItem,
     IExpenseJoinRequest,
     IExpenseJoinRequestDto,
-    IExpensePayload,
     IExpenseUserDetails,
 } from "@splitsies/shared-models";
 import { Observable } from "rxjs";
+import { IExpense } from "../../models/expense/expense-interface";
 
 export interface IExpenseManager {
-    readonly expenses: IExpensePayload[];
-    readonly expenses$: Observable<IExpensePayload[]>;
+    readonly expenses: IExpense[];
+    readonly expenses$: Observable<IExpense[]>;
 
     readonly currentExpense: IExpense | null;
     readonly currentExpense$: Observable<IExpense | null>;

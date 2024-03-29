@@ -17,13 +17,9 @@ import { ColorConfiguration } from "../models/configuration/color-config/color-c
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { StyleManager } from "../managers/style-manager/style-manager";
 import {
-    ExpenseMapper,
     ExpenseMessageParametersMapper,
-    ExpenseUpdateMapper,
     ExpenseUserDetailsMapper,
-    IExpenseMapper,
     IExpenseMessageParametersMapper,
-    IExpenseUpdateMapper,
     IExpenseUserDetailsMapper,
 } from "@splitsies/shared-models";
 import { IPersmissionRequester } from "../utils/permission-requester/permission-requester-interface";
@@ -54,6 +50,8 @@ import { IAdManager } from "../managers/ad-manager/ad-manager-interface";
 import { AdManager } from "../managers/ad-manager/ad-manager";
 import { IAdConfiguration } from "../models/configuration/ad-configuration/ad-configuration-interface";
 import { AdConfiguration } from "../models/configuration/ad-configuration/ad-configuration";
+import { IExpenseMapper } from "../mappers/expense-mapper-interface";
+import { ExpenseMapper } from "../mappers/expense-mapper";
 const container = new Container();
 
 container.bind<IApiConfig>(IApiConfig).to(ApiConfig).inSingletonScope();
@@ -64,8 +62,6 @@ container.bind<IUsersApiClient>(IUsersApiClient).to(UsersApiClient).inSingletonS
 container.bind<IAuthProvider>(IAuthProvider).to(AuthProvider).inSingletonScope();
 container.bind<IColorConfiguration>(IColorConfiguration).to(ColorConfiguration).inSingletonScope();
 container.bind<IStyleManager>(IStyleManager).to(StyleManager).inSingletonScope();
-container.bind<IExpenseMapper>(IExpenseMapper).to(ExpenseMapper).inSingletonScope();
-container.bind<IExpenseUpdateMapper>(IExpenseUpdateMapper).to(ExpenseUpdateMapper).inSingletonScope();
 container.bind<IExpenseUserDetailsMapper>(IExpenseUserDetailsMapper).to(ExpenseUserDetailsMapper).inSingletonScope();
 container.bind<IPersmissionRequester>(IPersmissionRequester).to(PermissionRequester).inSingletonScope();
 container.bind<IImageConfiguration>(IImageConfiguration).to(ImageConfiguration).inSingletonScope();
@@ -86,4 +82,5 @@ container.bind<ITransactionNoteBuilder>(ITransactionNoteBuilder).to(TransactionN
 container.bind<IClipboardUtility>(IClipboardUtility).to(ClipboardUtility).inSingletonScope();
 container.bind<IAdManager>(IAdManager).to(AdManager).inSingletonScope();
 container.bind<IAdConfiguration>(IAdConfiguration).to(AdConfiguration).inSingletonScope();
+container.bind<IExpenseMapper>(IExpenseMapper).to(ExpenseMapper).inSingletonScope();
 export { container };

@@ -39,13 +39,14 @@ export const RequestsFeedScreen = (_: Props): JSX.Element => {
     };
 
     const onApproveRequest = async (joinRequest: IExpenseJoinRequestDto): Promise<void> => {
-        await _expenseManager.requestAddUserToExpense(joinRequest.userId, joinRequest.expense.expense.id);
-        await _expenseManager.removeExpenseJoinRequestForUser(joinRequest.expense.expense.id);
+        await _expenseManager.removeExpenseJoinRequestForUser(joinRequest.expenseId);
     };
 
     const onDenyRequest = async (joinRequest: IExpenseJoinRequestDto): Promise<void> => {
-        await _expenseManager.removeExpenseJoinRequestForUser(joinRequest.expense.expense.id);
+        await _expenseManager.requestRemoveUserFromExpense(joinRequest.userId, joinRequest.expenseId);
+        void _expenseManager.requestExpenseJoinRequests();
     };
+    
     const refresh = async () => {
         setRefreshing(true);
         await _expenseManager.requestExpenseJoinRequests();
@@ -58,7 +59,7 @@ export const RequestsFeedScreen = (_: Props): JSX.Element => {
                 {joinRequests.length > 0 ? (
                     joinRequests.map((r) => (
                         <JoinRequest
-                            key={r.expense.expense.id}
+                            key={r.expenseId}
                             joinRequest={r}
                             onApprove={onApproveRequest}
                             onDeny={onDenyRequest}

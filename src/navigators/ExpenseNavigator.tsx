@@ -7,13 +7,12 @@ import { lazyInject } from "../utils/lazy-inject";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { useObservable } from "../hooks/use-observable";
 import { Observable, filter } from "rxjs";
-import { IExpense } from "@splitsies/shared-models";
 import { InviteNavigator } from "./InviteNavigator";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/params";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
-import { Icon } from "react-native-ui-lib";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
+import { IExpense } from "../models/expense/expense-interface";
 
 import Receipt from "../../assets/icons/receipt.svg";
 import People from "../../assets/icons/people.svg";

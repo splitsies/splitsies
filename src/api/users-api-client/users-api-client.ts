@@ -62,7 +62,7 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
             this._user$.next(result.data);
             return new CreateUserResult(true, null);
         } catch (e) {
-            return new CreateUserResult(false, e.message as unknown as string);
+            return new CreateUserResult(false, (e as any).message as unknown as string);
         }
     }
 

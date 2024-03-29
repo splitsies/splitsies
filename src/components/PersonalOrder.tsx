@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { StyleSheet, Alert, ScrollView } from "react-native";
-import { IExpense, IExpenseItem, IExpenseUserDetails, ExpenseItem as ExpenseItemModel } from "@splitsies/shared-models";
+import { IExpenseItem, IExpenseUserDetails, ExpenseItem as ExpenseItemModel } from "@splitsies/shared-models";
 import { Text, View } from "react-native-ui-lib/core";
 import { Button, Colors, Icon, Toast } from "react-native-ui-lib";
 import { ExpenseItem } from "./ExpenseItem";
@@ -16,6 +16,7 @@ import { IClipboardUtility } from "../utils/clipboard-utility/clipboard-utility-
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { RemovePersonButton } from "./RemovePersonButton";
 import Copy from "../../assets/icons/copy.svg";
+import { IExpense } from "../models/expense/expense-interface";
 
 const _priceCalculator = lazyInject<IPriceCalculator>(IPriceCalculator);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -40,11 +41,11 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
     );
 
     const [subtotalItem, setSubtotalItem] = useState<IExpenseItem>(
-        new ExpenseItemModel("", "Subtotal", personalExpense.subtotal, [], false),
+        new ExpenseItemModel("", expense.id, "Subtotal", personalExpense.subtotal, [], false, Date.now()),
     );
 
     const [totalItem, setTotalItem] = useState<IExpenseItem>(
-        new ExpenseItemModel("", "Total", personalExpense.total, [], false),
+        new ExpenseItemModel("", expense.id, "Total", personalExpense.total, [], false, Date.now()),
     );
 
     const [toastVisible, setToastVisible] = useState<boolean>(false);
@@ -52,8 +53,8 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
     useEffect(() => {
         const updatedPersonalExpense = _priceCalculator.calculatePersonalExpense(person.id, expense);
         setPersonalExpense(updatedPersonalExpense);
-        setSubtotalItem(new ExpenseItemModel("", "Subtotal", updatedPersonalExpense.subtotal, [], false));
-        setTotalItem(new ExpenseItemModel("", "Total", updatedPersonalExpense.total, [], false));
+        setSubtotalItem(new ExpenseItemModel("", expense.id, "Subtotal", updatedPersonalExpense.subtotal, [], false, Date.now()));
+        setTotalItem(new ExpenseItemModel("", expense.id, "Total", updatedPersonalExpense.total, [], false, Date.now()));
     }, [expense, person]);
 
     const onPayPress = (): void => {

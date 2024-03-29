@@ -1,11 +1,10 @@
 import { injectable } from "inversify";
 import { IExpenseManager } from "./expense-manager-interface";
 import {
-    IExpense,
+    IExpenseDto,
     IExpenseItem,
     IExpenseJoinRequest,
     IExpenseJoinRequestDto,
-    IExpensePayload,
     IExpenseUserDetails,
     IExpenseUserDetailsMapper,
     IUserCredential,
@@ -15,24 +14,27 @@ import { IExpenseApiClient } from "../../api/expense-api-client/expense-api-clie
 import { lazyInject } from "../../utils/lazy-inject";
 import { BaseManager } from "../base-manager";
 import { IUserManager } from "../user-manager/user-manager-interface";
+import { IExpense } from "../../models/expense/expense-interface";
+import { IExpenseMapper } from "../../mappers/expense-mapper-interface";
 
 @injectable()
 export class ExpenseManager extends BaseManager implements IExpenseManager {
     private readonly _api = lazyInject<IExpenseApiClient>(IExpenseApiClient);
     private readonly _userManager = lazyInject<IUserManager>(IUserManager);
+    private readonly _expenseMapper = lazyInject<IExpenseMapper>(IExpenseMapper);
     private readonly _expenseUserDetailsMapper = lazyInject<IExpenseUserDetailsMapper>(IExpenseUserDetailsMapper);
-    private readonly _expenses$ = new BehaviorSubject<IExpensePayload[]>([]);
+    private readonly _expenses$ = new BehaviorSubject<IExpense[]>([]);
     private readonly _currentExpense$ = new BehaviorSubject<IExpense | null>(null);
     private readonly _currentExpenseUsers$ = new BehaviorSubject<IExpenseUserDetails[]>([]);
     private readonly _isPendingExpenseData$ = new BehaviorSubject<boolean>(false);
     private readonly _expenseJoinRequests$ = new BehaviorSubject<IExpenseJoinRequestDto[]>([]);
     private readonly _currentExpenseJoinRequests$ = new BehaviorSubject<IExpenseJoinRequest[]>([]);
 
-    get expenses$(): Observable<IExpensePayload[]> {
+    get expenses$(): Observable<IExpense[]> {
         return this._expenses$.asObservable();
     }
 
-    get expenses(): IExpensePayload[] {
+    get expenses(): IExpense[] {
         return this._expenses$.value;
     }
 
@@ -74,20 +76,13 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     protected async initialize(): Promise<void> {
         await this._userManager.initialized;
+
         this._userManager.user$.subscribe({
             next: (user) => this.onUserCredentialUpdated(user),
         });
 
-        this._api.userExpenses$.subscribe({
-            next: (data) => this._expenses$.next(data),
-        });
-
         this._api.sessionExpense$.subscribe({
-            next: (data) => this._currentExpense$.next(data),
-        });
-
-        this._api.sessionExpenseUsers$.subscribe({
-            next: (users) => this._currentExpenseUsers$.next(users),
+            next: (data) => void this.onSessionExpenseUpdated(data)
         });
 
         this._api.sessionExpenseJoinRequests$.subscribe({
@@ -97,8 +92,10 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         await this.requestExpenseJoinRequests();
     }
 
-    requestForUser(): Promise<void> {
-        return this._api.getAllExpenses();
+    async requestForUser(): Promise<void> {
+        const expenseDtos = await this._api.getAllExpenses();
+        const expenses = await Promise.all(expenseDtos.map(dto => this._expenseMapper.toDomain(dto)));
+        this._expenses$.next(expenses.sort((a, b) => b.transactionDate.getTime() - a.transactionDate.getTime()));
     }
 
     async connectToExpense(expenseId: string): Promise<void> {
@@ -141,7 +138,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     async removeExpenseJoinRequestForUser(expenseId: string, userId: string | undefined = undefined): Promise<void> {
         await this._api.removeExpenseJoinRequest(expenseId, userId);
         const requests = this._expenseJoinRequests$.value;
-        const requestIndex = requests.findIndex((r) => r.expense.expense.id === expenseId);
+        const requestIndex = requests.findIndex((r) => r.expenseId === expenseId);
         if (requestIndex === -1) return;
 
         requests.splice(requestIndex, 1);
@@ -192,11 +189,33 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         this._api.updateExpenseTransactionDate(expenseId, transactionDate);
     }
 
+    private async onSessionExpenseUpdated(expenseDto: IExpenseDto | null): Promise<void> {
+        if (expenseDto == null) {
+            this._currentExpense$.next(null);
+            return;
+        }
+
+        const expense = await this._expenseMapper.toDomain(expenseDto);
+        this._currentExpense$.next(expense);
+
+        const expenses = [...this.expenses];
+        const expenseIndex = expenses.findIndex((e) => e.id === expenseDto.id);
+        if (expenseIndex === -1) {
+            return;
+        }
+
+        expenses[expenseIndex] = expense;
+
+        this._expenses$.next(
+            expenses.sort((a, b) => b.transactionDate.getTime() - a.transactionDate.getTime())            
+        );
+    }
+
     private async onUserCredentialUpdated(userCredential: IUserCredential | null): Promise<void> {
         this._isPendingExpenseData$.next(true);
         try {
             this._api.disconnectFromExpense();
-            await this._api.getAllExpenses(userCredential ?? undefined);
+            await this.requestForUser();
         } finally {
             this._isPendingExpenseData$.next(false);
         }
