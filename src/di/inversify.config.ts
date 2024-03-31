@@ -52,6 +52,8 @@ import { IAdConfiguration } from "../models/configuration/ad-configuration/ad-co
 import { AdConfiguration } from "../models/configuration/ad-configuration/ad-configuration";
 import { IExpenseMapper } from "../mappers/expense-mapper-interface";
 import { ExpenseMapper } from "../mappers/expense-mapper";
+import { IOcrApiClient } from "../api/ocr-api-client/ocr-api-client-interface";
+import { OcrApiClient } from "../api/ocr-api-client/ocr-api-client";
 const container = new Container();
 
 container.bind<IApiConfig>(IApiConfig).to(ApiConfig).inSingletonScope();
@@ -83,4 +85,6 @@ container.bind<IClipboardUtility>(IClipboardUtility).to(ClipboardUtility).inSing
 container.bind<IAdManager>(IAdManager).to(AdManager).inSingletonScope();
 container.bind<IAdConfiguration>(IAdConfiguration).to(AdConfiguration).inSingletonScope();
 container.bind<IExpenseMapper>(IExpenseMapper).to(ExpenseMapper).inSingletonScope();
+
+container.bind<IOcrApiClient>(IOcrApiClient).to(OcrApiClient).inSingletonScope();
 export { container };

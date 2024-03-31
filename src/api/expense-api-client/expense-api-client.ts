@@ -64,9 +64,8 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     async connectToExpense(expenseId: string): Promise<void> {
-        const socketUri = `${
-            this._config.expenseSocket
-        }?expenseId=${expenseId}&authToken=${this._authProvider.provideAuthToken()}`;
+        const tokenResponse = await this.postJson<string>(`${this._config.expense}/${expenseId}/connections/tokens`, {}, this._authProvider.provideAuthHeader());
+        const socketUri = `${this._config.expenseSocket}?expenseId=${expenseId}&userId=${this._authProvider.provideIdentity()}&connectionToken=${tokenResponse.data}`;
         const onConnected = new Promise<void>((res, rej) => {
             try {
                 this._connection = new WebSocket(socketUri);
@@ -124,9 +123,34 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
     }
 
+    async createFromExpense(expenseDto: IExpenseDto): Promise<boolean> {
+        try {
+            const body = { userId: this._authProvider.provideIdentity(), expense: expenseDto };
+
+            const response = await this.postJson<IExpenseDto>(
+                this._config.expense,
+                body,
+                this._authProvider.provideAuthHeader(),
+            );
+
+            if (response.success) {
+                void this.getAllExpenses();
+                await this.connectToExpense(response.data.id);
+                await this.getJoinRequestsForExpense(response.data.id);
+            } else {
+                return false;
+            }
+
+            return true;
+        } catch (e) {
+            console.error(e);
+            return false;
+        }
+    }
+
     async createExpense(base64Image: string | undefined = undefined): Promise<boolean> {
         try {
-            const body = { userId: this._authProvider.provideIdentity(), image: base64Image };
+            const body = { userId: this._authProvider.provideIdentity() };
             const response = await this.postJson<IExpenseDto>(
                 this._config.expense,
                 body,
@@ -260,6 +284,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     private async onExpenseConnection(promiseResolver: () => void, expenseId: string): Promise<void> {
+        console.log("CONNECTED!");
         await this.getExpense(expenseId);
         promiseResolver();
     }

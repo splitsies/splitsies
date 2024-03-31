@@ -16,10 +16,12 @@ import { BaseManager } from "../base-manager";
 import { IUserManager } from "../user-manager/user-manager-interface";
 import { IExpense } from "../../models/expense/expense-interface";
 import { IExpenseMapper } from "../../mappers/expense-mapper-interface";
+import { IOcrApiClient } from "../../api/ocr-api-client/ocr-api-client-interface";
 
 @injectable()
 export class ExpenseManager extends BaseManager implements IExpenseManager {
     private readonly _api = lazyInject<IExpenseApiClient>(IExpenseApiClient);
+    private readonly _ocr = lazyInject<IOcrApiClient>(IOcrApiClient);
     private readonly _userManager = lazyInject<IUserManager>(IUserManager);
     private readonly _expenseMapper = lazyInject<IExpenseMapper>(IExpenseMapper);
     private readonly _expenseUserDetailsMapper = lazyInject<IExpenseUserDetailsMapper>(IExpenseUserDetailsMapper);
@@ -126,7 +128,13 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         this._api.disconnectFromExpense();
     }
 
-    createExpense(base64Image?: string): Promise<boolean> {
+    async createExpense(base64Image?: string): Promise<boolean> {
+        if (base64Image) {
+            const expense = await this._ocr.scanImage(base64Image);
+            if (!expense) return false;
+            
+            return this._api.createFromExpense(expense);
+        }
         return this._api.createExpense(base64Image);
     }
 
@@ -191,6 +199,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     private async onSessionExpenseUpdated(expenseDto: IExpenseDto | null): Promise<void> {
         if (expenseDto == null) {
+            await this.requestForUser();
             this._currentExpense$.next(null);
             return;
         }

@@ -1,16 +1,18 @@
-import { inject, injectable, multiInject } from "inversify";
+import { injectable } from "inversify";
 import { IUsersApiClient } from "../api/users-api-client/users-api-client-interface";
 import { Expense } from "../models/expense/expense";
-import { ExpenseDto, IExpenseDto, IExpenseUserDetailsMapper } from "@splitsies/shared-models";
+import { ExpenseDto, IExpenseDto, IExpenseUserDetails, IExpenseUserDetailsMapper } from "@splitsies/shared-models";
 import { IExpense } from "../models/expense/expense-interface";
 import { IExpenseMapper } from "./expense-mapper-interface";
 import { lazyInject } from "../utils/lazy-inject";
+import { LRUCache } from "../utils/lru-cache/lru-cache";
 
 @injectable()
 export class ExpenseMapper implements IExpenseMapper {
 
     private readonly _usersApiClient = lazyInject<IUsersApiClient>(IUsersApiClient);
     private readonly _expenseUserDetailsMapper = lazyInject<IExpenseUserDetailsMapper>(IExpenseUserDetailsMapper);
+    private readonly _userCache = new LRUCache<IExpenseUserDetails>(1000);
 
     toDto(expense: IExpense): IExpenseDto {
         return new ExpenseDto(
@@ -23,13 +25,18 @@ export class ExpenseMapper implements IExpenseMapper {
     }
 
     async toDomain(dto: IExpenseDto): Promise<IExpense> {
-        const users = dto.userIds.length ? await this._usersApiClient.requestUsersByIds(dto.userIds) : [];
+        const newIds = dto.userIds.filter(i => !this._userCache.has(i));
+        const users = newIds.length ? await this._usersApiClient.requestUsersByIds(dto.userIds) : [];
+
+        for (const user of users) {
+            this._userCache.add(this._expenseUserDetailsMapper.fromUserDto(user));
+        }
+
         return new Expense(
             dto.id,
             dto.name,
             new Date(dto.transactionDate),
             dto.items,
-            users.map(u => this._expenseUserDetailsMapper.fromUserDto(u))
-        );        
+            dto.userIds.map(id => this._userCache.get(id)!));   
     }
 }

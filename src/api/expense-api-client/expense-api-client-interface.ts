@@ -18,6 +18,7 @@ export interface IExpenseApiClient {
     disconnectFromExpense(): void;
     addUserToExpense(userId: string, expenseId: string): Promise<void>;
     removeUserFromExpense(userId: string, expenseId: string): Promise<void>;
+    createFromExpense(expense: IExpenseDto): Promise<boolean>;
     createExpense(base64Image?: string): Promise<boolean>;
     getExpenseJoinRequests(): Promise<IExpenseJoinRequestDto[]>;
     removeExpenseJoinRequest(expenseId: string, userId?: string): Promise<void>;

@@ -12,6 +12,7 @@ export class ApiConfig implements IApiConfig {
     readonly expense: string;
     readonly expenseSocket: string;
     readonly users: string;
+    readonly ocr: string;
 
     constructor() {
         const config = this.provideConfig();
@@ -19,6 +20,7 @@ export class ApiConfig implements IApiConfig {
         this.expense = config.expense;
         this.expenseSocket = config.expenseSocket;
         this.users = config.users;
+        this.ocr = config.ocr;
     }
 
     private provideConfig() {
