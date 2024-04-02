@@ -12,7 +12,7 @@ export interface IUserManager extends IBaseManager {
     signOut(): Promise<void>;
     requestCreateUser(user: CreateUserRequest): Promise<ICreateUserResult>;
     requestAuthenticate(username: string, password: string): Promise<boolean>;
-    requestUsersByIds(ids: string[]): Promise<IUserDto[]>;
+    requestUsersByIds(ids: string[]): Promise<IExpenseUserDetails[]>;
     requestAddGuestUser(givenName: string, familyName: string, phoneNumber: string): Promise<IUserDto>;
     requestUsersFromContacts(): Promise<void>;
     requestFindUsers(search: string, reset: boolean): Promise<IExpenseUserDetails[]>;

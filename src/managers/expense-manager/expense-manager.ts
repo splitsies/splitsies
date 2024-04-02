@@ -1,12 +1,6 @@
 import { injectable } from "inversify";
 import { IExpenseManager } from "./expense-manager-interface";
-import {
-    IExpenseDto,
-    IExpenseItem,
-    IExpenseUserDetails,
-    IExpenseUserDetailsMapper,
-    IUserCredential,
-} from "@splitsies/shared-models";
+import { IExpenseDto, IExpenseItem, IExpenseUserDetails, IUserCredential } from "@splitsies/shared-models";
 import { BehaviorSubject, Observable } from "rxjs";
 import { IExpenseApiClient } from "../../api/expense-api-client/expense-api-client-interface";
 import { lazyInject } from "../../utils/lazy-inject";
@@ -24,11 +18,9 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     private readonly _ocr = lazyInject<IOcrApiClient>(IOcrApiClient);
     private readonly _userManager = lazyInject<IUserManager>(IUserManager);
     private readonly _expenseMapper = lazyInject<IExpenseMapper>(IExpenseMapper);
-    private readonly _expenseUserDetailsMapper = lazyInject<IExpenseUserDetailsMapper>(IExpenseUserDetailsMapper);
     private readonly _expenseJoinRequestMapper = lazyInject<IExpenseJoinRequestMapper>(IExpenseJoinRequestMapper);
     private readonly _expenses$ = new BehaviorSubject<IExpense[]>([]);
     private readonly _currentExpense$ = new BehaviorSubject<IExpense | null>(null);
-    private readonly _currentExpenseUsers$ = new BehaviorSubject<IExpenseUserDetails[]>([]);
     private readonly _isPendingExpenseData$ = new BehaviorSubject<boolean>(false);
     private readonly _expenseJoinRequests$ = new BehaviorSubject<IExpenseJoinRequest[]>([]);
 
@@ -86,17 +78,6 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     async connectToExpense(expenseId: string): Promise<void> {
         await this._api.connectToExpense(expenseId);
-    }
-
-    async requestUsersForExpense(expenseId: string): Promise<void> {
-        const userIds = await this._api.getUserIdsForExpense(expenseId);
-        const users = await this._userManager.requestUsersByIds(userIds);
-
-        if (this.currentExpense?.id === expenseId) {
-            this._currentExpenseUsers$.next(
-                users.map((u) => this._expenseUserDetailsMapper.fromUserDto(u)).sort(this.userSortCompare),
-            );
-        }
     }
 
     requestAddUserToExpense(userId: string, expenseId: string): Promise<void> {

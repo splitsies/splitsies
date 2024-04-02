@@ -20,7 +20,6 @@ export interface IExpenseManager {
     disconnectFromExpense(): void;
     requestAddUserToExpense(userId: string, expenseId: string): Promise<void>;
     requestRemoveUserFromExpense(userId: string, expenseId: string): Promise<void>;
-    requestUsersForExpense(expenseId: string): Promise<void>;
     createExpense(base64Image?: string): Promise<boolean>;
     requestExpenseJoinRequests(): Promise<void>;
     removeExpenseJoinRequestForUser(expenseId: string, userId?: string): Promise<void>;
