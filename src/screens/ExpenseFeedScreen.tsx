@@ -68,9 +68,7 @@ export const ExpenseFeedScreen = SpThemedComponent((): JSX.Element => {
 
     return expenses.length === 0 ? (
         <Container>
-            <ScrollView
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
-            >
+            <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
                 <View style={styles.messageBox}>
                     <Text subheading color={Colors.textColor}>
                         Welcome, {userName}!

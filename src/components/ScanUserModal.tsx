@@ -40,7 +40,8 @@ export const ScanUserModal = ({
     const expenseUsers = useObservableReducer<IExpense | null, IExpenseUserDetails[]>(
         _expenseManager.currentExpense$,
         [],
-        (e) => e?.users ?? []);
+        (e) => e?.users ?? [],
+    );
 
     const [chipLabel, setChipLabel] = useState<string>("");
 

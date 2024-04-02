@@ -7,7 +7,7 @@ export class Expense implements IExpense {
         readonly name: string,
         readonly transactionDate: Date,
         readonly items: IExpenseItem[],
-        readonly users: IExpenseUserDetails[]
+        readonly users: IExpenseUserDetails[],
     ) {}
 
     get subtotal(): number {

@@ -29,6 +29,9 @@ import { filter } from "rxjs";
 import { ScanUserModal } from "../components/ScanUserModal";
 import { IQrPayload } from "../models/qr-payload/qr-payload-interface";
 import { IImageConfiguration } from "../models/configuration/image-config/image-configuration-interface";
+import { useObservableReducer } from "../hooks/use-observable-reducer";
+import { IExpense } from "../models/expense/expense-interface";
+import { IExpenseUserDetails } from "@splitsies/shared-models";
 
 const Tab = createMaterialTopTabNavigator();
 const _userManager = lazyInject<IUserManager>(IUserManager);
@@ -50,7 +53,11 @@ export const InviteNavigator = ({ navigation }: Props) => {
     useThemeWatcher();
     const searchFilter = useObservable(_inviteViewModel.searchFilter$, _inviteViewModel.searchFilter);
     const state = useObservable(_inviteViewModel.mode$, _inviteViewModel.mode);
-    const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, []);
+    const expenseUsers = useObservableReducer<IExpense | null, IExpenseUserDetails[]>(
+        _expenseManager.currentExpense$,
+        [],
+        (e) => e?.users ?? [],
+    );
     const codeScannerVisible = useObservable(
         _inviteViewModel.inviteMenuOpen$.pipe(filter((_) => _inviteViewModel.mode !== "guests")),
         _inviteViewModel.inviteMenuOpen,

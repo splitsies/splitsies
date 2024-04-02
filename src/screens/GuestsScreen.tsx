@@ -29,11 +29,11 @@ type Props = CompositeScreenProps<
 >;
 
 export const GuestScreen = ({ navigation }: Props) => {
-    const pendingJoinRequests = useObservable(_expenseManager.currentExpenseJoinRequests$, []);
     const expenseUsers = useObservableReducer<IExpense | null, IExpenseUserDetails[]>(
         _expenseManager.currentExpense$,
         [],
-        (e) => e?.users ?? []);
+        (e) => e?.users ?? [],
+    );
     const searchFilter = useObservable(_inviteViewModel.searchFilter$, _inviteViewModel.searchFilter);
     const addGuestVisible = useObservable(
         _inviteViewModel.inviteMenuOpen$.pipe(filter((_) => _inviteViewModel.mode === "guests")),
@@ -64,7 +64,6 @@ export const GuestScreen = ({ navigation }: Props) => {
                         <UserInviteListItem
                             user={user}
                             expenseUsers={expenseUsers}
-                            pendingJoinRequests={pendingJoinRequests}
                             onInviteUser={() => {}}
                             onUninviteUser={() => {}}
                         />

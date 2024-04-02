@@ -1,14 +1,16 @@
-export class LRUCache<T extends { id: string }> {
+import { injectable } from "inversify";
+import { ILRUCache } from "./lru-cache-interface";
+
+@injectable()
+export class LRUCache<T extends { id: string }> implements ILRUCache<T> {
     private readonly _capacity: number;
 
     private _mostRecentlyUsed: Node<T> | null;
     private _leastRecentlyUsed: Node<T> | null;
     private _index = new Map<string, Node<T>>();
 
-    constructor(capacity: number) {
-        if (capacity < 1) { throw new Error("Invalid capacity given for cache"); }
-
-        this._capacity = capacity;
+    constructor() {
+        this._capacity = 1000;
         this._mostRecentlyUsed = null;
         this._leastRecentlyUsed = null;
     }
@@ -34,9 +36,9 @@ export class LRUCache<T extends { id: string }> {
             this._index.set(node.value.id, node);
             return;
         }
-        
+
         if (!this._leastRecentlyUsed) throw new Error("Invalid cache state");
-        
+
         if (this._capacity === 1) {
             this._index.delete(this._leastRecentlyUsed.value.id);
             this._leastRecentlyUsed = node;
@@ -81,9 +83,8 @@ export class LRUCache<T extends { id: string }> {
 
         node.previous = this._mostRecentlyUsed;
         this._mostRecentlyUsed.next = node;
-        this._mostRecentlyUsed = node;        
+        this._mostRecentlyUsed = node;
     }
-
 }
 
 class Node<T extends { id: string }> {

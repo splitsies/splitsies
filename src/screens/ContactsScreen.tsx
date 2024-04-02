@@ -21,11 +21,11 @@ const _inviteViewModel = lazyInject<IInviteViewModel>(IInviteViewModel);
 
 export const ContactsScreen = SpThemedComponent(() => {
     const contactUsers = useObservable(_userManager.contactUsers$, []);
-    const pendingJoinRequests = useObservable(_expenseManager.currentExpenseJoinRequests$, []);
     const expenseUsers = useObservableReducer<IExpense | null, IExpenseUserDetails[]>(
         _expenseManager.currentExpense$,
         [],
-        (e) => e?.users ?? []);
+        (e) => e?.users ?? [],
+    );
     const searchFilter = useObservable(_inviteViewModel.searchFilter$, _inviteViewModel.searchFilter);
 
     useFocusEffect(() => _inviteViewModel.setMode("contacts"));
@@ -70,7 +70,6 @@ export const ContactsScreen = SpThemedComponent(() => {
                         <UserInviteListItem
                             user={user}
                             expenseUsers={expenseUsers}
-                            pendingJoinRequests={pendingJoinRequests}
                             onInviteUser={() => onUserInvited(user)}
                             onUninviteUser={() => onUserUninvited(user)}
                         />

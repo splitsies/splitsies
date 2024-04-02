@@ -53,8 +53,13 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
     useEffect(() => {
         const updatedPersonalExpense = _priceCalculator.calculatePersonalExpense(person.id, expense);
         setPersonalExpense(updatedPersonalExpense);
-        setSubtotalItem(new ExpenseItemModel("", expense.id, "Subtotal", updatedPersonalExpense.subtotal, [], false, Date.now()));
-        setTotalItem(new ExpenseItemModel("", expense.id, "Total", updatedPersonalExpense.total, [], false, Date.now()));
+        setSubtotalItem(
+            new ExpenseItemModel("", expense.id, "Subtotal", updatedPersonalExpense.subtotal, [], false, Date.now()),
+        );
+
+        setTotalItem(
+            new ExpenseItemModel("", expense.id, "Total", updatedPersonalExpense.total, [], false, Date.now()),
+        );
     }, [expense, person]);
 
     const onPayPress = (): void => {

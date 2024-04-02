@@ -56,9 +56,7 @@ export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress }:
                     </View>
                     <View style={styles.rightBox}>
                         <Text subtext color={Colors.textColor}>
-                            {data.transactionDate
-                                .toLocaleString(Locale, DATE_OPTIONS)
-                                .replace(/\d{2}:\d{2}:\d{2}/, "")}
+                            {data.transactionDate.toLocaleString(Locale, DATE_OPTIONS).replace(/\d{2}:\d{2}:\d{2}/, "")}
                         </Text>
                     </View>
                 </View>

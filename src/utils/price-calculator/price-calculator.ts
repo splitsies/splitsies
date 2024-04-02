@@ -13,7 +13,17 @@ export class PriceCalculator {
             .filter((i) => !i.isProportional)
             .forEach((i) => {
                 if (i.owners.some((o) => o.id === userId)) {
-                    items.push(new ExpenseItem(i.id, i.expenseId, i.name, i.price / i.owners.length, i.owners, i.isProportional, i.createdAt));
+                    items.push(
+                        new ExpenseItem(
+                            i.id,
+                            i.expenseId,
+                            i.name,
+                            i.price / i.owners.length,
+                            i.owners,
+                            i.isProportional,
+                            i.createdAt,
+                        ),
+                    );
                 }
             });
 
@@ -32,7 +42,7 @@ export class PriceCalculator {
                         i.price * (personalExpense.subtotal / (expense.subtotal === 0 ? 1 : expense.subtotal)),
                         i.owners,
                         i.isProportional,
-                        i.createdAt
+                        i.createdAt,
                     ),
                 );
             });

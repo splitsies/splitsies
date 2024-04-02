@@ -3,8 +3,6 @@ import { IExpenseManager } from "./expense-manager-interface";
 import {
     IExpenseDto,
     IExpenseItem,
-    IExpenseJoinRequest,
-    IExpenseJoinRequestDto,
     IExpenseUserDetails,
     IExpenseUserDetailsMapper,
     IUserCredential,
@@ -17,6 +15,8 @@ import { IUserManager } from "../user-manager/user-manager-interface";
 import { IExpense } from "../../models/expense/expense-interface";
 import { IExpenseMapper } from "../../mappers/expense-mapper-interface";
 import { IOcrApiClient } from "../../api/ocr-api-client/ocr-api-client-interface";
+import { IExpenseJoinRequestMapper } from "../../mappers/expense-join-request-mapper/expense-join-request-mapper-interface";
+import { IExpenseJoinRequest } from "../../models/expense-join-request/expense-join-request-interface";
 
 @injectable()
 export class ExpenseManager extends BaseManager implements IExpenseManager {
@@ -25,12 +25,12 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     private readonly _userManager = lazyInject<IUserManager>(IUserManager);
     private readonly _expenseMapper = lazyInject<IExpenseMapper>(IExpenseMapper);
     private readonly _expenseUserDetailsMapper = lazyInject<IExpenseUserDetailsMapper>(IExpenseUserDetailsMapper);
+    private readonly _expenseJoinRequestMapper = lazyInject<IExpenseJoinRequestMapper>(IExpenseJoinRequestMapper);
     private readonly _expenses$ = new BehaviorSubject<IExpense[]>([]);
     private readonly _currentExpense$ = new BehaviorSubject<IExpense | null>(null);
     private readonly _currentExpenseUsers$ = new BehaviorSubject<IExpenseUserDetails[]>([]);
     private readonly _isPendingExpenseData$ = new BehaviorSubject<boolean>(false);
-    private readonly _expenseJoinRequests$ = new BehaviorSubject<IExpenseJoinRequestDto[]>([]);
-    private readonly _currentExpenseJoinRequests$ = new BehaviorSubject<IExpenseJoinRequest[]>([]);
+    private readonly _expenseJoinRequests$ = new BehaviorSubject<IExpenseJoinRequest[]>([]);
 
     get expenses$(): Observable<IExpense[]> {
         return this._expenses$.asObservable();
@@ -48,14 +48,6 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         return this._currentExpense$.value;
     }
 
-    get currentExpenseUsers$(): Observable<IExpenseUserDetails[]> {
-        return this._currentExpenseUsers$.asObservable();
-    }
-
-    get currentExpenseUsers(): IExpenseUserDetails[] {
-        return this._currentExpenseUsers$.value;
-    }
-
     get isPendingExpenseData(): boolean {
         return this._isPendingExpenseData$.value;
     }
@@ -64,12 +56,8 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         return this._isPendingExpenseData$.asObservable();
     }
 
-    get expenseJoinRequests$(): Observable<IExpenseJoinRequestDto[]> {
+    get expenseJoinRequests$(): Observable<IExpenseJoinRequest[]> {
         return this._expenseJoinRequests$.asObservable();
-    }
-
-    get currentExpenseJoinRequests$(): Observable<IExpenseJoinRequest[]> {
-        return this._currentExpenseJoinRequests$.asObservable();
     }
 
     constructor() {
@@ -84,11 +72,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         });
 
         this._api.sessionExpense$.subscribe({
-            next: (data) => void this.onSessionExpenseUpdated(data)
-        });
-
-        this._api.sessionExpenseJoinRequests$.subscribe({
-            next: (requests) => this._currentExpenseJoinRequests$.next(requests),
+            next: (data) => void this.onSessionExpenseUpdated(data),
         });
 
         await this.requestExpenseJoinRequests();
@@ -96,13 +80,12 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     async requestForUser(): Promise<void> {
         const expenseDtos = await this._api.getAllExpenses();
-        const expenses = await Promise.all(expenseDtos.map(dto => this._expenseMapper.toDomain(dto)));
+        const expenses = await Promise.all(expenseDtos.map((dto) => this._expenseMapper.toDomain(dto)));
         this._expenses$.next(expenses.sort((a, b) => b.transactionDate.getTime() - a.transactionDate.getTime()));
     }
 
     async connectToExpense(expenseId: string): Promise<void> {
         await this._api.connectToExpense(expenseId);
-        void this.getJoinRequestsForExpense(expenseId);
     }
 
     async requestUsersForExpense(expenseId: string): Promise<void> {
@@ -132,7 +115,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         if (base64Image) {
             const expense = await this._ocr.scanImage(base64Image);
             if (!expense) return false;
-            
+
             return this._api.createFromExpense(expense);
         }
         return this._api.createExpense(base64Image);
@@ -140,13 +123,21 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     async requestExpenseJoinRequests(): Promise<void> {
         const requests = await this._api.getExpenseJoinRequests();
-        this._expenseJoinRequests$.next(requests.sort((a, b) => Date.parse(b.createdAt) - Date.parse(a.createdAt)));
+
+        const joinRequests: IExpenseJoinRequest[] = [];
+
+        for (const r of requests) {
+            const result = await this._expenseJoinRequestMapper.toDomain(r);
+            if (result) joinRequests.push(result);
+        }
+
+        this._expenseJoinRequests$.next(joinRequests.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()));
     }
 
     async removeExpenseJoinRequestForUser(expenseId: string, userId: string | undefined = undefined): Promise<void> {
         await this._api.removeExpenseJoinRequest(expenseId, userId);
         const requests = this._expenseJoinRequests$.value;
-        const requestIndex = requests.findIndex((r) => r.expenseId === expenseId);
+        const requestIndex = requests.findIndex((r) => r.expense.id === expenseId);
         if (requestIndex === -1) return;
 
         requests.splice(requestIndex, 1);
@@ -155,10 +146,6 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void> {
         return this._api.sendExpenseJoinRequest(userId, expenseId);
-    }
-
-    async getJoinRequestsForExpense(expenseId: string): Promise<void> {
-        await this._api.getJoinRequestsForExpense(expenseId);
     }
 
     addItem(
@@ -215,9 +202,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
         expenses[expenseIndex] = expense;
 
-        this._expenses$.next(
-            expenses.sort((a, b) => b.transactionDate.getTime() - a.transactionDate.getTime())            
-        );
+        this._expenses$.next(expenses.sort((a, b) => b.transactionDate.getTime() - a.transactionDate.getTime()));
     }
 
     private async onUserCredentialUpdated(userCredential: IUserCredential | null): Promise<void> {

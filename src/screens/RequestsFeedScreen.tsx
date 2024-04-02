@@ -1,5 +1,4 @@
 import React, { useCallback, useState } from "react";
-import { IExpenseJoinRequestDto } from "@splitsies/shared-models";
 import { Text, View } from "react-native-ui-lib/core";
 import { JoinRequest } from "../components/JoinRequest";
 import { RefreshControl, ScrollView, StyleSheet } from "react-native";
@@ -13,6 +12,7 @@ import { lazyInject } from "../utils/lazy-inject";
 import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-interface";
 import { useObservable } from "../hooks/use-observable";
 import { Container } from "../components/Container";
+import { IExpenseJoinRequest } from "../models/expense-join-request/expense-join-request-interface";
 
 type Props = CompositeScreenProps<
     CompositeScreenProps<NativeStackScreenProps<RootStackParamList>, DrawerScreenProps<DrawerParamList, "Home">>,
@@ -38,15 +38,15 @@ export const RequestsFeedScreen = (_: Props): JSX.Element => {
         _viewModel.setPendingData(false);
     };
 
-    const onApproveRequest = async (joinRequest: IExpenseJoinRequestDto): Promise<void> => {
-        await _expenseManager.removeExpenseJoinRequestForUser(joinRequest.expenseId);
+    const onApproveRequest = async (joinRequest: IExpenseJoinRequest): Promise<void> => {
+        await _expenseManager.removeExpenseJoinRequestForUser(joinRequest.expense.id);
     };
 
-    const onDenyRequest = async (joinRequest: IExpenseJoinRequestDto): Promise<void> => {
-        await _expenseManager.requestRemoveUserFromExpense(joinRequest.userId, joinRequest.expenseId);
+    const onDenyRequest = async (joinRequest: IExpenseJoinRequest): Promise<void> => {
+        await _expenseManager.requestRemoveUserFromExpense(joinRequest.userId, joinRequest.expense.id);
         void _expenseManager.requestExpenseJoinRequests();
     };
-    
+
     const refresh = async () => {
         setRefreshing(true);
         await _expenseManager.requestExpenseJoinRequests();
@@ -59,7 +59,7 @@ export const RequestsFeedScreen = (_: Props): JSX.Element => {
                 {joinRequests.length > 0 ? (
                     joinRequests.map((r) => (
                         <JoinRequest
-                            key={r.expenseId}
+                            key={r.expense.id}
                             joinRequest={r}
                             onApprove={onApproveRequest}
                             onDeny={onDenyRequest}

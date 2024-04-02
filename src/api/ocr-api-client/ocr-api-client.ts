@@ -1,7 +1,7 @@
 import { injectable } from "inversify";
-import {  IOcrApiClient } from "./ocr-api-client-interface";
+import { IOcrApiClient } from "./ocr-api-client-interface";
 import { IApiConfig } from "../../models/configuration/api-config/api-config-interface";
-import {    IExpenseDto} from "@splitsies/shared-models";
+import { IExpenseDto } from "@splitsies/shared-models";
 import { ClientBase } from "../client-base";
 import { lazyInject } from "../../utils/lazy-inject";
 import { IAuthProvider } from "../../providers/auth-provider/auth-provider-interface";
@@ -19,10 +19,13 @@ export class OcrApiClient extends ClientBase implements IOcrApiClient {
         const uri = `${this._config.ocr}process`;
 
         try {
-            const result = await this.postJson<IExpenseDto>(uri, {
-                image: base64Image,
+            const result = await this.postJson<IExpenseDto>(
+                uri,
+                {
+                    image: base64Image,
                 },
-                this._authProvider.provideAuthHeader());
+                this._authProvider.provideAuthHeader(),
+            );
 
             if (!result?.success) {
                 console.error(`Error on request: ${result.data}`);

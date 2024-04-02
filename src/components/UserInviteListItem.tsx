@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { IExpenseJoinRequest, IExpenseUserDetails } from "@splitsies/shared-models";
+import { IExpenseUserDetails } from "@splitsies/shared-models";
 import { Chip, Colors, Icon, Text, View } from "react-native-ui-lib";
 import { ActivityIndicator, StyleSheet } from "react-native";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
@@ -14,7 +14,6 @@ const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 type Props = {
     user: IExpenseUserDetails;
     expenseUsers: IExpenseUserDetails[];
-    pendingJoinRequests: IExpenseJoinRequest[];
     showUsername?: boolean;
     onInviteUser: (user: IExpenseUserDetails) => void;
     onUninviteUser: (user: IExpenseUserDetails) => void;
@@ -31,7 +30,6 @@ enum UserState {
 export const UserInviteListItem = ({
     user,
     expenseUsers,
-    pendingJoinRequests,
     showUsername,
     onInviteUser,
     onUninviteUser,
@@ -55,7 +53,7 @@ export const UserInviteListItem = ({
         }
 
         setUserState(state);
-    }, [user, pendingJoinRequests, expenseUsers]);
+    }, [user, expenseUsers]);
 
     const computeButtonLabel = () => {
         switch (userState) {

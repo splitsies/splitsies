@@ -21,11 +21,11 @@ const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _inviteViewModel = lazyInject<IInviteViewModel>(IInviteViewModel);
 
 export const SearchScreen = SpThemedComponent(() => {
-    const pendingJoinRequests = useObservable(_expenseManager.currentExpenseJoinRequests$, []);
     const expenseUsers = useObservableReducer<IExpense | null, IExpenseUserDetails[]>(
         _expenseManager.currentExpense$,
         [],
-        (e) => e?.users ?? []);
+        (e) => e?.users ?? [],
+    );
     const searchFilter = useObservable(_inviteViewModel.searchFilter$, _inviteViewModel.searchFilter);
     const [users, setUsers] = useState<IExpenseUserDetails[]>([]);
     const [fetchingPage, setFetchingPage] = useState<boolean>(false);
@@ -84,7 +84,6 @@ export const SearchScreen = SpThemedComponent(() => {
                             <UserInviteListItem
                                 user={user}
                                 expenseUsers={expenseUsers}
-                                pendingJoinRequests={pendingJoinRequests}
                                 onInviteUser={() => onUserInvited(user)}
                                 onUninviteUser={() => onUserUninvited(user)}
                                 showUsername

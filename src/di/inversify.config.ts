@@ -54,6 +54,10 @@ import { IExpenseMapper } from "../mappers/expense-mapper-interface";
 import { ExpenseMapper } from "../mappers/expense-mapper";
 import { IOcrApiClient } from "../api/ocr-api-client/ocr-api-client-interface";
 import { OcrApiClient } from "../api/ocr-api-client/ocr-api-client";
+import { IUserCache } from "../utils/user-cache/user-cache-interface";
+import { UserCache } from "../utils/user-cache/user-cache";
+import { IExpenseJoinRequestMapper } from "../mappers/expense-join-request-mapper/expense-join-request-mapper-interface";
+import { ExpenseJoinRequestMapper } from "../mappers/expense-join-request-mapper/expense-join-request-mapper";
 const container = new Container();
 
 container.bind<IApiConfig>(IApiConfig).to(ApiConfig).inSingletonScope();
@@ -87,4 +91,6 @@ container.bind<IAdConfiguration>(IAdConfiguration).to(AdConfiguration).inSinglet
 container.bind<IExpenseMapper>(IExpenseMapper).to(ExpenseMapper).inSingletonScope();
 
 container.bind<IOcrApiClient>(IOcrApiClient).to(OcrApiClient).inSingletonScope();
+container.bind<IUserCache>(IUserCache).to(UserCache).inSingletonScope();
+container.bind<IExpenseJoinRequestMapper>(IExpenseJoinRequestMapper).to(ExpenseJoinRequestMapper).inSingletonScope();
 export { container };
