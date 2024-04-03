@@ -8,6 +8,7 @@
     "android:lan": "react-native run-android --mode lanDebug",
     "ios:lan": "react-native run-ios --scheme \"Splitsies LAN\"",
     "android:dev-pr": "react-native run-android --mode devprDebug",
+    "android:staging": "react-native run-android --mode stagingDebug",
     "ios:dev-pr": "react-native run-ios --scheme \"Splitsies dev-pr\"",
     "build-android:dev-pr": "cd android && ENVFILE=.env.dev-pr ./gradlew assembleRelease",
     "lint": "eslint .",

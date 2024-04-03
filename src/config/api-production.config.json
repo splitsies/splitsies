@@ -1,5 +1,6 @@
 {
-    "expense": "https://vrjjpfvylf.execute-api.us-east-1.amazonaws.com/production/expenses",
-    "expenseSocket": "wss://9ldl0hgd5a.execute-api.us-east-1.amazonaws.com/production",
-    "users": "https://i7dnchw88d.execute-api.us-east-1.amazonaws.com/production/users"
+    "expense": "https://tdi8ue4lj3.execute-api.us-east-1.amazonaws.com/production/expenses",
+    "expenseSocket": "wss://o1bk5shwae.execute-api.us-east-1.amazonaws.com/production",
+    "users": "https://g882ndqc41.execute-api.us-east-1.amazonaws.com/production/users",
+    "ocr": "https://g5i228tgg4.execute-api.us-east-1.amazonaws.com/production/"
 }
