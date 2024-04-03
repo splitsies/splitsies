@@ -28,7 +28,7 @@
     "@react-navigation/material-top-tabs": "^6.6.5",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.14",
-    "@splitsies/shared-models": "/Users/kevin/source/splitsies/shared-models/splitsies-shared-models-0.0.27.tgz",
+    "@splitsies/shared-models": "^0.0.28",
     "http2": "^3.3.7",
     "inversify": "^6.0.1",
     "inversify-inject-decorators": "^3.1.0",
@@ -63,7 +63,7 @@
       "react-native-svg": "$react-native-svg"
     },
     "react-native-qrcode-scanner": {
-        "react-native-permissions": "^4.0.1"
+      "react-native-permissions": "^4.0.1"
     }
   },
   "prettier": "@splitsies/formatting",
