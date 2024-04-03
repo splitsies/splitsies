@@ -24,7 +24,7 @@ export class ApiConfig implements IApiConfig {
     }
 
     private provideConfig() {
-        console.trace(`Setting up ${Config.STAGE} API endpoints.`);
+        console.log(`Setting up ${Config.STAGE} API endpoints.`);
         switch (Config.STAGE) {
             case "local":
                 return localConfig;

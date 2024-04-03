@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { FlatList, StyleSheet } from "react-native";
+import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { lazyInject } from "../utils/lazy-inject";
 import { DrawerParamList, RootStackParamList } from "../types/params";
@@ -39,14 +39,14 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
     const expense = useObservable<IExpense>(
         _expenseManager.currentExpense$.pipe(filter((e) => e != null)) as Observable<IExpense>,
         _expenseManager.currentExpense!,
+        () => setAwaitingResponse(false),
     );
-    // const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, []);
-
     const [selectedItem, setSelectedItem] = useState<IExpenseItem | null>(null);
     const [editingTitle, setEditingTitle] = useState<boolean>(false);
     const [isSelecting, setIsSelecting] = useState<boolean>(false);
     const [isAddingItem, setIsAddingItem] = useState<boolean>(false);
     const [inProgressSelections, setInProgressSelections] = useState<string[]>([]);
+    const [awaitingResponse, setAwaitingResponse] = useState<boolean>(false);
 
     const onBackPress = useCallback(() => {
         _expenseManager.disconnectFromExpense();
@@ -56,6 +56,7 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
     const onTitleSave = ({ name }: EditResult) => {
         _expenseManager.updateExpenseName(expense.id, name ?? "");
         setEditingTitle(false);
+        setAwaitingResponse(true);
     };
 
     const onItemSave = useCallback(
@@ -73,6 +74,7 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
             );
 
             setSelectedItem(null);
+            setAwaitingResponse(true);
         },
         [expense, selectedItem],
     );
@@ -82,6 +84,7 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
             if (!name || !price) return;
             _expenseManager.addItem(expense.id, name, price, [], !!isProportional);
             setIsAddingItem(false);
+            setAwaitingResponse(true);
         },
         [expense],
     );
@@ -109,10 +112,12 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
 
         _expenseManager.removeItem(expense.id, expense.items[itemIndex]);
         setSelectedItem(null);
+        setAwaitingResponse(true);
     }, [expense, selectedItem]);
 
     const onSelectAction = (): void => {
         const isStartingSelection = !isSelecting;
+        console.log("ayo");
 
         if (isStartingSelection) {
             // if we're starting selection, populate the in progress selections with current selections
@@ -133,10 +138,12 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
         const user = expense.users.find((u) => u.id === userId);
         if (!user) return;
         _expenseManager.updateItemSelections(expense.id, user, selectedItemIds);
+        setAwaitingResponse(true);
     };
 
     const onExpenseDateUpdated = (date: Date): void => {
         _expenseManager.updateExpenseTransactionDate(expense.id, date);
+        setAwaitingResponse(true);
     };
 
     return (
@@ -147,9 +154,12 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={onSelectAction}>
-                    <Text bodyBold color={Colors.textColor}>
-                        {!isSelecting ? "Select" : "Done"}
-                    </Text>
+                    <View flex row centerV style={{ columnGap: 10 }}>
+                        <ActivityIndicator animating={awaitingResponse} hidesWhenStopped color={Colors.textColor} />
+                        <Text bodyBold color={Colors.textColor}>
+                            {!isSelecting ? "Select" : "Done"}
+                        </Text>
+                    </View>
                 </TouchableOpacity>
             </SafeAreaView>
 

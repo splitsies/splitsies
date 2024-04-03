@@ -72,7 +72,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     async requestForUser(): Promise<void> {
         const expenseDtos = await this._api.getAllExpenses();
-        const expenses = await Promise.all(expenseDtos.map((dto) => this._expenseMapper.toDomain(dto)));
+        const expenses = await this._expenseMapper.toDomainBatch(expenseDtos);
         this._expenses$.next(expenses.sort((a, b) => b.transactionDate.getTime() - a.transactionDate.getTime()));
     }
 
@@ -167,7 +167,6 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     private async onSessionExpenseUpdated(expenseDto: IExpenseDto | null): Promise<void> {
         if (expenseDto == null) {
-            await this.requestForUser();
             this._currentExpense$.next(null);
             return;
         }
@@ -190,7 +189,6 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         this._isPendingExpenseData$.next(true);
         try {
             this._api.disconnectFromExpense();
-            await this.requestForUser();
         } finally {
             this._isPendingExpenseData$.next(false);
         }

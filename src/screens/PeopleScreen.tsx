@@ -8,7 +8,7 @@ import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList, ExpenseParamList } from "../types/params";
 import { TouchableOpacity, View } from "react-native-ui-lib/core";
-import { SafeAreaView, StyleSheet } from "react-native";
+import { ActivityIndicator, SafeAreaView, StyleSheet } from "react-native";
 import { Colors, Icon, Text } from "react-native-ui-lib";
 import { PeopleFooter } from "../components/PeopleFooter";
 import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
@@ -31,9 +31,11 @@ export const PeopleScreen = SpThemedComponent(({ navigation }: Props): JSX.Eleme
     const expense = useObservable<IExpense>(
         _expenseManager.currentExpense$.pipe(filter((e) => !!e)) as Observable<IExpense>,
         _expenseManager.currentExpense!,
+        () => setAwaitingResponse(false),
     );
 
     const [isSelecting, setIsSelecting] = useState<boolean>(false);
+    const [awaitingResponse, setAwaitingResponse] = useState<boolean>(false);
 
     const onBackPress = useCallback(() => {
         navigation.navigate("Items");
@@ -43,6 +45,7 @@ export const PeopleScreen = SpThemedComponent(({ navigation }: Props): JSX.Eleme
         const user = expense.users.find((u) => u.id === userId);
         if (!user) return;
         _expenseManager.updateItemSelections(expense.id, user, selectedItemIds);
+        setAwaitingResponse(true);
     };
 
     return !expense ? (
@@ -56,9 +59,12 @@ export const PeopleScreen = SpThemedComponent(({ navigation }: Props): JSX.Eleme
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => setIsSelecting(true)}>
-                        <Text bodyBold color={Colors.textColor}>
-                            Select
-                        </Text>
+                        <View flex row centerV style={{ columnGap: 10 }}>
+                            <ActivityIndicator animating={awaitingResponse} hidesWhenStopped color={Colors.textColor} />
+                            <Text bodyBold color={Colors.textColor}>
+                                Select
+                            </Text>
+                        </View>
                     </TouchableOpacity>
                 </View>
 

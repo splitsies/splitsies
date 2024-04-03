@@ -72,11 +72,11 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
         const remaining = phoneNumbers.filter((p) => !this._userCache.hasPhoneNumber(p));
         const cachedUsers = phoneNumbers
             .filter((p) => this._userCache.hasPhoneNumber(p))
-            .map((p) => this._userCache.getByPhoneNumber(p));
+            .map((p) => this._userCache.getByPhoneNumber(p)) as IExpenseUserDetails[];
 
-        if (remaining.length === 0) return cachedUsers.filter((u) => u !== undefined) as IExpenseUserDetails[];
+        if (remaining.length === 0) return cachedUsers;
 
-        const users: IExpenseUserDetails[] = [];
+        const users: IExpenseUserDetails[] = cachedUsers;
         const url = `${this._config.users}?phoneNumbers=${remaining.join(",")}`;
         let result = undefined;
         let lastKey = undefined;
@@ -94,6 +94,8 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
                 return users;
             }
         } while (result?.data?.lastEvaluatedKey && Date.now() < timeout);
+
+        users.forEach((u) => this._userCache.add(u));
         return [...users, cachedUsers].filter((u) => u !== undefined) as IExpenseUserDetails[];
     }
 

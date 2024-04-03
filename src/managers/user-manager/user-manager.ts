@@ -158,7 +158,6 @@ export class UserManager extends BaseManager implements IUserManager {
 
             // Do a search to find the ones existing as Splitsies users
             const splitsiesUsers = await this._client.requestFindUsersByPhoneNumber(numbers);
-
             const keyedByNumber = new Map<string, IExpenseUserDetails>();
 
             for (const u of splitsiesUsers) {
