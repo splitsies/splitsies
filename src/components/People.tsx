@@ -1,15 +1,13 @@
-import { IExpense, IExpenseUserDetails } from "@splitsies/shared-models";
+import { IExpenseUserDetails } from "@splitsies/shared-models";
 import React, { useState } from "react";
-import { Carousel, Colors, PageControl, PageControlPosition } from "react-native-ui-lib";
+import { Carousel, Colors, PageControl } from "react-native-ui-lib";
 import { View } from "react-native-ui-lib/core";
 import { PersonalOrder } from "./PersonalOrder";
 import { Dimensions, StyleSheet } from "react-native";
-import { lazyInject } from "../utils/lazy-inject";
-import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { SelectItemsModal } from "./SelectItemsModal";
 import { Container } from "./Container";
+import { IExpense } from "../models/expense/expense-interface";
 
-const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _dimensions = Dimensions.get("window");
 
 type Props = {

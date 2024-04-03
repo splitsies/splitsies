@@ -7,11 +7,13 @@ import { useObservable } from "../hooks/use-observable";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { ListSeparator } from "../components/ListSeparator";
 import { UserInviteListItem } from "../components/UserInviteListItem";
-import { IExpenseUserDetails } from "@splitsies/shared-models";
+import { IExpenseUserDetails, IUserDto } from "@splitsies/shared-models";
 import { useFocusEffect } from "@react-navigation/native";
 import { IInviteViewModel } from "../view-models/invite-view-model/invite-view-model-interface";
 import { Container } from "../components/Container";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
+import { useObservableReducer } from "../hooks/use-observable-reducer";
+import { IExpense } from "../models/expense/expense-interface";
 
 const _userManager = lazyInject<IUserManager>(IUserManager);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
@@ -19,8 +21,11 @@ const _inviteViewModel = lazyInject<IInviteViewModel>(IInviteViewModel);
 
 export const ContactsScreen = SpThemedComponent(() => {
     const contactUsers = useObservable(_userManager.contactUsers$, []);
-    const pendingJoinRequests = useObservable(_expenseManager.currentExpenseJoinRequests$, []);
-    const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, []);
+    const expenseUsers = useObservableReducer<IExpense | null, IExpenseUserDetails[]>(
+        _expenseManager.currentExpense$,
+        [],
+        (e) => e?.users ?? [],
+    );
     const searchFilter = useObservable(_inviteViewModel.searchFilter$, _inviteViewModel.searchFilter);
 
     useFocusEffect(() => _inviteViewModel.setMode("contacts"));
@@ -65,7 +70,6 @@ export const ContactsScreen = SpThemedComponent(() => {
                         <UserInviteListItem
                             user={user}
                             expenseUsers={expenseUsers}
-                            pendingJoinRequests={pendingJoinRequests}
                             onInviteUser={() => onUserInvited(user)}
                             onUninviteUser={() => onUserUninvited(user)}
                         />

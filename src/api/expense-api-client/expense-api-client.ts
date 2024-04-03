@@ -4,33 +4,23 @@ import { IApiConfig } from "../../models/configuration/api-config/api-config-int
 import { BehaviorSubject, Observable } from "rxjs";
 import {
     ExpenseMessageParameters,
-    ExpensePayload,
-    IExpense,
     IExpenseDto,
     IExpenseItem,
-    IExpenseJoinRequest,
-    IExpenseJoinRequestDto,
-    IExpenseMapper,
-    IExpenseMessage,
     IExpenseMessageParametersMapper,
-    IExpensePayload,
     IExpenseUserDetails,
     IUserCredential,
 } from "@splitsies/shared-models";
 import { ClientBase } from "../client-base";
 import { lazyInject } from "../../utils/lazy-inject";
 import { IAuthProvider } from "../../providers/auth-provider/auth-provider-interface";
+import { IUserExpenseDto } from "../../models/user-expense-dto/user-expense-dto-interface";
 
 @injectable()
 export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     private _connection!: WebSocket;
-    private readonly _userExpenses$ = new BehaviorSubject<IExpensePayload[]>([]);
-    private readonly _sessionExpense$ = new BehaviorSubject<IExpense | null>(null);
-    private readonly _sessionExpenseUsers$ = new BehaviorSubject<IExpenseUserDetails[]>([]);
-    private readonly _sessionExpenseJoinRequests$ = new BehaviorSubject<IExpenseJoinRequest[]>([]);
+    private readonly _sessionExpense$ = new BehaviorSubject<IExpenseDto | null>(null);
     private readonly _config = lazyInject<IApiConfig>(IApiConfig);
     private readonly _authProvider = lazyInject<IAuthProvider>(IAuthProvider);
-    private readonly _expenseMapper = lazyInject<IExpenseMapper>(IExpenseMapper);
     private readonly _expenseMessageParametersMapper = lazyInject<IExpenseMessageParametersMapper>(
         IExpenseMessageParametersMapper,
     );
@@ -39,43 +29,22 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         super();
     }
 
-    get userExpenses$(): Observable<IExpensePayload[]> {
-        return this._userExpenses$.asObservable();
-    }
-
-    get sessionExpense$(): Observable<IExpense | null> {
+    get sessionExpense$(): Observable<IExpenseDto | null> {
         return this._sessionExpense$.asObservable();
     }
 
-    get sessionExpenseUsers$(): Observable<IExpenseUserDetails[]> {
-        return this._sessionExpenseUsers$.asObservable();
-    }
-
-    get sessionExpenseJoinRequests$(): Observable<IExpenseJoinRequest[]> {
-        return this._sessionExpenseJoinRequests$.asObservable();
-    }
-
-    async getAllExpenses(userCred: IUserCredential | null = null): Promise<void> {
+    async getAllExpenses(userCred: IUserCredential | null = null): Promise<IExpenseDto[]> {
         const userId = userCred?.user.id ?? this._authProvider.provideIdentity();
         if (!userId) {
-            this._userExpenses$.next([]);
-            return;
+            return [];
         }
 
         const uri = `${this._config.expense}?userId=${userId}`;
         try {
-            const expenses = await this.get<IExpensePayload[]>(uri, this._authProvider.provideAuthHeader());
-            this._userExpenses$.next(
-                expenses.data.sort((a, b) =>
-                    a.expense.transactionDate < b.expense.transactionDate
-                        ? 1
-                        : a.expense.transactionDate > b.expense.transactionDate
-                        ? -1
-                        : 0,
-                ),
-            );
+            const expenses = await this.get<IExpenseDto[]>(uri, this._authProvider.provideAuthHeader());
+            return expenses?.data ?? [];
         } catch (e) {
-            return;
+            return [];
         }
     }
 
@@ -83,16 +52,21 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         const uri = `${this._config.expense}/${expenseId}`;
         try {
             const expense = await this.get<IExpenseDto>(uri, this._authProvider.provideAuthHeader());
-            this._sessionExpense$.next(this._expenseMapper.toDomainModel(expense.data));
+            this._sessionExpense$.next(expense.data);
         } catch (e) {
             return;
         }
     }
 
     async connectToExpense(expenseId: string): Promise<void> {
+        const tokenResponse = await this.postJson<string>(
+            `${this._config.expense}/${expenseId}/connections/tokens`,
+            {},
+            this._authProvider.provideAuthHeader(),
+        );
         const socketUri = `${
             this._config.expenseSocket
-        }?expenseId=${expenseId}&authToken=${this._authProvider.provideAuthToken()}`;
+        }?expenseId=${expenseId}&userId=${this._authProvider.provideIdentity()}&connectionToken=${tokenResponse.data}`;
         const onConnected = new Promise<void>((res, rej) => {
             try {
                 this._connection = new WebSocket(socketUri);
@@ -150,9 +124,10 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
     }
 
-    async createExpense(base64Image: string | undefined = undefined): Promise<boolean> {
+    async createFromExpense(expenseDto: IExpenseDto): Promise<boolean> {
         try {
-            const body = { userId: this._authProvider.provideIdentity(), image: base64Image };
+            const body = { userId: this._authProvider.provideIdentity(), expense: expenseDto };
+
             const response = await this.postJson<IExpenseDto>(
                 this._config.expense,
                 body,
@@ -162,7 +137,6 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
             if (response.success) {
                 void this.getAllExpenses();
                 await this.connectToExpense(response.data.id);
-                await this.getJoinRequestsForExpense(response.data.id);
             } else {
                 return false;
             }
@@ -174,10 +148,33 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
     }
 
-    async getExpenseJoinRequests(): Promise<IExpenseJoinRequestDto[]> {
+    async createExpense(base64Image: string | undefined = undefined): Promise<boolean> {
+        try {
+            const body = { userId: this._authProvider.provideIdentity() };
+            const response = await this.postJson<IExpenseDto>(
+                this._config.expense,
+                body,
+                this._authProvider.provideAuthHeader(),
+            );
+
+            if (response.success) {
+                void this.getAllExpenses();
+                await this.connectToExpense(response.data.id);
+            } else {
+                return false;
+            }
+
+            return true;
+        } catch (e) {
+            console.error(e);
+            return false;
+        }
+    }
+
+    async getExpenseJoinRequests(): Promise<IUserExpenseDto[]> {
         try {
             const url = `${this._config.expense}/requests/${this._authProvider.provideIdentity()}`;
-            const response = await this.get<IExpenseJoinRequestDto[]>(url, this._authProvider.provideAuthHeader());
+            const response = await this.get<IUserExpenseDto[]>(url, this._authProvider.provideAuthHeader());
             return response.data;
         } catch (e) {
             return [];
@@ -209,20 +206,6 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
             );
         } catch (e) {
             return;
-        }
-    }
-
-    async getJoinRequestsForExpense(expenseId: string): Promise<IExpenseJoinRequest[]> {
-        try {
-            const url = `${this._config.expense}/${expenseId}/requests`;
-            const response = await this.get<IExpenseJoinRequest[]>(url, this._authProvider.provideAuthHeader());
-
-            if (this._sessionExpense$.value?.id === expenseId) {
-                this._sessionExpenseJoinRequests$.next(response.data);
-            }
-            return response.data;
-        } catch (e) {
-            return [];
         }
     }
 
@@ -291,93 +274,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     private async onMessage(e: WebSocketMessageEvent): Promise<void> {
-        const message = JSON.parse(e.data) as IExpenseMessage;
-
-        switch (message.type) {
-            case "expense":
-                this.onExpenseMessage(message.data as IExpenseDto);
-                break;
-            case "joinRequests":
-                this.onJoinRequests(message.data as IExpenseJoinRequest[]);
-                break;
-            case "payload":
-                this.onPayloadMessage(message.data as IExpensePayload);
-                break;
-        }
-    }
-
-    private onExpenseMessage(expenseDto: IExpenseDto): void {
-        const expense = this._expenseMapper.toDomainModel(expenseDto);
-        this._sessionExpense$.next(expense);
-
-        const expenses = [...this._userExpenses$.value];
-        const expenseIndex = expenses.findIndex((e) => e.expense.id === expense.id);
-        if (expenseIndex === -1) {
-            return;
-        }
-
-        expenses[expenseIndex] = new ExpensePayload(
-            this._expenseMapper.toDtoModel(expense),
-            expenses[expenseIndex].expenseUsers,
-        );
-
-        this._userExpenses$.next(
-            expenses.sort((a, b) =>
-                a.expense.transactionDate < b.expense.transactionDate
-                    ? 1
-                    : a.expense.transactionDate > b.expense.transactionDate
-                    ? -1
-                    : 0,
-            ),
-        );
-    }
-
-    private onJoinRequests(joinRequests: IExpenseJoinRequest[]): void {
-        this._sessionExpenseJoinRequests$.next(joinRequests);
-    }
-
-    private onPayloadMessage(expensePayload: IExpensePayload): void {
-        const updatedExpenseDto = expensePayload.expense;
-        const expense = this._expenseMapper.toDomainModel(updatedExpenseDto);
-
-        if (!expensePayload.expenseUsers.find((u) => u.id === this._authProvider.provideIdentity())) {
-            // user was removed from the current expense
-            this._sessionExpense$.next(null);
-            this._sessionExpenseUsers$.next([]);
-            const expenses = this._userExpenses$.value.filter((e) => e.expense.id !== expense.id);
-            this._userExpenses$.next(
-                expenses.sort((a, b) =>
-                    a.expense.transactionDate < b.expense.transactionDate
-                        ? 1
-                        : a.expense.transactionDate > b.expense.transactionDate
-                        ? -1
-                        : 0,
-                ),
-            );
-
-            this.disconnectFromExpense();
-            return;
-        }
-
-        this._sessionExpense$.next(expense);
-        this._sessionExpenseUsers$.next(expensePayload.expenseUsers);
-
-        const expenses = [...this._userExpenses$.value];
-        const expenseIndex = expenses.findIndex((e) => e.expense.id === expense.id);
-        if (expenseIndex === -1) {
-            return;
-        }
-
-        expenses[expenseIndex] = expensePayload;
-
-        this._userExpenses$.next(
-            expenses.sort((a, b) =>
-                a.expense.transactionDate < b.expense.transactionDate
-                    ? 1
-                    : a.expense.transactionDate > b.expense.transactionDate
-                    ? -1
-                    : 0,
-            ),
-        );
+        const message = JSON.parse(e.data) as IExpenseDto;
+        this._sessionExpense$.next(message);
     }
 }

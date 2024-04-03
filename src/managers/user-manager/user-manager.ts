@@ -122,7 +122,7 @@ export class UserManager extends BaseManager implements IUserManager {
         }, ttlMs);
     }
 
-    async requestUsersByIds(ids: string[]): Promise<IUserDto[]> {
+    async requestUsersByIds(ids: string[]): Promise<IExpenseUserDetails[]> {
         return this._client.requestUsersByIds(ids);
     }
 
@@ -158,7 +158,7 @@ export class UserManager extends BaseManager implements IUserManager {
 
             // Do a search to find the ones existing as Splitsies users
             const splitsiesUsers = await this._client.requestFindUsersByPhoneNumber(numbers);
-            const keyedByNumber = new Map<string, IUserDto>();
+            const keyedByNumber = new Map<string, IExpenseUserDetails>();
 
             for (const u of splitsiesUsers) {
                 keyedByNumber.set(u.phoneNumber, u);
@@ -187,7 +187,7 @@ export class UserManager extends BaseManager implements IUserManager {
 
                 if (accountPhoneNumber && keyedByNumber.has(accountPhoneNumber)) {
                     const user = keyedByNumber.get(accountPhoneNumber);
-                    contactUsers.push(this._expenseUserDetailsMapper.fromUserDto(user!));
+                    contactUsers.push(user!);
                     continue;
                 }
 

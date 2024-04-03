@@ -1,31 +1,21 @@
-import {
-    IExpense,
-    IExpenseItem,
-    IExpenseJoinRequest,
-    IExpenseJoinRequestDto,
-    IExpensePayload,
-    IExpenseUserDetails,
-    IUserCredential,
-} from "@splitsies/shared-models";
+import { IExpenseDto, IExpenseItem, IExpenseUserDetails, IUserCredential } from "@splitsies/shared-models";
 import { Observable } from "rxjs";
+import { IUserExpenseDto } from "../../models/user-expense-dto/user-expense-dto-interface";
 
 export interface IExpenseApiClient {
-    readonly userExpenses$: Observable<IExpensePayload[]>;
-    readonly sessionExpense$: Observable<IExpense | null>;
-    readonly sessionExpenseUsers$: Observable<IExpenseUserDetails[]>;
-    readonly sessionExpenseJoinRequests$: Observable<IExpenseJoinRequest[]>;
-    getAllExpenses(userCred?: IUserCredential): Promise<void>;
+    readonly sessionExpense$: Observable<IExpenseDto | null>;
+    getAllExpenses(userCred?: IUserCredential): Promise<IExpenseDto[]>;
     getExpense(expenseId: string): Promise<void>;
     getUserIdsForExpense(expenseId: string): Promise<string[]>;
     connectToExpense(expenseId: string): Promise<void>;
     disconnectFromExpense(): void;
     addUserToExpense(userId: string, expenseId: string): Promise<void>;
     removeUserFromExpense(userId: string, expenseId: string): Promise<void>;
+    createFromExpense(expense: IExpenseDto): Promise<boolean>;
     createExpense(base64Image?: string): Promise<boolean>;
-    getExpenseJoinRequests(): Promise<IExpenseJoinRequestDto[]>;
+    getExpenseJoinRequests(): Promise<IUserExpenseDto[]>;
     removeExpenseJoinRequest(expenseId: string, userId?: string): Promise<void>;
     sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void>;
-    getJoinRequestsForExpense(expenseId: string): Promise<IExpenseJoinRequest[]>;
     addItem(
         expenseId: string,
         itemName: string,

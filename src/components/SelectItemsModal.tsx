@@ -3,13 +3,14 @@ import { useCallback, useEffect, useState } from "react";
 import { FlatList, SafeAreaView, StyleSheet } from "react-native";
 import { ListSeparator } from "./ListSeparator";
 import { ExpenseItem } from "./ExpenseItem";
-import { IExpense, IExpenseUserDetails } from "@splitsies/shared-models";
-import { Colors, Icon, Modal, Text, TouchableOpacity, View } from "react-native-ui-lib";
+import { IExpenseUserDetails } from "@splitsies/shared-models";
+import { Colors, Modal, Text, TouchableOpacity, View } from "react-native-ui-lib";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
 import { lazyInject } from "../utils/lazy-inject";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 
 import ArrowBack from "../../assets/icons/arrow-back.svg";
+import { IExpense } from "../models/expense/expense-interface";
 
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 

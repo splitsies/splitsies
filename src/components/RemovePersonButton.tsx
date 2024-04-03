@@ -6,7 +6,8 @@ import React from "react";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 import { Alert } from "react-native";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
-import { IExpense, IExpenseUserDetails } from "@splitsies/shared-models";
+import { IExpenseUserDetails } from "@splitsies/shared-models";
+import { IExpense } from "../models/expense/expense-interface";
 
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);

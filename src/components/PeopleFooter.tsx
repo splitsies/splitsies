@@ -1,28 +1,28 @@
 import React, { useEffect, useState } from "react";
 import { View } from "react-native-ui-lib";
 import { ExpenseItem } from "./ExpenseItem";
-import { IExpense, IExpenseItem, IExpenseUserDetails } from "@splitsies/shared-models";
+import { IExpenseItem, IExpenseUserDetails } from "@splitsies/shared-models";
 import { lazyInject } from "../utils/lazy-inject";
 import { IPriceCalculator } from "../utils/price-calculator/price-calculator-interface";
+import { IExpense } from "../models/expense/expense-interface";
 
 const _priceCalculator = lazyInject<IPriceCalculator>(IPriceCalculator);
 
 type Props = {
     expense: IExpense;
-    expenseUsers: IExpenseUserDetails[];
 };
 
-const calculateRunningTotal = ({ expense, expenseUsers }: Props): number => {
-    const personalExpenses = expenseUsers.map((u) => _priceCalculator.calculatePersonalExpense(u.id, expense));
+const calculateRunningTotal = (expense: IExpense): number => {
+    const personalExpenses = expense.users.map((u) => _priceCalculator.calculatePersonalExpense(u.id, expense));
     return personalExpenses.reduce((previous, current) => previous + parseFloat(current.total.toFixed(2)), 0);
 };
 
-export const PeopleFooter = ({ expense, expenseUsers }: Props): JSX.Element => {
-    const [runningTotal, setRunningTotal] = useState<number>(calculateRunningTotal({ expense, expenseUsers }));
+export const PeopleFooter = ({ expense }: Props): JSX.Element => {
+    const [runningTotal, setRunningTotal] = useState<number>(calculateRunningTotal(expense));
 
     useEffect(() => {
-        setRunningTotal(calculateRunningTotal({ expense, expenseUsers }));
-    }, [expenseUsers, expense]);
+        setRunningTotal(calculateRunningTotal(expense));
+    }, [expense]);
 
     return (
         <View>

@@ -15,10 +15,12 @@ import { BehaviorSubject, Observable } from "rxjs";
 import { lazyInject } from "../../utils/lazy-inject";
 import { ICreateUserResult } from "../../models/create-user-result/create-user-result-interface";
 import { CreateUserResult } from "../../models/create-user-result/create-user-result";
+import { IUserCache } from "../../utils/user-cache/user-cache-interface";
 
 @injectable()
 export class UsersApiClient extends ClientBase implements IUsersApiClient {
     private readonly _config = lazyInject<IApiConfig>(IApiConfig);
+    private readonly _userCache = lazyInject<IUserCache>(IUserCache);
     private readonly _expenseUserDetailsMapper = lazyInject<IExpenseUserDetailsMapper>(IExpenseUserDetailsMapper);
     private readonly _user$ = new BehaviorSubject<IUserCredential | null>(null);
 
@@ -62,13 +64,20 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
             this._user$.next(result.data);
             return new CreateUserResult(true, null);
         } catch (e) {
-            return new CreateUserResult(false, e.message as unknown as string);
+            return new CreateUserResult(false, (e as any).message as unknown as string);
         }
     }
 
-    async requestFindUsersByPhoneNumber(phoneNumbers: string[]): Promise<IUserDto[]> {
-        const users: IUserDto[] = [];
-        const url = `${this._config.users}?phoneNumbers=${phoneNumbers.join(",")}`;
+    async requestFindUsersByPhoneNumber(phoneNumbers: string[]): Promise<IExpenseUserDetails[]> {
+        const remaining = phoneNumbers.filter((p) => !this._userCache.hasPhoneNumber(p));
+        const cachedUsers = phoneNumbers
+            .filter((p) => this._userCache.hasPhoneNumber(p))
+            .map((p) => this._userCache.getByPhoneNumber(p)) as IExpenseUserDetails[];
+
+        if (remaining.length === 0) return cachedUsers;
+
+        const users: IExpenseUserDetails[] = cachedUsers;
+        const url = `${this._config.users}?phoneNumbers=${remaining.join(",")}`;
         let result = undefined;
         let lastKey = undefined;
 
@@ -79,20 +88,26 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
                 lastKey = result?.data?.lastEvaluatedKey
                     ? encodeURIComponent(JSON.stringify(result?.data?.lastEvaluatedKey))
                     : undefined;
-                users.push(...result.data.result);
+                users.push(...result.data.result.map((u) => this._expenseUserDetailsMapper.fromUserDto(u)));
             } catch (e) {
                 console.error(e);
                 return users;
             }
         } while (result?.data?.lastEvaluatedKey && Date.now() < timeout);
-        return users;
+
+        users.forEach((u) => this._userCache.add(u));
+        return [...users, cachedUsers].filter((u) => u !== undefined) as IExpenseUserDetails[];
     }
 
-    async requestUsersByIds(ids: string[]): Promise<IUserDto[]> {
+    async requestUsersByIds(ids: string[]): Promise<IExpenseUserDetails[]> {
+        if (ids.length === 0) return [];
+        const users = ids.map((i) => this._userCache.get(i)).filter((u) => u !== undefined) as IExpenseUserDetails[];
+        const uncachedIds = ids.filter((id) => !users.find((u) => u.id === id));
+        if (uncachedIds.length === 0) return users;
+
         try {
-            const url = `${this._config.users}?ids=${ids.join(",")}`;
+            const url = `${this._config.users}?ids=${uncachedIds.join(",")}`;
             const timeout = Date.now() + 15000;
-            const users: IUserDto[] = [];
             let response: IDataResponse<IScanResult<IUserDto>>;
             let lastKey = undefined;
 
@@ -102,8 +117,12 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
                     ? encodeURIComponent(JSON.stringify(response?.data?.lastEvaluatedKey))
                     : undefined;
                 if (!response?.success) continue;
-                users.push(...response.data.result);
+                users.push(...response.data.result.map((u) => this._expenseUserDetailsMapper.fromUserDto(u)));
             } while (response?.data?.lastEvaluatedKey && Date.now() < timeout);
+
+            for (const user of users) {
+                this._userCache.add(user);
+            }
 
             return users;
         } catch (e) {

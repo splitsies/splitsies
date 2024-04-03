@@ -1,5 +1,7 @@
-import { Expense, ExpenseItem, IExpense, IExpenseItem } from "@splitsies/shared-models";
+import { ExpenseItem, IExpenseItem } from "@splitsies/shared-models";
 import { injectable } from "inversify";
+import { IExpense } from "../../models/expense/expense-interface";
+import { Expense } from "../../models/expense/expense";
 
 @injectable()
 export class PriceCalculator {
@@ -11,13 +13,23 @@ export class PriceCalculator {
             .filter((i) => !i.isProportional)
             .forEach((i) => {
                 if (i.owners.some((o) => o.id === userId)) {
-                    items.push(new ExpenseItem(i.id, i.name, i.price / i.owners.length, i.owners, i.isProportional));
+                    items.push(
+                        new ExpenseItem(
+                            i.id,
+                            i.expenseId,
+                            i.name,
+                            i.price / i.owners.length,
+                            i.owners,
+                            i.isProportional,
+                            i.createdAt,
+                        ),
+                    );
                 }
             });
 
         // Put it into an expense to have it calculate subtotal and use that to
         // calculate the proportional split on each proportional item
-        const personalExpense = new Expense(expense.id, expense.name, expense.transactionDate, items);
+        const personalExpense = new Expense(expense.id, expense.name, expense.transactionDate, items, expense.users);
         const proportionalItems: IExpenseItem[] = [];
         expense.items
             .filter((i) => i.isProportional)
@@ -25,10 +37,12 @@ export class PriceCalculator {
                 proportionalItems.push(
                     new ExpenseItem(
                         i.id,
+                        i.expenseId,
                         i.name,
                         i.price * (personalExpense.subtotal / (expense.subtotal === 0 ? 1 : expense.subtotal)),
                         i.owners,
                         i.isProportional,
+                        i.createdAt,
                     ),
                 );
             });

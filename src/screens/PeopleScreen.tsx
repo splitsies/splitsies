@@ -3,13 +3,12 @@ import { People } from "../components/People";
 import { useObservable } from "../hooks/use-observable";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { lazyInject } from "../utils/lazy-inject";
-import { IExpense } from "@splitsies/shared-models";
 import { Observable, filter } from "rxjs";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList, ExpenseParamList } from "../types/params";
 import { TouchableOpacity, View } from "react-native-ui-lib/core";
-import { SafeAreaView, StyleSheet } from "react-native";
+import { ActivityIndicator, SafeAreaView, StyleSheet } from "react-native";
 import { Colors, Icon, Text } from "react-native-ui-lib";
 import { PeopleFooter } from "../components/PeopleFooter";
 import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
@@ -18,6 +17,7 @@ import { SpThemedComponent } from "../hocs/SpThemedComponent";
 import { ListSeparator } from "../components/ListSeparator";
 import ArrowBack from "../../assets/icons/arrow-back.svg";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+import { IExpense } from "../models/expense/expense-interface";
 
 type Props = CompositeScreenProps<
     NativeStackScreenProps<RootStackParamList>,
@@ -28,21 +28,24 @@ const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
 export const PeopleScreen = SpThemedComponent(({ navigation }: Props): JSX.Element => {
-    const expenseUsers = useObservable(_expenseManager.currentExpenseUsers$, _expenseManager.currentExpenseUsers);
     const expense = useObservable<IExpense>(
         _expenseManager.currentExpense$.pipe(filter((e) => !!e)) as Observable<IExpense>,
         _expenseManager.currentExpense!,
+        () => setAwaitingResponse(false),
     );
+
     const [isSelecting, setIsSelecting] = useState<boolean>(false);
+    const [awaitingResponse, setAwaitingResponse] = useState<boolean>(false);
 
     const onBackPress = useCallback(() => {
         navigation.navigate("Items");
     }, [_expenseManager, navigation]);
 
     const updateExpenseItemOwners = (userId: string, selectedItemIds: string[]): void => {
-        const user = expenseUsers.find((u) => u.id === userId);
+        const user = expense.users.find((u) => u.id === userId);
         if (!user) return;
         _expenseManager.updateItemSelections(expense.id, user, selectedItemIds);
+        setAwaitingResponse(true);
     };
 
     return !expense ? (
@@ -56,14 +59,17 @@ export const PeopleScreen = SpThemedComponent(({ navigation }: Props): JSX.Eleme
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => setIsSelecting(true)}>
-                        <Text bodyBold color={Colors.textColor}>
-                            Select
-                        </Text>
+                        <View flex row centerV style={{ columnGap: 10 }}>
+                            <ActivityIndicator animating={awaitingResponse} hidesWhenStopped color={Colors.textColor} />
+                            <Text bodyBold color={Colors.textColor}>
+                                Select
+                            </Text>
+                        </View>
                     </TouchableOpacity>
                 </View>
 
                 <People
-                    people={expenseUsers}
+                    people={expense.users}
                     expense={expense}
                     updateItemOwners={updateExpenseItemOwners}
                     isSelecting={isSelecting}
@@ -72,7 +78,7 @@ export const PeopleScreen = SpThemedComponent(({ navigation }: Props): JSX.Eleme
 
                 <View style={styles.footer}>
                     <ListSeparator />
-                    <PeopleFooter expense={expense} expenseUsers={expenseUsers} />
+                    <PeopleFooter expense={expense} expenseUsers={expense.users} />
                 </View>
             </SafeAreaView>
         </Container>

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { StyleSheet, Dimensions, NativeModules, Platform, TouchableOpacity } from "react-native";
-import { IExpense, IExpenseMapper, IExpensePayload } from "@splitsies/shared-models";
-import { Colors, Icon, Text, View } from "react-native-ui-lib";
+import { Colors, Text, View } from "react-native-ui-lib";
 import { UserIcon } from "./UserIcon";
 import { lazyInject } from "../utils/lazy-inject";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
+import { IExpense } from "../models/expense/expense-interface";
 import Location from "../../assets/icons/location.svg";
 import Calendar from "../../assets/icons/calendar.svg";
 import People from "../../assets/icons/people.svg";
@@ -21,13 +21,12 @@ const Locale = (
 type DateTimeFormatOptions = { weekday: "long"; year: "numeric"; month: "long"; day: "numeric" };
 const DATE_OPTIONS: DateTimeFormatOptions = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
 
-const _expenseMapper = lazyInject<IExpenseMapper>(IExpenseMapper);
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
 const iconSize = _uiConfig.sizes.smallIcon;
 
 interface propTypes {
-    data: IExpensePayload;
+    data: IExpense;
     onPress: (expenseId: string) => void;
     onLongPress?: () => void;
 }
@@ -36,21 +35,18 @@ interface propTypes {
  * @{@link propTypes}
  */
 export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress }: propTypes) => {
-    const [expense, setExpense] = useState<IExpense>(_expenseMapper.toDomainModel(data.expense));
     const [peopleContainerWidth, setPeopleContainerWidth] = useState<number>(Dimensions.get("window").width);
     const PERSON_LIMIT = Math.floor((peopleContainerWidth - 20) / 36) - 1;
 
-    useEffect(() => setExpense(_expenseMapper.toDomainModel(data.expense)), [data]);
-
     return (
-        <TouchableOpacity onPress={() => onPress(expense.id)} onLongPress={onLongPress}>
+        <TouchableOpacity onPress={() => onPress(data.id)} onLongPress={onLongPress}>
             <View style={[styles.container]}>
                 <View style={styles.rowContainer}>
                     <View style={styles.leftBox}>
                         <Location width={iconSize} height={iconSize} fill={Colors.textColor} />
                     </View>
                     <View style={styles.rightBox}>
-                        <Text color={Colors.textColor}>{expense.name}</Text>
+                        <Text color={Colors.textColor}>{data.name}</Text>
                     </View>
                 </View>
 
@@ -60,9 +56,7 @@ export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress }:
                     </View>
                     <View style={styles.rightBox}>
                         <Text subtext color={Colors.textColor}>
-                            {expense.transactionDate
-                                .toLocaleString(Locale, DATE_OPTIONS)
-                                .replace(/\d{2}:\d{2}:\d{2}/, "")}
+                            {data.transactionDate.toLocaleString(Locale, DATE_OPTIONS).replace(/\d{2}:\d{2}:\d{2}/, "")}
                         </Text>
                     </View>
                 </View>
@@ -76,20 +70,20 @@ export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress }:
                             style={styles.peopleContainer}
                             onLayout={({ nativeEvent }) => setPeopleContainerWidth(nativeEvent.layout.width)}
                         >
-                            {data.expenseUsers.length === 0 && <Text hint>None</Text>}
-                            {data.expenseUsers.length > PERSON_LIMIT
-                                ? data.expenseUsers
+                            {data.users.length === 0 && <Text hint>None</Text>}
+                            {data.users.length > PERSON_LIMIT
+                                ? data.users
                                       .slice(0, PERSON_LIMIT)
                                       .map(({ id, givenName }) => (
                                           <UserIcon key={id} letter={givenName[0]} style={{ marginRight: 6 }} />
                                       ))
-                                : data.expenseUsers.map(({ id, givenName }) => (
+                                : data.users.map(({ id, givenName }) => (
                                       <UserIcon key={id} letter={givenName[0]} style={{ marginRight: 6 }} />
                                   ))}
 
-                            {data.expenseUsers.length > PERSON_LIMIT && (
+                            {data.users.length > PERSON_LIMIT && (
                                 <Text body color={Colors.textColor}>
-                                    + {data.expenseUsers.length - PERSON_LIMIT}
+                                    + {data.users.length - PERSON_LIMIT}
                                 </Text>
                             )}
                         </View>
@@ -102,7 +96,7 @@ export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress }:
                     </View>
                     <View style={styles.rightBox}>
                         <Text subtext color={Colors.textColor}>
-                            ${expense.total.toFixed(2)}
+                            ${data.total.toFixed(2)}
                         </Text>
                     </View>
                 </View>

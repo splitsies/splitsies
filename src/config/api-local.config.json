@@ -1,5 +1,6 @@
 {
     "expense": "http://localhost:14623/dev-pr/expenses",
     "expenseSocket": "ws://localhost:14624/expenses",
-    "users": "http://localhost:6001/dev-pr/users"
+    "users": "http://localhost:6001/dev-pr/users",
+    "ocr": "http://localhost:12948/dev-pr/"
 }
