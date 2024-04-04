@@ -70,10 +70,16 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         await this.requestExpenseJoinRequests();
     }
 
-    async requestForUser(): Promise<void> {
-        const expenseDtos = await this._api.getAllExpenses();
+    async requestForUser(reset = true): Promise<void> {
+        const expenseDtos = await this._api.getAllExpenses(reset);
         const expenses = await this._expenseMapper.toDomainBatch(expenseDtos);
-        this._expenses$.next(expenses.sort((a, b) => b.transactionDate.getTime() - a.transactionDate.getTime()));
+
+        const newCollection = reset ? expenses : [
+            ...this.expenses,
+            ...expenses
+        ];
+
+        this._expenses$.next(newCollection.sort((a, b) => b.transactionDate.getTime() - a.transactionDate.getTime()));
     }
 
     async connectToExpense(expenseId: string): Promise<void> {

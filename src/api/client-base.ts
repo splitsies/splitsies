@@ -7,7 +7,7 @@ import { injectable } from "inversify";
  */
 @injectable()
 export abstract class ClientBase {
-    protected _scanPageKeys = new Map<string, Record<string, object>>();
+    protected _scanPageKeys = new Map<string, Record<string, object> | null>();
 
     parseResponse<T>(response: any): IDataResponse<T> {
         return response as IDataResponse<T>;

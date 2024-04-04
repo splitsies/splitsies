@@ -8,6 +8,7 @@ import {
     IExpenseItem,
     IExpenseMessageParametersMapper,
     IExpenseUserDetails,
+    IScanResult,
     IUserCredential,
 } from "@splitsies/shared-models";
 import { ClientBase } from "../client-base";
@@ -33,16 +34,26 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         return this._sessionExpense$.asObservable();
     }
 
-    async getAllExpenses(userCred: IUserCredential | null = null): Promise<IExpenseDto[]> {
-        const userId = userCred?.user.id ?? this._authProvider.provideIdentity();
+    async getAllExpenses(reset = true): Promise<IExpenseDto[]> {
+        const pageKey = "getAllExpenses";
+        const userId = this._authProvider.provideIdentity();
         if (!userId) {
             return [];
         }
 
-        const uri = `${this._config.expense}?userId=${userId}`;
+        if (reset && this._scanPageKeys.has(pageKey)) {
+            this._scanPageKeys.delete(pageKey);
+        }
+
+        const lastEvaluatedKey = this._scanPageKeys.get(pageKey);
+        let uri = `${this._config.expense}?userId=${userId}`;
+        if (lastEvaluatedKey) uri += `&lastEvaluatedKey=${encodeURIComponent(JSON.stringify(lastEvaluatedKey.LastEvaluatedKey))}`;
+
         try {
-            const expenses = await this.get<IExpenseDto[]>(uri, this._authProvider.provideAuthHeader());
-            return expenses?.data ?? [];
+            const expenses = await this.get<IScanResult<IExpenseDto>>(uri, this._authProvider.provideAuthHeader());
+            this._scanPageKeys.set(pageKey, expenses.data.lastEvaluatedKey);
+
+            return expenses?.data.result ?? [];
         } catch (e) {
             return [];
         }
@@ -135,7 +146,6 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
             );
 
             if (response.success) {
-                void this.getAllExpenses();
                 await this.connectToExpense(response.data.id);
             } else {
                 return false;
@@ -158,7 +168,6 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
             );
 
             if (response.success) {
-                void this.getAllExpenses();
                 await this.connectToExpense(response.data.id);
             } else {
                 return false;
