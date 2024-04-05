@@ -8,8 +8,7 @@ import {
     IExpenseItem,
     IExpenseMessageParametersMapper,
     IExpenseUserDetails,
-    IScanResult,
-    IUserCredential,
+    IScanResult
 } from "@splitsies/shared-models";
 import { ClientBase } from "../client-base";
 import { lazyInject } from "../../utils/lazy-inject";
@@ -51,7 +50,10 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
 
         try {
             const expenses = await this.get<IScanResult<IExpenseDto>>(uri, this._authProvider.provideAuthHeader());
-            this._scanPageKeys.set(pageKey, expenses.data.lastEvaluatedKey);
+
+            if (expenses?.data.result.length !== 0) {
+                this._scanPageKeys.set(pageKey, expenses.data.lastEvaluatedKey);
+            }
 
             return expenses?.data.result ?? [];
         } catch (e) {
