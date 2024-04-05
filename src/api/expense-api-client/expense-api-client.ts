@@ -44,17 +44,13 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
             this._scanPageKeys.delete(pageKey);
         }
 
-        const lastEvaluatedKey = this._scanPageKeys.get(pageKey);
+        const pagination = this._scanPageKeys.get(pageKey)?.nextPage ?? { limit: 7, offset: 0 };
         let uri = `${this._config.expense}?userId=${userId}`;
-        if (lastEvaluatedKey) uri += `&lastEvaluatedKey=${encodeURIComponent(JSON.stringify(lastEvaluatedKey.LastEvaluatedKey))}`;
+        uri += `&pagination=${encodeURIComponent(JSON.stringify(pagination))}`;
 
         try {
             const expenses = await this.get<IScanResult<IExpenseDto>>(uri, this._authProvider.provideAuthHeader());
-
-            if (expenses?.data.result.length !== 0) {
-                this._scanPageKeys.set(pageKey, expenses.data.lastEvaluatedKey);
-            }
-
+            this._scanPageKeys.set(pageKey, expenses.data.lastEvaluatedKey);
             return expenses?.data.result ?? [];
         } catch (e) {
             return [];
