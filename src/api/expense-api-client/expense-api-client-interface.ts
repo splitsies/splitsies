@@ -4,7 +4,7 @@ import { IUserExpenseDto } from "../../models/user-expense-dto/user-expense-dto-
 
 export interface IExpenseApiClient {
     readonly sessionExpense$: Observable<IExpenseDto | null>;
-    getAllExpenses(userCred?: IUserCredential): Promise<IExpenseDto[]>;
+    getAllExpenses(reset?: boolean): Promise<IExpenseDto[]>;
     getExpense(expenseId: string): Promise<void>;
     getUserIdsForExpense(expenseId: string): Promise<string[]>;
     connectToExpense(expenseId: string): Promise<void>;

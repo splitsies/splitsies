@@ -33,6 +33,7 @@ export const ExpenseFeedScreen = SpThemedComponent((): JSX.Element => {
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const expenses = useObservable(_expenseManager.expenses$, _expenseManager.expenses);
     const userName = useObservableReducer(_userManager.user$, "", (userCred) => userCred?.user.givenName ?? "");
+    const [fetchingPage, setFetchingPage] = useState<boolean>(false);
 
     useFocusEffect(
         useCallback(() => {
@@ -66,6 +67,13 @@ export const ExpenseFeedScreen = SpThemedComponent((): JSX.Element => {
         setRefreshing(false);
     };
 
+    const fetchPage = async (): Promise<void> => {
+        if (fetchingPage) return;
+        setFetchingPage(true);
+        await _expenseManager.requestForUser(false);
+        setFetchingPage(false);
+    };
+
     return expenses.length === 0 ? (
         <Container>
             <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
@@ -84,6 +92,8 @@ export const ExpenseFeedScreen = SpThemedComponent((): JSX.Element => {
             <FlatList
                 contentContainerStyle={{ paddingBottom: 40 }}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
+                
+                onEndReached={(_) => void fetchPage()}
                 ItemSeparatorComponent={ListSeparator}
                 renderItem={({ item }) => (
                     <ExpensePreview

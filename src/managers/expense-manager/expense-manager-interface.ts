@@ -15,7 +15,7 @@ export interface IExpenseManager {
 
     readonly expenseJoinRequests$: Observable<IExpenseJoinRequest[]>;
 
-    requestForUser(): Promise<void>;
+    requestForUser(reset?: boolean): Promise<void>;
     connectToExpense(expenseId: string): Promise<void>;
     disconnectFromExpense(): void;
     requestAddUserToExpense(userId: string, expenseId: string): Promise<void>;
