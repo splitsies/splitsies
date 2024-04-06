@@ -91,12 +91,13 @@ export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, pr
                         <View row style={styles.buttons}>
                             <Button
                                 body
+                                labelStyle={{color: "black"}} 
                                 label="Save"
                                 bg-primary
                                 onPress={() => onSave({ name, price: price.current, isProportional })}
                             />
-                            <Button body label="Cancel" bg-primary onPress={onCancel} />
-                            {onDelete != null && <Button body label="Delete" bg-primary onPress={onDelete} />}
+                            <Button body labelStyle={{color: "black"}}  label="Cancel" bg-primary onPress={onCancel} />
+                            {onDelete != null && <Button body labelStyle={{color: "black"}} label="Delete" bg-primary onPress={onDelete} />}
                         </View>
                     </KeyboardAvoidingView>
                     <View style={styles.optionsContainer}>
