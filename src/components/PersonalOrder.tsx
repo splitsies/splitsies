@@ -130,8 +130,8 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                 <ExpenseItem item={totalItem} key={"total"} onPress={() => {}} />
             </View>
             <View style={styles.buttonContainer}>
-                <Button body bg-primary borderless style={styles.button} label="Pay" onPress={onPayPress} />
-                <Button body bg-primary borderless style={styles.button} label="Request" onPress={onRequestPress} />
+                <Button body bg-primary borderless style={styles.button} labelStyle={{color: "black"}} label="Pay" onPress={onPayPress} />
+                <Button body bg-primary borderless style={styles.button} labelStyle={{color: "black"}} label="Request" onPress={onRequestPress} />
             </View>
             <Toast
                 body
@@ -197,7 +197,7 @@ const styles = StyleSheet.create({
         marginTop: 5,
     },
     button: {
-        minWidth: 100,
+        minWidth: 100
     },
     iconContainer: {
         overflow: "visible",
