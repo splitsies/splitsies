@@ -88,7 +88,7 @@ export const UserInviteListItem = ({
                         {user.givenName + " " + user.familyName}
                     </Text>
                     {showUsername ? (
-                        <Text hint>@{user.username}</Text>
+                        <Text hint>{user.isRegistered ? "@" + user.username : "Guest User"}</Text>
                     ) : (
                         <Text hint>{user.phoneNumber || "Guest"}</Text>
                     )}

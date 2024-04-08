@@ -163,4 +163,10 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
             return [];
         }
     }
+
+    async getMostFrequent(): Promise<IExpenseUserDetails[]> {
+        const url = `${this._config.users}/${this._user$.value?.user.id}/frequents`;
+        const response = await this.get<IUserDto[]>(url, { Authorization: `Bearer ${this._user$.value?.authToken}` });
+        return response.data.map(u => this._expenseUserDetailsMapper.fromUserDto(u));
+    }
 }

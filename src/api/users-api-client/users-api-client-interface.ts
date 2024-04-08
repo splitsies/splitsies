@@ -1,6 +1,5 @@
 import {
     CreateUserRequest,
-    IDataResponse,
     IExpenseUserDetails,
     IUserCredential,
     IUserDto,
@@ -17,6 +16,7 @@ export interface IUsersApiClient {
     requestUsersByIds(ids: string[]): Promise<IExpenseUserDetails[]>;
     requestAddGuestUser(givenName: string, familyName: string, phoneNumber: string): Promise<IUserDto>;
     requestFindUsers(search: string, reset: boolean): Promise<IExpenseUserDetails[]>;
+    getMostFrequent(): Promise<IExpenseUserDetails[]>;
 }
 
 export const IUsersApiClient = Symbol.for("IUsersApiClient");

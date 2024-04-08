@@ -26,12 +26,13 @@ export class UserManager extends BaseManager implements IUserManager {
     private readonly _permissionRequester = lazyInject<IPersmissionRequester>(IPersmissionRequester);
     private readonly _user$ = new BehaviorSubject<IUserCredential | null>(null);
     private readonly _contactUsers$ = new BehaviorSubject<IExpenseUserDetails[]>([]);
+    private readonly _mostFrequent$ = new BehaviorSubject<IExpenseUserDetails[]>([]);
 
     constructor() {
         super();
     }
 
-    protected async initialize(): Promise<any> {
+    protected async initialize(): Promise<any> {        
         this._client.user$.subscribe({
             next: (user) => this.onUserUpdated(user),
         });
@@ -70,6 +71,9 @@ export class UserManager extends BaseManager implements IUserManager {
         return this._contactUsers$.asObservable();
     }
 
+    get mostFrequent$() { return this._mostFrequent$.asObservable(); }
+    
+
     get userId(): string {
         return this.user?.user.id ?? "";
     }
@@ -102,13 +106,19 @@ export class UserManager extends BaseManager implements IUserManager {
         this._client.signOut();
     }
 
-    private onUserUpdated(user: IUserCredential | null): void {
+    private async onUserUpdated(user: IUserCredential | null): Promise<void> {
         this._user$.next(user);
-        if (!user) return;
+        if (!user) {
+            this._mostFrequent$.next([]);
+            return;
+        }
 
         // the token lasts for an hour, but try to get a new token 10 seconds
         // before to avoid an invalid token at any point
         const ttlMs = user.expiresAt - Date.now() - 10000;
+
+        const frequentUsers = await this._client.getMostFrequent();
+        this._mostFrequent$.next(frequentUsers);
 
         // whenever it gets updated, always make sure it's refreshed
         setTimeout(async () => {

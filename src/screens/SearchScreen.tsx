@@ -27,6 +27,7 @@ export const SearchScreen = SpThemedComponent(() => {
         (e) => e?.users ?? [],
     );
     const searchFilter = useObservable(_inviteViewModel.searchFilter$, _inviteViewModel.searchFilter);
+    const frequentUsers = useObservable(_userManager.mostFrequent$, []);
     const [users, setUsers] = useState<IExpenseUserDetails[]>([]);
     const [fetchingPage, setFetchingPage] = useState<boolean>(false);
 
@@ -70,16 +71,19 @@ export const SearchScreen = SpThemedComponent(() => {
         return _expenseManager.removeExpenseJoinRequestForUser(_expenseManager.currentExpense!.id, user.id);
     };
 
-    return (
-        <Container style={styles.container}>
-            <View style={styles.body}>
-                {fetchingPage || searchFilter === "" || users.length > 0 ? (
+    const render = () => {
+        console.log({ frequentUsers });
+        if (users.length === 0 && frequentUsers.length !== 0 && !fetchingPage && searchFilter === "") {
+            return (
+                <View flex-1>
+                     <View paddingL-10 paddingT-10>
+                        <Text hint>Your Top {frequentUsers.length === 5 ? "5" : frequentUsers.length}</Text>
+                    </View>
                     <FlatList
                         style={styles.list}
-                        data={users}
+                        data={frequentUsers}
                         keyExtractor={(i) => i.id + i.phoneNumber}
                         ItemSeparatorComponent={ListSeparator}
-                        onEndReached={(_) => void fetchPage()}
                         renderItem={({ item: user }) => (
                             <UserInviteListItem
                                 user={user}
@@ -90,11 +94,42 @@ export const SearchScreen = SpThemedComponent(() => {
                             />
                         )}
                     />
-                ) : (
-                    <View centerH paddingT-10>
-                        <Text hint>No results</Text>
-                    </View>
-                )}
+                </View>
+            )
+        }
+
+        if (fetchingPage || searchFilter === "" || users.length > 0) {
+            return (
+                <FlatList
+                    style={styles.list}
+                    data={users}
+                    keyExtractor={(i) => i.id + i.phoneNumber}
+                    ItemSeparatorComponent={ListSeparator}
+                    onEndReached={(_) => void fetchPage()}
+                    renderItem={({ item: user }) => (
+                        <UserInviteListItem
+                            user={user}
+                            expenseUsers={expenseUsers}
+                            onInviteUser={() => onUserInvited(user)}
+                            onUninviteUser={() => onUserUninvited(user)}
+                            showUsername
+                        />
+                    )}
+                />
+            )
+        }
+
+        return (
+            <View centerH paddingT-10>
+                <Text hint>No results</Text>
+            </View>
+        )
+    }
+
+    return (
+        <Container style={styles.container}>
+            <View style={styles.body}>
+                {render()}
             </View>
         </Container>
     );
