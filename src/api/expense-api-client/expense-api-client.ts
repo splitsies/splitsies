@@ -8,7 +8,7 @@ import {
     IExpenseItem,
     IExpenseMessageParametersMapper,
     IExpenseUserDetails,
-    IScanResult
+    IScanResult,
 } from "@splitsies/shared-models";
 import { ClientBase } from "../client-base";
 import { lazyInject } from "../../utils/lazy-inject";

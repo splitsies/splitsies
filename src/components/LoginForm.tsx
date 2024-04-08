@@ -67,6 +67,7 @@ export const LoginForm = ({ onLoginClicked, onSignUpClicked, validationError }: 
                         disabled={!email || !password}
                         body
                         marginT-15
+                        labelStyle={{color: "black"}}
                         label="Log in"
                         onPress={() => onLoginClicked(email, password)}
                         bg-primary

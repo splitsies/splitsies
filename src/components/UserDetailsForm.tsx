@@ -129,6 +129,7 @@ export const UserDetailsForm = SpThemedComponent(({ userDetails, onContinue }: P
                     <Button
                         body
                         bg-primary
+                        labelStyle={{color: "black"}}
                         label="Continue"
                         disabled={!isFormValid()}
                         onPress={() => onContinue(givenName, familyName, phoneNumber, dateOfBirth!)}
