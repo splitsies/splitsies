@@ -92,7 +92,6 @@ export const ExpenseFeedScreen = SpThemedComponent((): JSX.Element => {
             <FlatList
                 contentContainerStyle={{ paddingBottom: 40 }}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
-                
                 onEndReached={(_) => void fetchPage()}
                 ItemSeparatorComponent={ListSeparator}
                 renderItem={({ item }) => (

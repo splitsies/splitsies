@@ -37,7 +37,7 @@ export const AddGuestForm = ({ onSave, onCancel }: Props) => {
                 <View row style={styles.buttons}>
                     <Button
                         body
-                        labelStyle={{color: "black"}} 
+                        labelStyle={{ color: "black" }}
                         label="Save"
                         bg-primary
                         onPress={() => {
@@ -45,7 +45,7 @@ export const AddGuestForm = ({ onSave, onCancel }: Props) => {
                             onSave(name);
                         }}
                     />
-                    <Button body labelStyle={{color: "black"}} label="Cancel" bg-primary onPress={onCancel} />
+                    <Button body labelStyle={{ color: "black" }} label="Cancel" bg-primary onPress={onCancel} />
                 </View>
             </KeyboardAvoidingView>
         </Container>

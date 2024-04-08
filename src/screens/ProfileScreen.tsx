@@ -42,7 +42,9 @@ export const ProfileScreen = SpThemedComponent(({ navigation }: Props) => {
         <Container>
             <SafeAreaView style={styles.container}>
                 <ScrollView>
-                    <View style={{ display: "flex", flex: 2, rowGap: 10, justifyContent: "center", alignItems: "center" }}>
+                    <View
+                        style={{ display: "flex", flex: 2, rowGap: 10, justifyContent: "center", alignItems: "center" }}
+                    >
                         <QRCode value={JSON.stringify(payload)} color={Colors.black} backgroundColor={Colors.white} />
                         <SpTextInput readonly value={user.user.username} placeholder="Username" />
                         <SpTextInput readonly value={user.user.givenName} placeholder="First Name" />
@@ -54,7 +56,7 @@ export const ProfileScreen = SpThemedComponent(({ navigation }: Props) => {
                             <Button
                                 body
                                 bg-primary
-                                labelStyle={{color: "black"}}
+                                labelStyle={{ color: "black" }}
                                 label="Sign Out"
                                 onPress={onSignOut}
                                 style={{ width: _dimensions.width * 0.75 }}

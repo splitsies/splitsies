@@ -132,7 +132,7 @@ export const LoginDetailsForm = SpThemedComponent(({ userDetails, onComplete }: 
                     <Button
                         body
                         bg-primary
-                        labelStyle={{color: "black"}}
+                        labelStyle={{ color: "black" }}
                         label="Continue"
                         disabled={!isFormValid()}
                         onPress={() => onComplete(email, username, password)}
