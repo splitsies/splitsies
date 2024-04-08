@@ -74,10 +74,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         const expenseDtos = await this._api.getAllExpenses(reset);
         const expenses = await this._expenseMapper.toDomainBatch(expenseDtos);
 
-        const newCollection = reset ? expenses : [
-            ...this.expenses,
-            ...expenses
-        ];
+        const newCollection = reset ? expenses : [...this.expenses, ...expenses];
 
         this._expenses$.next(newCollection.sort((a, b) => b.transactionDate.getTime() - a.transactionDate.getTime()));
     }

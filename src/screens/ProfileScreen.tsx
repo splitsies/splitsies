@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Dimensions, SafeAreaView, StyleSheet } from "react-native";
+import { Dimensions, SafeAreaView, ScrollView, StyleSheet } from "react-native";
 import { lazyInject } from "../utils/lazy-inject";
 import { DrawerParamList, RootStackParamList } from "../types/params";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
@@ -41,24 +41,29 @@ export const ProfileScreen = SpThemedComponent(({ navigation }: Props) => {
     return user?.user ? (
         <Container>
             <SafeAreaView style={styles.container}>
-                <View style={{ display: "flex", flex: 2, rowGap: 10, justifyContent: "center", alignItems: "center" }}>
-                    <QRCode value={JSON.stringify(payload)} color={Colors.black} backgroundColor={Colors.white} />
-                    <SpTextInput readonly value={user.user.username} placeholder="Username" />
-                    <SpTextInput readonly value={user.user.givenName} placeholder="First Name" />
-                    <SpTextInput readonly value={user.user.familyName} placeholder="Last Name" />
-                    <SpTextInput readonly value={user.user.email} placeholder="Email" />
-                    <SpTextInput readonly value={user.user.phoneNumber} placeholder="Phone Number" />
+                <ScrollView>
+                    <View
+                        style={{ display: "flex", flex: 2, rowGap: 10, justifyContent: "center", alignItems: "center" }}
+                    >
+                        <QRCode value={JSON.stringify(payload)} color={Colors.black} backgroundColor={Colors.white} />
+                        <SpTextInput readonly value={user.user.username} placeholder="Username" />
+                        <SpTextInput readonly value={user.user.givenName} placeholder="First Name" />
+                        <SpTextInput readonly value={user.user.familyName} placeholder="Last Name" />
+                        <SpTextInput readonly value={user.user.email} placeholder="Email" />
+                        <SpTextInput readonly value={user.user.phoneNumber} placeholder="Phone Number" />
 
-                    <View style={{ display: "flex", flex: 1, justifyContent: "center", paddingBottom: 15 }}>
-                        <Button
-                            body
-                            bg-primary
-                            label="Sign Out"
-                            onPress={onSignOut}
-                            style={{ width: _dimensions.width * 0.75 }}
-                        />
+                        <View style={{ display: "flex", flex: 1, justifyContent: "center", paddingBottom: 15 }}>
+                            <Button
+                                body
+                                bg-primary
+                                labelStyle={{ color: "black" }}
+                                label="Sign Out"
+                                onPress={onSignOut}
+                                style={{ width: _dimensions.width * 0.75 }}
+                            />
+                        </View>
                     </View>
-                </View>
+                </ScrollView>
             </SafeAreaView>
         </Container>
     ) : null;
