@@ -17,6 +17,7 @@ export interface IUsersApiClient {
     requestUsersByIds(ids: string[]): Promise<IExpenseUserDetails[]>;
     requestAddGuestUser(givenName: string, familyName: string, phoneNumber: string): Promise<IUserDto>;
     requestFindUsers(search: string, reset: boolean): Promise<IExpenseUserDetails[]>;
+    deleteUser(): Promise<void>;
 }
 
 export const IUsersApiClient = Symbol.for("IUsersApiClient");

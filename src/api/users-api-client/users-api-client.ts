@@ -163,4 +163,12 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
             return [];
         }
     }
+
+    async deleteUser(): Promise<void> {
+        if (!this._user$.value) { return; }
+
+        const url = `${this._config.users}/${this._user$.value.user.id}`;
+        await this.delete(url, { Authorization: `Bearer ${this._user$.value.authToken}` });
+        this._user$.next(null);
+    }
 }

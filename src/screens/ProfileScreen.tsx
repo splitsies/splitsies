@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { Dimensions, SafeAreaView, ScrollView, StyleSheet } from "react-native";
+import { Alert, Dimensions, SafeAreaView, ScrollView, StyleSheet } from "react-native";
 import { lazyInject } from "../utils/lazy-inject";
 import { DrawerParamList, RootStackParamList } from "../types/params";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
@@ -38,6 +38,13 @@ export const ProfileScreen = SpThemedComponent(({ navigation }: Props) => {
         void _userManager.signOut();
     };
 
+    const onDelete = () => {
+        Alert.alert("Delete Account", "This action is not reversible. Do you want to this account and all data associated?", [
+            { text: "Yes", onPress: () => void _userManager.deleteUser() },
+            { text: "No", style: "cancel" },
+        ]);
+    };
+
     return user?.user ? (
         <Container>
             <SafeAreaView style={styles.container}>
@@ -52,13 +59,22 @@ export const ProfileScreen = SpThemedComponent(({ navigation }: Props) => {
                         <SpTextInput readonly value={user.user.email} placeholder="Email" />
                         <SpTextInput readonly value={user.user.phoneNumber} placeholder="Phone Number" />
 
-                        <View style={{ display: "flex", flex: 1, justifyContent: "center", paddingBottom: 15 }}>
+                        <View style={{ display: "flex", flex: 1, justifyContent: "center", paddingVertical: 15, rowGap: 10 }}>
                             <Button
                                 body
                                 bg-primary
                                 labelStyle={{ color: "black" }}
                                 label="Sign Out"
                                 onPress={onSignOut}
+                                style={{ width: _dimensions.width * 0.75 }}
+                            />
+
+                            <Button
+                                body
+                                bg-primary
+                                labelStyle={{ color: "red" }}
+                                label="Delete Account"
+                                onPress={onDelete}
                                 style={{ width: _dimensions.width * 0.75 }}
                             />
                         </View>
