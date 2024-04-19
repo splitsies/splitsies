@@ -33,11 +33,11 @@ export const UserDetailsForm = SpThemedComponent(({ userDetails, onContinue }: P
 
     const [givenNameValid, setGivenNameValid] = useState<boolean>(false);
     const [familyNameValid, setFamilyNameValid] = useState<boolean>(false);
-    const [phoneNumberValid, setPhoneNumberValid] = useState<boolean>(false);
-    const [dateOfBirthValid, setDateOfBirthValid] = useState<boolean>(false);
+    const [phoneNumberValid, setPhoneNumberValid] = useState<boolean>(true);
+    const [dateOfBirthValid, setDateOfBirthValid] = useState<boolean>(true);
 
     const shouldValidateOnStart = (): boolean => {
-        return !!givenName || !!familyName || !!phoneNumber || !!dateOfBirth;
+        return !!givenName || !!familyName;
     };
 
     const isFormValid = (): boolean => {
@@ -45,6 +45,7 @@ export const UserDetailsForm = SpThemedComponent(({ userDetails, onContinue }: P
     };
 
     const validatePhoneNumber = (phoneNumber: string): boolean => {
+        if (!phoneNumber) return true;
         const re = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/;
         return re.test(phoneNumber);
     };
@@ -91,8 +92,8 @@ export const UserDetailsForm = SpThemedComponent(({ userDetails, onContinue }: P
                     <KeyboardAvoidingView>
                         <SpTextInput
                             label="Phone Number"
-                            validate={["required", validatePhoneNumber]}
-                            validationMessage={["Phone number is required", "Please enter a valid phone number"]}
+                            validate={[validatePhoneNumber]}
+                            validationMessage={["Please enter a valid phone number"]}
                             enableErrors
                             validateOnBlur
                             validateOnStart={shouldValidateOnStart()}
@@ -107,10 +108,8 @@ export const UserDetailsForm = SpThemedComponent(({ userDetails, onContinue }: P
                     <DateTimePicker
                         body
                         color="black"
-                        validate={["required"]}
                         floatingPlaceholder
                         floatingPlaceholderStyle={styles.label}
-                        validationMessage={["Date of Birth is required"]}
                         maximumDate={new Date()}
                         retainValidationSpace={false}
                         validationMessageStyle={{ paddingHorizontal: 15, paddingTop: 5 }}

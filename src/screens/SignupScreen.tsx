@@ -45,7 +45,7 @@ export const SignupScreen = SpThemedComponent(({ navigation }: Props): JSX.Eleme
         phoneNumber: string,
         dateOfBirth: Date,
     ): void => {
-        setUserDetails({ ...userDetails, givenName, familyName, phoneNumber, dateOfBirth: dateOfBirth.toISOString() });
+        setUserDetails({ ...userDetails, givenName, familyName, phoneNumber, dateOfBirth: dateOfBirth?.toISOString() });
         if (!lastCompletedStepIndex || lastCompletedStepIndex < wizardIndex) {
             setLastCompletedStepIndex(wizardIndex);
         }
