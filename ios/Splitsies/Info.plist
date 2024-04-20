@@ -36,13 +36,13 @@
 		</dict>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>$(PRODUCT_NAME) needs access to your Camera.</string>
+	<string>$(PRODUCT_NAME) would like to access to your Camera for receipt scanning capabilities.</string>
 	<key>NSContactsUsageDescription</key>
-	<string>$(PRODUCT_NAME) Users lookup</string>
+	<string>$(PRODUCT_NAME) would like to access your Contacts to find your friends.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>$(PRODUCT_NAME) needs access to your Photos.</string>
+	<string>$(PRODUCT_NAME) would like to access your Photos to select receipt images.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>SFProDisplay-Black.otf</string>

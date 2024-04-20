@@ -64,13 +64,13 @@ export const LoginScreen = SpThemedComponent(({ navigation }: Props) => {
                     onSignUpClicked={onSignUpClicked}
                     validationError={validationError}
                 />
+                <View style={styles.versionContainer}>
+                    <Text hint>
+                        {pkg.name} v{pkg.version}
+                        {getEnvironmentSuffix()}
+                    </Text>
+                </View>
             </SafeAreaView>
-            <View style={styles.versionContainer}>
-                <Text hint>
-                    {pkg.name} v{pkg.version}
-                    {getEnvironmentSuffix()}
-                </Text>
-            </View>
         </Container>
     );
 });
@@ -85,6 +85,6 @@ const styles = StyleSheet.create({
     versionContainer: {
         width: "100%",
         alignItems: "center",
-        marginBottom: 10,
+        marginBottom: 5,
     },
 });

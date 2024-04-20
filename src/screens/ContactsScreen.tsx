@@ -62,7 +62,7 @@ export const ContactsScreen = SpThemedComponent(() => {
                         (u) =>
                             !searchFilter ||
                             `${u.givenName} ${u.familyName}`.toLowerCase().includes(searchFilter.toLowerCase()) ||
-                            u.phoneNumber.includes(searchFilter),
+                            u.phoneNumber?.includes(searchFilter),
                     )}
                     keyExtractor={(i) => i.id + i.phoneNumber}
                     ItemSeparatorComponent={ListSeparator}
