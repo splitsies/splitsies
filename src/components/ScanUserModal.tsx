@@ -5,12 +5,10 @@ import { CameraView } from "./CameraView";
 import { IQrPayload } from "../models/qr-payload/qr-payload-interface";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
-import { Code } from "react-native-vision-camera";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import ArrowBack from "../../assets/icons/arrow-back.svg";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import { IExpenseUserDetails } from "@splitsies/shared-models";
 import { useObservableReducer } from "../hooks/use-observable-reducer";
 import { IExpense } from "../models/expense/expense-interface";
@@ -26,7 +24,7 @@ type Props = {
     scannedUser: IQrPayload | null;
     onScannedUserAdded: () => void;
     shouldDisableChip: boolean;
-    onCodeScanned: (codes: Code[]) => void;
+    onCodeScanned: (event: any) => void;
 };
 
 export const ScanUserModal = ({
@@ -62,53 +60,45 @@ export const ScanUserModal = ({
 
     return (
         <Modal visible={visible} animationType="fade">
-            <CameraView onCodeScanned={onCodeScanned}>
-                <View style={styles.cameraOverlay}>
-                    {/* GestureDetector usage here is a workaround to block the tap from bubbling up and focusing the camera */}
-                    <GestureDetector gesture={Gesture.Tap()}>
-                        <SafeAreaView style={styles.headerContainer}>
-                            <TouchableOpacity
-                                style={{ marginTop: 32, marginLeft: 10, marginBottom: 20 }}
-                                onPress={() => setVisible(false)}
-                            >
-                                <ArrowBack
-                                    width={_uiConfig.sizes.icon}
-                                    height={_uiConfig.sizes.icon}
-                                    fill={Colors.white}
-                                />
-                            </TouchableOpacity>
-                        </SafeAreaView>
-                    </GestureDetector>
+            <SafeAreaView style={styles.headerContainer}>
+                <TouchableOpacity
+                    style={{ marginTop: 32, marginLeft: 10, marginBottom: 20 }}
+                    onPress={() => setVisible(false)}
+                >
+                    <ArrowBack width={_uiConfig.sizes.icon} height={_uiConfig.sizes.icon} fill={Colors.white} />
+                </TouchableOpacity>
+            </SafeAreaView>
+            <View style={{ flex: 1 }}>
+                <CameraView onCodeScanned={onCodeScanned} />
+            </View>
 
-                    <Toast
-                        body
-                        centerMessage
-                        messageStyle={_styleManager.typography.body}
-                        visible={true}
-                        renderAttachment={() =>
-                            scannedUser ? (
-                                <View style={{ width: "100%", alignItems: "center", paddingBottom: 20 }}>
-                                    <Chip
-                                        activeOpacity={0.5}
-                                        disabled={shouldDisableChip}
-                                        labelStyle={styles.buttonLabel}
-                                        containerStyle={{
-                                            minWidth: 120,
-                                            borderColor: _colorConfiguration.primary,
-                                        }}
-                                        backgroundColor={_colorConfiguration.primary}
-                                        label={chipLabel}
-                                        onPress={onScannedUserAdded}
-                                    />
-                                </View>
-                            ) : undefined
-                        }
-                        backgroundColor={_colorConfiguration.black}
-                        position="bottom"
-                        message="Scan the QR Code in the user's profile"
-                    />
-                </View>
-            </CameraView>
+            <Toast
+                body
+                centerMessage
+                messageStyle={_styleManager.typography.body}
+                visible={true}
+                renderAttachment={() =>
+                    scannedUser ? (
+                        <View style={{ width: "100%", alignItems: "center", paddingBottom: 20 }}>
+                            <Chip
+                                activeOpacity={0.5}
+                                disabled={shouldDisableChip}
+                                labelStyle={styles.buttonLabel}
+                                containerStyle={{
+                                    minWidth: 120,
+                                    borderColor: _colorConfiguration.primary,
+                                }}
+                                backgroundColor={_colorConfiguration.primary}
+                                label={chipLabel}
+                                onPress={onScannedUserAdded}
+                            />
+                        </View>
+                    ) : undefined
+                }
+                backgroundColor={_colorConfiguration.black}
+                position="bottom"
+                message="Scan the QR Code in the user's profile"
+            />
         </Modal>
     );
 };
@@ -146,7 +136,7 @@ const styles = StyleSheet.create({
         paddingBottom: 80,
     },
     headerContainer: {
-        backgroundColor: _colorConfiguration.darkOverlay,
+        backgroundColor: _colorConfiguration.black,
         paddingBottom: 20,
         width: "100%",
     },

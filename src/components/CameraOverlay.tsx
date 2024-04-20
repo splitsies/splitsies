@@ -1,4 +1,4 @@
-import React from "react";
+import React, { forwardRef } from "react";
 import { StyleSheet, SafeAreaView, View, Text } from "react-native";
 import { Icon, TouchableOpacity } from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
@@ -9,7 +9,8 @@ import { IColorConfiguration } from "../models/configuration/color-config/color-
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 import ArrowBack from "../../assets/icons/arrow-back.svg";
 import PhotoLibrary from "../../assets/icons/photo-library.svg";
-import { Gesture, GestureDetector } from "react-native-gesture-handler";
+import { CameraView } from "./CameraView";
+import { Camera } from "react-native-camera-kit";
 
 const _imageConfiguration = lazyInject<IImageConfiguration>(IImageConfiguration);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -27,7 +28,7 @@ type Props = {
     onImageSelected: (image: IImage) => void;
 };
 
-export const CameraOverlay = ({ onBackPress, onCapture, onImageSelected }: Props) => {
+export const CameraOverlay = forwardRef<Camera, Props>(({ onBackPress, onCapture, onImageSelected }: Props, ref): JSX.Element => {
     const onLibraryOpened = (): void => {
         launchImageLibrary(options, (response) => {
             if (response.didCancel || response.errorCode || !response.assets?.[0]) return;
@@ -35,8 +36,6 @@ export const CameraOverlay = ({ onBackPress, onCapture, onImageSelected }: Props
             onImageSelected({
                 base64: selectedAsset.base64!,
                 uri: selectedAsset.uri!,
-                height: selectedAsset.height!,
-                width: selectedAsset.width!,
                 fromLibrary: true,
             });
         });
@@ -44,8 +43,6 @@ export const CameraOverlay = ({ onBackPress, onCapture, onImageSelected }: Props
 
     return (
         <View style={styles.background}>
-            {/* GestureDetector usage here is a workaround to block the tap from bubbling up and focusing the camera */}
-            <GestureDetector gesture={Gesture.Tap()}>
                 <View style={styles.headerContainer}>
                     <SafeAreaView style={styles.container}>
                         <View style={styles.backButton}>
@@ -58,10 +55,12 @@ export const CameraOverlay = ({ onBackPress, onCapture, onImageSelected }: Props
                             </TouchableOpacity>
                         </View>
                     </SafeAreaView>
-                </View>
-            </GestureDetector>
+            </View>
+            
+            <View style={{ flex: 1 }}>
+                <CameraView ref={ref} />
+            </View>
 
-            <GestureDetector gesture={Gesture.Tap()}>
                 <View style={styles.contentContainer}>
                     <SafeAreaView style={styles.buttonContainer}>
                         <TouchableOpacity onPress={onLibraryOpened}>
@@ -79,10 +78,9 @@ export const CameraOverlay = ({ onBackPress, onCapture, onImageSelected }: Props
                         <View style={{ width: 35 }} />
                     </SafeAreaView>
                 </View>
-            </GestureDetector>
         </View>
     );
-};
+});
 
 const styles = StyleSheet.create({
     background: {
@@ -97,13 +95,13 @@ const styles = StyleSheet.create({
         flexDirection: "column",
         justifyContent: "space-between",
     },
-    headerContainer: { backgroundColor: _colorConfiguration.darkOverlay, paddingVertical: 15 },
+    headerContainer: { backgroundColor: _colorConfiguration.black, paddingVertical: 15 },
     contentContainer: {
         width: "100%",
         paddingBottom: 40,
         paddingTop: 30,
         paddingHorizontal: 20,
-        backgroundColor: _colorConfiguration.darkOverlay,
+        backgroundColor: _colorConfiguration.black,
     },
     buttonContainer: {
         display: "flex",
