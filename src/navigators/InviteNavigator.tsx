@@ -24,7 +24,6 @@ import AddPerson from "../../assets/icons/add-person.svg";
 
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 import { SearchScreen } from "../screens/SearchScreen";
-import { Code } from "react-native-vision-camera";
 import { filter } from "rxjs";
 import { ScanUserModal } from "../components/ScanUserModal";
 import { IQrPayload } from "../models/qr-payload/qr-payload-interface";
@@ -78,21 +77,23 @@ export const InviteNavigator = ({ navigation }: Props) => {
         _expenseManager.requestAddUserToExpense(scannedUser.id, _expenseManager.currentExpense.id);
     };
 
-    const onCodeScanned = (codes: Code[]): void => {
-        const rawPayload = codes.find((c) => {
-            try {
-                const parsed = JSON.parse(c.value ?? "") as IQrPayload;
-                return parsed.id !== undefined && parsed.familyName !== undefined && parsed.givenName !== undefined;
-            } catch {
-                return false;
-            }
-        });
+    const onCodeScanned = (event: any): void => {
+        let payload = null;
 
-        if (!rawPayload?.value || (scannedUser && rawPayload.value === JSON.stringify(scannedUser))) return;
+        try {
+            const parsed = JSON.parse(event.nativeEvent.codeStringValue ?? "") as IQrPayload;
+            if (!parsed.id) {
+                return;
+            }
+            payload = parsed;
+        } catch {
+            return;
+        }
+
+        if (!payload || (scannedUser && payload.id === scannedUser.id)) return;
 
         clearTimeout(timeoutId);
         timeoutId = setTimeout(() => setScannedUser(null), _imageConfiguration.qrCodeTimeoutMs);
-        const payload = JSON.parse(rawPayload.value) as IQrPayload;
         setScannedUser(payload);
     };
 

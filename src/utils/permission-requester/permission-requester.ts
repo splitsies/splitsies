@@ -1,6 +1,5 @@
-import { Linking, PermissionStatus, PermissionsAndroid, Platform } from "react-native";
+import { Alert, Linking, PermissionStatus, PermissionsAndroid, Platform } from "react-native";
 import { IPersmissionRequester } from "./permission-requester-interface";
-import { Camera } from "react-native-vision-camera";
 import { injectable } from "inversify";
 import { check, request, PERMISSIONS, RESULTS } from "react-native-permissions";
 
@@ -18,11 +17,24 @@ export class PermissionRequester implements IPersmissionRequester {
         return Promise.resolve("never_ask_again");
     }
 
-    async requestCameraPersmission(): Promise<PermissionStatus> {
-        const permission = await Camera.requestCameraPermission();
-        if (permission === "denied") Linking.openSettings();
+    async requestCameraPersmission(): Promise<PermissionStatus> {    
+        const permission = Platform.OS === "ios" ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA;
+        let result = await check(permission);
 
-        return permission;
+        if (result === RESULTS.BLOCKED) {
+            // The permission has not been requested, so request it.
+            result = await request(permission);
+            if (result === RESULTS.BLOCKED) {
+                Alert.alert(`Camera Access Required`, "Open settings to enable camera access?", [
+                    { text: "Yes", onPress: async () => await Linking.openSettings() },
+                    { text: "No", style: "cancel" },
+                ]);
+            }
+
+            return result === RESULTS.GRANTED ? "granted" : "denied";
+        }
+
+        return result === RESULTS.GRANTED ? "granted" : "denied";
     }
 
     async requestAppTrackingTransparency(): Promise<void> {

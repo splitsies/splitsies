@@ -39,10 +39,14 @@ export const ProfileScreen = SpThemedComponent(({ navigation }: Props) => {
     };
 
     const onDelete = () => {
-        Alert.alert("Delete Account", "This action is not reversible. Do you want to this account and all data associated?", [
-            { text: "Yes", onPress: () => void _userManager.deleteUser() },
-            { text: "No", style: "cancel" },
-        ]);
+        Alert.alert(
+            "Delete Account",
+            "This action is not reversible. Do you want to delete this account and all data associated?",
+            [
+                { text: "Yes", onPress: () => void _userManager.deleteUser() },
+                { text: "No", style: "cancel" },
+            ],
+        );
     };
 
     return user?.user ? (
@@ -59,7 +63,15 @@ export const ProfileScreen = SpThemedComponent(({ navigation }: Props) => {
                         <SpTextInput readonly value={user.user.email} placeholder="Email" />
                         <SpTextInput readonly value={user.user.phoneNumber} placeholder="Phone Number" />
 
-                        <View style={{ display: "flex", flex: 1, justifyContent: "center", paddingVertical: 15, rowGap: 10 }}>
+                        <View
+                            style={{
+                                display: "flex",
+                                flex: 1,
+                                justifyContent: "center",
+                                paddingVertical: 15,
+                                rowGap: 10,
+                            }}
+                        >
                             <Button
                                 body
                                 bg-primary
