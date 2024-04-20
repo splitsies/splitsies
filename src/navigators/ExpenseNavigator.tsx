@@ -25,7 +25,8 @@ export const ExpenseNavigator = (_: Props) => {
             screenOptions={{
                 headerShown: false,
                 tabBarActiveTintColor: _colorConfiguration.primary,
-                tabBarLabelStyle: _styleManager.typography.subtext,
+                tabBarLabelStyle: { ..._styleManager.typography.subtext, marginBottom: -3 },
+                tabBarStyle: { paddingTop: 5 },
             }}
         >
             <Tab.Screen

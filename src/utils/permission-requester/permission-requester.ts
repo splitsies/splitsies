@@ -17,7 +17,7 @@ export class PermissionRequester implements IPersmissionRequester {
         return Promise.resolve("never_ask_again");
     }
 
-    async requestCameraPersmission(): Promise<PermissionStatus> {    
+    async requestCameraPersmission(): Promise<PermissionStatus> {
         const permission = Platform.OS === "ios" ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA;
         let result = await check(permission);
 

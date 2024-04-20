@@ -26,7 +26,9 @@ export const PeopleFooter = ({ expense }: Props): JSX.Element => {
 
     return (
         <View>
-            <ExpenseItem item={{ name: "Running Total", price: runningTotal, owners: [] } as unknown as IExpenseItem} />
+            <ExpenseItem
+                item={{ name: "Selected Total", price: runningTotal, owners: [] } as unknown as IExpenseItem}
+            />
             <ExpenseItem item={{ name: "Total", price: expense.total, owners: [] } as unknown as IExpenseItem} />
         </View>
     );

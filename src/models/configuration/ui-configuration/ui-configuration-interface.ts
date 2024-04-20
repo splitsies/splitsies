@@ -3,6 +3,7 @@ export interface IUiConfiguration {
         smallIcon: number;
         icon: number;
         largeIcon: number;
+        carouselPadding: number;
     };
 
     readonly durations: {

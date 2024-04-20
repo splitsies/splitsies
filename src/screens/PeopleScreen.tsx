@@ -68,17 +68,19 @@ export const PeopleScreen = SpThemedComponent(({ navigation }: Props): JSX.Eleme
                     </TouchableOpacity>
                 </View>
 
-                <People
-                    people={expense.users}
-                    expense={expense}
-                    updateItemOwners={updateExpenseItemOwners}
-                    isSelecting={isSelecting}
-                    endSelectingMode={() => setIsSelecting(false)}
-                />
+                <View flex-1>
+                    <People
+                        people={expense.users}
+                        expense={expense}
+                        updateItemOwners={updateExpenseItemOwners}
+                        isSelecting={isSelecting}
+                        endSelectingMode={() => setIsSelecting(false)}
+                    />
+                </View>
 
                 <View style={styles.footer}>
                     <ListSeparator />
-                    <PeopleFooter expense={expense} expenseUsers={expense.users} />
+                    <PeopleFooter expense={expense} />
                 </View>
             </SafeAreaView>
         </Container>

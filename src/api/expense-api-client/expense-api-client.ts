@@ -135,6 +135,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
 
     async createFromExpense(expenseDto: IExpenseDto): Promise<boolean> {
         try {
+            console.log({ expenseDto });
             const body = { userId: this._authProvider.provideIdentity(), expense: expenseDto };
 
             const response = await this.postJson<IExpenseDto>(

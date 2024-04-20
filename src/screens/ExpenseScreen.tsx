@@ -148,38 +148,40 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
 
     return (
         <Container>
-            <SafeAreaView style={styles.header}>
-                <TouchableOpacity onPress={onBackPress}>
-                    <ArrowBack width={_uiConfig.sizes.icon} height={_uiConfig.sizes.icon} fill={Colors.textColor} />
-                </TouchableOpacity>
+            <SafeAreaView>
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={onBackPress}>
+                        <ArrowBack width={_uiConfig.sizes.icon} height={_uiConfig.sizes.icon} fill={Colors.textColor} />
+                    </TouchableOpacity>
 
-                <TouchableOpacity onPress={onSelectAction}>
-                    <View flex row centerV style={{ columnGap: 10 }}>
-                        <ActivityIndicator animating={awaitingResponse} hidesWhenStopped color={Colors.textColor} />
-                        <Text bodyBold color={Colors.textColor}>
-                            {!isSelecting ? "Select" : "Done"}
+                    <TouchableOpacity onPress={onSelectAction}>
+                        <View flex row centerV style={{ columnGap: 10 }}>
+                            <ActivityIndicator animating={awaitingResponse} hidesWhenStopped color={Colors.textColor} />
+                            <Text bodyBold color={Colors.textColor}>
+                                {!isSelecting ? "Select" : "Done"}
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+
+                <View centerH>
+                    <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
+                        <Text letterHeading color={Colors.textColor} style={styles.headerLabel}>
+                            {expense.name}
                         </Text>
-                    </View>
-                </TouchableOpacity>
+                    </TouchableOpacity>
+
+                    <DateTimePicker
+                        letter
+                        color={Colors.textColor}
+                        maximumDate={new Date()}
+                        dateTimeFormatter={(date) => format(date)}
+                        mode="date"
+                        value={expense.transactionDate}
+                        onChange={onExpenseDateUpdated}
+                    />
+                </View>
             </SafeAreaView>
-
-            <View centerH>
-                <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
-                    <Text heading color={Colors.textColor} style={styles.headerLabel}>
-                        {expense.name}
-                    </Text>
-                </TouchableOpacity>
-
-                <DateTimePicker
-                    subtext
-                    color={Colors.textColor}
-                    maximumDate={new Date()}
-                    dateTimeFormatter={(date) => format(date)}
-                    mode="date"
-                    value={expense.transactionDate}
-                    onChange={onExpenseDateUpdated}
-                />
-            </View>
 
             <FlatList
                 style={styles.list}
