@@ -28,21 +28,22 @@ type Props = {
     onImageSelected: (image: IImage) => void;
 };
 
-export const CameraOverlay = forwardRef<Camera, Props>(({ onBackPress, onCapture, onImageSelected }: Props, ref): JSX.Element => {
-    const onLibraryOpened = (): void => {
-        launchImageLibrary(options, (response) => {
-            if (response.didCancel || response.errorCode || !response.assets?.[0]) return;
-            const selectedAsset = response.assets[0];
-            onImageSelected({
-                base64: selectedAsset.base64!,
-                uri: selectedAsset.uri!,
-                fromLibrary: true,
+export const CameraOverlay = forwardRef<Camera, Props>(
+    ({ onBackPress, onCapture, onImageSelected }: Props, ref): JSX.Element => {
+        const onLibraryOpened = (): void => {
+            launchImageLibrary(options, (response) => {
+                if (response.didCancel || response.errorCode || !response.assets?.[0]) return;
+                const selectedAsset = response.assets[0];
+                onImageSelected({
+                    base64: selectedAsset.base64!,
+                    uri: selectedAsset.uri!,
+                    fromLibrary: true,
+                });
             });
-        });
-    };
+        };
 
-    return (
-        <View style={styles.background}>
+        return (
+            <View style={styles.background}>
                 <View style={styles.headerContainer}>
                     <SafeAreaView style={styles.container}>
                         <View style={styles.backButton}>
@@ -55,11 +56,11 @@ export const CameraOverlay = forwardRef<Camera, Props>(({ onBackPress, onCapture
                             </TouchableOpacity>
                         </View>
                     </SafeAreaView>
-            </View>
-            
-            <View style={{ flex: 1 }}>
-                <CameraView ref={ref} />
-            </View>
+                </View>
+
+                <View style={{ flex: 1 }}>
+                    <CameraView ref={ref} />
+                </View>
 
                 <View style={styles.contentContainer}>
                     <SafeAreaView style={styles.buttonContainer}>
@@ -78,9 +79,10 @@ export const CameraOverlay = forwardRef<Camera, Props>(({ onBackPress, onCapture
                         <View style={{ width: 35 }} />
                     </SafeAreaView>
                 </View>
-        </View>
-    );
-});
+            </View>
+        );
+    },
+);
 
 const styles = StyleSheet.create({
     background: {

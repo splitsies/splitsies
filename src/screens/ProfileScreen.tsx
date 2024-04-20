@@ -41,7 +41,7 @@ export const ProfileScreen = SpThemedComponent(({ navigation }: Props) => {
     const onDelete = () => {
         Alert.alert(
             "Delete Account",
-            "This action is not reversible. Do you want to this account and all data associated?",
+            "This action is not reversible. Do you want to delete this account and all data associated?",
             [
                 { text: "Yes", onPress: () => void _userManager.deleteUser() },
                 { text: "No", style: "cancel" },
