@@ -1,7 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { ActivityIndicator, FlatList, StyleSheet } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import { ActivityIndicator, FlatList, SafeAreaView, StyleSheet } from "react-native";
 import { lazyInject } from "../utils/lazy-inject";
 import { DrawerParamList, RootStackParamList } from "../types/params";
 import { Observable, filter } from "rxjs";
@@ -43,7 +42,7 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
     );
     const [selectedItem, setSelectedItem] = useState<IExpenseItem | null>(null);
     const [editingTitle, setEditingTitle] = useState<boolean>(false);
-    const [isSelecting, setIsSelecting] = useState<boolean>(false);
+    const [isEditing, setIsEditing] = useState<boolean>(false);
     const [isAddingItem, setIsAddingItem] = useState<boolean>(false);
     const [inProgressSelections, setInProgressSelections] = useState<string[]>([]);
     const [awaitingResponse, setAwaitingResponse] = useState<boolean>(false);
@@ -89,18 +88,37 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
         [expense],
     );
 
-    const onItemSelected = useCallback(
-        (itemId: string): void => {
-            const itemIndex = inProgressSelections.indexOf(itemId);
+    const onItemSelected = (itemId: string): void => {
+        console.log({ itemId });
+        const selectedItems = expense.items
+            .filter((item) => item.owners.some((o) => o.id === _userManager.userId))
+            .map((item) => item.id);
 
-            if (itemIndex === -1) {
-                setInProgressSelections([...inProgressSelections, itemId]);
+        const itemIndex = selectedItems.findIndex((id) => id === itemId);
+        if (itemIndex === -1) {
+            selectedItems.push(itemId);
+        } else {
+            selectedItems.splice(itemIndex, 1);
+        }
+
+        // Due to socket performance, managing selections locally first gives the illusion of
+        // the selection persisting sooner to avoid additional attempts
+        for (const item of expense.items) {
+            const itemSelected = selectedItems.includes(item.id);
+            const userOwnsItem = !!item.owners.find((o) => o.id === _userManager.userId);
+
+            if (itemSelected && !userOwnsItem) {
+                item.owners.push(_userManager.expenseUserDetails);
+            } else if (!itemSelected && userOwnsItem) {
+                const index = item.owners.findIndex((o) => o.id === _userManager.userId);
+                if (index !== -1) item.owners.splice(index, 1);
             } else {
-                setInProgressSelections(inProgressSelections.filter((id) => id !== itemId));
+                continue;
             }
-        },
-        [inProgressSelections],
-    );
+        }
+
+        updateExpenseItemOwners(_userManager.userId, selectedItems);
+    };
 
     const onItemDelete = useCallback((): void => {
         const itemIndex = expense.items.findIndex((i) => i.id === selectedItem?.id);
@@ -116,22 +134,7 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
     }, [expense, selectedItem]);
 
     const onSelectAction = (): void => {
-        const isStartingSelection = !isSelecting;
-        console.log("ayo");
-
-        if (isStartingSelection) {
-            // if we're starting selection, populate the in progress selections with current selections
-            const userExpenseIds = expense.items
-                .map((i) => (i.owners.find((u) => u.id === _userManager.userId) ? i.id : ""))
-                .filter((i) => !!i);
-
-            setInProgressSelections(userExpenseIds);
-        } else {
-            updateExpenseItemOwners(_userManager.userId, inProgressSelections);
-            setInProgressSelections([]);
-        }
-
-        setIsSelecting(!isSelecting);
+        setIsEditing(!isEditing);
     };
 
     const updateExpenseItemOwners = (userId: string, selectedItemIds: string[]): void => {
@@ -148,38 +151,40 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
 
     return (
         <Container>
-            <SafeAreaView style={styles.header}>
-                <TouchableOpacity onPress={onBackPress}>
-                    <ArrowBack width={_uiConfig.sizes.icon} height={_uiConfig.sizes.icon} fill={Colors.textColor} />
-                </TouchableOpacity>
+            <SafeAreaView style={{ marginBottom: 10 }}>
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={onBackPress}>
+                        <ArrowBack width={_uiConfig.sizes.icon} height={_uiConfig.sizes.icon} fill={Colors.textColor} />
+                    </TouchableOpacity>
 
-                <TouchableOpacity onPress={onSelectAction}>
-                    <View flex row centerV style={{ columnGap: 10 }}>
-                        <ActivityIndicator animating={awaitingResponse} hidesWhenStopped color={Colors.textColor} />
-                        <Text bodyBold color={Colors.textColor}>
-                            {!isSelecting ? "Select" : "Done"}
+                    <TouchableOpacity onPress={onSelectAction}>
+                        <View flex row centerV style={{ columnGap: 10 }}>
+                            <ActivityIndicator animating={awaitingResponse} hidesWhenStopped color={Colors.textColor} />
+                            <Text bodyBold color={Colors.textColor}>
+                                {!isEditing ? "Edit" : "Done"}
+                            </Text>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+
+                <View centerH>
+                    <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
+                        <Text letterHeading color={Colors.textColor} style={styles.headerLabel}>
+                            {expense.name}
                         </Text>
-                    </View>
-                </TouchableOpacity>
+                    </TouchableOpacity>
+
+                    <DateTimePicker
+                        letter
+                        color={Colors.textColor}
+                        maximumDate={new Date()}
+                        dateTimeFormatter={(date) => format(date)}
+                        mode="date"
+                        value={expense.transactionDate}
+                        onChange={onExpenseDateUpdated}
+                    />
+                </View>
             </SafeAreaView>
-
-            <View centerH>
-                <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
-                    <Text heading color={Colors.textColor} style={styles.headerLabel}>
-                        {expense.name}
-                    </Text>
-                </TouchableOpacity>
-
-                <DateTimePicker
-                    subtext
-                    color={Colors.textColor}
-                    maximumDate={new Date()}
-                    dateTimeFormatter={(date) => format(date)}
-                    mode="date"
-                    value={expense.transactionDate}
-                    onChange={onExpenseDateUpdated}
-                />
-            </View>
 
             <FlatList
                 style={styles.list}
@@ -205,7 +210,7 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                         style={{ marginVertical: 15 }}
                         showOwners
                         selected={inProgressSelections.includes(item.id)}
-                        selectable={isSelecting}
+                        editable={isEditing}
                         onPress={() => setSelectedItem(item)}
                         onSelect={onItemSelected}
                     />
@@ -214,7 +219,7 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
 
             <View style={styles.footer}>
                 <ListSeparator />
-                <ExpenseFooter expense={expense} onItemSelected={setSelectedItem} />
+                <ExpenseFooter expense={expense} onItemSelected={setSelectedItem} isEditing={isEditing} />
             </View>
 
             <EditModal

@@ -13,9 +13,11 @@ import { EditResult } from "../models/edit-result";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { useThemeWatcher } from "../hooks/use-theme-watcher";
+import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 
 const _dimensions = Dimensions.get("screen");
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
+const _styleManager = lazyInject<IStyleManager>(IStyleManager);
 
 type Props = {
     visible: boolean;
@@ -82,7 +84,8 @@ export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, pr
                                 onChangeText={(text) => onPriceChange(text)}
                                 style={[
                                     styles.textInput,
-                                    { fontSize: 15, fontFamily: "Avenir-Roman", backgroundColor: Colors.screenBG },
+                                    _styleManager.typography.body,
+                                    { backgroundColor: Colors.screenBG },
                                 ]}
                                 color={Colors.textColor}
                             />

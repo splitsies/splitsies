@@ -29,7 +29,8 @@ export const FeedNavigator = () => {
             screenOptions={{
                 headerShown: false,
                 tabBarActiveTintColor: _colorConfiguration.primary,
-                tabBarLabelStyle: _styleManager.typography.subtext,
+                tabBarLabelStyle: { ..._styleManager.typography.subtext },
+                tabBarStyle: { paddingTop: 3 },
             }}
         >
             <Tab.Screen

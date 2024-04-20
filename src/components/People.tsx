@@ -7,8 +7,10 @@ import { Dimensions, StyleSheet } from "react-native";
 import { SelectItemsModal } from "./SelectItemsModal";
 import { Container } from "./Container";
 import { IExpense } from "../models/expense/expense-interface";
+import { lazyInject } from "../utils/lazy-inject";
+import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 
-const _dimensions = Dimensions.get("window");
+const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
 type Props = {
     isSelecting: boolean;
@@ -40,9 +42,10 @@ export const People = ({ isSelecting, people, expense, updateItemOwners, endSele
             <View style={{ display: "flex", flex: 1 }}>
                 <Carousel
                     onChangePage={onChangePage}
-                    itemSpacings={20}
+                    disableIntervalMomentum
+                    pagingEnabled
+                    itemSpacings={_uiConfig.sizes.carouselPadding}
                     containerStyle={{ width: "100%", alignItems: "center" }}
-                    pageWidth={_dimensions.width - 40}
                 >
                     {people.map((person) => (
                         <PersonalOrder key={person.id} person={person} expense={expense} />

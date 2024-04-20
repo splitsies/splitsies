@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { StyleSheet, Alert, ScrollView } from "react-native";
+import { StyleSheet, Alert, ScrollView, Dimensions } from "react-native";
 import { IExpenseItem, IExpenseUserDetails, ExpenseItem as ExpenseItemModel } from "@splitsies/shared-models";
 import { Text, View } from "react-native-ui-lib/core";
 import { Button, Colors, Icon, Toast } from "react-native-ui-lib";
@@ -17,6 +17,7 @@ import { IStyleManager } from "../managers/style-manager/style-manager-interface
 import { RemovePersonButton } from "./RemovePersonButton";
 import Copy from "../../assets/icons/copy.svg";
 import { IExpense } from "../models/expense/expense-interface";
+import { IUserManager } from "../managers/user-manager/user-manager-interface";
 
 const _priceCalculator = lazyInject<IPriceCalculator>(IPriceCalculator);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -25,6 +26,8 @@ const _transactionNoteBuilder = lazyInject<ITransactionNoteBuilder>(ITransaction
 const _clipboardUtility = lazyInject<IClipboardUtility>(IClipboardUtility);
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
+const _userManager = lazyInject<IUserManager>(IUserManager);
+const _dimensions = Dimensions.get("window");
 
 const icon = _uiConfig.sizes.smallIcon;
 
@@ -110,7 +113,7 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
     };
 
     return (
-        <View style={[styles.container, { borderColor: Colors.textColor }, style]}>
+        <View style={[styles.container, { borderColor: Colors.divider }, style]}>
             {renderHeader()}
             <ScrollView style={styles.orderContainer}>
                 {personalExpense.items
@@ -120,7 +123,7 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                     ))}
             </ScrollView>
 
-            <View style={{ borderTopWidth: 0.5, borderTopColor: _colorConfiguration.greyFont, paddingTop: 5 }}>
+            <View style={{ borderTopWidth: 0.5, borderTopColor: Colors.divider, paddingTop: 5 }}>
                 <ExpenseItem item={subtotalItem} key={"subtotal"} onPress={() => {}} />
                 {personalExpense.items
                     .filter((i) => i.isProportional)
@@ -129,26 +132,28 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                     ))}
                 <ExpenseItem item={totalItem} key={"total"} onPress={() => {}} />
             </View>
-            <View style={styles.buttonContainer}>
-                <Button
-                    body
-                    bg-primary
-                    borderless
-                    style={styles.button}
-                    labelStyle={{ color: "black" }}
-                    label="Pay"
-                    onPress={onPayPress}
-                />
-                <Button
-                    body
-                    bg-primary
-                    borderless
-                    style={styles.button}
-                    labelStyle={{ color: "black" }}
-                    label="Request"
-                    onPress={onRequestPress}
-                />
-            </View>
+            {_userManager.userId !== person.id && (
+                <View style={styles.buttonContainer}>
+                    <Button
+                        body
+                        bg-primary
+                        borderless
+                        style={styles.button}
+                        labelStyle={{ color: "black" }}
+                        label="Pay"
+                        onPress={onPayPress}
+                    />
+                    <Button
+                        body
+                        bg-primary
+                        borderless
+                        style={styles.button}
+                        labelStyle={{ color: "black" }}
+                        label="Request"
+                        onPress={onRequestPress}
+                    />
+                </View>
+            )}
             <Toast
                 body
                 centerMessage
@@ -170,12 +175,12 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
 
 const styles = StyleSheet.create({
     container: {
-        width: "100%",
+        width: _dimensions.width - _uiConfig.sizes.carouselPadding,
         height: "100%",
         alignItems: "center",
         alignSelf: "center",
-        borderRadius: 25,
-        borderWidth: 0.5,
+        borderRadius: 30,
+        borderWidth: 1,
         padding: 15,
         display: "flex",
     },
@@ -207,13 +212,16 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         flexDirection: "row",
+        columnGap: 25,
         justifyContent: "space-between",
         alignItems: "flex-end",
         width: "100%",
         marginTop: 5,
+        paddingHorizontal: 10,
+        paddingBottom: 5,
     },
     button: {
-        minWidth: 100,
+        flex: 1,
     },
     iconContainer: {
         overflow: "visible",

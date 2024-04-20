@@ -11,21 +11,29 @@ import { IStyleManager } from "../managers/style-manager/style-manager-interface
 import Receipt from "../../assets/icons/receipt.svg";
 import People from "../../assets/icons/people.svg";
 import AddPerson from "../../assets/icons/add-person.svg";
+import { useInitialize } from "../hooks/use-initialize";
+import { IUserManager } from "../managers/user-manager/user-manager-interface";
 
 const Tab = createBottomTabNavigator();
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
+const _userManager = lazyInject<IUserManager>(IUserManager);
 
 type Props = NativeStackScreenProps<RootStackParamList, "ExpenseScreen">;
 
 export const ExpenseNavigator = (_: Props) => {
+    useInitialize(() => {
+        void _userManager.requestUsersFromContacts();
+    });
+
     return (
         <Tab.Navigator
             initialRouteName="Items"
             screenOptions={{
                 headerShown: false,
                 tabBarActiveTintColor: _colorConfiguration.primary,
-                tabBarLabelStyle: _styleManager.typography.subtext,
+                tabBarLabelStyle: { ..._styleManager.typography.subtext },
+                tabBarStyle: { paddingTop: 3 },
             }}
         >
             <Tab.Screen

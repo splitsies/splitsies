@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import { Text, TouchableOpacity, View } from "react-native-ui-lib";
+import { Button, Text, TouchableOpacity, View } from "react-native-ui-lib";
 import { ExpensePreview } from "./ExpensePreview";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
@@ -21,14 +21,24 @@ export const JoinRequest = ({ joinRequest, onDeny, onApprove }: Props): JSX.Elem
             <ExpensePreview data={joinRequest.expense} onPress={(expenseId: string) => {}} />
 
             <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button} onPress={() => onDeny(joinRequest)}>
-                    <Text body>Deny</Text>
-                </TouchableOpacity>
-                <View style={styles.border} />
-
-                <TouchableOpacity style={[styles.button]} onPress={() => onApprove(joinRequest)}>
-                    <Text body>Accept</Text>
-                </TouchableOpacity>
+                <Button
+                    body
+                    bg-primary
+                    borderless
+                    style={styles.button}
+                    labelStyle={{ color: "black" }}
+                    label="Deny"
+                    onPress={() => onDeny(joinRequest)}
+                />
+                <Button
+                    body
+                    bg-primary
+                    borderless
+                    style={styles.button}
+                    labelStyle={{ color: "black" }}
+                    label="Approve"
+                    onPress={() => onApprove(joinRequest)}
+                />
             </View>
         </View>
     );
@@ -41,25 +51,21 @@ const styles = StyleSheet.create({
         marginBottom: 30,
     },
     buttonContainer: {
-        display: "flex",
-        width: "100%",
         flexDirection: "row",
-        borderTopWidth: 1,
-        borderBottomWidth: 1,
-        borderColor: _colorConfiguration.greyFont,
-        marginTop: 10,
+        columnGap: 15,
+        justifyContent: "space-between",
+        alignItems: "flex-end",
+        width: "100%",
+        marginTop: 5,
+        paddingHorizontal: 20,
+        paddingBottom: 5,
     },
     label: {
         paddingHorizontal: 20,
         marginBottom: 10,
     },
     button: {
-        display: "flex",
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        flexGrow: 1,
-        paddingVertical: 12,
     },
     border: {
         width: 1,

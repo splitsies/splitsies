@@ -2,7 +2,8 @@
     "sizes": {
         "smallIcon": 17, 
         "icon": 27,
-        "largeIcon": 30
+        "largeIcon": 30,
+        "carouselPadding": 20
     },
     "durations": {
         "focusThrottleMs": 500,
