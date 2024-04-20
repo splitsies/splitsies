@@ -33,7 +33,6 @@ import { IExpense } from "../models/expense/expense-interface";
 import { IExpenseUserDetails } from "@splitsies/shared-models";
 
 const Tab = createMaterialTopTabNavigator();
-const _userManager = lazyInject<IUserManager>(IUserManager);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _inviteViewModel = lazyInject<IInviteViewModel>(IInviteViewModel);
@@ -68,10 +67,6 @@ export const InviteNavigator = ({ navigation }: Props) => {
         navigation.navigate("Items");
     }, [_expenseManager, navigation]);
 
-    useInitialize(() => {
-        void _userManager.requestUsersFromContacts();
-    });
-
     const onScannedUserAdded = () => {
         if (!scannedUser || !_expenseManager.currentExpense) return;
         _expenseManager.requestAddUserToExpense(scannedUser.id, _expenseManager.currentExpense.id);
@@ -98,7 +93,7 @@ export const InviteNavigator = ({ navigation }: Props) => {
     };
 
     return (
-        <SafeAreaView style={{ flex: 1, backgroundColor: Colors.screenBG }}>
+        <SafeAreaView style={{ display: "flex", flex: 1, flexGrow: 1, backgroundColor: Colors.screenBG }}>
             <View style={styles.header} bg-screenBG>
                 <View style={styles.arrowContainer}>
                     <TouchableOpacity onPress={onBackPress}>
@@ -134,17 +129,19 @@ export const InviteNavigator = ({ navigation }: Props) => {
                 </View>
             </View>
 
-            <Tab.Navigator
-                initialRouteName="Contacts"
-                screenOptions={{
-                    tabBarLabelStyle: _styleManager.typography.body,
-                    tabBarIndicatorStyle: { backgroundColor: _colorConfiguration.primary },
-                }}
-            >
-                <Tab.Screen name="Contacts" component={ContactsScreen} />
-                <Tab.Screen name="Guests" component={GuestScreen} />
-                <Tab.Screen name="Search" component={SearchScreen} />
-            </Tab.Navigator>
+            <View style={{ backgroundColor: "red", flex: 1 }}>
+                <Tab.Navigator
+                    initialRouteName="Contacts"
+                    screenOptions={{
+                        tabBarLabelStyle: _styleManager.typography.body,
+                        tabBarIndicatorStyle: { backgroundColor: _colorConfiguration.primary },
+                    }}
+                >
+                    <Tab.Screen name="Contacts" component={ContactsScreen} />
+                    <Tab.Screen name="Guests" component={GuestScreen} />
+                    <Tab.Screen name="Search" component={SearchScreen} />
+                </Tab.Navigator>
+            </View>
 
             <ScanUserModal
                 visible={codeScannerVisible}

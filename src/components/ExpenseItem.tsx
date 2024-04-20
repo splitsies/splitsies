@@ -6,10 +6,13 @@ import { Text, TouchableOpacity, View } from "react-native-ui-lib/core";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { useThemeWatcher } from "../hooks/use-theme-watcher";
+import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+import Edit from "../../assets/icons/edit.svg";
 
 type Props = {
     item: IExpenseItem;
     selected?: boolean;
+    editable?: boolean;
     selectable?: boolean;
     showOwners?: boolean;
     style?: object;
@@ -18,8 +21,9 @@ type Props = {
 };
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
+const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
-export const ExpenseItem = ({ item, selected, selectable, showOwners, style, onPress, onSelect }: Props) => {
+export const ExpenseItem = ({ item, selected, selectable, editable, showOwners, style, onPress, onSelect }: Props) => {
     useThemeWatcher();
     const ownerList = item.owners
         .map(
@@ -32,12 +36,19 @@ export const ExpenseItem = ({ item, selected, selectable, showOwners, style, onP
         <TouchableOpacity
             style={styles.body}
             disabled={!onPress}
-            onPress={() => (selectable ? onSelect?.(item.id) : onPress!())}
+            onPress={() => (editable ? onPress!() : onSelect?.(item.id))}
         >
             <View style={{ ...styles.container, ...style }}>
                 <View style={styles.nameContainer}>
                     <View style={styles.itemContainer}>
-                        <View style={{ flexDirection: "row", alignItems: "center" }}>
+                        <View style={{ flexDirection: "row", alignItems: "center", columnGap: 8 }}>
+                            {editable && (
+                                <Edit
+                                    width={_uiConfig.sizes.smallIcon}
+                                    height={_uiConfig.sizes.smallIcon}
+                                    fill={Colors.textColor}
+                                />
+                            )}
                             {selectable && (
                                 <Checkbox
                                     size={18}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View } from "react-native-ui-lib";
+import { Colors, ProgressBar, Slider, Text, View } from "react-native-ui-lib";
 import { ExpenseItem } from "./ExpenseItem";
 import { IExpenseItem, IExpenseUserDetails } from "@splitsies/shared-models";
 import { lazyInject } from "../utils/lazy-inject";
@@ -19,6 +19,7 @@ const calculateRunningTotal = (expense: IExpense): number => {
 
 export const PeopleFooter = ({ expense }: Props): JSX.Element => {
     const [runningTotal, setRunningTotal] = useState<number>(calculateRunningTotal(expense));
+    const percentage = expense.total === 0 ? 0 : Math.min(Math.ceil((runningTotal * 100) / expense.total), 100);
 
     useEffect(() => {
         setRunningTotal(calculateRunningTotal(expense));
@@ -26,10 +27,25 @@ export const PeopleFooter = ({ expense }: Props): JSX.Element => {
 
     return (
         <View>
-            <ExpenseItem
-                item={{ name: "Selected Total", price: runningTotal, owners: [] } as unknown as IExpenseItem}
-            />
-            <ExpenseItem item={{ name: "Total", price: expense.total, owners: [] } as unknown as IExpenseItem} />
+            <View
+                style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                    paddingHorizontal: 15,
+                    columnGap: 10,
+                }}
+            >
+                <Text hint>Selected</Text>
+                <ProgressBar
+                    style={{ display: "flex", flex: 1, height: 9 }}
+                    progressColor={Colors.primary}
+                    progress={percentage}
+                />
+                <Text hint style={{ display: "flex", minWidth: 40, textAlign: "right" }}>
+                    {percentage}%
+                </Text>
+            </View>
         </View>
     );
 };

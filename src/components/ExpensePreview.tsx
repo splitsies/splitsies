@@ -36,7 +36,7 @@ interface propTypes {
  */
 export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress }: propTypes) => {
     const [peopleContainerWidth, setPeopleContainerWidth] = useState<number>(Dimensions.get("window").width);
-    const PERSON_LIMIT = Math.floor((peopleContainerWidth - 20) / 36) - 1;
+    const PERSON_LIMIT = Math.floor((peopleContainerWidth - 20) / 34) - 1;
 
     return (
         <TouchableOpacity onPress={() => onPress(data.id)} onLongPress={onLongPress}>
@@ -46,7 +46,9 @@ export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress }:
                         <Location width={iconSize} height={iconSize} fill={Colors.textColor} />
                     </View>
                     <View style={styles.rightBox}>
-                        <Text color={Colors.textColor}>{data.name}</Text>
+                        <Text bodyBold color={Colors.textColor}>
+                            {data.name}
+                        </Text>
                     </View>
                 </View>
 
@@ -124,7 +126,7 @@ const styles = StyleSheet.create({
         marginRight: 15,
     },
     rightBox: {
-        flex: 5,
+        flex: 8,
         justifyContent: "center",
     },
     peopleContainer: {

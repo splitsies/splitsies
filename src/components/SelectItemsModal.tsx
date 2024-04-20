@@ -1,5 +1,5 @@
-import React from "react";
-import { useCallback, useEffect, useState } from "react";
+import React, { useCallback } from "react";
+import { useEffect, useState } from "react";
 import { FlatList, SafeAreaView, StyleSheet } from "react-native";
 import { ListSeparator } from "./ListSeparator";
 import { ExpenseItem } from "./ExpenseItem";

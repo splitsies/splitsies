@@ -86,7 +86,6 @@ const styles = StyleSheet.create({
         flex: 1,
         rowGap: 10,
         alignItems: "center",
-        height: "100%",
         paddingTop: 10,
     },
     body: {
