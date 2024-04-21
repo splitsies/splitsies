@@ -132,28 +132,26 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                     ))}
                 <ExpenseItem item={totalItem} key={"total"} onPress={() => {}} />
             </View>
-            {_userManager.userId !== person.id && (
-                <View style={styles.buttonContainer}>
-                    <Button
-                        body
-                        bg-primary
-                        borderless
-                        style={styles.button}
-                        labelStyle={{ color: "black" }}
-                        label="Pay"
-                        onPress={onPayPress}
-                    />
-                    <Button
-                        body
-                        bg-primary
-                        borderless
-                        style={styles.button}
-                        labelStyle={{ color: "black" }}
-                        label="Request"
-                        onPress={onRequestPress}
-                    />
-                </View>
-            )}
+            <View style={styles.buttonContainer}>
+                <Button
+                    body
+                    bg-primary
+                    borderless
+                    style={styles.button}
+                    labelStyle={{ color: "black" }}
+                    label="Pay"
+                    onPress={onPayPress}
+                />
+                <Button
+                    body
+                    bg-primary
+                    borderless
+                    style={styles.button}
+                    labelStyle={{ color: "black" }}
+                    label="Request"
+                    onPress={onRequestPress}
+                />
+            </View>
             <Toast
                 body
                 centerMessage
