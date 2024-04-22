@@ -21,11 +21,11 @@ export class PermissionRequester implements IPersmissionRequester {
         const permission = Platform.OS === "ios" ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA;
         let result = await check(permission);
 
-        if (result !== RESULTS.GRANTED) {
+        if (result === RESULTS.DENIED) {
             // The permission has not been requested, so request it.
             result = await request(permission);
 
-            if (result !== RESULTS.GRANTED) {
+            if (result !== RESULTS.BLOCKED) {
                 Alert.alert(`Camera Access Required`, "Open settings to enable camera access?", [
                     { text: "Yes", onPress: async () => await Linking.openSettings() },
                     { text: "No", style: "cancel" },
@@ -33,6 +33,11 @@ export class PermissionRequester implements IPersmissionRequester {
             }
 
             return result === RESULTS.GRANTED ? "granted" : "denied";
+        } else if (result !== RESULTS.GRANTED && result !== RESULTS.UNAVAILABLE) {
+            Alert.alert(`Camera Access Required`, "Open settings to enable camera access?", [
+                { text: "Yes", onPress: async () => await Linking.openSettings() },
+                { text: "No", style: "cancel" },
+            ]);
         }
 
         return result === RESULTS.GRANTED ? "granted" : "denied";
@@ -44,7 +49,7 @@ export class PermissionRequester implements IPersmissionRequester {
 
         const result = await check(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
 
-        if (result === RESULTS.BLOCKED) {
+        if (result === RESULTS.DENIED) {
             // The permission has not been requested, so request it.
             await request(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
         }
