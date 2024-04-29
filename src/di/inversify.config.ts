@@ -58,6 +58,10 @@ import { IUserCache } from "../utils/user-cache/user-cache-interface";
 import { UserCache } from "../utils/user-cache/user-cache";
 import { IExpenseJoinRequestMapper } from "../mappers/expense-join-request-mapper/expense-join-request-mapper-interface";
 import { ExpenseJoinRequestMapper } from "../mappers/expense-join-request-mapper/expense-join-request-mapper";
+import { INotificationManager } from "../managers/notification-manager/notification-manager-interface";
+import { NotificationManager } from "../managers/notification-manager/notification-manager";
+import { INotificationApiClient } from "../api/notification-api-client/notification-api-client-interface";
+import { NotificationApiClient } from "../api/notification-api-client/notification-api-client";
 const container = new Container();
 
 container.bind<IApiConfig>(IApiConfig).to(ApiConfig).inSingletonScope();
@@ -93,4 +97,6 @@ container.bind<IExpenseMapper>(IExpenseMapper).to(ExpenseMapper).inSingletonScop
 container.bind<IOcrApiClient>(IOcrApiClient).to(OcrApiClient).inSingletonScope();
 container.bind<IUserCache>(IUserCache).to(UserCache).inSingletonScope();
 container.bind<IExpenseJoinRequestMapper>(IExpenseJoinRequestMapper).to(ExpenseJoinRequestMapper).inSingletonScope();
+container.bind<INotificationManager>(INotificationManager).to(NotificationManager).inSingletonScope();
+container.bind<INotificationApiClient>(INotificationApiClient).to(NotificationApiClient).inSingletonScope();
 export { container };

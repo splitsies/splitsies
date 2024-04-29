@@ -43,6 +43,8 @@
 	<string></string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>$(PRODUCT_NAME) would like to access your Photos to select receipt images.</string>
+	<key>NSUserTrackingUsageDescription</key>
+	<string>This app uses device identifiers to track marketing attribution and app usage.  Your data is kept confidential and is not shared with any 3rd parties or advertising partners.</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>SFProDisplay-Black.otf</string>
@@ -104,6 +106,11 @@
 		<string>MaterialIcons.ttf</string>
 		<string>MaterialCommunityIcons.ttf</string>
 	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>fetch</string>
+		<string>remote-notification</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -118,7 +125,5 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-    <key>NSUserTrackingUsageDescription</key>
-    <string>This app uses device identifiers to track marketing attribution and app usage.  Your data is kept confidential and is not shared with any 3rd parties or advertising partners.</string>
 </dict>
 </plist>

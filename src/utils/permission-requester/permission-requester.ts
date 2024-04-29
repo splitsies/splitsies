@@ -2,6 +2,7 @@ import { Alert, Linking, PermissionStatus, PermissionsAndroid, Platform } from "
 import { IPersmissionRequester } from "./permission-requester-interface";
 import { injectable } from "inversify";
 import { check, request, PERMISSIONS, RESULTS } from "react-native-permissions";
+import messaging from "@react-native-firebase/messaging";
 
 @injectable()
 export class PermissionRequester implements IPersmissionRequester {
@@ -44,6 +45,24 @@ export class PermissionRequester implements IPersmissionRequester {
         if (result === RESULTS.DENIED) {
             // The permission has not been requested, so request it.
             await request(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
+        }
+    }
+
+    async requestPushNotificationPermission(): Promise<PermissionStatus> {
+        if (Platform.OS === "ios") {
+            const authStatus = await messaging().requestPermission();
+            const enabled =
+                authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+                authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+            if (enabled) {
+                console.log("Authorization status:", authStatus);
+            }
+
+            return enabled ? "granted" : "denied";
+        } else {
+            const authStatus = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+            return authStatus;
         }
     }
 }
