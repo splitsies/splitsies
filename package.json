@@ -22,6 +22,7 @@
     "google-services:production": "cp ./google-services/ios/production-GoogleService-Info.plist ./ios/GoogleService-Info.plist && cp ./google-services/android/production-google-services.json ./android/app/google-services.json"
   },
   "dependencies": {
+    "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-native-clipboard/clipboard": "^1.13.2",
     "@react-native-community/blur": "^4.3.2",
     "@react-native-community/datetimepicker": "^7.6.2",

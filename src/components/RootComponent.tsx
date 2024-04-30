@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { NavigationContainer, DefaultTheme, Theme } from "@react-navigation/native";
+import { NavigationContainer, DefaultTheme, Theme, LinkingOptions } from "@react-navigation/native";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { lazyInject } from "../utils/lazy-inject";
 import { Colors } from "react-native-ui-lib/core";
@@ -8,6 +8,7 @@ import { useColorScheme } from "react-native";
 import { IThemeViewModel } from "../view-models/theme-view-model/theme-view-model-interface";
 import { useObservable } from "../hooks/use-observable";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { linking } from "../config/linking.config";
 
 const _themeViewModel = lazyInject<IThemeViewModel>(IThemeViewModel);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
@@ -34,7 +35,7 @@ export const RootComponent = () => {
     }, [colorScheme]);
 
     return (
-        <NavigationContainer theme={theme}>
+        <NavigationContainer theme={theme} linking={linking as LinkingOptions<ReactNavigation.RootParamList>}>
             <GestureHandlerRootView style={{ flex: 1 }}>
                 <RootNavigator />
             </GestureHandlerRootView>

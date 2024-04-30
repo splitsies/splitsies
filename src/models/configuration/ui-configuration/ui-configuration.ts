@@ -4,5 +4,5 @@ import config from "../../../config/ui.config.json";
 
 @injectable()
 export class UiConfiguration implements IUiConfiguration {
-    constructor(readonly sizes = config.sizes, readonly durations = config.durations) {}
+    constructor(readonly sizes = config.sizes, readonly durations = config.durations, readonly card = config.card) {}
 }

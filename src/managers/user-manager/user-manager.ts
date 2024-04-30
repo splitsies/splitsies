@@ -6,7 +6,7 @@ import {
     IUserCredential,
     IUserDto,
 } from "@splitsies/shared-models";
-import { BehaviorSubject, Observable, first, lastValueFrom } from "rxjs";
+import { BehaviorSubject, Observable, Subject, first, lastValueFrom } from "rxjs";
 import { IUserManager } from "./user-manager-interface";
 import { injectable } from "inversify";
 import { IUsersApiClient } from "../../api/users-api-client/users-api-client-interface";
@@ -26,6 +26,7 @@ export class UserManager extends BaseManager implements IUserManager {
     private readonly _permissionRequester = lazyInject<IPersmissionRequester>(IPersmissionRequester);
     private readonly _user$ = new BehaviorSubject<IUserCredential | null>(null);
     private readonly _contactUsers$ = new BehaviorSubject<IExpenseUserDetails[]>([]);
+    private readonly _signoutRequested$ = new Subject<void>();
 
     constructor() {
         super();
@@ -74,6 +75,10 @@ export class UserManager extends BaseManager implements IUserManager {
         return this.user?.user.id ?? "";
     }
 
+    get signoutRequested$(): Observable<void> {
+        return this._signoutRequested$.asObservable();
+    }
+
     async requestCreateUser(user: CreateUserRequest): Promise<ICreateUserResult> {
         try {
             const result = await this._client.create(user);
@@ -98,6 +103,7 @@ export class UserManager extends BaseManager implements IUserManager {
     }
 
     async signOut(): Promise<void> {
+        this._signoutRequested$.next();
         await resetGenericPassword();
         this._client.signOut();
     }

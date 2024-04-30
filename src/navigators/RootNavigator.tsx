@@ -15,8 +15,10 @@ import { useInitialize } from "../hooks/use-initialize";
 import { ExpenseNavigator } from "../navigators/ExpenseNavigator";
 import { HomeNavigator } from "../navigators/HomeNavigator";
 import SplashScreen from "react-native-splash-screen";
+import { IMessageHub } from "../hubs/message-hub/message-hub-interface";
 
 const _userManager = lazyInject<IUserManager>(IUserManager);
+const _messageHub = lazyInject<IMessageHub>(IMessageHub);
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -50,7 +52,7 @@ export const RootNavigator = () => {
     };
 
     return (
-        <Stack.Navigator initialRouteName={initialRoute} screenOptions={{ headerShown: false }}>
+        <Stack.Navigator initialRouteName="LoginScreen" screenOptions={{ headerShown: false }}>
             <Stack.Screen name="LoginScreen" component={LoginScreen} />
             <Stack.Screen name="RootScreen" component={HomeNavigator} options={{ gestureEnabled: false }} />
             <Stack.Screen name="SignupScreen" component={SignupScreen} />

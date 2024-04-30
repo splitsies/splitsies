@@ -10,6 +10,32 @@ See `docs/ad-setup.md` for including the configured ad ID to your local environm
 npm install --include=dev
 ```
 
+### Google Services
+To initialize the firebase SDK for respective stages, the `google-services.json` and `GoogleServices-Info.plist` files are requried for android and iOS respectively.
+1. Download the service configurations from the Firebase console for each stage
+1. For Android, place each in the following
+    ```
+    dev-pr google-services.json > ./android/app/src/local/google-services.json
+                                > .google-services/android/dev-pr-google-services.json
+    dev-pr google-services.json > ./android/app/src/lan/google-services.json
+                                > ./google-services/android/dev-pr-google-services.json
+    dev-pr google-services.json > ./android/app/src/devpr/google-services.json
+                                > ./google-services/android/dev-pr-google-services.json
+    staging google-services.json > ./android/app/src/staging/google-services.json
+                                 > ./google-services/android/staging-google-services.json
+    production google-services.json > ./android/app/src/local/google-services.json
+                                    > ./google-services/android/production-google-services.json
+    ```
+1. For iOS, place each in the following
+    ```
+    dev-pr GoogleServices-Info.plist > .google-services/ios/dev-prGoogleServices-Info.plist
+    dev-pr GoogleServices-Info.plist > ./google-services/ios/dev-prGoogleServices-Info.plist
+    dev-pr GoogleServices-Info.plist > ./google-services/ios/dev-prGoogleServices-Info.plist
+    staging GoogleServices-Info.plist > ./google-services/ios/stagingGoogleServices-Info.plist
+    production GoogleServices-Info.plist > ./google-services/ios/productionGoogleServices-Info.plist
+    ```
+
+
 ## Step 1: Start the Metro Server
 
 First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.

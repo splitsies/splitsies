@@ -3,5 +3,5 @@
     "expenseSocket": "ws://localhost:14624/expenses",
     "users": "http://localhost:6001/dev-pr/users",
     "ocr": "http://localhost:12948/dev-pr/",
-    "notification": "http://127.0.0.1:3000/"
+    "notification": "http://localhost:3000/"
 }

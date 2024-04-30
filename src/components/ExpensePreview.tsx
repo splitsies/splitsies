@@ -10,6 +10,7 @@ import Location from "../../assets/icons/location.svg";
 import Calendar from "../../assets/icons/calendar.svg";
 import People from "../../assets/icons/people.svg";
 import Price from "../../assets/icons/price.svg";
+import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 
 const Locale = (
     Platform.OS === "ios"
@@ -23,11 +24,14 @@ const DATE_OPTIONS: DateTimeFormatOptions = { weekday: "long", year: "numeric", 
 
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
+
 const iconSize = _uiConfig.sizes.smallIcon;
 
+
+const styleconfig = lazyInject<IStyleManager>(IStyleManager);
 interface propTypes {
     data: IExpense;
-    onPress: (expenseId: string) => void;
+    onPress?: (expenseId: string) => void;
     onLongPress?: () => void;
 }
 
@@ -39,14 +43,14 @@ export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress }:
     const PERSON_LIMIT = Math.floor((peopleContainerWidth - 20) / 34) - 1;
 
     return (
-        <TouchableOpacity onPress={() => onPress(data.id)} onLongPress={onLongPress}>
+        <TouchableOpacity disabled={!!!onPress} onPress={() => onPress?.(data.id)} onLongPress={onLongPress}>
             <View style={[styles.container]}>
                 <View style={styles.rowContainer}>
                     <View style={styles.leftBox}>
                         <Location width={iconSize} height={iconSize} fill={Colors.textColor} />
                     </View>
                     <View style={styles.rightBox}>
-                        <Text bodyBold color={Colors.textColor}>
+                        <Text style={styleconfig.typography.letter} color={Colors.textColor}>
                             {data.name}
                         </Text>
                     </View>

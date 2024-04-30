@@ -65,6 +65,7 @@ export const FeedNavigator = () => {
                 name="Requests"
                 component={RequestsFeedScreen}
                 options={{ tabBarIcon: ({ color, size }) => <People width={size} height={size} fill={color} /> }}
+                listeners={({ navigation }) => ({ blur: () => navigation.setParams({ expenseId: undefined }) })}
             />
         </Tab.Navigator>
     );

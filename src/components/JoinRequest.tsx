@@ -1,11 +1,13 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import { Button, Text, TouchableOpacity, View } from "react-native-ui-lib";
+import { Button, Colors, Text, TouchableOpacity, View } from "react-native-ui-lib";
 import { ExpensePreview } from "./ExpensePreview";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { IExpenseJoinRequest } from "../models/expense-join-request/expense-join-request-interface";
+import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 
+const { card } = lazyInject<IUiConfiguration>(IUiConfiguration)
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 
 type Props = {
@@ -18,7 +20,7 @@ export const JoinRequest = ({ joinRequest, onDeny, onApprove }: Props): JSX.Elem
     return (
         <View style={styles.container}>
             <Text body style={styles.label}>{`${joinRequest.requestingUser.givenName} is inviting you to join:`}</Text>
-            <ExpensePreview data={joinRequest.expense} onPress={(expenseId: string) => {}} />
+            <ExpensePreview data={joinRequest.expense} />
 
             <View style={styles.buttonContainer}>
                 <Button
@@ -48,7 +50,12 @@ const styles = StyleSheet.create({
     container: {
         display: "flex",
         width: "100%",
-        marginBottom: 30,
+        paddingVertical: 25,
+        paddingHorizontal: 10,
+        marginBottom: 15,
+        borderRadius: card.borderRadius,
+        borderWidth: card.borderWidth,
+        borderColor: Colors.divider
     },
     buttonContainer: {
         flexDirection: "row",
@@ -58,7 +65,6 @@ const styles = StyleSheet.create({
         width: "100%",
         marginTop: 5,
         paddingHorizontal: 20,
-        paddingBottom: 5,
     },
     label: {
         paddingHorizontal: 20,
@@ -66,9 +72,5 @@ const styles = StyleSheet.create({
     },
     button: {
         flex: 1,
-    },
-    border: {
-        width: 1,
-        backgroundColor: _colorConfiguration.greyFont,
-    },
+    }
 });

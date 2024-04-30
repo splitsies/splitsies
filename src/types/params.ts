@@ -12,6 +12,7 @@ export type RootStackParamList = {
 export type DrawerParamList = {
     Home: undefined;
     Profile: undefined;
+    Settings: undefined;
 };
 
 export type ExpenseParamList = {
@@ -27,5 +28,5 @@ export type InviteParamList = {
 
 export type FeedParamList = {
     Expenses: undefined;
-    Requests: undefined;
+    Requests: { expenseId: string | undefined };
 };

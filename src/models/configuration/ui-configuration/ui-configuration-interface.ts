@@ -11,5 +11,10 @@ export interface IUiConfiguration {
         searchDebounceMs: number;
         adBufferMs: number;
     };
+
+    readonly card: {
+        borderRadius: number;
+        borderWidth: number;
+    };
 }
 export const IUiConfiguration = Symbol.for("IUiConfiguration");

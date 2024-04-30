@@ -3,28 +3,30 @@ import { Text, View } from "react-native-ui-lib/core";
 import { JoinRequest } from "../components/JoinRequest";
 import { RefreshControl, ScrollView, StyleSheet } from "react-native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import { DrawerScreenProps } from "@react-navigation/drawer";
-import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useFocusEffect } from "@react-navigation/native";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
-import { RootStackParamList, DrawerParamList, FeedParamList } from "../types/params";
+import { FeedParamList } from "../types/params";
 import { lazyInject } from "../utils/lazy-inject";
 import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-interface";
-import { useObservable } from "../hooks/use-observable";
 import { Container } from "../components/Container";
 import { IExpenseJoinRequest } from "../models/expense-join-request/expense-join-request-interface";
+import { useObservableReducer } from "../hooks/use-observable-reducer";
+import { first, lastValueFrom, race, timer } from "rxjs";
+import { IRequestConfiguration } from "../models/configuration/request-config/request-configuration-interface";
 
-type Props = CompositeScreenProps<
-    CompositeScreenProps<NativeStackScreenProps<RootStackParamList>, DrawerScreenProps<DrawerParamList, "Home">>,
-    BottomTabScreenProps<FeedParamList, "Requests">
->;
+type Props = BottomTabScreenProps<FeedParamList, "Requests">;
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _viewModel = lazyInject<IHomeViewModel>(IHomeViewModel);
+const _requestConfiguration = lazyInject<IRequestConfiguration>(IRequestConfiguration);
 
-export const RequestsFeedScreen = (_: Props): JSX.Element => {
+
+export const RequestsFeedScreen = ({ route: { params: expenseId } }: Props): JSX.Element => {
+    const filter = (joinRequests: IExpenseJoinRequest[]): IExpenseJoinRequest[] =>
+        expenseId?.expenseId ? joinRequests.filter(j => j.expense.id === expenseId?.expenseId) : joinRequests;
+
     const [refreshing, setRefreshing] = useState<boolean>(false);
-    const joinRequests = useObservable(_expenseManager.expenseJoinRequests$, []);
+    const joinRequests = useObservableReducer(_expenseManager.expenseJoinRequests$, [], filter, [expenseId]);
 
     useFocusEffect(
         useCallback(() => {
@@ -40,6 +42,17 @@ export const RequestsFeedScreen = (_: Props): JSX.Element => {
 
     const onApproveRequest = async (joinRequest: IExpenseJoinRequest): Promise<void> => {
         await _expenseManager.removeExpenseJoinRequestForUser(joinRequest.expense.id);
+        
+        _viewModel.setPendingData(true);
+        void _expenseManager.connectToExpense(joinRequest.expense.id);
+
+        const timedExpenseObserver = race(
+            _expenseManager.currentExpense$.pipe(first((e) => !!e)),
+            timer(_requestConfiguration.connectionTimeoutMs),
+        );
+
+        await lastValueFrom(timedExpenseObserver);
+        _viewModel.setPendingData(false);
     };
 
     const onDenyRequest = async (joinRequest: IExpenseJoinRequest): Promise<void> => {
@@ -54,7 +67,7 @@ export const RequestsFeedScreen = (_: Props): JSX.Element => {
     };
 
     return (
-        <Container>
+        <Container style={{paddingHorizontal: 15}}>
             <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
                 {joinRequests.length > 0 ? (
                     joinRequests.map((r) => (

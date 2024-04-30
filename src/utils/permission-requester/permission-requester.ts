@@ -61,7 +61,9 @@ export class PermissionRequester implements IPersmissionRequester {
 
             return enabled ? "granted" : "denied";
         } else {
+            return "granted";
             const authStatus = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
+            console.log({ authStatus });
             return authStatus;
         }
     }
