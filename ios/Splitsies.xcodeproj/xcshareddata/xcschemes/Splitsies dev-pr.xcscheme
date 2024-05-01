@@ -10,7 +10,7 @@
             ActionType = "Xcode.IDEStandardExecutionActionsCore.ExecutionActionType.ShellScriptAction">
             <ActionContent
                title = "Run Script"
-               scriptText = "rm -f &quot;${PROJECT_DIR}/../node_modules/react-native-config/ios/ReactNativeConfig/GeneratedDotEnv.m&quot;&#10;cp &quot;${PROJECT_DIR}/../src/.env/.env.dev-pr&quot; &quot;${PROJECT_DIR}/../.env&quot;&#10;">
+               scriptText = "rm -f &quot;${PROJECT_DIR}/../node_modules/react-native-config/ios/ReactNativeConfig/GeneratedDotEnv.m&quot;&#10;cp &quot;${PROJECT_DIR}/../src/.env/.env.dev-pr&quot; &quot;${PROJECT_DIR}/../.env&quot;&#10;cp &quot;${PROJECT_DIR}/../google-services/ios/dev-pr-GoogleService-Info.plist&quot; &quot;${PROJECT_DIR}/GoogleService-Info.plist&quot;&#10;">
                <EnvironmentBuildable>
                   <BuildableReference
                      BuildableIdentifier = "primary"

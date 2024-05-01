@@ -27,7 +27,7 @@ const iconSize = _uiConfig.sizes.smallIcon;
 
 interface propTypes {
     data: IExpense;
-    onPress: (expenseId: string) => void;
+    onPress?: (expenseId: string) => void;
     onLongPress?: () => void;
 }
 
@@ -39,7 +39,7 @@ export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress }:
     const PERSON_LIMIT = Math.floor((peopleContainerWidth - 20) / 34) - 1;
 
     return (
-        <TouchableOpacity onPress={() => onPress(data.id)} onLongPress={onLongPress}>
+        <TouchableOpacity disabled={!!!onPress} onPress={() => onPress?.(data.id)} onLongPress={onLongPress}>
             <View style={[styles.container]}>
                 <View style={styles.rowContainer}>
                     <View style={styles.leftBox}>

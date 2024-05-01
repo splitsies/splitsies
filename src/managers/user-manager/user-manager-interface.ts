@@ -6,6 +6,7 @@ import { ICreateUserResult } from "../../models/create-user-result/create-user-r
 export interface IUserManager extends IBaseManager {
     readonly contactUsers$: Observable<IExpenseUserDetails[]>;
     readonly user$: Observable<IUserCredential | null>;
+    readonly signoutRequested$: Observable<void>;
     readonly user: IUserCredential | null;
     readonly userId: string;
     readonly expenseUserDetails: IExpenseUserDetails;

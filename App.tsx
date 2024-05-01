@@ -6,18 +6,22 @@ import { lazyInject } from "./src/utils/lazy-inject";
 import { IThemeViewModel } from "./src/view-models/theme-view-model/theme-view-model-interface";
 import { useInitialize } from "./src/hooks/use-initialize";
 import { IAdManager } from "./src/managers/ad-manager/ad-manager-interface";
+import { INotificationManager } from "./src/managers/notification-manager/notification-manager-interface";
 
 const uiLibConfig = require("react-native-ui-lib/config");
 uiLibConfig.setConfig({ appScheme: "default" });
 
 const _themeViewModel = lazyInject<IThemeViewModel>(IThemeViewModel);
 const _adManager = lazyInject<IAdManager>(IAdManager);
+const _notificationManager = lazyInject<INotificationManager>(INotificationManager);
 
 function App(): JSX.Element {
     const colorScheme = useColorScheme();
 
     useInitialize(() => {
-        void _adManager.initialize();
+        _notificationManager.initialized.then(() => {
+            void _adManager.initialize();
+        });
     });
 
     useEffect(() => {

@@ -9,5 +9,9 @@
         "focusThrottleMs": 500,
         "searchDebounceMs": 500,
         "adBufferMs": 850
+    },
+    "card": {
+        "borderWidth": 1,
+        "borderRadius": 30
     }
 }

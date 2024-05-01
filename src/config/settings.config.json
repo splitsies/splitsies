@@ -1,0 +1,10 @@
+{
+    "pushNotifications": {
+        "displayName": "Push Notifications",
+        "joinRequestNotifications": {
+            "displayName": "Requests",
+            "key": "joinRequestNotifications",
+            "default": true
+        }
+    }
+}

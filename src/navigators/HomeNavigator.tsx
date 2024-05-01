@@ -21,6 +21,7 @@ import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-co
 import Add from "../../assets/icons/add.svg";
 import Menu from "../../assets/icons/menu.svg";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
+import { SettingsScreen } from "../screens/SettingsScreen";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
@@ -99,6 +100,7 @@ export const HomeNavigator = SpThemedComponent(({ navigation }: Props) => {
         >
             <Drawer.Screen name="Home" component={FeedNavigator} />
             <Drawer.Screen name="Profile" component={ProfileScreen} />
+            <Drawer.Screen name="Settings" component={SettingsScreen} />
         </Drawer.Navigator>
     );
 });

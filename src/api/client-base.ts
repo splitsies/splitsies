@@ -52,6 +52,26 @@ export abstract class ClientBase {
         return this.parseResponse(dataResponse);
     }
 
+    async putJson<T>(url: string, body: any = {}, headers: any = {}): Promise<IDataResponse<T>> {
+        const response = await fetch(url, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+                ...headers,
+            },
+            body: JSON.stringify(body),
+        });
+
+        const dataResponse = await response.json();
+
+        if (!dataResponse.success) {
+            console.error(`endpoint = ${url}, response - ${JSON.stringify(response, null, 2)}`);
+            throw new Error(dataResponse.data);
+        }
+
+        return this.parseResponse(dataResponse);
+    }
+
     async delete(url: string, headers: any = {}): Promise<void> {
         const response = await fetch(url, {
             method: "DELETE",
