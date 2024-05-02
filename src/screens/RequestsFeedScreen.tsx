@@ -1,37 +1,56 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Text, View } from "react-native-ui-lib/core";
 import { JoinRequest } from "../components/JoinRequest";
 import { RefreshControl, ScrollView, StyleSheet } from "react-native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import { useFocusEffect } from "@react-navigation/native";
+import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
-import { FeedParamList } from "../types/params";
+import { DrawerParamList, FeedParamList, RootStackParamList } from "../types/params";
 import { lazyInject } from "../utils/lazy-inject";
 import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-interface";
 import { Container } from "../components/Container";
 import { IExpenseJoinRequest } from "../models/expense-join-request/expense-join-request-interface";
-import { useObservableReducer } from "../hooks/use-observable-reducer";
 import { first, lastValueFrom, race, timer } from "rxjs";
 import { IRequestConfiguration } from "../models/configuration/request-config/request-configuration-interface";
+import { DrawerScreenProps } from "@react-navigation/drawer";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useObservable } from "../hooks/use-observable";
 
-type Props = BottomTabScreenProps<FeedParamList, "Requests">;
+type Props = CompositeScreenProps<
+    CompositeScreenProps<NativeStackScreenProps<RootStackParamList>, DrawerScreenProps<DrawerParamList, "Home">>,
+    BottomTabScreenProps<FeedParamList, "Requests">
+>;
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _viewModel = lazyInject<IHomeViewModel>(IHomeViewModel);
 const _requestConfiguration = lazyInject<IRequestConfiguration>(IRequestConfiguration);
 
-export const RequestsFeedScreen = ({ route: { params: expenseId } }: Props): JSX.Element => {
-    const filter = (joinRequests: IExpenseJoinRequest[]): IExpenseJoinRequest[] =>
-        expenseId?.expenseId ? joinRequests.filter((j) => j.expense.id === expenseId?.expenseId) : joinRequests;
-
+export const RequestsFeedScreen = ({ navigation }: Props): JSX.Element => {
+    const requestFilter = useObservable(_viewModel.requestFilter$, _viewModel.requestFilter);
+    const allJoinRequests = useObservable(_expenseManager.expenseJoinRequests$, []);
+    const [joinRequests, setJoinRequests] = useState<IExpenseJoinRequest[]>(allJoinRequests);
     const [refreshing, setRefreshing] = useState<boolean>(false);
-    const joinRequests = useObservableReducer(_expenseManager.expenseJoinRequests$, [], filter, [expenseId]);
 
     useFocusEffect(
         useCallback(() => {
             void onFocusAsync();
         }, []),
     );
+
+    useEffect(() => {
+        const unsubscribe = navigation.addListener("blur", () => {
+            _viewModel.setRequestFilter("");
+        });
+
+        return unsubscribe;
+    }, [navigation]);
+
+    useEffect(() => {
+        const requests = requestFilter
+            ? [...allJoinRequests.filter((j) => j.expense.id === requestFilter)]
+            : [...allJoinRequests];
+        setJoinRequests(requests);
+    }, [allJoinRequests, requestFilter]);
 
     const onFocusAsync = async (): Promise<void> => {
         _viewModel.setPendingData(true);
@@ -60,14 +79,18 @@ export const RequestsFeedScreen = ({ route: { params: expenseId } }: Props): JSX
     };
 
     const refresh = async () => {
+        _viewModel.setRequestFilter("");
         setRefreshing(true);
         await _expenseManager.requestExpenseJoinRequests();
         setRefreshing(false);
     };
 
     return (
-        <Container style={{ paddingHorizontal: 15 }}>
-            <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
+        <Container>
+            <ScrollView
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
+                style={{ paddingHorizontal: 15 }}
+            >
                 {joinRequests.length > 0 ? (
                     joinRequests.map((r) => (
                         <JoinRequest

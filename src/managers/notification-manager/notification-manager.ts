@@ -12,15 +12,21 @@ import { ISettingsManager } from "../settings-manager/settings-manager-interface
 import { Linking, Platform } from "react-native";
 import { filter } from "rxjs/operators";
 import { Notifications } from "react-native-notifications";
+import { IWritableMessageHub } from "../../hubs/writable-message-hub/writable-message-hub-interface";
+import { PushMessage } from "../../models/push-message/push-message";
+import { NotificationType } from "../../types/notification-type";
+import { IAppManager } from "../app-manager/app-manager-interface";
 
 @injectable()
 export class NotificationManager extends BaseManager implements INotificationManager {
     private static readonly SERVICE_NAME = "NotificationService";
 
+    private readonly _appManager = lazyInject<IAppManager>(IAppManager);
     private readonly _settingsManager = lazyInject<ISettingsManager>(ISettingsManager);
     private readonly _permissionRequester = lazyInject<IPersmissionRequester>(IPersmissionRequester);
     private readonly _userManager = lazyInject<IUserManager>(IUserManager);
     private readonly _api = lazyInject<INotificationApiClient>(INotificationApiClient);
+    private readonly _messageHub = lazyInject<IWritableMessageHub>(IWritableMessageHub);
 
     constructor() {
         super();
@@ -57,7 +63,6 @@ export class NotificationManager extends BaseManager implements INotificationMan
      * isDeviceRegisteredForRemoteMessages, we need to explicitly wait for the
      * APNS token to come back before intitializing the firebase token.
      * On Android, this immediately resolves successfully.
-     * @param resolve
      */
     private async initNativePushToken(): Promise<boolean> {
         if (Platform.OS === "android") {
@@ -96,7 +101,10 @@ export class NotificationManager extends BaseManager implements INotificationMan
     }
 
     private async onNotificationOpened(message: FirebaseMessagingTypes.RemoteMessage): Promise<void> {
+        await this._appManager.initialized;
+
         // TODO: there's only one notification type right now, this needs to be generalized and moved when there's more
+        this._messageHub.publishPushMessage(new PushMessage(NotificationType.JoinRequest, message.data));
         await Linking.openURL(`splitsies://requests/${message.data?.expenseId}`);
     }
 

@@ -71,8 +71,13 @@ import { IApiConfigurationProvider } from "../providers/api-configuration-provid
 import { ApiConfigurationProvider } from "../providers/api-configuration-provider/api-configuration-provider";
 import { IVersionManager } from "../managers/version-manager/version-manager-interface";
 import { VersionManager } from "../managers/version-manager/version-manager";
+import { IAppManager } from "../managers/app-manager/app-manager-interface";
+import { AppManager } from "../managers/app-manager/app-manager";
 const container = new Container({ defaultScope: "Singleton" });
 
+const messageHub = new WritableMessageHub();
+container.bind<IWritableMessageHub>(IWritableMessageHub).toConstantValue(messageHub);
+container.bind<IMessageHub>(IMessageHub).toConstantValue(messageHub);
 container.bind<IApiConfigurationProvider>(IApiConfigurationProvider).to(ApiConfigurationProvider);
 container.bind<IExpenseManager>(IExpenseManager).to(ExpenseManager);
 container.bind<IUserManager>(IUserManager).to(UserManager);
@@ -105,10 +110,8 @@ container.bind<IUserCache>(IUserCache).to(UserCache);
 container.bind<IExpenseJoinRequestMapper>(IExpenseJoinRequestMapper).to(ExpenseJoinRequestMapper);
 container.bind<INotificationManager>(INotificationManager).to(NotificationManager);
 container.bind<INotificationApiClient>(INotificationApiClient).to(NotificationApiClient);
-
-container.bind<IMessageHub>(IMessageHub).to(WritableMessageHub);
-container.bind<IWritableMessageHub>(IWritableMessageHub).to(WritableMessageHub);
 container.bind<ISettingsManager>(ISettingsManager).to(SettingsManager);
 container.bind<IVersionApiClient>(IVersionApiClient).to(VersionApiClient).inTransientScope();
 container.bind<IVersionManager>(IVersionManager).to(VersionManager);
+container.bind<IAppManager>(IAppManager).to(AppManager);
 export { container };
