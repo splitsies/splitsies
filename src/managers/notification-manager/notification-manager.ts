@@ -9,8 +9,9 @@ import { getInternetCredentials, resetInternetCredentials, setInternetCredential
 import { INotificationApiClient } from "../../api/notification-api-client/notification-api-client-interface";
 import { UserCredential } from "@splitsies/shared-models";
 import { ISettingsManager } from "../settings-manager/settings-manager-interface";
-import { Linking } from "react-native";
+import { Linking, Platform } from "react-native";
 import { filter } from "rxjs/operators";
+import { Notifications } from "react-native-notifications";
 
 @injectable()
 export class NotificationManager extends BaseManager implements INotificationManager {
@@ -32,19 +33,53 @@ export class NotificationManager extends BaseManager implements INotificationMan
             return;
         }
 
-        await this._userManager.initialized;
-        await messaging().getAPNSToken();
-        await messaging().registerDeviceForRemoteMessages();
+        const remoteTokenResolved = await this.initNativePushToken();
+        if (!remoteTokenResolved) {
+            return;
+        }
 
         messaging().onTokenRefresh(this.onTokenRefresh.bind(this));
         messaging().setBackgroundMessageHandler(this.onBackgroundNotification.bind(this));
         messaging().onMessage(this.onForegroundNotification.bind(this));
         messaging().onNotificationOpenedApp(this.onNotificationOpened.bind(this));
 
+        await this._userManager.initialized;
         this._userManager.user$.pipe(filter((u) => !!u)).subscribe({ next: this.onUserUpdated.bind(this) });
         this._userManager.signoutRequested$.subscribe({ next: this.onSignoutRequested.bind(this) });
         this._settingsManager.joinRequestNotificationsAllowed$.subscribe({
             next: this.onPushNotificationSettingsChanged.bind(this),
+        });
+    }
+
+    /**
+     * For iOS, resolves when the APNS token is fetched.
+     * Due to issues with the firebase-react-native package incorrectly determining
+     * isDeviceRegisteredForRemoteMessages, we need to explicitly wait for the
+     * APNS token to come back before intitializing the firebase token.
+     * On Android, this immediately resolves successfully.
+     * @param resolve
+     */
+    private async initNativePushToken(): Promise<boolean> {
+        if (Platform.OS === "android") {
+            // Firebase works well to ensure token init state on android
+            return true;
+        }
+
+        return new Promise<boolean>(async (resolve) => {
+            await messaging().registerDeviceForRemoteMessages();
+            Notifications.registerRemoteNotifications();
+            Notifications.events().registerRemoteNotificationsRegistered((_) => {
+                resolve(true);
+            });
+
+            Notifications.events().registerRemoteNotificationsRegistrationFailed((e) => {
+                console.error(e);
+                resolve(false);
+            });
+
+            Notifications.events().registerRemoteNotificationsRegistrationDenied(() => {
+                resolve(false);
+            });
         });
     }
 

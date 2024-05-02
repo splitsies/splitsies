@@ -36,7 +36,7 @@ export const RootNavigator = () => {
         _versionManager.initialized.then(() => {
             if (_versionManager.requiresUpdate) {
                 navigation.navigate("UpdateRequiredScreen");
-                SplashScreen.hide();
+                setTimeout(() => SplashScreen.hide(), 300);
                 return;
             }
 
@@ -46,7 +46,7 @@ export const RootNavigator = () => {
                         next: (credential) => onUserUpdated(credential),
                     }),
                 );
-                SplashScreen.hide();
+                setTimeout(() => SplashScreen.hide(), 300);
             });
         });
 
