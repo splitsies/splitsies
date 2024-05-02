@@ -28,8 +28,10 @@ export class NotificationManager extends BaseManager implements INotificationMan
     protected async initialize(): Promise<void> {
         await this._api.initialized;
         const status = await this._permissionRequester.requestPushNotificationPermission();
-        if (status !== "granted") { return; }
-        
+        if (status !== "granted") {
+            return;
+        }
+
         await this._userManager.initialized;
         await messaging().getAPNSToken();
         await messaging().registerDeviceForRemoteMessages();
@@ -39,10 +41,10 @@ export class NotificationManager extends BaseManager implements INotificationMan
         messaging().onMessage(this.onForegroundNotification.bind(this));
         messaging().onNotificationOpenedApp(this.onNotificationOpened.bind(this));
 
-        this._userManager.user$.pipe(filter(u => !!u)).subscribe({ next: this.onUserUpdated.bind(this) });
+        this._userManager.user$.pipe(filter((u) => !!u)).subscribe({ next: this.onUserUpdated.bind(this) });
         this._userManager.signoutRequested$.subscribe({ next: this.onSignoutRequested.bind(this) });
         this._settingsManager.joinRequestNotificationsAllowed$.subscribe({
-            next: this.onPushNotificationSettingsChanged.bind(this)
+            next: this.onPushNotificationSettingsChanged.bind(this),
         });
     }
 
@@ -69,12 +71,12 @@ export class NotificationManager extends BaseManager implements INotificationMan
 
     private async onUserUpdated(user: UserCredential | null): Promise<void> {
         // Signout handled separately
-        if (!user) { return; }
+        if (!user) {
+            return;
+        }
 
-        const token = messaging().isDeviceRegisteredForRemoteMessages
-            ? await messaging().getToken()
-            : "";
-                
+        const token = messaging().isDeviceRegisteredForRemoteMessages ? await messaging().getToken() : "";
+
         await this.refreshPersistedToken(user.user.id, token);
     }
 
@@ -84,7 +86,7 @@ export class NotificationManager extends BaseManager implements INotificationMan
             await this.refreshPersistedToken(undefined, "");
         } else if (allowed && !messaging().isDeviceRegisteredForRemoteMessages) {
             await messaging().registerDeviceForRemoteMessages();
-            
+
             const token = await messaging().getToken();
             await this.refreshPersistedToken(this._userManager.userId, token);
         }

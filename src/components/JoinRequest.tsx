@@ -7,7 +7,7 @@ import { IColorConfiguration } from "../models/configuration/color-config/color-
 import { IExpenseJoinRequest } from "../models/expense-join-request/expense-join-request-interface";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 
-const { card } = lazyInject<IUiConfiguration>(IUiConfiguration)
+const { card } = lazyInject<IUiConfiguration>(IUiConfiguration);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 
 type Props = {
@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
         marginBottom: 15,
         borderRadius: card.borderRadius,
         borderWidth: card.borderWidth,
-        borderColor: Colors.divider
+        borderColor: Colors.divider,
     },
     buttonContainer: {
         flexDirection: "row",
@@ -72,5 +72,5 @@ const styles = StyleSheet.create({
     },
     button: {
         flex: 1,
-    }
+    },
 });

@@ -12,7 +12,7 @@ export class StyleManager implements IStyleManager {
     readonly typography = {
         heading: { fontSize: 27, fontFamily: "Avenir-Heavy" },
         subheading: { fontSize: 24, fontFamily: "Avenir-Heavy" },
-        body: { fontSize: 15, fontFamily: "Avenir-Heavy", },
+        body: { fontSize: 15, fontFamily: "Avenir-Heavy" },
         bodyBold: { fontSize: 16, fontFamily: "Avenir-Heavy" },
         subtext: { fontSize: 13, fontFamily: "Avenir-Heavy" },
         letter: { fontFamily: "ZillaSlab-Bold" },

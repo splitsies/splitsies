@@ -4,4 +4,4 @@ export interface IApiConfig {
     readonly users: string;
     readonly ocr: string;
     readonly notification: string;
-};
+}

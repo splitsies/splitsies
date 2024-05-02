@@ -92,9 +92,7 @@ container.bind<IInviteViewModel>(IInviteViewModel).to(InviteViewModel);
 container.bind<IHomeViewModel>(IHomeViewModel).to(HomeViewModel);
 container.bind<IThemeViewModel>(IThemeViewModel).to(ThemeViewModel);
 container.bind<IUiConfiguration>(IUiConfiguration).to(UiConfiguration);
-container
-    .bind<IExpenseMessageParametersMapper>(IExpenseMessageParametersMapper)
-    .to(ExpenseMessageParametersMapper);
+container.bind<IExpenseMessageParametersMapper>(IExpenseMessageParametersMapper).to(ExpenseMessageParametersMapper);
 
 container.bind<ITransactionNoteBuilder>(ITransactionNoteBuilder).to(TransactionNoteBuilder);
 container.bind<IClipboardUtility>(IClipboardUtility).to(ClipboardUtility);

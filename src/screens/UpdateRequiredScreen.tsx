@@ -23,11 +23,14 @@ export const UpdateRequiredScreen = SpThemedComponent(({ navigation }: Props) =>
 
     return (
         <SafeAreaView style={styles.container}>
-
             <View style={{ display: "flex", flex: 4, justifyContent: "center" }}>
                 <SplitsiesTitle style={{ flex: 0, marginTop: 0 }} />
-                <Text letterHeading marginT-35 marginB-10 marginL-10 style={{ fontSize: 32 }}>Time for an upgrade!</Text>
-                <Text hint marginL-10>A new app version is available. Update now to get the latest and greatest features.</Text>
+                <Text letterHeading marginT-35 marginB-10 marginL-10 style={{ fontSize: 32 }}>
+                    Time for an upgrade!
+                </Text>
+                <Text hint marginL-10>
+                    A new app version is available. Update now to get the latest and greatest features.
+                </Text>
             </View>
 
             <View style={styles.versionContainer}>
@@ -46,7 +49,6 @@ export const UpdateRequiredScreen = SpThemedComponent(({ navigation }: Props) =>
                     {getEnvironmentSuffix()}
                 </Text>
             </View>
-            
         </SafeAreaView>
     );
 });
@@ -74,6 +76,6 @@ const styles = StyleSheet.create({
     },
     input: {
         display: "flex",
-        width: "75%"
+        width: "75%",
     },
 });

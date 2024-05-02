@@ -20,10 +20,9 @@ const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _viewModel = lazyInject<IHomeViewModel>(IHomeViewModel);
 const _requestConfiguration = lazyInject<IRequestConfiguration>(IRequestConfiguration);
 
-
 export const RequestsFeedScreen = ({ route: { params: expenseId } }: Props): JSX.Element => {
     const filter = (joinRequests: IExpenseJoinRequest[]): IExpenseJoinRequest[] =>
-        expenseId?.expenseId ? joinRequests.filter(j => j.expense.id === expenseId?.expenseId) : joinRequests;
+        expenseId?.expenseId ? joinRequests.filter((j) => j.expense.id === expenseId?.expenseId) : joinRequests;
 
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const joinRequests = useObservableReducer(_expenseManager.expenseJoinRequests$, [], filter, [expenseId]);
@@ -42,7 +41,7 @@ export const RequestsFeedScreen = ({ route: { params: expenseId } }: Props): JSX
 
     const onApproveRequest = async (joinRequest: IExpenseJoinRequest): Promise<void> => {
         await _expenseManager.removeExpenseJoinRequestForUser(joinRequest.expense.id);
-        
+
         _viewModel.setPendingData(true);
         void _expenseManager.connectToExpense(joinRequest.expense.id);
 
@@ -67,7 +66,7 @@ export const RequestsFeedScreen = ({ route: { params: expenseId } }: Props): JSX
     };
 
     return (
-        <Container style={{paddingHorizontal: 15}}>
+        <Container style={{ paddingHorizontal: 15 }}>
             <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
                 {joinRequests.length > 0 ? (
                     joinRequests.map((r) => (

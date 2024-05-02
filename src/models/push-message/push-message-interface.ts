@@ -3,6 +3,6 @@ import { NotificationType } from "../../types/notification-type";
 
 export interface IPushMessage {
     type: NotificationType;
-    data?: {[key: string]: string | object; } | undefined,
-    notification?: FirebaseMessagingTypes.Notification
+    data?: { [key: string]: string | object } | undefined;
+    notification?: FirebaseMessagingTypes.Notification;
 }

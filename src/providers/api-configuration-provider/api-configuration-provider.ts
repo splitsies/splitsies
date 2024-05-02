@@ -13,7 +13,6 @@ import productionConfig from "../../config/api-production.config.json";
 
 @injectable()
 export class ApiConfigurationProvider extends BaseManager implements IApiConfigurationProvider {
-
     private readonly _versionManager = lazyInject<IVersionManager>(IVersionManager);
     private _apiConfiguration: IApiConfig = localConfig;
 
@@ -22,7 +21,7 @@ export class ApiConfigurationProvider extends BaseManager implements IApiConfigu
     }
 
     protected async initialize(): Promise<void> {
-        await this._versionManager.initialized;        
+        await this._versionManager.initialized;
         this._apiConfiguration = this._versionManager.isPrerelease
             ? new ApiConfig(stagingConfig)
             : new ApiConfig(this.provideConfig());

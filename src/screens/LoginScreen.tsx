@@ -34,11 +34,11 @@ export const LoginScreen = SpThemedComponent(({ navigation }: Props) => {
     const onConnect = () => {
         const subscription = new Subscription();
         subscription.add(_userManager.user$.subscribe({ next: (cred) => void onUserCredential(cred) }));
-        
+
         return () => {
             attempts.current = 0;
             subscription.unsubscribe();
-        }
+        };
     };
 
     const onLoginClicked = (e: string, p: string) => {
@@ -50,7 +50,7 @@ export const LoginScreen = SpThemedComponent(({ navigation }: Props) => {
     const onUserCredential = async (credential: IUserCredential | null) => {
         await _versionManager.initialized;
         if (_versionManager.requiresUpdate) return;
-        
+
         if (!credential || !credential.authToken) {
             if (attempts.current > 0) {
                 setValidationError("You've entered an incorrect username or password. Please try again.");

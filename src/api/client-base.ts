@@ -15,14 +15,11 @@ export abstract class ClientBase extends BaseManager {
 
     protected _config: IApiConfig = undefined!;
     protected _scanPageKeys = new Map<string, Record<string, object> | null>();
-    
 
     protected async initialize(): Promise<void> {
         await this._apiConfigurationProvider.initialized;
         this._config = await this._apiConfigurationProvider.provide();
     }
-
-
 
     parseResponse<T>(response: any): IDataResponse<T> {
         return response as IDataResponse<T>;

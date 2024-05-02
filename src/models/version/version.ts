@@ -1,7 +1,6 @@
 import { IVersion } from "./version-interface";
 
 export class Version implements IVersion {
-
     readonly major: number;
     readonly minor: number;
     readonly patch: number;
@@ -21,9 +20,11 @@ export class Version implements IVersion {
     }
 
     get isDefault(): boolean {
-        return this.major === Number.MAX_SAFE_INTEGER
-            && this.minor === Number.MAX_SAFE_INTEGER
-            && this.patch === Number.MAX_SAFE_INTEGER;
+        return (
+            this.major === Number.MAX_SAFE_INTEGER &&
+            this.minor === Number.MAX_SAFE_INTEGER &&
+            this.patch === Number.MAX_SAFE_INTEGER
+        );
     }
 
     isGreater(other: IVersion): boolean {
@@ -36,5 +37,4 @@ export class Version implements IVersion {
         if (this.patch > other.patch) return true;
         return false;
     }
-
 }

@@ -30,7 +30,10 @@ export const SearchScreen = SpThemedComponent(() => {
     const [users, setUsers] = useState<IExpenseUserDetails[]>([]);
     const [fetchingPage, setFetchingPage] = useState<boolean>(false);
 
-    useFocusEffect(() => {_inviteViewModel.setMode("search"); search(searchFilter);});
+    useFocusEffect(() => {
+        _inviteViewModel.setMode("search");
+        search(searchFilter);
+    });
 
     const search = useCallback(
         debounce(async (search: string) => {

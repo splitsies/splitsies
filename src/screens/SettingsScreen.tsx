@@ -17,16 +17,20 @@ import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-co
 import { TouchableOpacity } from "react-native-gesture-handler";
 
 const _settingsManager = lazyInject<ISettingsManager>(ISettingsManager);
-const { sizes: { icon } } = lazyInject<IUiConfiguration>(IUiConfiguration);
+const {
+    sizes: { icon },
+} = lazyInject<IUiConfiguration>(IUiConfiguration);
 
 type Props = CompositeScreenProps<
     NativeStackScreenProps<RootStackParamList>,
     DrawerScreenProps<DrawerParamList, "Settings">
-    >;
-
+>;
 
 export const SettingsScreen = SpThemedComponent(({ navigation }: Props) => {
-    const joinRequestNotificationsAllowed = useObservable<boolean>(_settingsManager.joinRequestNotificationsAllowed$, false);
+    const joinRequestNotificationsAllowed = useObservable<boolean>(
+        _settingsManager.joinRequestNotificationsAllowed$,
+        false,
+    );
 
     const openSettings = useCallback(() => {
         void Linking.openSettings();
@@ -41,7 +45,8 @@ export const SettingsScreen = SpThemedComponent(({ navigation }: Props) => {
                         <Switch
                             onColor={Colors.primary}
                             value={joinRequestNotificationsAllowed}
-                            onValueChange={_settingsManager.setJoinRequestNotificationsAllowed.bind(_settingsManager)} />
+                            onValueChange={_settingsManager.setJoinRequestNotificationsAllowed.bind(_settingsManager)}
+                        />
                     </View>
                 </SettingsGroup>
 
@@ -53,7 +58,6 @@ export const SettingsScreen = SpThemedComponent(({ navigation }: Props) => {
                         </View>
                     </TouchableOpacity>
                 </SettingsGroup>
-                
             </ScrollView>
         </Container>
     );
@@ -71,5 +75,5 @@ const styles = StyleSheet.create({
         alignItems: "center",
         paddingHorizontal: 15,
         marginVertical: 12,
-    }
+    },
 });

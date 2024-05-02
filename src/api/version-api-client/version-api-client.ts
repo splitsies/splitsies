@@ -15,9 +15,8 @@ export class VersionApiClient implements IVersionApiClient {
     private readonly _endpoint: string = "https://3bagj5p6y2.execute-api.us-east-1.amazonaws.com/production";
 
     constructor() {
-
         if (Config.STAGE !== "production") {
-            this._endpoint = "https://842gezrnph.execute-api.us-east-1.amazonaws.com/devpr"
+            this._endpoint = "https://842gezrnph.execute-api.us-east-1.amazonaws.com/devpr";
         }
     }
 

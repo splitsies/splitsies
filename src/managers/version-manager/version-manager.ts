@@ -8,7 +8,7 @@ import { Version } from "../../models/version/version";
 import Config from "react-native-config";
 
 @injectable()
-export class VersionManager extends BaseManager implements IVersionManager {    
+export class VersionManager extends BaseManager implements IVersionManager {
     private _requiresUpdate = false;
     private _isPrerelease = false;
 
@@ -35,7 +35,7 @@ export class VersionManager extends BaseManager implements IVersionManager {
     get requiresUpdate(): boolean {
         return this._requiresUpdate;
     }
-    
+
     get isPrerelease(): boolean {
         return this._isPrerelease;
     }
