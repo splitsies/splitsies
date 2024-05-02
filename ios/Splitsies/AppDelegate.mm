@@ -32,7 +32,7 @@
 
 - (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
   [RNNotifications didRegisterForRemoteNotificationsWithDeviceToken:deviceToken];
-  [FIRMessaging messaging] = deviceToken;
+  [FIRMessaging messaging].APNSToken = deviceToken;
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
