@@ -26,6 +26,7 @@ export class NotificationManager extends BaseManager implements INotificationMan
     }
 
     protected async initialize(): Promise<void> {
+        await this._api.initialized;
         const status = await this._permissionRequester.requestPushNotificationPermission();
         if (status !== "granted") { return; }
         

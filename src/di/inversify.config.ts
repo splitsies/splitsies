@@ -69,6 +69,8 @@ import { IVersionApiClient } from "../api/version-api-client/version-api-client-
 import { VersionApiClient } from "../api/version-api-client/version-api-client";
 import { IApiConfigurationProvider } from "../providers/api-configuration-provider/api-configuration-provider-interface";
 import { ApiConfigurationProvider } from "../providers/api-configuration-provider/api-configuration-provider";
+import { IVersionManager } from "../managers/version-manager/version-manager-interface";
+import { VersionManager } from "../managers/version-manager/version-manager";
 const container = new Container({ defaultScope: "Singleton" });
 
 container.bind<IApiConfigurationProvider>(IApiConfigurationProvider).to(ApiConfigurationProvider);
@@ -109,5 +111,6 @@ container.bind<INotificationApiClient>(INotificationApiClient).to(NotificationAp
 container.bind<IMessageHub>(IMessageHub).to(WritableMessageHub);
 container.bind<IWritableMessageHub>(IWritableMessageHub).to(WritableMessageHub);
 container.bind<ISettingsManager>(ISettingsManager).to(SettingsManager);
-container.bind<IVersionApiClient>(IVersionApiClient).to(VersionApiClient);
+container.bind<IVersionApiClient>(IVersionApiClient).to(VersionApiClient).inTransientScope();
+container.bind<IVersionManager>(IVersionManager).to(VersionManager);
 export { container };

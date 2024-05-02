@@ -35,7 +35,7 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
     }
 
     async authenticate(username: string, password: string): Promise<void> {
-        await this.initialized;
+        
         const url = `${this._config.users}/auth`;
 
         try {
@@ -53,7 +53,7 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
     }
 
     async create(user: CreateUserRequest): Promise<ICreateUserResult> {
-        await this.initialized;
+        
         try {
             const result = await this.postJson<IUserCredential>(this._config.users, { user });
             if (!result.success) {
@@ -69,7 +69,7 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
     }
 
     async requestFindUsersByPhoneNumber(phoneNumbers: string[]): Promise<IExpenseUserDetails[]> {
-        await this.initialized;
+        
         const remaining = phoneNumbers.filter((p) => !this._userCache.hasPhoneNumber(p));
         const cachedUsers = phoneNumbers
             .filter((p) => this._userCache.hasPhoneNumber(p))
@@ -101,7 +101,7 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
     }
 
     async requestUsersByIds(ids: string[]): Promise<IExpenseUserDetails[]> {
-        await this.initialized;
+        
         if (ids.length === 0) return [];
         const users = ids.map((i) => this._userCache.get(i)).filter((u) => u !== undefined) as IExpenseUserDetails[];
         const uncachedIds = ids.filter((id) => !users.find((u) => u.id === id));
@@ -134,14 +134,14 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
     }
 
     async requestAddGuestUser(givenName: string, familyName: string, phoneNumber: string): Promise<IUserDto> {
-        await this.initialized;
+        
         const url = `${this._config.users}/guests`;
         const result = await this.postJson<IUserDto>(url, { givenName, familyName, phoneNumber });
         return result.data;
     }
 
     async requestFindUsers(search: string, reset: boolean): Promise<IExpenseUserDetails[]> {
-        await this.initialized;
+        
         const pageKey = "requestFindUsers";
         if (reset && this._scanPageKeys.has(pageKey)) {
             this._scanPageKeys.delete(pageKey);
@@ -169,7 +169,7 @@ export class UsersApiClient extends ClientBase implements IUsersApiClient {
     }
 
     async deleteUser(): Promise<void> {
-        await this.initialized;
+        
         if (!this._user$.value) {
             return;
         }

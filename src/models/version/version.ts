@@ -27,11 +27,14 @@ export class Version implements IVersion {
     }
 
     isGreater(other: IVersion): boolean {
-        if (this.major <= other.major) return false;
-        if (this.minor <= other.minor) return false;
-        if (this.patch <= other.patch) return false;
+        if (this.major > other.major) return true;
+        if (this.major < other.major) return false;
 
-        return true;
+        if (this.minor > other.minor) return true;
+        if (this.minor < other.minor) return false;
+
+        if (this.patch > other.patch) return true;
+        return false;
     }
 
 }

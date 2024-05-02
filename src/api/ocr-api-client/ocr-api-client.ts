@@ -14,7 +14,7 @@ export class OcrApiClient extends ClientBase implements IOcrApiClient {
     }
 
     async scanImage(base64Image: string): Promise<IExpenseDto | null> {
-        await this.initialized;
+        
         const uri = `${this._config.ocr}process`;
 
         try {

@@ -7,8 +7,9 @@ import {
 } from "@splitsies/shared-models";
 import { Observable } from "rxjs";
 import { ICreateUserResult } from "../../models/create-user-result/create-user-result-interface";
+import { IBaseManager } from "../../managers/base-manager-interface";
 
-export interface IUsersApiClient {
+export interface IUsersApiClient extends IBaseManager {
     readonly user$: Observable<IUserCredential | null>;
     create(user: CreateUserRequest): Promise<ICreateUserResult>;
     authenticate(username: string, password: string): Promise<void>;

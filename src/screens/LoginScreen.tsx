@@ -13,7 +13,9 @@ import { useInitialize } from "../hooks/use-initialize";
 import { Text, View } from "react-native-ui-lib";
 import pkg from "../../package.json";
 import Config from "react-native-config";
+import { IVersionManager } from "../managers/version-manager/version-manager-interface";
 
+const _versionManager = lazyInject<IVersionManager>(IVersionManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
 
 type Props = NativeStackScreenProps<RootStackParamList, "LoginScreen">;
@@ -31,8 +33,12 @@ export const LoginScreen = SpThemedComponent(({ navigation }: Props) => {
 
     const onConnect = () => {
         const subscription = new Subscription();
-        subscription.add(_userManager.user$.subscribe({ next: (cred) => onUserCredential(cred) }));
-        return () => subscription.unsubscribe();
+        subscription.add(_userManager.user$.subscribe({ next: (cred) => void onUserCredential(cred) }));
+        
+        return () => {
+            attempts.current = 0;
+            subscription.unsubscribe();
+        }
     };
 
     const onLoginClicked = (e: string, p: string) => {
@@ -41,7 +47,10 @@ export const LoginScreen = SpThemedComponent(({ navigation }: Props) => {
         _userManager.requestAuthenticate(e, p);
     };
 
-    const onUserCredential = (credential: IUserCredential | null) => {
+    const onUserCredential = async (credential: IUserCredential | null) => {
+        await _versionManager.initialized;
+        if (_versionManager.requiresUpdate) return;
+        
         if (!credential || !credential.authToken) {
             if (attempts.current > 0) {
                 setValidationError("You've entered an incorrect username or password. Please try again.");

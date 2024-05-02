@@ -33,6 +33,7 @@ export class UserManager extends BaseManager implements IUserManager {
     }
 
     protected async initialize(): Promise<any> {
+        await this._client.initialized;
         this._client.user$.subscribe({
             next: (user) => this.onUserUpdated(user),
         });

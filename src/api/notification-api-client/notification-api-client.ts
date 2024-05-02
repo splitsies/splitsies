@@ -19,7 +19,7 @@ export class NotificationApiClient extends ClientBase implements INotificationAp
         oldUserId?: string;
         oldDeviceToken?: string;
     }): Promise<void> {
-        await this.initialized;
+        
         const uri = `${this._config.notification}v1/tokens`;
 
         const { newUserId, newDeviceToken, oldUserId, oldDeviceToken } = params;

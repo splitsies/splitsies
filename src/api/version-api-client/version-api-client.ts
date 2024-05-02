@@ -26,7 +26,9 @@ export class VersionApiClient implements IVersionApiClient {
             const response = await this.get<string>(`${this._endpoint}/minimum`);
             return new Version(response?.data);
         } catch {
-            return new Version("N/A");
+            // On errors getting data allow the user to use the app. Chances are they don't have signal,
+            // so they won't be able to login anyway.
+            return new Version("0.0.0");
         }
     }
 
@@ -50,8 +52,8 @@ export class VersionApiClient implements IVersionApiClient {
 
         const dataResponse = await response.json();
 
-        if (!dataResponse.success) {
-            console.error(`endpoint = ${url}, response - ${JSON.stringify(response, null, 2)}`);
+        if (dataResponse.statusCode !== 200) {
+            console.error(`endpoint = ${url}, response - ${JSON.stringify(dataResponse, null, 2)}`);
             throw new Error(dataResponse.data);
         }
 

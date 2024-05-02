@@ -7,6 +7,7 @@ export type RootStackParamList = {
     ExpenseScreen: undefined;
     CameraScreen: undefined;
     ImageScreen: { image: IImage };
+    UpdateRequiredScreen: undefined;
 };
 
 export type DrawerParamList = {
