@@ -1,6 +1,5 @@
 import { injectable } from "inversify";
 import { IExpenseApiClient } from "./expense-api-client-interface";
-import { IApiConfig } from "../../models/configuration/api-config/api-config-interface";
 import { BehaviorSubject, Observable } from "rxjs";
 import {
     ExpenseMessageParameters,
@@ -19,7 +18,6 @@ import { IUserExpenseDto } from "../../models/user-expense-dto/user-expense-dto-
 export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     private _connection!: WebSocket;
     private readonly _sessionExpense$ = new BehaviorSubject<IExpenseDto | null>(null);
-    private readonly _config = lazyInject<IApiConfig>(IApiConfig);
     private readonly _authProvider = lazyInject<IAuthProvider>(IAuthProvider);
     private readonly _expenseMessageParametersMapper = lazyInject<IExpenseMessageParametersMapper>(
         IExpenseMessageParametersMapper,
@@ -34,6 +32,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     async getAllExpenses(reset = true): Promise<IExpenseDto[]> {
+        await this.initialized;
         const pageKey = "getAllExpenses";
         const userId = this._authProvider.provideIdentity();
         if (!userId) {
@@ -58,6 +57,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     async getExpense(expenseId: string): Promise<void> {
+        await this.initialized;
         const uri = `${this._config.expense}/${expenseId}`;
         try {
             const expense = await this.get<IExpenseDto>(uri, this._authProvider.provideAuthHeader());
@@ -68,6 +68,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     async connectToExpense(expenseId: string): Promise<void> {
+        await this.initialized;
         const tokenResponse = await this.postJson<string>(
             `${this._config.expense}/${expenseId}/connections/tokens`,
             {},
@@ -102,6 +103,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     async getUserIdsForExpense(expenseId: string): Promise<string[]> {
+        await this.initialized;
         const url = `${this._config.expense}/${expenseId}/users`;
 
         try {
@@ -113,6 +115,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     async addUserToExpense(userId: string, expenseId: string): Promise<void> {
+        await this.initialized;
         const url = `${this._config.expense}/${expenseId}/users`;
 
         try {
@@ -124,6 +127,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     async removeUserFromExpense(userId: string, expenseId: string): Promise<void> {
+        await this.initialized;
         const url = `${this._config.expense}/${expenseId}/users/${userId}`;
 
         try {
@@ -134,6 +138,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     async createFromExpense(expenseDto: IExpenseDto): Promise<boolean> {
+        await this.initialized;
         try {
             console.log({ expenseDto });
             const body = { userId: this._authProvider.provideIdentity(), expense: expenseDto };
@@ -158,6 +163,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     async createExpense(base64Image: string | undefined = undefined): Promise<boolean> {
+        await this.initialized;
         try {
             const body = { userId: this._authProvider.provideIdentity() };
             const response = await this.postJson<IExpenseDto>(
@@ -180,6 +186,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     async getExpenseJoinRequests(): Promise<IUserExpenseDto[]> {
+        await this.initialized;
         try {
             const url = `${this._config.expense}/requests/${this._authProvider.provideIdentity()}`;
             const response = await this.get<IUserExpenseDto[]>(url, this._authProvider.provideAuthHeader());
@@ -190,6 +197,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     async removeExpenseJoinRequest(expenseId: string, userId: string | undefined = undefined): Promise<void> {
+        await this.initialized;
         try {
             const url = `${this._config.expense}/${expenseId}/requests/${
                 userId ?? this._authProvider.provideIdentity()
@@ -201,6 +209,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     async sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void> {
+        await this.initialized;
         try {
             const url = `${this._config.expense}/requests`;
             const response = await this.postJson<void>(
@@ -277,11 +286,13 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     private async onExpenseConnection(promiseResolver: () => void, expenseId: string): Promise<void> {
+        await this.initialized;
         await this.getExpense(expenseId);
         promiseResolver();
     }
 
     private async onMessage(e: WebSocketMessageEvent): Promise<void> {
+        await this.initialized;
         const message = JSON.parse(e.data) as IExpenseDto;
         this._sessionExpense$.next(message);
     }

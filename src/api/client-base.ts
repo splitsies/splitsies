@@ -1,13 +1,28 @@
 import { IDataResponse } from "@splitsies/shared-models";
 import { injectable } from "inversify";
+import { BaseManager } from "../managers/base-manager";
+import { lazyInject } from "../utils/lazy-inject";
+import { IApiConfigurationProvider } from "../providers/api-configuration-provider/api-configuration-provider-interface";
+import { IApiConfig } from "../models/configuration/api-config/api-config-interface";
 
 /**
  * Base class for providing HTTP response parsing for Splitsies APIs,
  * which require responses to be an IDataResponse in the body.response
  */
 @injectable()
-export abstract class ClientBase {
+export abstract class ClientBase extends BaseManager {
+    private readonly _apiConfigurationProvider = lazyInject<IApiConfigurationProvider>(IApiConfigurationProvider);
+
+    protected _config: IApiConfig = undefined!;
     protected _scanPageKeys = new Map<string, Record<string, object> | null>();
+    
+
+    protected async initialize(): Promise<void> {
+        await this._apiConfigurationProvider.initialized;
+        this._config = await this._apiConfigurationProvider.provide();
+    }
+
+
 
     parseResponse<T>(response: any): IDataResponse<T> {
         return response as IDataResponse<T>;

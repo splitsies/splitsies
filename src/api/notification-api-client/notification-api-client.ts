@@ -1,13 +1,12 @@
 import { injectable } from "inversify";
 import { INotificationApiClient } from "./notification-api-client-interface";
-import { IApiConfig } from "../../models/configuration/api-config/api-config-interface";
 import { ClientBase } from "../client-base";
 import { lazyInject } from "../../utils/lazy-inject";
 import { IAuthProvider } from "../../providers/auth-provider/auth-provider-interface";
+import { IApiConfigurationProvider } from "../../providers/api-configuration-provider/api-configuration-provider-interface";
 
 @injectable()
 export class NotificationApiClient extends ClientBase implements INotificationApiClient {
-    private readonly _config = lazyInject<IApiConfig>(IApiConfig);
     private readonly _authProvider = lazyInject<IAuthProvider>(IAuthProvider);
 
     constructor() {
@@ -20,6 +19,7 @@ export class NotificationApiClient extends ClientBase implements INotificationAp
         oldUserId?: string;
         oldDeviceToken?: string;
     }): Promise<void> {
+        await this.initialized;
         const uri = `${this._config.notification}v1/tokens`;
 
         const { newUserId, newDeviceToken, oldUserId, oldDeviceToken } = params;
