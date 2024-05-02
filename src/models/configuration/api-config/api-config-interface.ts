@@ -5,5 +5,3 @@ export interface IApiConfig {
     readonly ocr: string;
     readonly notification: string;
 }
-
-export const IApiConfig = Symbol.for("IApiConfig");

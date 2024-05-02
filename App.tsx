@@ -19,9 +19,8 @@ function App(): JSX.Element {
     const colorScheme = useColorScheme();
 
     useInitialize(() => {
-        _notificationManager.initialized.then(() => {
-            void _adManager.initialize();
-        });
+        void _notificationManager.initialized;
+        void _adManager.initialize();
     });
 
     useEffect(() => {

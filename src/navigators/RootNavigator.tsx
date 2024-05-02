@@ -15,29 +15,39 @@ import { useInitialize } from "../hooks/use-initialize";
 import { ExpenseNavigator } from "../navigators/ExpenseNavigator";
 import { HomeNavigator } from "../navigators/HomeNavigator";
 import SplashScreen from "react-native-splash-screen";
-import { IMessageHub } from "../hubs/message-hub/message-hub-interface";
+import { UpdateRequiredScreen } from "../screens/UpdateRequiredScreen";
+import { version } from "../../package.json";
+import { Version } from "../models/version/version";
+import { IVersionManager } from "../managers/version-manager/version-manager-interface";
 
+const _versionManager = lazyInject<IVersionManager>(IVersionManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
-const _messageHub = lazyInject<IMessageHub>(IMessageHub);
+const _appVersion = new Version(version);
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export const RootNavigator = () => {
-    const [initialRoute, setInitialRoute] = useState<"RootScreen" | "LoginScreen">("LoginScreen");
     const [userId, setUserId] = useState<string>("");
     const navigation = useNavigation<NavigationProp<RootStackParamList>>();
 
     useInitialize(() => {
         const subscription = new Subscription();
 
-        _userManager.initialized.then(() => {
-            setInitialRoute(_userManager.user ? "RootScreen" : "LoginScreen");
-            subscription.add(
-                _userManager.user$.subscribe({
-                    next: (credential) => onUserUpdated(credential),
-                }),
-            );
-            SplashScreen.hide();
+        _versionManager.initialized.then(() => {
+            if (_versionManager.requiresUpdate) {
+                navigation.navigate("UpdateRequiredScreen");
+                setTimeout(() => SplashScreen.hide(), 300);
+                return;
+            }
+
+            _userManager.initialized.then(() => {
+                subscription.add(
+                    _userManager.user$.subscribe({
+                        next: (credential) => onUserUpdated(credential),
+                    }),
+                );
+                setTimeout(() => SplashScreen.hide(), 300);
+            });
         });
 
         return () => subscription.unsubscribe();
@@ -47,7 +57,6 @@ export const RootNavigator = () => {
         if (cred && cred.user.id === userId) return;
         setUserId(cred?.user.id ?? "");
         const screen = cred ? "RootScreen" : "LoginScreen";
-        setInitialRoute(screen);
         navigation.navigate(screen);
     };
 
@@ -59,6 +68,7 @@ export const RootNavigator = () => {
             <Stack.Screen name="ExpenseScreen" component={ExpenseNavigator} options={{ gestureEnabled: false }} />
             <Stack.Screen name="CameraScreen" component={CameraScreen} />
             <Stack.Screen name="ImageScreen" component={ImageScreen} />
+            <Stack.Screen name="UpdateRequiredScreen" component={UpdateRequiredScreen} />
         </Stack.Navigator>
     );
 };

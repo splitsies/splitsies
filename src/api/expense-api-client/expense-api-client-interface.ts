@@ -1,8 +1,9 @@
-import { IExpenseDto, IExpenseItem, IExpenseUserDetails, IUserCredential } from "@splitsies/shared-models";
+import { IExpenseDto, IExpenseItem, IExpenseUserDetails } from "@splitsies/shared-models";
 import { Observable } from "rxjs";
 import { IUserExpenseDto } from "../../models/user-expense-dto/user-expense-dto-interface";
+import { IBaseManager } from "../../managers/base-manager-interface";
 
-export interface IExpenseApiClient {
+export interface IExpenseApiClient extends IBaseManager {
     readonly sessionExpense$: Observable<IExpenseDto | null>;
     getAllExpenses(reset?: boolean): Promise<IExpenseDto[]>;
     getExpense(expenseId: string): Promise<void>;

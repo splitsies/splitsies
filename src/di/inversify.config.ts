@@ -2,8 +2,6 @@ import "reflect-metadata";
 import { Container } from "inversify";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { ExpenseManager } from "../managers/expense-manager/expense-manager";
-import { IApiConfig } from "../models/configuration/api-config/api-config-interface";
-import { ApiConfig } from "../models/configuration/api-config/api-config";
 import { IUsersApiClient } from "../api/users-api-client/users-api-client-interface";
 import { UsersApiClient } from "../api/users-api-client/users-api-client";
 import { IExpenseApiClient } from "../api/expense-api-client/expense-api-client-interface";
@@ -67,9 +65,15 @@ import { IWritableMessageHub } from "../hubs/writable-message-hub/writable-messa
 import { WritableMessageHub } from "../hubs/writable-message-hub/writable-message-hub";
 import { ISettingsManager } from "../managers/settings-manager/settings-manager-interface";
 import { SettingsManager } from "../managers/settings-manager/settings-manager";
+import { IVersionApiClient } from "../api/version-api-client/version-api-client-interface";
+import { VersionApiClient } from "../api/version-api-client/version-api-client";
+import { IApiConfigurationProvider } from "../providers/api-configuration-provider/api-configuration-provider-interface";
+import { ApiConfigurationProvider } from "../providers/api-configuration-provider/api-configuration-provider";
+import { IVersionManager } from "../managers/version-manager/version-manager-interface";
+import { VersionManager } from "../managers/version-manager/version-manager";
 const container = new Container({ defaultScope: "Singleton" });
 
-container.bind<IApiConfig>(IApiConfig).to(ApiConfig);
+container.bind<IApiConfigurationProvider>(IApiConfigurationProvider).to(ApiConfigurationProvider);
 container.bind<IExpenseManager>(IExpenseManager).to(ExpenseManager);
 container.bind<IUserManager>(IUserManager).to(UserManager);
 container.bind<IExpenseApiClient>(IExpenseApiClient).to(ExpenseApiClient);
@@ -88,9 +92,7 @@ container.bind<IInviteViewModel>(IInviteViewModel).to(InviteViewModel);
 container.bind<IHomeViewModel>(IHomeViewModel).to(HomeViewModel);
 container.bind<IThemeViewModel>(IThemeViewModel).to(ThemeViewModel);
 container.bind<IUiConfiguration>(IUiConfiguration).to(UiConfiguration);
-container
-    .bind<IExpenseMessageParametersMapper>(IExpenseMessageParametersMapper)
-    .to(ExpenseMessageParametersMapper);
+container.bind<IExpenseMessageParametersMapper>(IExpenseMessageParametersMapper).to(ExpenseMessageParametersMapper);
 
 container.bind<ITransactionNoteBuilder>(ITransactionNoteBuilder).to(TransactionNoteBuilder);
 container.bind<IClipboardUtility>(IClipboardUtility).to(ClipboardUtility);
@@ -107,4 +109,6 @@ container.bind<INotificationApiClient>(INotificationApiClient).to(NotificationAp
 container.bind<IMessageHub>(IMessageHub).to(WritableMessageHub);
 container.bind<IWritableMessageHub>(IWritableMessageHub).to(WritableMessageHub);
 container.bind<ISettingsManager>(ISettingsManager).to(SettingsManager);
+container.bind<IVersionApiClient>(IVersionApiClient).to(VersionApiClient).inTransientScope();
+container.bind<IVersionManager>(IVersionManager).to(VersionManager);
 export { container };

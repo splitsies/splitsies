@@ -2,5 +2,7 @@
     "expense": "https://tdi8ue4lj3.execute-api.us-east-1.amazonaws.com/production/expenses",
     "expenseSocket": "wss://o1bk5shwae.execute-api.us-east-1.amazonaws.com/production",
     "users": "https://g882ndqc41.execute-api.us-east-1.amazonaws.com/production/users",
-    "ocr": "https://g5i228tgg4.execute-api.us-east-1.amazonaws.com/production/"
+    "ocr": "https://g5i228tgg4.execute-api.us-east-1.amazonaws.com/production/",
+    "notification": "",
+    "version": "https://3bagj5p6y2.execute-api.us-east-1.amazonaws.com/production/"
 }

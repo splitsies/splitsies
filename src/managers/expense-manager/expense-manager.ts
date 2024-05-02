@@ -58,6 +58,8 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     protected async initialize(): Promise<void> {
         await this._userManager.initialized;
+        await this._api.initialized;
+        await this._ocr.initialized;
 
         this._userManager.user$.subscribe({
             next: (user) => this.onUserCredentialUpdated(user),

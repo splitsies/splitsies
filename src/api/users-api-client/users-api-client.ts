@@ -9,7 +9,6 @@ import {
     IUserCredential,
     IUserDto,
 } from "@splitsies/shared-models";
-import { IApiConfig } from "../../models/configuration/api-config/api-config-interface";
 import { ClientBase } from "../client-base";
 import { BehaviorSubject, Observable } from "rxjs";
 import { lazyInject } from "../../utils/lazy-inject";
@@ -19,7 +18,6 @@ import { IUserCache } from "../../utils/user-cache/user-cache-interface";
 
 @injectable()
 export class UsersApiClient extends ClientBase implements IUsersApiClient {
-    private readonly _config = lazyInject<IApiConfig>(IApiConfig);
     private readonly _userCache = lazyInject<IUserCache>(IUserCache);
     private readonly _expenseUserDetailsMapper = lazyInject<IExpenseUserDetailsMapper>(IExpenseUserDetailsMapper);
     private readonly _user$ = new BehaviorSubject<IUserCredential | null>(null);

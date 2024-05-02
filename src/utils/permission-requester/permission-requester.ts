@@ -44,9 +44,7 @@ export class PermissionRequester implements IPersmissionRequester {
 
         if (result === RESULTS.DENIED) {
             // The permission has not been requested, so request it.
-            await request(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY
-
-            );
+            await request(PERMISSIONS.IOS.APP_TRACKING_TRANSPARENCY);
         }
     }
 
@@ -56,15 +54,9 @@ export class PermissionRequester implements IPersmissionRequester {
             const enabled =
                 authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
                 authStatus === messaging.AuthorizationStatus.PROVISIONAL;
-
-            if (enabled) {
-                console.log("Authorization status:", authStatus);
-            }
-
             return enabled ? "granted" : "denied";
         } else if (Number(Platform.Version) >= 33) {
             const authStatus = await PermissionsAndroid.request(PermissionsAndroid.PERMISSIONS.POST_NOTIFICATIONS);
-            console.log({ authStatus });
             return authStatus;
         }
 

@@ -1,6 +1,5 @@
 import { injectable } from "inversify";
 import { IExpenseApiClient } from "./expense-api-client-interface";
-import { IApiConfig } from "../../models/configuration/api-config/api-config-interface";
 import { BehaviorSubject, Observable } from "rxjs";
 import {
     ExpenseMessageParameters,
@@ -19,7 +18,6 @@ import { IUserExpenseDto } from "../../models/user-expense-dto/user-expense-dto-
 export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     private _connection!: WebSocket;
     private readonly _sessionExpense$ = new BehaviorSubject<IExpenseDto | null>(null);
-    private readonly _config = lazyInject<IApiConfig>(IApiConfig);
     private readonly _authProvider = lazyInject<IAuthProvider>(IAuthProvider);
     private readonly _expenseMessageParametersMapper = lazyInject<IExpenseMessageParametersMapper>(
         IExpenseMessageParametersMapper,
