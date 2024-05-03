@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { FlatList, StyleSheet } from "react-native";
 import { Modal, View } from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
@@ -35,10 +35,12 @@ export const GuestScreen = SpThemedComponent(() => {
         _inviteViewModel.inviteMenuOpen,
     );
 
-    useFocusEffect(() => {
-        _inviteViewModel.setMode("guests");
-        _expenseViewModel.setScreen("Guests");
-    });
+    useFocusEffect(
+        useCallback(() => {
+            _inviteViewModel.setMode("guests");
+            _expenseViewModel.setScreen("Guests");
+        }, []),
+    );
 
     const onSaveGuest = async (name: string): Promise<void> => {
         const user = await _userManager.requestAddGuestUser(name, "", "");
