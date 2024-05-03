@@ -32,11 +32,11 @@ export const SearchScreen = SpThemedComponent(() => {
     const [users, setUsers] = useState<IExpenseUserDetails[]>([]);
     const [fetchingPage, setFetchingPage] = useState<boolean>(false);
 
-    useFocusEffect(() => {
+    useFocusEffect(useCallback(() => {
         _inviteViewModel.setMode("search");
         _expenseViewModel.setScreen("Search");
         search(searchFilter);
-    });
+    }, []));
 
     const search = useCallback(
         debounce(async (search: string) => {
@@ -49,6 +49,7 @@ export const SearchScreen = SpThemedComponent(() => {
 
     const fetchPage = async (): Promise<void> => {
         if (fetchingPage) return;
+
         setFetchingPage(true);
         const newList = [
             ...users,

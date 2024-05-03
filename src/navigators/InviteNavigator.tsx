@@ -54,9 +54,9 @@ export const InviteNavigator = SpThemedComponent(({ navigation }: Props) => {
 
     const [scannedUser, setScannedUser] = useState<IQrPayload | null>(null);
 
-    useFocusEffect(() => {
+    useFocusEffect(useCallback(() => {
         _expenseViewModel.onBackPress = onBackPress;
-    });
+    }, []));
 
     const onBackPress = useCallback(() => {
         navigation.navigate("Items");

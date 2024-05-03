@@ -43,15 +43,12 @@ export const UserInviteListItem = ({
 
         setAwaitingResponse(false);
 
-        if (
-            expenseUsers.map((u) => u.id).includes(user.id) ||
-            expenseUsers.some((u) => u.phoneNumber === user.phoneNumber)
-        ) {
+        if (expenseUsers.map((u) => u.id).includes(user.id)) {
             state = UserState.Joined;
         } else if (user.isRegistered) {
             state = UserState.AvailableToInvite;
         }
-
+        
         setUserState(state);
     }, [user, expenseUsers]);
 

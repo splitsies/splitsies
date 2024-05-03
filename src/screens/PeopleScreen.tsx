@@ -33,10 +33,10 @@ export const PeopleScreen = SpThemedComponent(({ navigation }: Props): JSX.Eleme
         () => _expenseViewModel.setAwaitingResponse(false),
     );
 
-    useFocusEffect(() => {
+    useFocusEffect(useCallback(() => {
         _expenseViewModel.onBackPress = onBackPress;
         _expenseViewModel.setScreen("People");
-    });
+    }, []));
 
     const onBackPress = useCallback(() => {
         navigation.navigate("Items");

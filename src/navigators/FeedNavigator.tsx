@@ -11,11 +11,18 @@ import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-co
 import Camera from "../../assets/icons/camera.svg";
 import Receipt from "../../assets/icons/receipt.svg";
 import People from "../../assets/icons/people.svg";
+import { useInitialize } from "../hooks/use-initialize";
+import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
+import { useObservableReducer } from "../hooks/use-observable-reducer";
+import { IExpenseJoinRequest } from "../models/expense-join-request/expense-join-request-interface";
 
 const Tab = createBottomTabNavigator();
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
+const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
+
+
 
 // TODO: Hack, satisfy the unused component param
 const C = () => {
@@ -23,6 +30,20 @@ const C = () => {
 };
 
 export const FeedNavigator = () => {
+    useInitialize(() => {
+        void _expenseManager.requestExpenseJoinRequests();
+    });
+
+    const requestsBadge = useObservableReducer<IExpenseJoinRequest[], string | undefined>(
+        _expenseManager.expenseJoinRequests$,
+        undefined,
+        (requests) => {
+            if (requests.length === 0) return undefined;
+            if (requests.length > 99) return "99+";
+            return `${requests.length}`;
+        }
+    );
+
     return (
         <Tab.Navigator
             initialRouteName="Feed"
@@ -63,9 +84,12 @@ export const FeedNavigator = () => {
             />
             <Tab.Screen
                 name="Requests"
-                component={RequestsFeedScreen}
-                options={{ tabBarIcon: ({ color, size }) => <People width={size} height={size} fill={color} /> }}
-                listeners={({ navigation }) => ({ blur: () => navigation.setParams({ expenseId: undefined }) })}
+                component={RequestsFeedScreen}            
+                options={{
+                    tabBarIcon: ({ color, size }) => <People width={size} height={size} fill={color} />,
+                    tabBarBadge: requestsBadge,
+                    tabBarBadgeStyle: styles.badge
+                }}
             />
         </Tab.Navigator>
     );
@@ -94,4 +118,12 @@ const styles = StyleSheet.create({
         alignItems: "center",
         marginBottom: 10,
     },
+    badge: {
+        marginLeft: 5,
+        marginTop: -2,
+        backgroundColor: _colorConfiguration.primary,
+        color: _colorConfiguration.black,
+        ..._styleManager.typography.letter,
+        fontSize: 13
+    }
 });

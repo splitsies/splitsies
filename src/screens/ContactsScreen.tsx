@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { FlatList, StyleSheet } from "react-native";
 import { View } from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
@@ -31,10 +31,10 @@ export const ContactsScreen = SpThemedComponent(() => {
 
     const searchFilter = useObservable(_inviteViewModel.searchFilter$, _inviteViewModel.searchFilter);
 
-    useFocusEffect(() => {
+    useFocusEffect(useCallback(() => {
         _inviteViewModel.setMode("contacts");
         _expenseViewModel.setScreen("Contacts");
-    });
+    }, []));
 
     const onUserInvited = async (user: IExpenseUserDetails): Promise<void> => {
         if (!user.isRegistered) {
