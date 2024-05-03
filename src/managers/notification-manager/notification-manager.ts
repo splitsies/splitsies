@@ -34,6 +34,11 @@ export class NotificationManager extends BaseManager implements INotificationMan
 
     protected async initialize(): Promise<void> {
         await this._api.initialized;
+        const openedNotification = await Notifications.getInitialNotification();
+        if (openedNotification) {
+            this.onNotificationOpened({ ...openedNotification, data: openedNotification.payload } as any);
+        }
+
         const status = await this._permissionRequester.requestPushNotificationPermission();
         if (status !== "granted") {
             return;
@@ -48,6 +53,10 @@ export class NotificationManager extends BaseManager implements INotificationMan
         messaging().setBackgroundMessageHandler(this.onBackgroundNotification.bind(this));
         messaging().onMessage(this.onForegroundNotification.bind(this));
         messaging().onNotificationOpenedApp(this.onNotificationOpened.bind(this));
+
+        Notifications.events().registerNotificationOpened((notification) => {
+            console.log({ notification });
+        });
 
         await this._userManager.initialized;
         this._userManager.user$.pipe(filter((u) => !!u)).subscribe({ next: this.onUserUpdated.bind(this) });

@@ -1,8 +1,6 @@
-
 <resources>
-  <!-- We'll use 'background' name to reference this color -->
-  <!-- Replace #HEX_VALUE with Your color -->
   <color name="background">#FFFFFF</color>
   <color name="primary">#FFBD2F</color>
   <color name="primary_dark">#FFBD2F</color>
+  <color name="bootsplash_background">#FFBD2F</color>
 </resources>

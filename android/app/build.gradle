@@ -151,7 +151,6 @@ dependencies {
     }
 
     implementation project(':react-native-contacts')
-    implementation project(':react-native-splash-screen')
     implementation project(':react-native-config')
 }
 

@@ -3,8 +3,8 @@
 #import <React/RCTLinkingManager.h>
 
 #import <React/RCTBundleURLProvider.h>
-#import "RNSplashScreen.h"
 #import "RNNotifications.h"
+#import "RNBootSplash.h"
 
 @implementation AppDelegate
 
@@ -17,7 +17,6 @@
   // They will be passed down to the ViewController used by React Native.
   self.initialProps = @{};
   bool result = [super application:application didFinishLaunchingWithOptions:launchOptions];
-  [RNSplashScreen show];
   return result;
 }
 
@@ -48,5 +47,13 @@
    options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
   return [RCTLinkingManager application:application openURL:url options:options];
+}
+
+- (UIView *)createRootViewWithBridge:(RCTBridge *)bridge
+                          moduleName:(NSString *)moduleName
+                           initProps:(NSDictionary *)initProps {
+  UIView *rootView = [super createRootViewWithBridge:bridge moduleName:moduleName initProps:initProps];
+  [RNBootSplash initWithStoryboard:@"BootSplash" rootView:rootView]; // ⬅️ initialize the splash screen
+  return rootView;
 }
 @end
