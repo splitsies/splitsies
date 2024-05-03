@@ -4,10 +4,11 @@ import { Colors, Text, TouchableOpacity, View } from "react-native-ui-lib/core";
 import { lazyInject } from "../utils/lazy-inject";
 import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
 import { useObservable } from "../hooks/use-observable";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 
-export const SelectItemsControl = () => {
+export const SelectItemsControl = SpThemedComponent(() => {
     const awaitingResponse = useObservable(_expenseViewModel.awaitingResponse$, false);
     return (
         <TouchableOpacity onPress={() => _expenseViewModel.setIsSelectingItems(true)}>
@@ -19,4 +20,4 @@ export const SelectItemsControl = () => {
             </View>
         </TouchableOpacity>
     );
-};
+});
