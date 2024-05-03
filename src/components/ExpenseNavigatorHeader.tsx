@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
         display: "flex",
         flexDirection: "row",
         width: "100%",
-        paddingVertical: 5,
+        paddingTop: 10,
         paddingHorizontal: 10,
     },
     arrowContainer: {
