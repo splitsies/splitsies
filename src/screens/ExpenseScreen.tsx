@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { ActivityIndicator, FlatList, SafeAreaView, StyleSheet } from "react-native";
+import { FlatList, SafeAreaView, StyleSheet } from "react-native";
 import { lazyInject } from "../utils/lazy-inject";
 import { DrawerParamList, RootStackParamList } from "../types/params";
 import { Observable, filter } from "rxjs";
@@ -16,18 +16,22 @@ import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { ListSeparator } from "../components/ListSeparator";
 import { ExpenseFooter } from "../components/ExpenseFooter";
 import { useObservable } from "../hooks/use-observable";
-import { CompositeScreenProps } from "@react-navigation/native";
+import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
 import { Container } from "../components/Container";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
-import ArrowBack from "../../assets/icons/arrow-back.svg";
-import Add from "../../assets/icons/add.svg";
 import { IExpense } from "../models/expense/expense-interface";
+import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
+import Add from "../../assets/icons/add.svg";
+import { IStyleManager } from "../managers/style-manager/style-manager-interface";
+import { Expense } from "../models/expense/expense";
 
+const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
+const _styleManager = lazyInject<IStyleManager>(IStyleManager);
 
 type Props = CompositeScreenProps<
     NativeStackScreenProps<RootStackParamList>,
@@ -35,17 +39,25 @@ type Props = CompositeScreenProps<
 >;
 
 export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
-    const expense = useObservable<IExpense>(
-        _expenseManager.currentExpense$.pipe(filter((e) => e != null)) as Observable<IExpense>,
-        _expenseManager.currentExpense!,
-        () => setAwaitingResponse(false),
-    );
+    const [expense, setExpense] = useState<IExpense>(_expenseManager.currentExpense!);
     const [selectedItem, setSelectedItem] = useState<IExpenseItem | null>(null);
     const [editingTitle, setEditingTitle] = useState<boolean>(false);
-    const [isEditing, setIsEditing] = useState<boolean>(false);
     const [isAddingItem, setIsAddingItem] = useState<boolean>(false);
-    const [inProgressSelections, setInProgressSelections] = useState<string[]>([]);
-    const [awaitingResponse, setAwaitingResponse] = useState<boolean>(false);
+    const isEditing = useObservable(_expenseViewModel.isEditingItems$, false);
+
+    useObservable<IExpense>(
+        _expenseManager.currentExpense$.pipe(filter((e) => e != null)) as Observable<IExpense>,
+        _expenseManager.currentExpense!,
+        (updated) => {
+            _expenseViewModel.setAwaitingResponse(false);
+            setExpense(updated);
+        },
+    );
+
+    useFocusEffect(() => {
+        _expenseViewModel.setScreen("Items");
+        _expenseViewModel.onBackPress = onBackPress;
+    });
 
     const onBackPress = useCallback(() => {
         _expenseManager.disconnectFromExpense();
@@ -55,7 +67,7 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
     const onTitleSave = ({ name }: EditResult) => {
         _expenseManager.updateExpenseName(expense.id, name ?? "");
         setEditingTitle(false);
-        setAwaitingResponse(true);
+        _expenseViewModel.setAwaitingResponse(true);
     };
 
     const onItemSave = useCallback(
@@ -73,7 +85,7 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
             );
 
             setSelectedItem(null);
-            setAwaitingResponse(true);
+            _expenseViewModel.setAwaitingResponse(true);
         },
         [expense, selectedItem],
     );
@@ -83,13 +95,12 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
             if (!name || !price) return;
             _expenseManager.addItem(expense.id, name, price, [], !!isProportional);
             setIsAddingItem(false);
-            setAwaitingResponse(true);
+            _expenseViewModel.setAwaitingResponse(true);
         },
         [expense],
     );
 
     const onItemSelected = (itemId: string): void => {
-        console.log({ itemId });
         const selectedItems = expense.items
             .filter((item) => item.owners.some((o) => o.id === _userManager.userId))
             .map((item) => item.id);
@@ -117,6 +128,8 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
             }
         }
 
+        setExpense(new Expense(expense.id, expense.name, expense.transactionDate, expense.items, expense.users));
+
         updateExpenseItemOwners(_userManager.userId, selectedItems);
     };
 
@@ -130,43 +143,24 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
 
         _expenseManager.removeItem(expense.id, expense.items[itemIndex]);
         setSelectedItem(null);
-        setAwaitingResponse(true);
+        _expenseViewModel.setAwaitingResponse(true);
     }, [expense, selectedItem]);
-
-    const onSelectAction = (): void => {
-        setIsEditing(!isEditing);
-    };
 
     const updateExpenseItemOwners = (userId: string, selectedItemIds: string[]): void => {
         const user = expense.users.find((u) => u.id === userId);
         if (!user) return;
         _expenseManager.updateItemSelections(expense.id, user, selectedItemIds);
-        setAwaitingResponse(true);
+        _expenseViewModel.setAwaitingResponse(true);
     };
 
     const onExpenseDateUpdated = (date: Date): void => {
         _expenseManager.updateExpenseTransactionDate(expense.id, date);
-        setAwaitingResponse(true);
+        _expenseViewModel.setAwaitingResponse(true);
     };
 
     return (
         <Container>
             <SafeAreaView style={{ marginBottom: 10 }}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={onBackPress}>
-                        <ArrowBack width={_uiConfig.sizes.icon} height={_uiConfig.sizes.icon} fill={Colors.textColor} />
-                    </TouchableOpacity>
-
-                    <TouchableOpacity onPress={onSelectAction}>
-                        <View flex row centerV style={{ columnGap: 10 }}>
-                            <ActivityIndicator animating={awaitingResponse} hidesWhenStopped color={Colors.textColor} />
-                            <Text bodyBold color={Colors.textColor}>
-                                {!isEditing ? "Edit" : "Done"}
-                            </Text>
-                        </View>
-                    </TouchableOpacity>
-                </View>
-
                 <View centerH>
                     <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
                         <Text letterHeading color={Colors.textColor} style={styles.headerLabel}>
@@ -175,7 +169,7 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                     </TouchableOpacity>
 
                     <DateTimePicker
-                        letter
+                        style={_styleManager.typography.letter}
                         color={Colors.textColor}
                         maximumDate={new Date()}
                         dateTimeFormatter={(date) => format(date)}
@@ -209,7 +203,6 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                         item={item}
                         style={{ marginVertical: 15 }}
                         showOwners
-                        selected={inProgressSelections.includes(item.id)}
                         editable={isEditing}
                         onPress={() => setSelectedItem(item)}
                         onSelect={onItemSelected}

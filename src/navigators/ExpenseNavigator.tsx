@@ -8,22 +8,42 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../types/params";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
+import { useInitialize } from "../hooks/use-initialize";
+import { IUserManager } from "../managers/user-manager/user-manager-interface";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import { ExpenseNavigationHeader } from "../components/ExpenseNavigatorHeader";
 import Receipt from "../../assets/icons/receipt.svg";
 import People from "../../assets/icons/people.svg";
 import AddPerson from "../../assets/icons/add-person.svg";
-import { useInitialize } from "../hooks/use-initialize";
-import { IUserManager } from "../managers/user-manager/user-manager-interface";
+import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
 
+const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
+const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 
 type Props = NativeStackScreenProps<RootStackParamList, "ExpenseScreen">;
 
-export const ExpenseNavigator = (_: Props) => {
+export const ExpenseNavigator = SpThemedComponent(() => {
+    return (
+        <Drawer.Navigator screenOptions={{ header: ExpenseNavigationHeader, swipeEnabled: false }}>
+            <Drawer.Screen name="Expense" component={InternalExpenseNavigator} />
+        </Drawer.Navigator>
+    );
+});
+
+/**
+ * See https://github.com/react-navigation/react-navigation/issues/11353
+ * There is an issue where the layouts will flicker on initial load.
+ * Wrapping this in a drawer navigator seems to be a bandaid for the issue
+ */
+const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
     useInitialize(() => {
         void _userManager.requestUsersFromContacts();
+        return () => _expenseViewModel.resetState();
     });
 
     return (
@@ -46,13 +66,19 @@ export const ExpenseNavigator = (_: Props) => {
             <Tab.Screen
                 name="People"
                 component={PeopleScreen}
-                options={{ tabBarIcon: ({ color, size }) => <People width={size} height={size} fill={color} /> }}
+                options={{
+                    lazy: false,
+                    tabBarIcon: ({ color, size }) => <People width={size} height={size} fill={color} />,
+                }}
             />
             <Tab.Screen
                 name="Invite"
                 component={InviteNavigator}
-                options={{ tabBarIcon: ({ color, size }) => <AddPerson width={size} height={size} fill={color} /> }}
+                options={{
+                    lazy: false,
+                    tabBarIcon: ({ color, size }) => <AddPerson width={size} height={size} fill={color} />,
+                }}
             />
         </Tab.Navigator>
     );
-};
+});

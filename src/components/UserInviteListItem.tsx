@@ -96,7 +96,7 @@ export const UserInviteListItem = ({
 
                 <View style={styles.buttonContainer}>
                     <ActivityIndicator animating={awaitingResponse} hidesWhenStopped color={Colors.textColor} />
-                    {!expenseUsers.map((u) => u.id).includes(user.id) && user.isRegistered && (
+                    {!expenseUsers.map((u) => u.id).includes(user.id) && (user.isRegistered || !!user.phoneNumber) && (
                         <Chip
                             activeOpacity={0.5}
                             disabled={userState === UserState.Invited || awaitingResponse}

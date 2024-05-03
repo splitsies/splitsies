@@ -8,27 +8,22 @@ import { IExpenseManager } from "../managers/expense-manager/expense-manager-int
 import { AddGuestForm } from "../components/AddGuestForm";
 import { ListSeparator } from "../components/ListSeparator";
 import { UserInviteListItem } from "../components/UserInviteListItem";
-import { MaterialTopTabScreenProps } from "@react-navigation/material-top-tabs";
-import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { RootStackParamList, InviteParamList } from "../types/params";
+import { useFocusEffect } from "@react-navigation/native";
 import { IInviteViewModel } from "../view-models/invite-view-model/invite-view-model-interface";
 import { filter } from "rxjs";
 import { Container } from "../components/Container";
 import { useObservableReducer } from "../hooks/use-observable-reducer";
 import { IExpense } from "../models/expense/expense-interface";
 import { IExpenseUserDetails } from "@splitsies/shared-models";
+import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 const _userManager = lazyInject<IUserManager>(IUserManager);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _inviteViewModel = lazyInject<IInviteViewModel>(IInviteViewModel);
+const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 
-type Props = CompositeScreenProps<
-    NativeStackScreenProps<RootStackParamList>,
-    MaterialTopTabScreenProps<InviteParamList, "Contacts">
->;
-
-export const GuestScreen = ({ navigation }: Props) => {
+export const GuestScreen = SpThemedComponent(() => {
     const expenseUsers = useObservableReducer<IExpense | null, IExpenseUserDetails[]>(
         _expenseManager.currentExpense$,
         [],
@@ -40,7 +35,10 @@ export const GuestScreen = ({ navigation }: Props) => {
         _inviteViewModel.inviteMenuOpen,
     );
 
-    useFocusEffect(() => _inviteViewModel.setMode("guests"));
+    useFocusEffect(() => {
+        _inviteViewModel.setMode("guests");
+        _expenseViewModel.setScreen("Guests");
+    });
 
     const onSaveGuest = async (name: string): Promise<void> => {
         const user = await _userManager.requestAddGuestUser(name, "", "");
@@ -76,7 +74,7 @@ export const GuestScreen = ({ navigation }: Props) => {
             </Modal>
         </Container>
     );
-};
+});
 
 const styles = StyleSheet.create({
     container: {
