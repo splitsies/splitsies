@@ -5,7 +5,7 @@ import { IColorConfiguration } from "../models/configuration/color-config/color-
 import { Colors, Icon, TouchableOpacity, View } from "react-native-ui-lib";
 import { RequestsFeedScreen } from "../screens/RequestsFeedScreen";
 import { ExpenseFeedScreen } from "../screens/ExpenseFeedScreen";
-import { StyleSheet } from "react-native";
+import { PixelRatio, StyleSheet } from "react-native";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 import Camera from "../../assets/icons/camera.svg";
@@ -121,7 +121,10 @@ const styles = StyleSheet.create({
         marginTop: -2,
         backgroundColor: _colorConfiguration.primary,
         color: _colorConfiguration.black,
-        ..._styleManager.typography.letter,
-        fontSize: 13,
+        ..._styleManager.typography.body,
+        fontSize: 10,
+        height: 20,
+        minWidth: 20,
+        lineHeight: 20 * (1 / PixelRatio.getFontScale()),
     },
 });
