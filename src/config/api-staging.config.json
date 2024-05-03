@@ -3,6 +3,5 @@
     "expenseSocket": "wss://djb25cevxg.execute-api.us-east-1.amazonaws.com/staging",
     "users": "https://8v9glcff5m.execute-api.us-east-1.amazonaws.com/staging/users",
     "ocr": "https://hbtu902b92.execute-api.us-east-1.amazonaws.com/staging/",
-    "notification": "https://lzeitv2g5k.execute-api.us-east-1.amazonaws.com/Prod/",
-    "version": "https://842gezrnph.execute-api.us-east-1.amazonaws.com/devpr/"
+    "notification": "https://27lec33uje.execute-api.us-east-1.amazonaws.com/staging/"
 }
