@@ -73,6 +73,8 @@ import { IVersionManager } from "../managers/version-manager/version-manager-int
 import { VersionManager } from "../managers/version-manager/version-manager";
 import { IAppManager } from "../managers/app-manager/app-manager-interface";
 import { AppManager } from "../managers/app-manager/app-manager";
+import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
+import { ExpenseViewModel } from "../view-models/expense-view-model/expense-view-model";
 const container = new Container({ defaultScope: "Singleton" });
 
 const messageHub = new WritableMessageHub();
@@ -114,4 +116,5 @@ container.bind<ISettingsManager>(ISettingsManager).to(SettingsManager);
 container.bind<IVersionApiClient>(IVersionApiClient).to(VersionApiClient).inTransientScope();
 container.bind<IVersionManager>(IVersionManager).to(VersionManager);
 container.bind<IAppManager>(IAppManager).to(AppManager);
+container.bind<IExpenseViewModel>(IExpenseViewModel).to(ExpenseViewModel);
 export { container };

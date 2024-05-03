@@ -8,7 +8,7 @@ import { GuestScreen } from "../screens/GuestsScreen";
 import { SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native";
 import { Colors, Icon, TextField } from "react-native-ui-lib";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
-import { CompositeScreenProps } from "@react-navigation/native";
+import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList, ExpenseParamList } from "../types/params";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
@@ -31,11 +31,14 @@ import { IImageConfiguration } from "../models/configuration/image-config/image-
 import { useObservableReducer } from "../hooks/use-observable-reducer";
 import { IExpense } from "../models/expense/expense-interface";
 import { IExpenseUserDetails } from "@splitsies/shared-models";
+import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 const Tab = createMaterialTopTabNavigator();
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _inviteViewModel = lazyInject<IInviteViewModel>(IInviteViewModel);
+const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 const _imageConfiguration = lazyInject<IImageConfiguration>(IImageConfiguration);
@@ -47,21 +50,23 @@ type Props = CompositeScreenProps<
 
 let timeoutId: NodeJS.Timeout;
 
-export const InviteNavigator = ({ navigation }: Props) => {
-    useThemeWatcher();
-    const searchFilter = useObservable(_inviteViewModel.searchFilter$, _inviteViewModel.searchFilter);
-    const state = useObservable(_inviteViewModel.mode$, _inviteViewModel.mode);
+export const InviteNavigator = SpThemedComponent(({ navigation }: Props) => {
     const expenseUsers = useObservableReducer<IExpense | null, IExpenseUserDetails[]>(
         _expenseManager.currentExpense$,
-        [],
+        _expenseManager.currentExpense?.users ?? [],
         (e) => e?.users ?? [],
     );
+
     const codeScannerVisible = useObservable(
         _inviteViewModel.inviteMenuOpen$.pipe(filter((_) => _inviteViewModel.mode !== "guests")),
         _inviteViewModel.inviteMenuOpen,
     );
 
     const [scannedUser, setScannedUser] = useState<IQrPayload | null>(null);
+
+    useFocusEffect(() => {
+        _expenseViewModel.onBackPress = onBackPress;
+    });
 
     const onBackPress = useCallback(() => {
         navigation.navigate("Items");
@@ -94,42 +99,7 @@ export const InviteNavigator = ({ navigation }: Props) => {
 
     return (
         <SafeAreaView style={{ display: "flex", flex: 1, flexGrow: 1, backgroundColor: Colors.screenBG }}>
-            <View style={styles.header} bg-screenBG>
-                <View style={styles.arrowContainer}>
-                    <TouchableOpacity onPress={onBackPress}>
-                        <ArrowBack height={_uiConfig.sizes.icon} width={_uiConfig.sizes.icon} fill={Colors.textColor} />
-                    </TouchableOpacity>
-                </View>
-
-                <View style={styles.inputContainer}>
-                    <TextField
-                        body
-                        autoCapitalize="none"
-                        bg-screenBG
-                        placeholder="Search"
-                        placeholderTextColor={_colorConfiguration.greyFont}
-                        value={searchFilter}
-                        style={styles.textInput}
-                        onChangeText={(text) => _inviteViewModel.setSearchFilter(text)}
-                    />
-                </View>
-
-                <View style={styles.addUserContainer}>
-                    <TouchableOpacity onPress={() => _inviteViewModel.setInviteMenuOpen(true)}>
-                        {state === "guests" ? (
-                            <AddPerson
-                                height={_uiConfig.sizes.icon}
-                                width={_uiConfig.sizes.icon}
-                                fill={Colors.textColor}
-                            />
-                        ) : (
-                            <QrAdd height={_uiConfig.sizes.icon} width={_uiConfig.sizes.icon} fill={Colors.textColor} />
-                        )}
-                    </TouchableOpacity>
-                </View>
-            </View>
-
-            <View style={{ backgroundColor: "red", flex: 1 }}>
+            <View style={{ flex: 1 }}>
                 <Tab.Navigator
                     initialRouteName="Contacts"
                     screenOptions={{
@@ -153,38 +123,4 @@ export const InviteNavigator = ({ navigation }: Props) => {
             />
         </SafeAreaView>
     );
-};
-
-const styles = StyleSheet.create({
-    header: {
-        display: "flex",
-        flexDirection: "row",
-        width: "100%",
-        paddingVertical: 20,
-        paddingHorizontal: 10,
-    },
-    addUserContainer: {
-        display: "flex",
-        height: 50,
-        justifyContent: "center",
-        paddingLeft: 5,
-    },
-    inputContainer: {
-        display: "flex",
-        flex: 1,
-        height: 50,
-    },
-    textInput: {
-        height: 50,
-        borderRadius: 25,
-        paddingHorizontal: 15,
-        borderWidth: 1,
-        borderColor: _colorConfiguration.divider,
-    },
-    arrowContainer: {
-        display: "flex",
-        height: 50,
-        justifyContent: "center",
-        paddingRight: 5,
-    },
 });

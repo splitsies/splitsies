@@ -15,10 +15,12 @@ import { SpThemedComponent } from "../hocs/SpThemedComponent";
 import { debounce } from "../utils/debounce";
 import { useObservableReducer } from "../hooks/use-observable-reducer";
 import { IExpense } from "../models/expense/expense-interface";
+import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
 
 const _userManager = lazyInject<IUserManager>(IUserManager);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _inviteViewModel = lazyInject<IInviteViewModel>(IInviteViewModel);
+const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 
 export const SearchScreen = SpThemedComponent(() => {
     const expenseUsers = useObservableReducer<IExpense | null, IExpenseUserDetails[]>(
@@ -32,6 +34,7 @@ export const SearchScreen = SpThemedComponent(() => {
 
     useFocusEffect(() => {
         _inviteViewModel.setMode("search");
+        _expenseViewModel.setScreen("Search");
         search(searchFilter);
     });
 

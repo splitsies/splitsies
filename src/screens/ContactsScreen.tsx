@@ -14,10 +14,12 @@ import { Container } from "../components/Container";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
 import { useObservableReducer } from "../hooks/use-observable-reducer";
 import { IExpense } from "../models/expense/expense-interface";
+import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
 
 const _userManager = lazyInject<IUserManager>(IUserManager);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _inviteViewModel = lazyInject<IInviteViewModel>(IInviteViewModel);
+const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 
 export const ContactsScreen = SpThemedComponent(() => {
     const contactUsers = useObservable(_userManager.contactUsers$, []);
@@ -26,9 +28,13 @@ export const ContactsScreen = SpThemedComponent(() => {
         [],
         (e) => e?.users ?? [],
     );
+
     const searchFilter = useObservable(_inviteViewModel.searchFilter$, _inviteViewModel.searchFilter);
 
-    useFocusEffect(() => _inviteViewModel.setMode("contacts"));
+    useFocusEffect(() => {
+        _inviteViewModel.setMode("contacts");
+        _expenseViewModel.setScreen("Contacts");
+    });
 
     const onUserInvited = async (user: IExpenseUserDetails): Promise<void> => {
         if (!user.isRegistered) {
