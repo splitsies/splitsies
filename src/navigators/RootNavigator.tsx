@@ -14,15 +14,14 @@ import { SignupScreen } from "../screens/SignupScreen";
 import { useInitialize } from "../hooks/use-initialize";
 import { ExpenseNavigator } from "../navigators/ExpenseNavigator";
 import { HomeNavigator } from "../navigators/HomeNavigator";
-import SplashScreen from "react-native-splash-screen";
+import { hide } from "react-native-bootsplash";
 import { UpdateRequiredScreen } from "../screens/UpdateRequiredScreen";
-import { version } from "../../package.json";
-import { Version } from "../models/version/version";
 import { IVersionManager } from "../managers/version-manager/version-manager-interface";
+import { IAppManager } from "../managers/app-manager/app-manager-interface";
 
 const _versionManager = lazyInject<IVersionManager>(IVersionManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
-const _appVersion = new Version(version);
+const _appManager = lazyInject<IAppManager>(IAppManager);
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -36,7 +35,10 @@ export const RootNavigator = () => {
         _versionManager.initialized.then(() => {
             if (_versionManager.requiresUpdate) {
                 navigation.navigate("UpdateRequiredScreen");
-                setTimeout(() => SplashScreen.hide(), 300);
+                setTimeout(() => {
+                    void hide({ fade: true });
+                    _appManager.initialize();
+                }, 300);
                 return;
             }
 
@@ -46,7 +48,10 @@ export const RootNavigator = () => {
                         next: (credential) => onUserUpdated(credential),
                     }),
                 );
-                setTimeout(() => SplashScreen.hide(), 300);
+                setTimeout(() => {
+                    void hide({ fade: true });
+                    _appManager.initialize();
+                }, 300);
             });
         });
 

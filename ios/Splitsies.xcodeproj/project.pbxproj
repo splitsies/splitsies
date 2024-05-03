@@ -35,7 +35,6 @@
 		7072E78A955247BC800CD9B0 /* SofiaProRegular-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = F6AF423B02FC48D3A7937B86 /* SofiaProRegular-Italic.ttf */; };
 		756A29B82CF049BC9B82B93A /* SFProDisplay-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 60D536F704654C91B27E9E78 /* SFProDisplay-Black.otf */; };
 		77CC9ED6B91E448AB722C062 /* ZillaSlab-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = CBD50837607F440982B3764A /* ZillaSlab-Regular.ttf */; };
-		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		827D1A6B70174C24A3C74315 /* SFProDisplay-BlackItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 97B63AAD162B47C48D92B8C1 /* SFProDisplay-BlackItalic.otf */; };
 		82D2F3E58BB94775AAF7CFA6 /* SFProDisplay-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = F6D04C0CBC9C49F5B98C3A9F /* SFProDisplay-Thin.otf */; };
 		8666A0DE43E74B7AB181947A /* SofiaProMedium-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1EA9282E39404DB691DDE41A /* SofiaProMedium-Italic.ttf */; };
@@ -46,6 +45,7 @@
 		954BEF9F21DA4105B94754A6 /* SofiaProUltraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 10103C4E87494F77A37DF134 /* SofiaProUltraLight.ttf */; };
 		A0E07E5BC5C948A48908AFC6 /* ZillaSlab-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DAA7B65BA01643769804D5CF /* ZillaSlab-Light.ttf */; };
 		A1175D6EF1974BFA9D6FBFDB /* SofiaProMedium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 516B24184FF24E0F90706286 /* SofiaProMedium.ttf */; };
+		A43B4CA54D704EA7808A5736 /* BootSplash.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 129470D6225046BCA44574B8 /* BootSplash.storyboard */; };
 		A5060A89EB4B41AC85AA9FBF /* SofiaProRegular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 0B361C402DDE45449C3DC27D /* SofiaProRegular.ttf */; };
 		A55D0DC9013646318197B370 /* SofiaProExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 2843924795534B7A879863CD /* SofiaProExtraLight.ttf */; };
 		A6F922283B4B46DFA8356F90 /* SofiaProUltraLight-Italic.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 383F37E9E67E48DB8504C3EF /* SofiaProUltraLight-Italic.ttf */; };
@@ -97,6 +97,7 @@
 		0C044390BC8C4878A0F66372 /* SFProDisplay-SemiboldItalic.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "SFProDisplay-SemiboldItalic.otf"; path = "../assets/fonts/SFProDisplay-SemiboldItalic.otf"; sourceTree = "<group>"; };
 		10103C4E87494F77A37DF134 /* SofiaProUltraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SofiaProUltraLight.ttf; path = ../assets/fonts/SofiaProUltraLight.ttf; sourceTree = "<group>"; };
 		11F927862A4499B3621D8B5C /* Pods_Splitsies_SplitsiesTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Splitsies_SplitsiesTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		129470D6225046BCA44574B8 /* BootSplash.storyboard */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = BootSplash.storyboard; path = Splitsies/BootSplash.storyboard; sourceTree = "<group>"; };
 		13B07F961A680F5B00A75B9A /* Splitsies.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Splitsies.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		13B07FAF1A68108700A75B9A /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = Splitsies/AppDelegate.h; sourceTree = "<group>"; };
 		13B07FB01A68108700A75B9A /* AppDelegate.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppDelegate.mm; path = Splitsies/AppDelegate.mm; sourceTree = "<group>"; };
@@ -127,7 +128,6 @@
 		76FE587C649E4E668E10BD19 /* Avenir-Oblique.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Avenir-Oblique.ttf"; path = "../assets/fonts/Avenir-Oblique.ttf"; sourceTree = "<group>"; };
 		790B736A11D94B85BD79CC44 /* Avenir-HeavyOblique.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Avenir-HeavyOblique.ttf"; path = "../assets/fonts/Avenir-HeavyOblique.ttf"; sourceTree = "<group>"; };
 		8162B13D5BBC49438FD69FCA /* Avenir-LightOblique.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "Avenir-LightOblique.ttf"; path = "../assets/fonts/Avenir-LightOblique.ttf"; sourceTree = "<group>"; };
-		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = Splitsies/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		870394F14F734A3092E47FE6 /* SofiaProLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = SofiaProLight.ttf; path = ../assets/fonts/SofiaProLight.ttf; sourceTree = "<group>"; };
 		89C6BE57DB24E9ADA2F236DE /* Pods-Splitsies-SplitsiesTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Splitsies-SplitsiesTests.release.xcconfig"; path = "Target Support Files/Pods-Splitsies-SplitsiesTests/Pods-Splitsies-SplitsiesTests.release.xcconfig"; sourceTree = "<group>"; };
 		8BFC150864A710FAD221FC5A /* Pods_Splitsies.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Splitsies.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -270,8 +270,8 @@
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
 				13B07FB61A68108700A75B9A /* Info.plist */,
-				81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */,
 				13B07FB71A68108700A75B9A /* main.m */,
+				129470D6225046BCA44574B8 /* BootSplash.storyboard */,
 			);
 			name = Splitsies;
 			sourceTree = "<group>";
@@ -427,7 +427,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
 				756A29B82CF049BC9B82B93A /* SFProDisplay-Black.otf in Resources */,
 				827D1A6B70174C24A3C74315 /* SFProDisplay-BlackItalic.otf in Resources */,
@@ -486,6 +485,7 @@
 				77CC9ED6B91E448AB722C062 /* ZillaSlab-Regular.ttf in Resources */,
 				3DE10A4EEDE64E19B5F72F99 /* ZillaSlab-SemiBold.ttf in Resources */,
 				BC22D85A66C14A068B965462 /* ZillaSlab-SemiBoldItalic.ttf in Resources */,
+				A43B4CA54D704EA7808A5736 /* BootSplash.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

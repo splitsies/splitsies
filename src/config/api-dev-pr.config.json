@@ -3,6 +3,5 @@
     "expenseSocket": "wss://srzam2rrj5.execute-api.us-east-1.amazonaws.com/dev-pr",
     "users": "https://gzo0ijz6u0.execute-api.us-east-1.amazonaws.com/dev-pr/users",
     "ocr": "https://2rr00kld14.execute-api.us-east-1.amazonaws.com/dev-pr/",
-    "notification": "https://0whn6r18ud.execute-api.us-east-1.amazonaws.com/devpr/",
-    "version": "https://842gezrnph.execute-api.us-east-1.amazonaws.com/devpr/"
+    "notification": "https://0whn6r18ud.execute-api.us-east-1.amazonaws.com/devpr/"
 }
