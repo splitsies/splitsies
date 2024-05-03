@@ -1,12 +1,10 @@
-import React, { lazy, useCallback, useState } from "react";
+import React, { useCallback, useState } from "react";
 import { createMaterialTopTabNavigator } from "@react-navigation/material-top-tabs";
 import { ContactsScreen } from "../screens/ContactsScreen";
-import { useInitialize } from "../hooks/use-initialize";
-import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { lazyInject } from "../utils/lazy-inject";
 import { GuestScreen } from "../screens/GuestsScreen";
-import { SafeAreaView, StyleSheet, TouchableOpacity, View } from "react-native";
-import { Colors, Icon, TextField } from "react-native-ui-lib";
+import { SafeAreaView, View } from "react-native";
+import { Colors } from "react-native-ui-lib";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -16,13 +14,6 @@ import { IColorConfiguration } from "../models/configuration/color-config/color-
 import { IInviteViewModel } from "../view-models/invite-view-model/invite-view-model-interface";
 import { useObservable } from "../hooks/use-observable";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
-import { useThemeWatcher } from "../hooks/use-theme-watcher";
-
-import ArrowBack from "../../assets/icons/arrow-back.svg";
-import QrAdd from "../../assets/icons/qr-add.svg";
-import AddPerson from "../../assets/icons/add-person.svg";
-
-import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 import { SearchScreen } from "../screens/SearchScreen";
 import { filter } from "rxjs";
 import { ScanUserModal } from "../components/ScanUserModal";
@@ -40,7 +31,6 @@ const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration)
 const _inviteViewModel = lazyInject<IInviteViewModel>(IInviteViewModel);
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
-const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 const _imageConfiguration = lazyInject<IImageConfiguration>(IImageConfiguration);
 
 type Props = CompositeScreenProps<

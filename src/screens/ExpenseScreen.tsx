@@ -25,6 +25,7 @@ import { IExpense } from "../models/expense/expense-interface";
 import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
 import Add from "../../assets/icons/add.svg";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
+import { Expense } from "../models/expense/expense";
 
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
@@ -127,7 +128,8 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
             }
         }
 
-        setExpense({ ...expense });
+        setExpense(new Expense(expense.id, expense.name, expense.transactionDate, expense.items, expense.users));
+
         updateExpenseItemOwners(_userManager.userId, selectedItems);
     };
 

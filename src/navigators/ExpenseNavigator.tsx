@@ -29,7 +29,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "ExpenseScreen">;
 
 export const ExpenseNavigator = SpThemedComponent(() => {
     return (
-        <Drawer.Navigator screenOptions={{ header: ExpenseNavigationHeader }}>
+        <Drawer.Navigator screenOptions={{ header: ExpenseNavigationHeader, swipeEnabled: false }}>
             <Drawer.Screen name="Expense" component={InternalExpenseNavigator} />
         </Drawer.Navigator>
     );
