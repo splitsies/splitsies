@@ -22,8 +22,6 @@ const _styleManager = lazyInject<IStyleManager>(IStyleManager);
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 
-
-
 // TODO: Hack, satisfy the unused component param
 const C = () => {
     return null;
@@ -41,7 +39,7 @@ export const FeedNavigator = () => {
             if (requests.length === 0) return undefined;
             if (requests.length > 99) return "99+";
             return `${requests.length}`;
-        }
+        },
     );
 
     return (
@@ -84,11 +82,11 @@ export const FeedNavigator = () => {
             />
             <Tab.Screen
                 name="Requests"
-                component={RequestsFeedScreen}            
+                component={RequestsFeedScreen}
                 options={{
                     tabBarIcon: ({ color, size }) => <People width={size} height={size} fill={color} />,
                     tabBarBadge: requestsBadge,
-                    tabBarBadgeStyle: styles.badge
+                    tabBarBadgeStyle: styles.badge,
                 }}
             />
         </Tab.Navigator>
@@ -124,6 +122,6 @@ const styles = StyleSheet.create({
         backgroundColor: _colorConfiguration.primary,
         color: _colorConfiguration.black,
         ..._styleManager.typography.letter,
-        fontSize: 13
-    }
+        fontSize: 13,
+    },
 });

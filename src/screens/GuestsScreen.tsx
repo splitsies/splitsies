@@ -35,10 +35,12 @@ export const GuestScreen = SpThemedComponent(() => {
         _inviteViewModel.inviteMenuOpen,
     );
 
-    useFocusEffect(useCallback(() => {
-        _inviteViewModel.setMode("guests");
-        _expenseViewModel.setScreen("Guests");
-    }, []));
+    useFocusEffect(
+        useCallback(() => {
+            _inviteViewModel.setMode("guests");
+            _expenseViewModel.setScreen("Guests");
+        }, []),
+    );
 
     const onSaveGuest = async (name: string): Promise<void> => {
         const user = await _userManager.requestAddGuestUser(name, "", "");

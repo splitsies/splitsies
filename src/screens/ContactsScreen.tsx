@@ -31,10 +31,12 @@ export const ContactsScreen = SpThemedComponent(() => {
 
     const searchFilter = useObservable(_inviteViewModel.searchFilter$, _inviteViewModel.searchFilter);
 
-    useFocusEffect(useCallback(() => {
-        _inviteViewModel.setMode("contacts");
-        _expenseViewModel.setScreen("Contacts");
-    }, []));
+    useFocusEffect(
+        useCallback(() => {
+            _inviteViewModel.setMode("contacts");
+            _expenseViewModel.setScreen("Contacts");
+        }, []),
+    );
 
     const onUserInvited = async (user: IExpenseUserDetails): Promise<void> => {
         if (!user.isRegistered) {

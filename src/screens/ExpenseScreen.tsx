@@ -54,10 +54,12 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
         },
     );
 
-    useFocusEffect(useCallback(() => {
-        _expenseViewModel.setScreen("Items");
-        _expenseViewModel.onBackPress = onBackPress;
-    }, []));
+    useFocusEffect(
+        useCallback(() => {
+            _expenseViewModel.setScreen("Items");
+            _expenseViewModel.onBackPress = onBackPress;
+        }, []),
+    );
 
     const onBackPress = useCallback(() => {
         _expenseManager.disconnectFromExpense();
