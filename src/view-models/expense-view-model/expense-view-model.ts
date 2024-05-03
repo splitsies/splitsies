@@ -6,10 +6,19 @@ import { BehaviorSubject, Observable } from "rxjs";
 export class ExpenseViewModel implements IExpenseViewModel {
     onBackPress = () => {};
     private readonly _awaitingResponse$ = new BehaviorSubject<boolean>(false);
-    private readonly _isEditingItems = new BehaviorSubject<boolean>(false);
+    private readonly _isEditingItems$ = new BehaviorSubject<boolean>(false);
     private readonly _isSelectingItems = new BehaviorSubject<boolean>(false);
     private readonly _searchVisible$ = new BehaviorSubject<boolean>(false);
     private readonly _screen$ = new BehaviorSubject<"Items" | "People" | "Contacts" | "Guests" | "Search">("Items");
+
+    resetState(): void {
+        this.onBackPress = () => {};
+        this._awaitingResponse$.next(false);
+        this._isEditingItems$.next(false);
+        this._isSelectingItems.next(false);
+        this._searchVisible$.next(false);
+        this._screen$.next("Items");
+    }
 
     get awaitingResponse$(): Observable<boolean> {
         return this._awaitingResponse$.asObservable();
@@ -19,10 +28,10 @@ export class ExpenseViewModel implements IExpenseViewModel {
     }
 
     get isEditingItems$(): Observable<boolean> {
-        return this._isEditingItems.asObservable();
+        return this._isEditingItems$.asObservable();
     }
     setIsEditingItems(value: boolean): void {
-        this._isEditingItems.next(value);
+        this._isEditingItems$.next(value);
     }
 
     get isSelectingItems$(): Observable<boolean> {

@@ -16,20 +16,18 @@ import { ExpenseNavigationHeader } from "../components/ExpenseNavigatorHeader";
 import Receipt from "../../assets/icons/receipt.svg";
 import People from "../../assets/icons/people.svg";
 import AddPerson from "../../assets/icons/add-person.svg";
+import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
+const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 
 type Props = NativeStackScreenProps<RootStackParamList, "ExpenseScreen">;
 
-export const ExpenseNavigator = SpThemedComponent(({ navigation }: Props) => {
-    useInitialize(() => {
-        void _userManager.requestUsersFromContacts();
-    });
-
+export const ExpenseNavigator = SpThemedComponent(() => {
     return (
         <Drawer.Navigator screenOptions={{ header: ExpenseNavigationHeader }}>
             <Drawer.Screen name="Expense" component={InternalExpenseNavigator} />
@@ -43,6 +41,11 @@ export const ExpenseNavigator = SpThemedComponent(({ navigation }: Props) => {
  * Wrapping this in a drawer navigator seems to be a bandaid for the issue
  */
 const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
+    useInitialize(() => {
+        void _userManager.requestUsersFromContacts();
+        return () => _expenseViewModel.resetState();
+    });
+
     return (
         <Tab.Navigator
             initialRouteName="Items"

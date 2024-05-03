@@ -1,13 +1,14 @@
+import React from "react";
 import { Colors, Text, TouchableOpacity, View } from "react-native-ui-lib/core";
 import { lazyInject } from "../utils/lazy-inject";
 import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
 import { ActivityIndicator } from "react-native";
-import React from "react";
 import { useObservable } from "../hooks/use-observable";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 
-export const EditItemsControl = () => {
+export const EditItemsControl = SpThemedComponent(() => {
     const editing = useObservable(_expenseViewModel.isEditingItems$, false);
     const awaitingResponse = useObservable(_expenseViewModel.awaitingResponse$, false);
 
@@ -25,4 +26,4 @@ export const EditItemsControl = () => {
             </View>
         </TouchableOpacity>
     );
-};
+});

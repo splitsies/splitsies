@@ -1,6 +1,7 @@
 import { Observable } from "rxjs";
 
 export interface IExpenseViewModel {
+    resetState(): void;
     awaitingResponse$: Observable<boolean>;
     setAwaitingResponse(value: boolean): void;
 

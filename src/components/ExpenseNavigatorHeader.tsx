@@ -28,7 +28,7 @@ export const ExpenseNavigationHeader = () => {
         <SafeAreaView>
             <View style={styles.header} bg-screenBG>
                 <View style={styles.arrowContainer}>
-                    <TouchableOpacity onPress={_expenseViewModel.onBackPress}>
+                    <TouchableOpacity onPress={() => _expenseViewModel.onBackPress()}>
                         <ArrowBack height={_uiConfig.sizes.icon} width={_uiConfig.sizes.icon} fill={Colors.textColor} />
                     </TouchableOpacity>
                 </View>
