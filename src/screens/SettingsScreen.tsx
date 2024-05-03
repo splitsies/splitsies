@@ -38,7 +38,7 @@ export const SettingsScreen = SpThemedComponent(({ navigation }: Props) => {
 
     return (
         <Container useSafeArea>
-            <ScrollView style={{ paddingHorizontal: 20 }}>
+            <ScrollView style={{ paddingHorizontal: 20, height: "100%" }}>
                 <SettingsGroup name={SettingsConfiguration.pushNotifications.displayName}>
                     <View style={[styles.settingsItem, { marginTop: 0, marginBottom: 0 }]}>
                         <Text body>{SettingsConfiguration.pushNotifications.joinRequestNotifications.displayName}</Text>
