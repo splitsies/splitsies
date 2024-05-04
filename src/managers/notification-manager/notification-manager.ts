@@ -2,7 +2,7 @@ import { injectable } from "inversify";
 import { BaseManager } from "../base-manager";
 import { lazyInject } from "../../utils/lazy-inject";
 import { IPersmissionRequester } from "../../utils/permission-requester/permission-requester-interface";
-import messaging, { FirebaseMessagingTypes } from "@react-native-firebase/messaging";
+import messaging, { FirebaseMessagingTypes, firebase } from "@react-native-firebase/messaging";
 import { INotificationManager } from "./notification-manager-interface";
 import { IUserManager } from "../user-manager/user-manager-interface";
 import { getInternetCredentials, resetInternetCredentials, setInternetCredentials } from "react-native-keychain";
@@ -46,6 +46,17 @@ export class NotificationManager extends BaseManager implements INotificationMan
             return;
         }
 
+        if (Platform.OS === "android" && Platform.Version >= 26) {
+            Notifications.setNotificationChannel({
+                channelId: "priority_notification",
+                name: "Priority Notifications",
+                importance: 4,
+                enableVibration: true,
+                enableLights: true,
+                showBadge: true,
+            });
+        }
+
         const remoteTokenResolved = await this.initNativePushToken();
         if (!remoteTokenResolved) {
             return;
@@ -57,7 +68,7 @@ export class NotificationManager extends BaseManager implements INotificationMan
         messaging().onNotificationOpenedApp(this.onNotificationOpened.bind(this));
 
         Notifications.events().registerNotificationOpened((notification) => {
-            console.log({ notification });
+            this.onNotificationOpened({ ...notification, data: notification.payload } as any);
         });
 
         await this._userManager.initialized;

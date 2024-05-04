@@ -12,6 +12,10 @@ import Animated, {
     withTiming,
 } from "react-native-reanimated";
 import { IPushMessage } from "../models/push-message/push-message-interface";
+import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+import { lazyInject } from "../utils/lazy-inject";
+
+const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
 type Props = {
     visible: boolean;
@@ -37,11 +41,13 @@ export const BannerNotification = SpThemedComponent(({ visible, onPress, message
     }, [visible]);
 
     const hide = () => {
-        setTimeout(() => {
-            yPosition.value = withTiming(-200, { duration: 890, easing: Easing.out(Easing.quad) }, () => {
+        yPosition.value = withTiming(
+            hiddenOffset,
+            { duration: _uiConfig.durations.notificationDismissDurationMs, easing: Easing.out(Easing.quad) },
+            () => {
                 runOnJS(setContainerOffset)(hiddenOffset);
-            });
-        }, 50);
+            },
+        );
     };
 
     const show = () => {

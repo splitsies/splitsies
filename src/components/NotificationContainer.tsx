@@ -27,9 +27,11 @@ export const NotificationContainer = ({ children }: Props) => {
         setNotificationVisible(true);
 
         setTimeout(() => {
-            onNotificationPress.current = undefined;
-            pushMessage.current = undefined;
             setNotificationVisible(false);
+            setTimeout(() => {
+                onNotificationPress.current = undefined;
+                pushMessage.current = undefined;
+            }, _uiConfig.durations.notificationDismissDurationMs);
         }, _uiConfig.durations.notificationTimeoutMs);
     });
 
