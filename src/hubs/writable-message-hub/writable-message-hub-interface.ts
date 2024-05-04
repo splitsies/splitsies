@@ -1,9 +1,8 @@
-import { Observable } from "rxjs";
 import { IMessageHub } from "../message-hub/message-hub-interface";
 import { IPushMessage } from "../../models/push-message/push-message-interface";
 
 export interface IWritableMessageHub extends IMessageHub {
-    publishPushMessage(message: IPushMessage): void;
+    publishNotificationOpened(message: IPushMessage): void;
     publishForegroundNotificationReceived(message: IPushMessage): void;
 }
 

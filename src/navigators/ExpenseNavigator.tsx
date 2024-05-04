@@ -17,12 +17,14 @@ import Receipt from "../../assets/icons/receipt.svg";
 import People from "../../assets/icons/people.svg";
 import AddPerson from "../../assets/icons/add-person.svg";
 import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
+import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
+const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 
 type Props = NativeStackScreenProps<RootStackParamList, "ExpenseScreen">;
@@ -43,7 +45,10 @@ export const ExpenseNavigator = SpThemedComponent(() => {
 const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
     useInitialize(() => {
         void _userManager.requestUsersFromContacts();
-        return () => _expenseViewModel.resetState();
+        return () => {
+            _expenseViewModel.resetState();
+            _expenseManager.disconnectFromExpense();
+        };
     });
 
     return (

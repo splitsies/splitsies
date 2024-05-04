@@ -6,7 +6,7 @@ import { PushMessage } from "../../models/push-message/push-message";
 import { Linking } from "react-native";
 import { IPushMessage } from "../../models/push-message/push-message-interface";
 
-@injectable() 
+@injectable()
 export class PushMessageHandlerProvider {
     private readonly _messageHub = lazyInject<IWritableMessageHub>(IWritableMessageHub);
 
@@ -14,11 +14,13 @@ export class PushMessageHandlerProvider {
         switch (message.type) {
             case NotificationType.JoinRequest:
                 return () => {
-                    this._messageHub.publishPushMessage(new PushMessage(NotificationType.JoinRequest, message.data));
+                    this._messageHub.publishNotificationOpened(
+                        new PushMessage(NotificationType.JoinRequest, message.data),
+                    );
                     void Linking.openURL(`splitsies://requests/${message.data?.expenseId}`);
                 };
             default:
-                return () => { };
+                return () => {};
         }
     }
 }
