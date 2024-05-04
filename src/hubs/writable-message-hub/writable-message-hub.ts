@@ -5,7 +5,11 @@ import { IPushMessage } from "../../models/push-message/push-message-interface";
 
 @injectable()
 export class WritableMessageHub extends MessageHub implements IWritableMessageHub {
-    publishPushMessage(message: IPushMessage): void {
+    publishNotificationOpened(message: IPushMessage): void {
         this._notificationOpened$.next(message);
+    }
+
+    publishForegroundNotificationReceived(message: IPushMessage): void {
+        return this._foregroundNotificationReceived.next(message);
     }
 }

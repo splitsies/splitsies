@@ -32,21 +32,20 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     async getAllExpenses(reset = true): Promise<IExpenseDto[]> {
-        const pageKey = "getAllExpenses";
-        const userId = this._authProvider.provideIdentity();
-        if (!userId) {
-            return [];
-        }
-
-        if (reset && this._scanPageKeys.has(pageKey)) {
-            this._scanPageKeys.delete(pageKey);
-        }
-
-        const pagination = this._scanPageKeys.get(pageKey)?.nextPage ?? { limit: 7, offset: 0 };
-        let uri = `${this._config.expense}?userId=${userId}`;
-        uri += `&pagination=${encodeURIComponent(JSON.stringify(pagination))}`;
-
         try {
+            const pageKey = "getAllExpenses";
+            const userId = this._authProvider.provideIdentity();
+            if (!userId) {
+                return [];
+            }
+
+            if (reset && this._scanPageKeys.has(pageKey)) {
+                this._scanPageKeys.delete(pageKey);
+            }
+
+            const pagination = this._scanPageKeys.get(pageKey)?.nextPage ?? { limit: 7, offset: 0 };
+            let uri = `${this._config.expense}?userId=${userId}`;
+            uri += `&pagination=${encodeURIComponent(JSON.stringify(pagination))}`;
             const expenses = await this.get<IScanResult<IExpenseDto>>(uri, this._authProvider.provideAuthHeader());
             this._scanPageKeys.set(pageKey, expenses.data.lastEvaluatedKey);
             return expenses?.data.result ?? [];

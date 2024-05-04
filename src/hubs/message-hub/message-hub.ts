@@ -6,8 +6,13 @@ import { IPushMessage } from "../../models/push-message/push-message-interface";
 @injectable()
 export class MessageHub implements IMessageHub {
     protected readonly _notificationOpened$ = new Subject<IPushMessage>();
+    protected readonly _foregroundNotificationReceived = new Subject<IPushMessage>();
 
     get notificationOpened$(): Observable<IPushMessage> {
         return this._notificationOpened$.asObservable();
+    }
+
+    get foregroundNotificationReceived$(): Observable<IPushMessage> {
+        return this._foregroundNotificationReceived.asObservable();
     }
 }
