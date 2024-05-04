@@ -8,4 +8,8 @@ export class WritableMessageHub extends MessageHub implements IWritableMessageHu
     publishPushMessage(message: IPushMessage): void {
         this._notificationOpened$.next(message);
     }
+
+    publishForegroundNotificationReceived(message: IPushMessage): void {
+        return this._foregroundNotificationReceived.next(message);
+    }
 }

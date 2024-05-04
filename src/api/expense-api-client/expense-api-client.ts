@@ -32,11 +32,12 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     async getAllExpenses(reset = true): Promise<IExpenseDto[]> {
-        const pageKey = "getAllExpenses";
-        const userId = this._authProvider.provideIdentity();
-        if (!userId) {
-            return [];
-        }
+        try {
+            const pageKey = "getAllExpenses";
+            const userId = this._authProvider.provideIdentity();
+            if (!userId) {
+                return [];
+            }
 
         if (reset && this._scanPageKeys.has(pageKey)) {
             this._scanPageKeys.delete(pageKey);

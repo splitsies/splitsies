@@ -75,6 +75,8 @@ import { IAppManager } from "../managers/app-manager/app-manager-interface";
 import { AppManager } from "../managers/app-manager/app-manager";
 import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
 import { ExpenseViewModel } from "../view-models/expense-view-model/expense-view-model";
+import { IPushMessageHandlerProvider } from "../providers/push-message-handler-provider/push-message-handler-provider-interface";
+import { PushMessageHandlerProvider } from "../providers/push-message-handler-provider/push-message-handler-provider";
 const container = new Container({ defaultScope: "Singleton" });
 
 const messageHub = new WritableMessageHub();
@@ -117,4 +119,5 @@ container.bind<IVersionApiClient>(IVersionApiClient).to(VersionApiClient).inTran
 container.bind<IVersionManager>(IVersionManager).to(VersionManager);
 container.bind<IAppManager>(IAppManager).to(AppManager);
 container.bind<IExpenseViewModel>(IExpenseViewModel).to(ExpenseViewModel);
+container.bind<IPushMessageHandlerProvider>(IPushMessageHandlerProvider).to(PushMessageHandlerProvider);
 export { container };

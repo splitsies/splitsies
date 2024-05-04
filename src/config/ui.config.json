@@ -8,7 +8,8 @@
     "durations": {
         "focusThrottleMs": 500,
         "searchDebounceMs": 500,
-        "adBufferMs": 850
+        "adBufferMs": 850,
+        "notificationTimeoutMs": 4000
     },
     "card": {
         "borderWidth": 1,
