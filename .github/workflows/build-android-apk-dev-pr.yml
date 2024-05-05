@@ -29,7 +29,7 @@ jobs:
  
         run: |
            echo $GOOGLE_SERVICES > gs.android.json
-           base64 -d gs.android.json > ./android/app/google-services.json
+           base64 -d -i gs.android.json > ./android/app/google-services.json
 
       - name: Restore gradle.properties
         env:
