@@ -37,16 +37,16 @@ export class ApiConfigurationProvider extends BaseManager implements IApiConfigu
         switch (Config.STAGE) {
             case "local":
                 return localConfig;
-            case "lan":
-                // require this one as a special case - since the file isn't in
-                // git, it may not exist
-                try {
-                    const c = require("../../config/api-lan.config.json");
-                    return c;
-                } catch (e) {
-                    console.warn("Could not import the LAN api configuration. Defaulting to local configuration.");
-                    return localConfig;
-                }
+            // case "lan":
+            //     // require this one as a special case - since the file isn't in
+            //     // git, it may not exist
+            //     try {
+            //         const c = require("../../config/api-lan.config.json");
+            //         return c;
+            //     } catch (e) {
+            //         console.warn("Could not import the LAN api configuration. Defaulting to local configuration.");
+            //         return localConfig;
+            //     }
             case "dev-pr":
                 return devPrConfig;
             case "staging":
