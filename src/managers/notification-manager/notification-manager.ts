@@ -2,7 +2,7 @@ import { injectable } from "inversify";
 import { BaseManager } from "../base-manager";
 import { lazyInject } from "../../utils/lazy-inject";
 import { IPersmissionRequester } from "../../utils/permission-requester/permission-requester-interface";
-import messaging, { FirebaseMessagingTypes, firebase } from "@react-native-firebase/messaging";
+import messaging, { FirebaseMessagingTypes } from "@react-native-firebase/messaging";
 import { INotificationManager } from "./notification-manager-interface";
 import { IUserManager } from "../user-manager/user-manager-interface";
 import { getInternetCredentials, resetInternetCredentials, setInternetCredentials } from "react-native-keychain";
@@ -89,6 +89,7 @@ export class NotificationManager extends BaseManager implements INotificationMan
     private async initNativePushToken(): Promise<boolean> {
         if (Platform.OS === "android") {
             // Firebase works well to ensure token init state on android
+            await messaging().registerDeviceForRemoteMessages();
             return true;
         }
 
@@ -119,7 +120,6 @@ export class NotificationManager extends BaseManager implements INotificationMan
     }
 
     private async onForegroundNotification(message: FirebaseMessagingTypes.RemoteMessage): Promise<void> {
-        // Do something with foreground messages
         const typeCode = parseInt(`${message.data?.type}` || "");
         if (isNaN(typeCode)) return;
         this._messageHub.publishForegroundNotificationReceived(
