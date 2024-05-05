@@ -12,4 +12,8 @@ export class WritableMessageHub extends MessageHub implements IWritableMessageHu
     publishForegroundNotificationReceived(message: IPushMessage): void {
         return this._foregroundNotificationReceived.next(message);
     }
+
+    publishAdVisible(isVisible: boolean): void {
+        return this._adVisible$.next(isVisible);
+    }
 }
