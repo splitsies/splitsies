@@ -5,11 +5,13 @@ import { IPersmissionRequester } from "../../utils/permission-requester/permissi
 import mobileAds from "react-native-google-mobile-ads";
 import { IAdConfiguration } from "../../models/configuration/ad-configuration/ad-configuration-interface";
 import { InterstitialAd, AdEventType } from "react-native-google-mobile-ads";
+import { IWritableMessageHub } from "../../hubs/writable-message-hub/writable-message-hub-interface";
 
 @injectable()
 export class AdManager implements IAdManager {
     private readonly _permissionRequester = lazyInject<IPersmissionRequester>(IPersmissionRequester);
     private readonly _adConfiguration = lazyInject<IAdConfiguration>(IAdConfiguration);
+    private readonly _messageHub = lazyInject<IWritableMessageHub>(IWritableMessageHub);
 
     async initialize(): Promise<void> {
         await this._permissionRequester.requestAppTrackingTransparency();
@@ -32,9 +34,20 @@ export class AdManager implements IAdManager {
                 interstitial.addAdEventListener(AdEventType.LOADED, () => {
                     resolve();
                 });
+
                 interstitial.addAdEventListener(AdEventType.ERROR, () => {
                     reject();
+                    this._messageHub.publishAdVisible(false);
                 });
+
+                interstitial.addAdEventListener(AdEventType.OPENED, () => {
+                    this._messageHub.publishAdVisible(true);
+                });
+
+                interstitial.addAdEventListener(AdEventType.CLOSED, () => {
+                    this._messageHub.publishAdVisible(false);
+                });
+
                 interstitial.load();
             });
 
