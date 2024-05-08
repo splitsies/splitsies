@@ -5,6 +5,7 @@ on:
   pull_request:
     branches:
       - main
+      - "releases/**"
 
 jobs:
   build-android:
@@ -42,9 +43,3 @@ jobs:
       - name: Build .aab
         run: |
           cd android && ./gradlew bundleDevprRelease
-
-      - name: Upload .aab Artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: app-devpr-release.aab
-          path: android/app/build/outputs/bundle/devprRelease/

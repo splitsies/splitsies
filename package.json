@@ -18,7 +18,7 @@
     "android-emulator-ports": "adb reverse tcp:6001 tcp:6001 && adb reverse tcp:14624 tcp:14624 && adb reverse tcp:14623 tcp:14623",
     "clear-shared-models": "npm cache clean --force && rm -rf ./node_modules/@splitsies/shared-models && rm -rf ./package-lock.json",
     "google-services:dev-pr": "cp ./google-services/ios/dev-pr-GoogleService-Info.plist ./ios/GoogleService-Info.plist && cp ./google-services/android/dev-pr-google-services.json ./android/app/google-services.json",
-    "google-services:staging": "cp ./google-services/ios/staging-GoogleService-Info.plist ./ios/GoogleService-Info.plist && cp ./google-services/android/staging-google-services.json ./android/app/google-services.json",
+    "google-services:staging": "cp ./google-services/ios/production-GoogleService-Info.plist ./ios/GoogleService-Info.plist && cp ./google-services/android/staging-google-services.json ./android/app/google-services.json",
     "google-services:production": "cp ./google-services/ios/production-GoogleService-Info.plist ./ios/GoogleService-Info.plist && cp ./google-services/android/production-google-services.json ./android/app/google-services.json"
   },
   "dependencies": {

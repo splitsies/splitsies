@@ -5,6 +5,7 @@ on:
   pull_request:
     branches:
       - main
+      - "releases/**"
 
 jobs:
   build-android:
@@ -42,9 +43,3 @@ jobs:
       - name: Build .apk
         run: |
           cd android && ./gradlew assembleDevprRelease
-
-      - name: Upload .apk Artifact
-        uses: actions/upload-artifact@v1
-        with:
-          name: app-devpr-release.apk
-          path: android/app/build/outputs/apk/devpr/release/
