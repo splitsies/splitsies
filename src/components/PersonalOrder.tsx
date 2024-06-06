@@ -66,14 +66,14 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
     }, [expense, person]);
 
     const onPayPress = (): void => {
-        Alert.alert(`Send payment on Venmo for ${person.givenName}?`, "", [
+        Alert.alert(`Send payment with Venmo for ${person.givenName}?`, "", [
             { text: "Yes", onPress: () => _venmoLinker.link("pay", personalExpense) },
             { text: "No", style: "cancel" },
         ]);
     };
 
     const onRequestPress = (): void => {
-        Alert.alert(`Request payment on Venmo for ${person.givenName}?`, "", [
+        Alert.alert(`Request payment with Venmo for ${person.givenName}?`, "", [
             { text: "Yes", onPress: () => _venmoLinker.link("charge", personalExpense) },
             { text: "No", style: "cancel" },
         ]);
