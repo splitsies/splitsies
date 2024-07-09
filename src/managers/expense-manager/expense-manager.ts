@@ -107,9 +107,8 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         return this._api.createExpense(base64Image);
     }
 
-    async requestExpenseJoinRequests(): Promise<void> {
-        const requests = await this._api.getExpenseJoinRequests();
-
+    async requestExpenseJoinRequests(reset = true): Promise<void> {
+        const requests = await this._api.getExpenseJoinRequests(reset);
         const joinRequests: IExpenseJoinRequest[] = [];
 
         for (const r of requests) {
@@ -117,7 +116,8 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
             if (result) joinRequests.push(result);
         }
 
-        this._expenseJoinRequests$.next(joinRequests.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()));
+        const newCollection = reset ? joinRequests : [...this._expenseJoinRequests$.value, ...joinRequests];
+        this._expenseJoinRequests$.next(newCollection.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()));
     }
 
     async removeExpenseJoinRequestForUser(expenseId: string, userId: string | undefined = undefined): Promise<void> {

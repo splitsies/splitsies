@@ -15,6 +15,7 @@ import { IRequestConfiguration } from "../models/configuration/request-config/re
 import { DrawerScreenProps } from "@react-navigation/drawer";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { useObservable } from "../hooks/use-observable";
+import { FlatList } from "react-native-gesture-handler";
 
 type Props = CompositeScreenProps<
     CompositeScreenProps<NativeStackScreenProps<RootStackParamList>, DrawerScreenProps<DrawerParamList, "Home">>,
@@ -29,6 +30,7 @@ export const RequestsFeedScreen = ({ navigation }: Props): JSX.Element => {
     const requestFilter = useObservable(_viewModel.requestFilter$, _viewModel.requestFilter);
     const allJoinRequests = useObservable(_expenseManager.expenseJoinRequests$, []);
     const [joinRequests, setJoinRequests] = useState<IExpenseJoinRequest[]>(allJoinRequests);
+    const [fetchingPage, setFetchingPage] = useState<boolean>(false);
     const [refreshing, setRefreshing] = useState<boolean>(false);
 
     useFocusEffect(
@@ -85,27 +87,35 @@ export const RequestsFeedScreen = ({ navigation }: Props): JSX.Element => {
         setRefreshing(false);
     };
 
+    const fetchPage = async (): Promise<void> => {
+        if (fetchingPage) return;
+        setFetchingPage(true);
+        await _expenseManager.requestExpenseJoinRequests(false);
+        setFetchingPage(false);
+    };
+
     return (
         <Container>
-            <ScrollView
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
-                style={{ paddingHorizontal: 15 }}
-            >
-                {joinRequests.length > 0 ? (
-                    joinRequests.map((r) => (
+            {joinRequests.length === 0 ? (
+                <View style={styles.messageContainer}>
+                    <Text hint>Doesn't look like there are any requests here</Text>
+                </View>)
+                :
+                <FlatList
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
+                    onEndReached={() => void fetchPage()}
+                    style={{ paddingHorizontal: 15 }}
+                    renderItem={({ item }) => (
                         <JoinRequest
-                            key={r.expense.id}
-                            joinRequest={r}
+                            key={item.expense.id}
+                            joinRequest={item}
                             onApprove={onApproveRequest}
                             onDeny={onDenyRequest}
                         />
-                    ))
-                ) : (
-                    <View style={styles.messageContainer}>
-                        <Text hint>Doesn't look like there are any requests here</Text>
-                    </View>
-                )}
-            </ScrollView>
+                    )}
+                    data={joinRequests}
+                />
+            }
         </Container>
     );
 };
