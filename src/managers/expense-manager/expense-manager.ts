@@ -23,6 +23,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     private readonly _currentExpense$ = new BehaviorSubject<IExpense | null>(null);
     private readonly _isPendingExpenseData$ = new BehaviorSubject<boolean>(false);
     private readonly _expenseJoinRequests$ = new BehaviorSubject<IExpenseJoinRequest[]>([]);
+    private readonly _expenseJoinRequestCount$ = new BehaviorSubject<number>(0);
 
     get expenses$(): Observable<IExpense[]> {
         return this._expenses$.asObservable();
@@ -50,6 +51,10 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     get expenseJoinRequests$(): Observable<IExpenseJoinRequest[]> {
         return this._expenseJoinRequests$.asObservable();
+    }
+
+    get expenseJoinRequestCount$(): Observable<number> {
+        return this._expenseJoinRequestCount$.asObservable();
     }
 
     constructor() {
@@ -108,6 +113,10 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     }
 
     async requestExpenseJoinRequests(reset = true): Promise<void> {
+        if (reset) {
+            await this.getExpenseJoinRequestCount();
+        }
+
         const requests = await this._api.getExpenseJoinRequests(reset);
         const joinRequests: IExpenseJoinRequest[] = [];
 
@@ -118,6 +127,11 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
         const newCollection = reset ? joinRequests : [...this._expenseJoinRequests$.value, ...joinRequests];
         this._expenseJoinRequests$.next(newCollection.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()));
+    }
+
+    async getExpenseJoinRequestCount(): Promise<void> {
+        const count = await this._api.getExpenseJoinRequestCount();
+        this._expenseJoinRequestCount$.next(count);
     }
 
     async removeExpenseJoinRequestForUser(expenseId: string, userId: string | undefined = undefined): Promise<void> {

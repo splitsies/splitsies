@@ -14,6 +14,7 @@ export interface IExpenseManager {
     readonly isPendingExpenseData$: Observable<boolean>;
 
     readonly expenseJoinRequests$: Observable<IExpenseJoinRequest[]>;
+    readonly expenseJoinRequestCount$: Observable<number>;
 
     requestForUser(reset?: boolean): Promise<void>;
     connectToExpense(expenseId: string): Promise<void>;
@@ -24,6 +25,7 @@ export interface IExpenseManager {
     requestExpenseJoinRequests(reset?: boolean): Promise<void>;
     removeExpenseJoinRequestForUser(expenseId: string, userId?: string): Promise<void>;
     sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void>;
+    getExpenseJoinRequestCount(): Promise<void>;
     addItem(
         expenseId: string,
         itemName: string,

@@ -15,6 +15,7 @@ export interface IExpenseApiClient extends IBaseManager {
     createFromExpense(expense: IExpenseDto): Promise<boolean>;
     createExpense(base64Image?: string): Promise<boolean>;
     getExpenseJoinRequests(reset?: boolean): Promise<IUserExpenseDto[]>;
+    getExpenseJoinRequestCount(): Promise<number>;
     removeExpenseJoinRequest(expenseId: string, userId?: string): Promise<void>;
     sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void>;
     addItem(
