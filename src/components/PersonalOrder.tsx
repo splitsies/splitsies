@@ -16,8 +16,8 @@ import { IClipboardUtility } from "../utils/clipboard-utility/clipboard-utility-
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { RemovePersonButton } from "./RemovePersonButton";
 import Copy from "../../assets/icons/copy.svg";
+import Star from "../../assets/icons/star.svg";
 import { IExpense } from "../models/expense/expense-interface";
-import { IUserManager } from "../managers/user-manager/user-manager-interface";
 
 const _priceCalculator = lazyInject<IPriceCalculator>(IPriceCalculator);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -26,7 +26,6 @@ const _transactionNoteBuilder = lazyInject<ITransactionNoteBuilder>(ITransaction
 const _clipboardUtility = lazyInject<IClipboardUtility>(IClipboardUtility);
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
-const _userManager = lazyInject<IUserManager>(IUserManager);
 const _dimensions = Dimensions.get("window");
 
 const icon = _uiConfig.sizes.smallIcon;
@@ -88,7 +87,13 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
         return (
             <View style={styles.header}>
                 <View style={styles.iconContainer}>
-                    {person.isRegistered && <Icon assetName="logoPrimary" size={27} />}
+
+                    <View style={{display: "flex", flex: 1 }}>
+                        {person.isRegistered && <Icon assetName="logoPrimary" size={27} />}
+                    </View>
+                    <View style={{display: "flex", flex: 1, alignItems: "flex-end" }}>
+                        {expense.payers.find(p => p.userId === person.id) && <Star width={icon} height={icon} fill={Colors.primary} />}
+                    </View>
                 </View>
 
                 <View style={styles.nameContainer}>
@@ -98,7 +103,7 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                 </View>
 
                 <View
-                    style={[styles.iconContainer, { flexDirection: "row", columnGap: 5, justifyContent: "flex-end" }]}
+                    style={[styles.iconContainer, { columnGap: 5, justifyContent: "flex-end" }]}
                 >
                     <TouchableOpacity
                         onPress={onCopyPress}
@@ -223,10 +228,11 @@ const styles = StyleSheet.create({
     },
     iconContainer: {
         overflow: "visible",
+        flexDirection: "row", 
         alignItems: "center",
         justifyContent: "center",
         width: 35,
-        height: 35,
+        flexGrow: 1,
     },
     icon: {
         backgroundColor: _colorConfiguration.primary,

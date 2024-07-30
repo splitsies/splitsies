@@ -1,4 +1,4 @@
-import { IExpenseItem, IExpenseUserDetails } from "@splitsies/shared-models";
+import { IExpenseItem, IExpenseUserDetails, IPayerShare } from "@splitsies/shared-models";
 
 export interface IExpense {
     readonly id: string;
@@ -8,4 +8,5 @@ export interface IExpense {
     readonly users: IExpenseUserDetails[];
     readonly subtotal: number;
     readonly total: number;
+    readonly payers: IPayerShare[];
 }
