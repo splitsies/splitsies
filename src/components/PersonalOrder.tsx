@@ -18,6 +18,7 @@ import Star from "../../assets/icons/star.svg";
 import More from "../../assets/icons/more.svg";
 import { IExpense } from "../models/expense/expense-interface";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
+import { useComputed } from "../hooks/use-computed";
 
 const _priceCalculator = lazyInject<IPriceCalculator>(IPriceCalculator);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -39,7 +40,16 @@ type Props = {
 
 export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element => {
     useThemeWatcher();
-    const [actionsVisible, setActionsVisible] = useState<boolean>(false);
+
+    const payer = useComputed<boolean>(
+        ([expense]) => !!(expense as IExpense).payers.find((p) => p.userId === person.id),
+        [expense],
+    );
+    const settled = useComputed<boolean>(
+        ([expense]) => !!(expense as IExpense).payerStatuses.find((s) => s.userId === person.id)?.settled,
+        [expense],
+    );
+
     const [personalExpense, setPersonalExpense] = useState<IExpense>(
         _priceCalculator.calculatePersonalExpense(person.id, expense),
     );
@@ -68,35 +78,6 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
         ]);
     };
 
-    const defaultActions: ButtonProps[] = [
-        { label: "Remove User", onPress: onRemovePerson },
-        { label: "Copy Breakdown to Clipboard", onPress: onCopyPress },
-        { label: "Mark as Payer", disabled: !!expense.payers.find((p) => p.userId === person.id), onPress: onSetPayer },
-        { label: "Cancel", onPress: () => setActionsVisible(false) },
-    ];
-
-    const [subtotalItem, setSubtotalItem] = useState<IExpenseItem>(
-        new ExpenseItemModel("", expense.id, "Subtotal", personalExpense.subtotal, [], false, Date.now()),
-    );
-
-    const [totalItem, setTotalItem] = useState<IExpenseItem>(
-        new ExpenseItemModel("", expense.id, "Total", personalExpense.total, [], false, Date.now()),
-    );
-
-    const [toastVisible, setToastVisible] = useState<boolean>(false);
-
-    useEffect(() => {
-        const updatedPersonalExpense = _priceCalculator.calculatePersonalExpense(person.id, expense);
-        setPersonalExpense(updatedPersonalExpense);
-        setSubtotalItem(
-            new ExpenseItemModel("", expense.id, "Subtotal", updatedPersonalExpense.subtotal, [], false, Date.now()),
-        );
-
-        setTotalItem(
-            new ExpenseItemModel("", expense.id, "Total", updatedPersonalExpense.total, [], false, Date.now()),
-        );
-    }, [expense, person]);
-
     const onPayPress = (): void => {
         Alert.alert(
             `Pay ${
@@ -119,40 +100,102 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
         ]);
     };
 
+    const onTogglePayerStatus = (): void => {
+        void _expenseManager.requestSetExpensePayerStatus(expense.id, person.id, !settled);
+        setActionsVisible(false);
+    };
+
+    const defaultActions: ButtonProps[] = [
+        { label: "Remove User", onPress: onRemovePerson },
+        { label: "Copy Breakdown to Clipboard", onPress: onCopyPress },
+        {
+            label: "Mark as Payer",
+            disabled: payer,
+            onPress: onSetPayer,
+        },
+        {
+            label: settled ? "Mark as Unpaid" : "Mark as Paid",
+            disabled: expense.payers.length === 0 || payer,
+            onPress: onTogglePayerStatus,
+        },
+        { label: "Cancel", onPress: () => setActionsVisible(false) },
+    ];
+
+    const [actionsVisible, setActionsVisible] = useState<boolean>(false);
+    const [borderColor, setBorderColor] = useState<string>(Colors.divider);
+    const [subtotalItem, setSubtotalItem] = useState<IExpenseItem>(
+        new ExpenseItemModel("", expense.id, "Subtotal", personalExpense.subtotal, [], false, Date.now()),
+    );
+    const [totalItem, setTotalItem] = useState<IExpenseItem>(
+        new ExpenseItemModel("", expense.id, "Total", personalExpense.total, [], false, Date.now()),
+    );
+    const [toastVisible, setToastVisible] = useState<boolean>(false);
+
+    useEffect(() => {
+        const updatedPersonalExpense = _priceCalculator.calculatePersonalExpense(person.id, expense);
+        setPersonalExpense(updatedPersonalExpense);
+        setSubtotalItem(
+            new ExpenseItemModel("", expense.id, "Subtotal", updatedPersonalExpense.subtotal, [], false, Date.now()),
+        );
+
+        setTotalItem(
+            new ExpenseItemModel("", expense.id, "Total", updatedPersonalExpense.total, [], false, Date.now()),
+        );
+
+        if (expense.payers.length === 0 || expense.payers.find((u) => u.userId === person.id)) {
+            setBorderColor(Colors.divider);
+            return;
+        }
+
+        setBorderColor(!settled ? Colors.attention : Colors.primary);
+    }, [expense, person, settled]);
+
     const renderHeader = (): JSX.Element => {
         return (
-            <View style={styles.header}>
-                <View style={styles.iconContainer}>
-                    <View style={{ display: "flex", flex: 1 }}>
-                        {person.isRegistered && <Icon assetName="logoPrimary" size={27} />}
+            <View style={{ alignItems: "center" }}>
+                <View style={styles.header}>
+                    <View style={styles.iconContainer}>
+                        <View style={{ display: "flex", flex: 1 }}>
+                            {person.isRegistered && <Icon assetName="logoPrimary" size={27} />}
+                        </View>
+                        <View style={{ display: "flex", flex: 1, alignItems: "flex-end" }}>
+                            {payer && <Star width={icon} height={icon} fill={Colors.primary} />}
+                        </View>
                     </View>
-                    <View style={{ display: "flex", flex: 1, alignItems: "flex-end" }}>
-                        {expense.payers.find((p) => p.userId === person.id) && (
-                            <Star width={icon} height={icon} fill={Colors.primary} />
-                        )}
+
+                    <View style={styles.nameContainer}>
+                        <Text body numberOfLines={1} ellipsizeMode={"tail"} color={Colors.textColor}>
+                            {person.givenName + (person.familyName ? " " + person.familyName : "")}
+                        </Text>
+                    </View>
+
+                    <View style={[styles.iconContainer, { columnGap: 5, justifyContent: "flex-end" }]}>
+                        <TouchableOpacity onPress={() => setActionsVisible(true)}>
+                            <More width={icon} height={icon} fill={Colors.textColor} />
+                        </TouchableOpacity>
                     </View>
                 </View>
-
-                <View style={styles.nameContainer}>
-                    <Text body numberOfLines={1} ellipsizeMode={"tail"} color={Colors.textColor}>
-                        {person.givenName + (person.familyName ? " " + person.familyName : "")}
+                {expense.payers.length > 0 && (
+                    <Text subtext style={{ marginTop: -5 }}>
+                        {payer
+                            ? `Owed $${expense.users
+                                  .reduce((p, c) => {
+                                      if (c.id === person.id) return p;
+                                      if (expense.payerStatuses.find((s) => s.userId === c.id)?.settled) return p;
+                                      return p + _priceCalculator.calculatePersonalExpense(c.id, expense).total;
+                                  }, 0)
+                                  .toFixed(2)}`
+                            : `Owes ${
+                                  expense.users.find((u) => u.id === expense.payers[0].userId)?.givenName
+                              } $${personalExpense.total.toFixed(2)}`}
                     </Text>
-                </View>
-
-                <View style={[styles.iconContainer, { columnGap: 5, justifyContent: "flex-end" }]}>
-                    <TouchableOpacity
-                        onPress={() => setActionsVisible(true)}
-                        // style={{ backgroundColor: Colors.primary, padding: 7, borderRadius: 20 }}
-                    >
-                        <More width={icon} height={icon} fill={Colors.textColor} />
-                    </TouchableOpacity>
-                </View>
+                )}
             </View>
         );
     };
 
     return (
-        <View style={[styles.container, { borderColor: Colors.divider }, style]}>
+        <View style={[styles.container, { borderColor }, style]}>
             {renderHeader()}
             <ScrollView style={styles.orderContainer}>
                 {personalExpense.items
@@ -199,7 +242,7 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                 centerMessage
                 swipeable
                 style={{ borderRadius: 35, margin: 14 }}
-                messageStyle={_styleManager.typography.body}
+                messageStyle={{ ..._styleManager.typography.body, color: "black" }}
                 visible={toastVisible}
                 position={"bottom"}
                 autoDismiss={1000}
@@ -212,10 +255,11 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
 
             <ActionSheet
                 useNativeIOS
-                cancelButtonIndex={3}
+                cancelButtonIndex={defaultActions.filter((a) => !a.disabled).length - 1}
                 destructiveButtonIndex={0}
                 options={defaultActions.filter((a) => !a.disabled)}
                 visible={actionsVisible}
+                onDismiss={() => setActionsVisible(false)}
             />
         </View>
     );
@@ -228,7 +272,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         alignSelf: "center",
         borderRadius: 30,
-        borderWidth: 1,
+        borderWidth: 2,
         padding: 15,
         display: "flex",
     },

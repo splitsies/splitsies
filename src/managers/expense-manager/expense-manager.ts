@@ -159,6 +159,10 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         await this._api.requestSetExpensePayers(expensePayerDto);
     }
 
+    async requestSetExpensePayerStatus(expenseId: string, userId: string, settled: boolean): Promise<void> {
+        await this._api.requestSetExpensePayerStatus(expenseId, userId, settled);
+    }
+
     sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void> {
         return this._api.sendExpenseJoinRequest(userId, expenseId);
     }

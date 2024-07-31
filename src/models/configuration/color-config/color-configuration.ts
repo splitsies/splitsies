@@ -25,6 +25,8 @@ export class ColorConfiguration implements IColorConfiguration {
     readonly iosKeyboardBtnDarkLight: string;
     readonly iosKeyboardBtnLightDark: string;
     readonly iosKeyboardBtnLightLight: string;
+    readonly attention = config.attention;
+    readonly ready = config.ready;
 
     constructor() {
         this.primary = config.primary;

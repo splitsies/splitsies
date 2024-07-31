@@ -25,6 +25,8 @@ export class StyleManager implements IStyleManager {
             primary: this.colorConfiguration.primary,
             primaryTranslucentLight: this.colorConfiguration.primaryTranslucentLight,
             hint: this.colorConfiguration.greyFont,
+            attention: this.colorConfiguration.attention,
+            ready: this.colorConfiguration.ready,
         });
 
         Colors.loadSchemes({

@@ -242,15 +242,22 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     async requestSetExpensePayers(expensePayerDto: IExpensePayerDto): Promise<void> {
         try {
             const url = `${this._config.expense}/${expensePayerDto.expenseId}/payers`;
-            const response = await this.putJson<IExpenseDto>(
+            await this.putJson<IExpenseDto>(
                 url,
                 {
                     payerShares: expensePayerDto.payers,
                 },
                 this._authProvider.provideAuthHeader(),
             );
+        } catch (e) {
+            return;
+        }
+    }
 
-            this._sessionExpense$.next(response.data);
+    async requestSetExpensePayerStatus(expenseId: string, userId: string, settled: boolean): Promise<void> {
+        try {
+            const url = `${this._config.expense}/${expenseId}/payers/${userId}`;
+            await this.putJson<IExpenseDto>(url, { settled }, this._authProvider.provideAuthHeader());
         } catch (e) {
             return;
         }

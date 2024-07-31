@@ -1,4 +1,4 @@
-import { IExpenseItem, IExpenseUserDetails, IPayerShare, IUserDto } from "@splitsies/shared-models";
+import { ExpensePayerStatus, IExpenseItem, IExpenseUserDetails, IPayerShare } from "@splitsies/shared-models";
 import { IExpense } from "./expense-interface";
 
 export class Expense implements IExpense {
@@ -9,6 +9,7 @@ export class Expense implements IExpense {
         readonly items: IExpenseItem[],
         readonly users: IExpenseUserDetails[],
         readonly payers: IPayerShare[],
+        readonly payerStatuses: ExpensePayerStatus[],
     ) {}
 
     get subtotal(): number {

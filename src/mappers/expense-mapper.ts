@@ -18,6 +18,7 @@ export class ExpenseMapper implements IExpenseMapper {
             expense.items,
             expense.users.map((u) => u.id),
             expense.payers,
+            expense.payerStatuses,
         );
     }
 
@@ -32,6 +33,7 @@ export class ExpenseMapper implements IExpenseMapper {
                 .map((id) => users.find((u) => u.id === id))
                 .filter((u) => u !== undefined) as IExpenseUserDetails[],
             dto.payers,
+            dto.payerStatuses,
         );
     }
 
@@ -50,6 +52,7 @@ export class ExpenseMapper implements IExpenseMapper {
                         .map((id) => users.find((u) => u.id === id))
                         .filter((u) => u !== undefined) as IExpenseUserDetails[],
                     dto.payers,
+                    dto.payerStatuses,
                 ),
         );
     }
