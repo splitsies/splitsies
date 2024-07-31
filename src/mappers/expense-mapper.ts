@@ -17,7 +17,7 @@ export class ExpenseMapper implements IExpenseMapper {
             expense.transactionDate.toISOString(),
             expense.items,
             expense.users.map((u) => u.id),
-            expense.payers
+            expense.payers,
         );
     }
 
@@ -31,7 +31,7 @@ export class ExpenseMapper implements IExpenseMapper {
             dto.userIds
                 .map((id) => users.find((u) => u.id === id))
                 .filter((u) => u !== undefined) as IExpenseUserDetails[],
-            dto.payers
+            dto.payers,
         );
     }
 
@@ -49,7 +49,7 @@ export class ExpenseMapper implements IExpenseMapper {
                     dto.userIds
                         .map((id) => users.find((u) => u.id === id))
                         .filter((u) => u !== undefined) as IExpenseUserDetails[],
-                    dto.payers
+                    dto.payers,
                 ),
         );
     }

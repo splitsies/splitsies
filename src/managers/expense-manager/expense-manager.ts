@@ -1,6 +1,14 @@
 import { injectable } from "inversify";
 import { IExpenseManager } from "./expense-manager-interface";
-import { IExpenseDto, IExpenseItem, IExpenseUserDetails, IUserCredential } from "@splitsies/shared-models";
+import {
+    ExpensePayerDto,
+    IExpenseDto,
+    IExpenseItem,
+    IExpensePayerDto,
+    IExpenseUserDetails,
+    IUserCredential,
+    PayerShare,
+} from "@splitsies/shared-models";
 import { BehaviorSubject, Observable } from "rxjs";
 import { IExpenseApiClient } from "../../api/expense-api-client/expense-api-client-interface";
 import { lazyInject } from "../../utils/lazy-inject";
@@ -142,6 +150,13 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
         requests.splice(requestIndex, 1);
         this._expenseJoinRequests$.next(requests);
+    }
+
+    // TODO: This method signture ensures only one payer per expense, but the backing
+    // design allows multiple. At some point, UX should be defined for multiple payer workflows
+    async requestSetExpensePayers(expenseId: string, userId: string): Promise<void> {
+        const expensePayerDto = new ExpensePayerDto(expenseId, [new PayerShare(userId, 1)]);
+        await this._api.requestSetExpensePayers(expensePayerDto);
     }
 
     sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void> {

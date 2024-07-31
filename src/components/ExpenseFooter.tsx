@@ -1,7 +1,8 @@
 import { Stepper, View } from "react-native-ui-lib";
 import { ExpenseItem } from "./ExpenseItem";
 import React from "react";
-import { IExpense, IExpenseItem } from "@splitsies/shared-models";
+import { IExpenseItem } from "@splitsies/shared-models";
+import { IExpense } from "../models/expense/expense-interface";
 
 type Props = {
     expense: IExpense;
@@ -12,7 +13,11 @@ type Props = {
 export const ExpenseFooter = ({ expense, onItemSelected, isEditing }: Props): JSX.Element => {
     return (
         <View>
-            <ExpenseItem item={{ name: "Subtotal", price: expense.subtotal, owners: [] } as unknown as IExpenseItem} />
+            {expense.items.filter((i) => i.isProportional).length > 0 && (
+                <ExpenseItem
+                    item={{ name: "Subtotal", price: expense.subtotal, owners: [] } as unknown as IExpenseItem}
+                />
+            )}
             {expense.items
                 .filter((i) => i.isProportional)
                 .map((pi) => (

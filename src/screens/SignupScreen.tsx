@@ -121,9 +121,7 @@ export const SignupScreen = SpThemedComponent(({ navigation }: Props): JSX.Eleme
                 </View>
 
                 <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-                    <View style={styles.stepContainer}>
-                        {provideWizardStepComponent(wizardIndex)}
-                    </View>
+                    <View style={styles.stepContainer}>{provideWizardStepComponent(wizardIndex)}</View>
                 </TouchableWithoutFeedback>
             </SafeAreaView>
         </Container>

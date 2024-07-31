@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { StyleSheet, Alert, ScrollView, Dimensions } from "react-native";
 import { IExpenseItem, IExpenseUserDetails, ExpenseItem as ExpenseItemModel } from "@splitsies/shared-models";
 import { Text, View } from "react-native-ui-lib/core";
-import { Button, Colors, Icon, Toast } from "react-native-ui-lib";
+import { ActionSheet, Button, ButtonProps, Colors, Icon, Toast } from "react-native-ui-lib";
 import { ExpenseItem } from "./ExpenseItem";
 import { lazyInject } from "../utils/lazy-inject";
 import { IPriceCalculator } from "../utils/price-calculator/price-calculator-interface";
@@ -14,10 +14,10 @@ import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-co
 import { ITransactionNoteBuilder } from "../utils/transaction-note-builder/transaction-note-builder-interface";
 import { IClipboardUtility } from "../utils/clipboard-utility/clipboard-utility-interface";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
-import { RemovePersonButton } from "./RemovePersonButton";
-import Copy from "../../assets/icons/copy.svg";
 import Star from "../../assets/icons/star.svg";
+import More from "../../assets/icons/more.svg";
 import { IExpense } from "../models/expense/expense-interface";
+import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 
 const _priceCalculator = lazyInject<IPriceCalculator>(IPriceCalculator);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -27,6 +27,7 @@ const _clipboardUtility = lazyInject<IClipboardUtility>(IClipboardUtility);
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
 const _dimensions = Dimensions.get("window");
+const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 
 const icon = _uiConfig.sizes.smallIcon;
 
@@ -38,9 +39,41 @@ type Props = {
 
 export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element => {
     useThemeWatcher();
+    const [actionsVisible, setActionsVisible] = useState<boolean>(false);
     const [personalExpense, setPersonalExpense] = useState<IExpense>(
         _priceCalculator.calculatePersonalExpense(person.id, expense),
     );
+
+    const onCopyPress = useCallback((): void => {
+        _clipboardUtility.copyToClipboard(_transactionNoteBuilder.build(personalExpense));
+        setActionsVisible(false);
+        setToastVisible(true);
+    }, [personalExpense]);
+
+    const onSetPayer = useCallback((): void => {
+        void _expenseManager.requestSetExpensePayers(expense.id, person.id);
+        setActionsVisible(false);
+    }, [expense, person]);
+
+    const onRemovePerson = (): void => {
+        Alert.alert(`Remove Person?`, "Any item selections will be reverted. Do you want to continue?", [
+            {
+                text: "Yes",
+                onPress: () => {
+                    void _expenseManager.requestRemoveUserFromExpense(person.id, expense.id);
+                    setActionsVisible(false);
+                },
+            },
+            { text: "No", style: "cancel" },
+        ]);
+    };
+
+    const defaultActions: ButtonProps[] = [
+        { label: "Remove User", onPress: onRemovePerson },
+        { label: "Copy Breakdown to Clipboard", onPress: onCopyPress },
+        { label: "Mark as Payer", disabled: !!expense.payers.find((p) => p.userId === person.id), onPress: onSetPayer },
+        { label: "Cancel", onPress: () => setActionsVisible(false) },
+    ];
 
     const [subtotalItem, setSubtotalItem] = useState<IExpenseItem>(
         new ExpenseItemModel("", expense.id, "Subtotal", personalExpense.subtotal, [], false, Date.now()),
@@ -65,10 +98,18 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
     }, [expense, person]);
 
     const onPayPress = (): void => {
-        Alert.alert(`Send payment with Venmo for ${person.givenName}?`, "", [
-            { text: "Yes", onPress: () => _venmoLinker.link("pay", personalExpense) },
-            { text: "No", style: "cancel" },
-        ]);
+        Alert.alert(
+            `Pay ${
+                expense.payers.length
+                    ? expense.users.find((u) => u.id === expense.payers[0].userId)?.givenName + " "
+                    : ""
+            }the breakdown for ${person.givenName} with Venmo?`,
+            "",
+            [
+                { text: "Yes", onPress: () => _venmoLinker.link("pay", personalExpense) },
+                { text: "No", style: "cancel" },
+            ],
+        );
     };
 
     const onRequestPress = (): void => {
@@ -78,21 +119,17 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
         ]);
     };
 
-    const onCopyPress = useCallback((): void => {
-        _clipboardUtility.copyToClipboard(_transactionNoteBuilder.build(personalExpense));
-        setToastVisible(true);
-    }, [personalExpense]);
-
     const renderHeader = (): JSX.Element => {
         return (
             <View style={styles.header}>
                 <View style={styles.iconContainer}>
-
-                    <View style={{display: "flex", flex: 1 }}>
+                    <View style={{ display: "flex", flex: 1 }}>
                         {person.isRegistered && <Icon assetName="logoPrimary" size={27} />}
                     </View>
-                    <View style={{display: "flex", flex: 1, alignItems: "flex-end" }}>
-                        {expense.payers.find(p => p.userId === person.id) && <Star width={icon} height={icon} fill={Colors.primary} />}
+                    <View style={{ display: "flex", flex: 1, alignItems: "flex-end" }}>
+                        {expense.payers.find((p) => p.userId === person.id) && (
+                            <Star width={icon} height={icon} fill={Colors.primary} />
+                        )}
                     </View>
                 </View>
 
@@ -102,16 +139,14 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                     </Text>
                 </View>
 
-                <View
-                    style={[styles.iconContainer, { columnGap: 5, justifyContent: "flex-end" }]}
-                >
+                <View style={[styles.iconContainer, { columnGap: 5, justifyContent: "flex-end" }]}>
                     <TouchableOpacity
-                        onPress={onCopyPress}
-                        style={{ backgroundColor: Colors.primary, padding: 7, borderRadius: 20 }}
+                        onPress={() => setActionsVisible(true)}
+                        // style={{ backgroundColor: Colors.primary, padding: 7, borderRadius: 20 }}
                     >
-                        <Copy width={icon} height={icon} fill={Colors.bgColor} />
+                        <More width={icon} height={icon} fill={Colors.bgColor} />
                     </TouchableOpacity>
-                    <RemovePersonButton person={person} expense={expense} />
+                    {/* <RemovePersonButton person={person} expense={expense} /> */}
                 </View>
             </View>
         );
@@ -129,7 +164,9 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
             </ScrollView>
 
             <View style={{ borderTopWidth: 0.5, borderTopColor: Colors.divider, paddingTop: 5 }}>
-                <ExpenseItem item={subtotalItem} key={"subtotal"} onPress={() => {}} />
+                {expense.items.filter((i) => i.isProportional).length > 0 && (
+                    <ExpenseItem item={subtotalItem} key={"subtotal"} onPress={() => {}} />
+                )}
                 {personalExpense.items
                     .filter((i) => i.isProportional)
                     .map((item) => (
@@ -157,6 +194,7 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                     onPress={onRequestPress}
                 />
             </View>
+
             <Toast
                 body
                 centerMessage
@@ -167,10 +205,18 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                 position={"bottom"}
                 autoDismiss={1000}
                 backgroundColor={_colorConfiguration.primary}
-                message="Note copied to clipboard"
+                message="Breakdown copied to clipboard"
                 onDismiss={() => {
                     setToastVisible(false);
                 }}
+            />
+
+            <ActionSheet
+                useNativeIOS
+                cancelButtonIndex={3}
+                destructiveButtonIndex={0}
+                options={defaultActions.filter((a) => !a.disabled)}
+                visible={actionsVisible}
             />
         </View>
     );
@@ -194,6 +240,7 @@ const styles = StyleSheet.create({
     nameContainer: {
         flex: 1,
         alignItems: "center",
+        justifyContent: "center",
     },
     header: {
         flexDirection: "row",
@@ -228,7 +275,7 @@ const styles = StyleSheet.create({
     },
     iconContainer: {
         overflow: "visible",
-        flexDirection: "row", 
+        flexDirection: "row",
         alignItems: "center",
         justifyContent: "center",
         width: 35,

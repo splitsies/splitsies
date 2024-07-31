@@ -24,6 +24,7 @@ export interface IExpenseManager {
     createExpense(base64Image?: string): Promise<boolean>;
     requestExpenseJoinRequests(reset?: boolean): Promise<void>;
     removeExpenseJoinRequestForUser(expenseId: string, userId?: string): Promise<void>;
+    requestSetExpensePayers(expenseId: string, userId: string): Promise<void>;
     sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void>;
     getExpenseJoinRequestCount(): Promise<void>;
     addItem(
