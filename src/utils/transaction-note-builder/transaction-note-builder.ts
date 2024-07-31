@@ -1,8 +1,6 @@
 import { injectable } from "inversify";
 import { ITransactionNoteBuilder } from "./transaction-note-builder-interface";
-import { IExpense } from "@splitsies/shared-models";
-import { IVenmoConfiguration } from "../../models/configuration/venmo-configuration/venmo-configuration-interface";
-import { lazyInject } from "../lazy-inject";
+import { IExpense } from "../../models/expense/expense-interface";
 
 @injectable()
 export class TransactionNoteBuilder implements ITransactionNoteBuilder {

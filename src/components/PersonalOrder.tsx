@@ -22,6 +22,7 @@ import { useComputed } from "../hooks/use-computed";
 import { IBalanceCalculator } from "../utils/balance-calculator/balance-calculator-interface";
 import { BalanceResult } from "../models/balance-result";
 import { format } from "../utils/format-price";
+import { ISettingsManager } from "../managers/settings-manager/settings-manager-interface";
 
 const _priceCalculator = lazyInject<IPriceCalculator>(IPriceCalculator);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -33,6 +34,7 @@ const _styleManager = lazyInject<IStyleManager>(IStyleManager);
 const _dimensions = Dimensions.get("window");
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _balanceCalculator = lazyInject<IBalanceCalculator>(IBalanceCalculator);
+const _settingsManager = lazyInject<ISettingsManager>(ISettingsManager);
 
 const icon = _uiConfig.sizes.smallIcon;
 
@@ -95,7 +97,15 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
             }the breakdown for ${person.givenName} with Venmo?`,
             "",
             [
-                { text: "Yes", onPress: () => _venmoLinker.link("pay", personalExpense) },
+                {
+                    text: "Yes",
+                    onPress: () => {
+                        _venmoLinker.link("pay", personalExpense);
+                        if (_settingsManager.markPaidOnPay && !settled) {
+                            onTogglePayerStatus();
+                        }
+                    },
+                },
                 { text: "No", style: "cancel" },
             ],
         );
@@ -103,7 +113,14 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
 
     const onRequestPress = (): void => {
         Alert.alert(`Request payment with Venmo for ${person.givenName}?`, "", [
-            { text: "Yes", onPress: () => _venmoLinker.link("charge", personalExpense) },
+            {
+                text: "Yes", onPress: () => {
+                    _venmoLinker.link("charge", personalExpense);
+                    if (_settingsManager.markPaidOnRequest && !settled) {
+                        onTogglePayerStatus();
+                    }
+                }
+            },
             { text: "No", style: "cancel" },
         ]);
     };
