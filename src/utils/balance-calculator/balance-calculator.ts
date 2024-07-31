@@ -28,7 +28,9 @@ export class BalanceCalculator implements IBalanceCalculator {
 
         return new BalanceResult(
             true,
-            -this._priceCalculator.calculatePersonalExpense(userId, expense).total,
+            expense.payerStatuses.find((s) => s.userId === userId)?.settled
+                ? 0
+                : -this._priceCalculator.calculatePersonalExpense(userId, expense).total,
             payer.givenName,
         );
     }

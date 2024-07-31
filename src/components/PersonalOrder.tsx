@@ -14,13 +14,14 @@ import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-co
 import { ITransactionNoteBuilder } from "../utils/transaction-note-builder/transaction-note-builder-interface";
 import { IClipboardUtility } from "../utils/clipboard-utility/clipboard-utility-interface";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
-import Star from "../../assets/icons/star.svg";
 import More from "../../assets/icons/more.svg";
+import CheckCircle from "../../assets/icons/check-circle.svg";
 import { IExpense } from "../models/expense/expense-interface";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { useComputed } from "../hooks/use-computed";
 import { IBalanceCalculator } from "../utils/balance-calculator/balance-calculator-interface";
 import { BalanceResult } from "../models/balance-result";
+import { format } from "../utils/format-price";
 
 const _priceCalculator = lazyInject<IPriceCalculator>(IPriceCalculator);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -162,34 +163,32 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
             <View style={{ alignItems: "center" }}>
                 <View style={styles.header}>
                     <View style={styles.iconContainer}>
-                        <View style={{ display: "flex", flex: 1 }}>
-                            {person.isRegistered && <Icon assetName="logoPrimary" size={27} />}
-                        </View>
-                        <View style={{ display: "flex", flex: 1, alignItems: "flex-end" }}>
-                            {payer && <Star width={icon} height={icon} fill={Colors.primary} />}
-                        </View>
+                        {payer && <Icon assetName="logoPrimary" size={_uiConfig.sizes.largeIcon} />}
                     </View>
 
                     <View style={styles.nameContainer}>
                         <Text body numberOfLines={1} ellipsizeMode={"tail"} color={Colors.textColor}>
                             {person.givenName + (person.familyName ? " " + person.familyName : "")}
                         </Text>
+
+                        {balance.hasPayer && balance.balance !== 0 && (
+                            <Text hint style={{ fontSize: 12 }}>
+                                {payer
+                                    ? `Owed ${format(balance.balance)}`
+                                    : `Owes ${balance.payerName} ${format(-balance.balance)}`}
+                            </Text>
+                        )}
                     </View>
 
                     <View style={[styles.iconContainer, { columnGap: 5, justifyContent: "flex-end" }]}>
+                        {balance.hasPayer && balance.balance === 0 && (
+                            <CheckCircle width={icon} height={icon} fill={Colors.ready} />
+                        )}
                         <TouchableOpacity onPress={() => setActionsVisible(true)}>
                             <More width={icon} height={icon} fill={Colors.textColor} />
                         </TouchableOpacity>
                     </View>
                 </View>
-
-                {balance.hasPayer && (
-                    <Text hint style={{ marginTop: -5, fontSize: 12 }}>
-                        {payer
-                            ? `Owed $${balance.balance.toFixed(2)}`
-                            : `Owes ${balance.payerName} $${(-balance.balance).toFixed(2)}`}
-                    </Text>
-                )}
             </View>
         );
     };
@@ -284,6 +283,7 @@ const styles = StyleSheet.create({
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
+        flexGrow: 1,
     },
     header: {
         flexDirection: "row",
@@ -320,9 +320,7 @@ const styles = StyleSheet.create({
         overflow: "visible",
         flexDirection: "row",
         alignItems: "center",
-        justifyContent: "center",
         width: 35,
-        flexGrow: 1,
     },
     icon: {
         backgroundColor: _colorConfiguration.primary,

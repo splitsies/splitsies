@@ -15,6 +15,7 @@ import { IBalanceCalculator } from "../utils/balance-calculator/balance-calculat
 import { useComputed } from "../hooks/use-computed";
 import { IExpenseUserDetails } from "@splitsies/shared-models";
 import { BalanceResult } from "../models/balance-result";
+import { format } from "../utils/format-price";
 
 const Locale = (
     Platform.OS === "ios"
@@ -123,8 +124,8 @@ export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress, p
                         <View style={styles.rightBox}>
                             <Text subtext color={Colors.textColor}>
                                 {balance.balance < 0
-                                    ? `You owe ${balance.payerName} $${(-balance.balance).toFixed(2)}`
-                                    : `You're owed $${balance.balance.toFixed(2)}`}
+                                    ? `You owe ${balance.payerName} ${format(-balance.balance)}`
+                                    : `You're owed ${format(balance.balance)}`}
                             </Text>
                         </View>
                     </View>
