@@ -10,6 +10,11 @@ import Location from "../../assets/icons/location.svg";
 import Calendar from "../../assets/icons/calendar.svg";
 import People from "../../assets/icons/people.svg";
 import Price from "../../assets/icons/price.svg";
+import Exchange from "../../assets/icons/exchange.svg";
+import { IBalanceCalculator } from "../utils/balance-calculator/balance-calculator-interface";
+import { useComputed } from "../hooks/use-computed";
+import { IExpenseUserDetails } from "@splitsies/shared-models";
+import { BalanceResult } from "../models/balance-result";
 
 const Locale = (
     Platform.OS === "ios"
@@ -22,11 +27,13 @@ type DateTimeFormatOptions = { weekday: "long"; year: "numeric"; month: "long"; 
 const DATE_OPTIONS: DateTimeFormatOptions = { weekday: "long", year: "numeric", month: "long", day: "numeric" };
 
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
+const _balanceCalculator = lazyInject<IBalanceCalculator>(IBalanceCalculator);
 
 const iconSize = _uiConfig.sizes.smallIcon;
 
 interface propTypes {
     data: IExpense;
+    person: IExpenseUserDetails;
     onPress?: (expenseId: string) => void;
     onLongPress?: () => void;
 }
@@ -34,9 +41,14 @@ interface propTypes {
 /**
  * @{@link propTypes}
  */
-export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress }: propTypes) => {
+export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress, person }: propTypes) => {
     const [peopleContainerWidth, setPeopleContainerWidth] = useState<number>(Dimensions.get("window").width);
     const PERSON_LIMIT = Math.floor((peopleContainerWidth - 20) / 34) - 1;
+
+    const balance = useComputed<BalanceResult>(
+        ([data, person]) => _balanceCalculator.calculate(data as IExpense, (person as IExpenseUserDetails).id),
+        [data, person],
+    );
 
     return (
         <TouchableOpacity disabled={!!!onPress} onPress={() => onPress?.(data.id)} onLongPress={onLongPress}>
@@ -102,6 +114,21 @@ export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress }:
                         </Text>
                     </View>
                 </View>
+
+                {balance.hasPayer && balance.balance !== 0 && (
+                    <View style={[styles.rowContainer, { marginTop: 4 }]}>
+                        <View style={styles.leftBox}>
+                            <Exchange width={iconSize} height={iconSize} fill={Colors.textColor} />
+                        </View>
+                        <View style={styles.rightBox}>
+                            <Text subtext color={Colors.textColor}>
+                                {balance.balance < 0
+                                    ? `You owe ${balance.payerName} $${(-balance.balance).toFixed(2)}`
+                                    : `You're owed $${balance.balance.toFixed(2)}`}
+                            </Text>
+                        </View>
+                    </View>
+                )}
             </View>
         </TouchableOpacity>
     );

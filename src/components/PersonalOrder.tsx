@@ -19,6 +19,8 @@ import More from "../../assets/icons/more.svg";
 import { IExpense } from "../models/expense/expense-interface";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { useComputed } from "../hooks/use-computed";
+import { IBalanceCalculator } from "../utils/balance-calculator/balance-calculator-interface";
+import { BalanceResult } from "../models/balance-result";
 
 const _priceCalculator = lazyInject<IPriceCalculator>(IPriceCalculator);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -29,6 +31,7 @@ const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
 const _dimensions = Dimensions.get("window");
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
+const _balanceCalculator = lazyInject<IBalanceCalculator>(IBalanceCalculator);
 
 const icon = _uiConfig.sizes.smallIcon;
 
@@ -48,6 +51,10 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
     const settled = useComputed<boolean>(
         ([expense]) => !!(expense as IExpense).payerStatuses.find((s) => s.userId === person.id)?.settled,
         [expense],
+    );
+    const balance = useComputed<BalanceResult>(
+        ([expense, person]) => _balanceCalculator.calculate(expense as IExpense, (person as IExpenseUserDetails).id),
+        [expense, person],
     );
 
     const [personalExpense, setPersonalExpense] = useState<IExpense>(
@@ -175,19 +182,12 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                         </TouchableOpacity>
                     </View>
                 </View>
-                {expense.payers.length > 0 && (
-                    <Text subtext style={{ marginTop: -5 }}>
+
+                {balance.hasPayer && (
+                    <Text hint style={{ marginTop: -5, fontSize: 12 }}>
                         {payer
-                            ? `Owed $${expense.users
-                                  .reduce((p, c) => {
-                                      if (c.id === person.id) return p;
-                                      if (expense.payerStatuses.find((s) => s.userId === c.id)?.settled) return p;
-                                      return p + _priceCalculator.calculatePersonalExpense(c.id, expense).total;
-                                  }, 0)
-                                  .toFixed(2)}`
-                            : `Owes ${
-                                  expense.users.find((u) => u.id === expense.payers[0].userId)?.givenName
-                              } $${personalExpense.total.toFixed(2)}`}
+                            ? `Owed $${balance.balance.toFixed(2)}`
+                            : `Owes ${balance.payerName} $${(-balance.balance).toFixed(2)}`}
                     </Text>
                 )}
             </View>
