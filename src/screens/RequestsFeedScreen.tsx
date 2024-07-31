@@ -99,8 +99,8 @@ export const RequestsFeedScreen = ({ navigation }: Props): JSX.Element => {
             {joinRequests.length === 0 ? (
                 <View style={styles.messageContainer}>
                     <Text hint>Doesn't look like there are any requests here</Text>
-                </View>)
-                :
+                </View>
+            ) : (
                 <FlatList
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
                     onEndReached={() => void fetchPage()}
@@ -115,7 +115,7 @@ export const RequestsFeedScreen = ({ navigation }: Props): JSX.Element => {
                     )}
                     data={joinRequests}
                 />
-            }
+            )}
         </Container>
     );
 };

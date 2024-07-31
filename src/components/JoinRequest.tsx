@@ -1,14 +1,14 @@
 import React from "react";
 import { StyleSheet } from "react-native";
-import { Button, Colors, Text, TouchableOpacity, View } from "react-native-ui-lib";
+import { Button, Colors, Text, View } from "react-native-ui-lib";
 import { ExpensePreview } from "./ExpensePreview";
 import { lazyInject } from "../utils/lazy-inject";
-import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { IExpenseJoinRequest } from "../models/expense-join-request/expense-join-request-interface";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+import { IUserManager } from "../managers/user-manager/user-manager-interface";
 
 const { card } = lazyInject<IUiConfiguration>(IUiConfiguration);
-const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
+const _userManager = lazyInject<IUserManager>(IUserManager);
 
 type Props = {
     joinRequest: IExpenseJoinRequest;
@@ -20,7 +20,7 @@ export const JoinRequest = ({ joinRequest, onDeny, onApprove }: Props): JSX.Elem
     return (
         <View style={styles.container}>
             <Text body style={styles.label}>{`${joinRequest.requestingUser.givenName} is inviting you to join:`}</Text>
-            <ExpensePreview data={joinRequest.expense} />
+            <ExpensePreview data={joinRequest.expense} person={_userManager.expenseUserDetails} />
 
             <View style={styles.buttonContainer}>
                 <Button

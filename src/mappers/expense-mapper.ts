@@ -5,7 +5,6 @@ import { ExpenseDto, IExpenseDto, IExpenseUserDetails } from "@splitsies/shared-
 import { IExpense } from "../models/expense/expense-interface";
 import { IExpenseMapper } from "./expense-mapper-interface";
 import { lazyInject } from "../utils/lazy-inject";
-import { IUserCache } from "../utils/user-cache/user-cache-interface";
 
 @injectable()
 export class ExpenseMapper implements IExpenseMapper {
@@ -18,6 +17,8 @@ export class ExpenseMapper implements IExpenseMapper {
             expense.transactionDate.toISOString(),
             expense.items,
             expense.users.map((u) => u.id),
+            expense.payers,
+            expense.payerStatuses,
         );
     }
 
@@ -31,6 +32,8 @@ export class ExpenseMapper implements IExpenseMapper {
             dto.userIds
                 .map((id) => users.find((u) => u.id === id))
                 .filter((u) => u !== undefined) as IExpenseUserDetails[],
+            dto.payers,
+            dto.payerStatuses,
         );
     }
 
@@ -48,6 +51,8 @@ export class ExpenseMapper implements IExpenseMapper {
                     dto.userIds
                         .map((id) => users.find((u) => u.id === id))
                         .filter((u) => u !== undefined) as IExpenseUserDetails[],
+                    dto.payers,
+                    dto.payerStatuses,
                 ),
         );
     }

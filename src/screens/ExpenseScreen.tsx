@@ -130,7 +130,16 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
             }
         }
 
-        setExpense(new Expense(expense.id, expense.name, expense.transactionDate, expense.items, expense.users));
+        setExpense(
+            new Expense(
+                expense.id,
+                expense.name,
+                expense.transactionDate,
+                expense.items,
+                expense.users,
+                expense.payers,
+            ),
+        );
 
         updateExpenseItemOwners(_userManager.userId, selectedItems);
     };

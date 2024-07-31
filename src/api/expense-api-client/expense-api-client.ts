@@ -6,6 +6,7 @@ import {
     IExpenseDto,
     IExpenseItem,
     IExpenseMessageParametersMapper,
+    IExpensePayerDto,
     IExpenseUserDetails,
     IScanResult,
 } from "@splitsies/shared-models";
@@ -233,6 +234,30 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
                 },
                 this._authProvider.provideAuthHeader(),
             );
+        } catch (e) {
+            return;
+        }
+    }
+
+    async requestSetExpensePayers(expensePayerDto: IExpensePayerDto): Promise<void> {
+        try {
+            const url = `${this._config.expense}/${expensePayerDto.expenseId}/payers`;
+            await this.putJson<IExpenseDto>(
+                url,
+                {
+                    payerShares: expensePayerDto.payers,
+                },
+                this._authProvider.provideAuthHeader(),
+            );
+        } catch (e) {
+            return;
+        }
+    }
+
+    async requestSetExpensePayerStatus(expenseId: string, userId: string, settled: boolean): Promise<void> {
+        try {
+            const url = `${this._config.expense}/${expenseId}/payers/${userId}`;
+            await this.putJson<IExpenseDto>(url, { settled }, this._authProvider.provideAuthHeader());
         } catch (e) {
             return;
         }

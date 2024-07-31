@@ -19,5 +19,7 @@
     "iosKeyboardBtnDarkDark": "#616161",
     "iosKeyboardBtnDarkLight": "#757575",
     "iosKeyboardBtnLightDark": "#FFFFFF",
-    "iosKeyboardBtnLightLight": "#FFFFFF"
+    "iosKeyboardBtnLightLight": "#FFFFFF",
+    "attention": "#FF3131",
+    "ready": "#32CD32"
 }  
