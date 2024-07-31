@@ -144,9 +144,8 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                         onPress={() => setActionsVisible(true)}
                         // style={{ backgroundColor: Colors.primary, padding: 7, borderRadius: 20 }}
                     >
-                        <More width={icon} height={icon} fill={Colors.bgColor} />
+                        <More width={icon} height={icon} fill={Colors.textColor} />
                     </TouchableOpacity>
-                    {/* <RemovePersonButton person={person} expense={expense} /> */}
                 </View>
             </View>
         );
