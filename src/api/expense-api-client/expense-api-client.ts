@@ -6,6 +6,7 @@ import {
     IExpenseDto,
     IExpenseItem,
     IExpenseMessageParametersMapper,
+    IExpensePayerDto,
     IExpenseUserDetails,
     IScanResult,
 } from "@splitsies/shared-models";
@@ -176,13 +177,37 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
     }
 
-    async getExpenseJoinRequests(): Promise<IUserExpenseDto[]> {
+    async getExpenseJoinRequests(reset = true): Promise<IUserExpenseDto[]> {
         try {
-            const url = `${this._config.expense}/requests/${this._authProvider.provideIdentity()}`;
-            const response = await this.get<IUserExpenseDto[]>(url, this._authProvider.provideAuthHeader());
-            return response.data;
+            const pageKey = "getExpenseJoinRequests";
+            const userId = this._authProvider.provideIdentity();
+            if (!userId) {
+                return [];
+            }
+
+            if (reset && this._scanPageKeys.has(pageKey)) {
+                this._scanPageKeys.delete(pageKey);
+            }
+
+            const pagination = this._scanPageKeys.get(pageKey)?.nextPage ?? { limit: 1, offset: 0 };
+            let url = `${this._config.expense}/requests/${this._authProvider.provideIdentity()}`;
+            url += `?pagination=${encodeURIComponent(JSON.stringify(pagination))}`;
+
+            const response = await this.get<IScanResult<IUserExpenseDto>>(url, this._authProvider.provideAuthHeader());
+            this._scanPageKeys.set(pageKey, response.data.lastEvaluatedKey);
+            return response?.data.result ?? [];
         } catch (e) {
             return [];
+        }
+    }
+
+    async getExpenseJoinRequestCount(): Promise<number> {
+        try {
+            const url = `${this._config.expense}/requests/${this._authProvider.provideIdentity()}/count`;
+            const response = await this.get<string>(url, this._authProvider.provideAuthHeader());
+            return parseInt(response.data);
+        } catch (e) {
+            return 0;
         }
     }
 
@@ -209,6 +234,30 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
                 },
                 this._authProvider.provideAuthHeader(),
             );
+        } catch (e) {
+            return;
+        }
+    }
+
+    async requestSetExpensePayers(expensePayerDto: IExpensePayerDto): Promise<void> {
+        try {
+            const url = `${this._config.expense}/${expensePayerDto.expenseId}/payers`;
+            await this.putJson<IExpenseDto>(
+                url,
+                {
+                    payerShares: expensePayerDto.payers,
+                },
+                this._authProvider.provideAuthHeader(),
+            );
+        } catch (e) {
+            return;
+        }
+    }
+
+    async requestSetExpensePayerStatus(expenseId: string, userId: string, settled: boolean): Promise<void> {
+        try {
+            const url = `${this._config.expense}/${expenseId}/payers/${userId}`;
+            await this.putJson<IExpenseDto>(url, { settled }, this._authProvider.provideAuthHeader());
         } catch (e) {
             return;
         }

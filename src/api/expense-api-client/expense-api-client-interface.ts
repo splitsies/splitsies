@@ -1,4 +1,4 @@
-import { IExpenseDto, IExpenseItem, IExpenseUserDetails } from "@splitsies/shared-models";
+import { IExpenseDto, IExpenseItem, IExpensePayerDto, IExpenseUserDetails } from "@splitsies/shared-models";
 import { Observable } from "rxjs";
 import { IUserExpenseDto } from "../../models/user-expense-dto/user-expense-dto-interface";
 import { IBaseManager } from "../../managers/base-manager-interface";
@@ -14,9 +14,12 @@ export interface IExpenseApiClient extends IBaseManager {
     removeUserFromExpense(userId: string, expenseId: string): Promise<void>;
     createFromExpense(expense: IExpenseDto): Promise<boolean>;
     createExpense(base64Image?: string): Promise<boolean>;
-    getExpenseJoinRequests(): Promise<IUserExpenseDto[]>;
+    getExpenseJoinRequests(reset?: boolean): Promise<IUserExpenseDto[]>;
+    getExpenseJoinRequestCount(): Promise<number>;
     removeExpenseJoinRequest(expenseId: string, userId?: string): Promise<void>;
     sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void>;
+    requestSetExpensePayers(expensePayerDto: IExpensePayerDto): Promise<void>;
+    requestSetExpensePayerStatus(expenseId: string, userId: string, settled: boolean): Promise<void>;
     addItem(
         expenseId: string,
         itemName: string,

@@ -99,6 +99,7 @@ export const ExpenseFeedScreen = SpThemedComponent((): JSX.Element => {
                         key={item.id}
                         data={item}
                         onPress={onExpenseClick}
+                        person={_userManager.expenseUserDetails}
                         onLongPress={() => console.log("LONG")}
                     />
                 )}

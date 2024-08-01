@@ -1,6 +1,14 @@
 import { injectable } from "inversify";
 import { IExpenseManager } from "./expense-manager-interface";
-import { IExpenseDto, IExpenseItem, IExpenseUserDetails, IUserCredential } from "@splitsies/shared-models";
+import {
+    ExpensePayerDto,
+    IExpenseDto,
+    IExpenseItem,
+    IExpensePayerDto,
+    IExpenseUserDetails,
+    IUserCredential,
+    PayerShare,
+} from "@splitsies/shared-models";
 import { BehaviorSubject, Observable } from "rxjs";
 import { IExpenseApiClient } from "../../api/expense-api-client/expense-api-client-interface";
 import { lazyInject } from "../../utils/lazy-inject";
@@ -23,6 +31,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     private readonly _currentExpense$ = new BehaviorSubject<IExpense | null>(null);
     private readonly _isPendingExpenseData$ = new BehaviorSubject<boolean>(false);
     private readonly _expenseJoinRequests$ = new BehaviorSubject<IExpenseJoinRequest[]>([]);
+    private readonly _expenseJoinRequestCount$ = new BehaviorSubject<number>(0);
 
     get expenses$(): Observable<IExpense[]> {
         return this._expenses$.asObservable();
@@ -50,6 +59,10 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     get expenseJoinRequests$(): Observable<IExpenseJoinRequest[]> {
         return this._expenseJoinRequests$.asObservable();
+    }
+
+    get expenseJoinRequestCount$(): Observable<number> {
+        return this._expenseJoinRequestCount$.asObservable();
     }
 
     constructor() {
@@ -107,9 +120,12 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         return this._api.createExpense(base64Image);
     }
 
-    async requestExpenseJoinRequests(): Promise<void> {
-        const requests = await this._api.getExpenseJoinRequests();
+    async requestExpenseJoinRequests(reset = true): Promise<void> {
+        if (reset) {
+            await this.getExpenseJoinRequestCount();
+        }
 
+        const requests = await this._api.getExpenseJoinRequests(reset);
         const joinRequests: IExpenseJoinRequest[] = [];
 
         for (const r of requests) {
@@ -117,7 +133,13 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
             if (result) joinRequests.push(result);
         }
 
-        this._expenseJoinRequests$.next(joinRequests.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()));
+        const newCollection = reset ? joinRequests : [...this._expenseJoinRequests$.value, ...joinRequests];
+        this._expenseJoinRequests$.next(newCollection.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()));
+    }
+
+    async getExpenseJoinRequestCount(): Promise<void> {
+        const count = await this._api.getExpenseJoinRequestCount();
+        this._expenseJoinRequestCount$.next(count);
     }
 
     async removeExpenseJoinRequestForUser(expenseId: string, userId: string | undefined = undefined): Promise<void> {
@@ -128,6 +150,17 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
         requests.splice(requestIndex, 1);
         this._expenseJoinRequests$.next(requests);
+    }
+
+    // TODO: This method signture ensures only one payer per expense, but the backing
+    // design allows multiple. At some point, UX should be defined for multiple payer workflows
+    async requestSetExpensePayers(expenseId: string, userId: string): Promise<void> {
+        const expensePayerDto = new ExpensePayerDto(expenseId, [new PayerShare(userId, 1)]);
+        await this._api.requestSetExpensePayers(expensePayerDto);
+    }
+
+    async requestSetExpensePayerStatus(expenseId: string, userId: string, settled: boolean): Promise<void> {
+        await this._api.requestSetExpensePayerStatus(expenseId, userId, settled);
     }
 
     sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void> {

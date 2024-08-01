@@ -20,6 +20,8 @@ export interface IColorConfiguration {
     readonly iosKeyboardBtnDarkLight: string;
     readonly iosKeyboardBtnLightDark: string;
     readonly iosKeyboardBtnLightLight: string;
+    readonly attention: string;
+    readonly ready: string;
 }
 
 export const IColorConfiguration = Symbol.for("IColorConfiguration");

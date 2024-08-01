@@ -2,7 +2,7 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
-import { Colors, Icon, TouchableOpacity, View } from "react-native-ui-lib";
+import { TouchableOpacity, View } from "react-native-ui-lib";
 import { RequestsFeedScreen } from "../screens/RequestsFeedScreen";
 import { ExpenseFeedScreen } from "../screens/ExpenseFeedScreen";
 import { PixelRatio, StyleSheet } from "react-native";
@@ -14,7 +14,6 @@ import People from "../../assets/icons/people.svg";
 import { useInitialize } from "../hooks/use-initialize";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { useObservableReducer } from "../hooks/use-observable-reducer";
-import { IExpenseJoinRequest } from "../models/expense-join-request/expense-join-request-interface";
 
 const Tab = createBottomTabNavigator();
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -32,13 +31,13 @@ export const FeedNavigator = () => {
         void _expenseManager.requestExpenseJoinRequests();
     });
 
-    const requestsBadge = useObservableReducer<IExpenseJoinRequest[], string | undefined>(
-        _expenseManager.expenseJoinRequests$,
+    const requestsBadge = useObservableReducer<number, string | undefined>(
+        _expenseManager.expenseJoinRequestCount$,
         undefined,
-        (requests) => {
-            if (requests.length === 0) return undefined;
-            if (requests.length > 99) return "99+";
-            return `${requests.length}`;
+        (count) => {
+            if (count === 0) return undefined;
+            if (count > 99) return "99+";
+            return `${count}`;
         },
     );
 

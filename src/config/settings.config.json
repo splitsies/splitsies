@@ -6,5 +6,18 @@
             "key": "joinRequestNotifications",
             "default": true
         }
+    },
+    "behavior": {
+        "displayName": "Behavior",
+        "markPaidOnPay": {
+            "displayName": "Mark as Paid on Pay",
+            "key": "markPaidOnPay",
+            "default": true
+        },
+        "markPaidOnRequest": {
+            "displayName": "Mark as Paid on Request",
+            "key": "markPaidOnRequest",
+            "default": false
+        }
     }
 }

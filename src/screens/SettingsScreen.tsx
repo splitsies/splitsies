@@ -32,6 +32,9 @@ export const SettingsScreen = SpThemedComponent(({ navigation }: Props) => {
         false,
     );
 
+    const markPaidOnPay = useObservable<boolean>(_settingsManager.markPaidOnPay$, false);
+    const markPaidOnRequest = useObservable<boolean>(_settingsManager.markPaidOnRequest$, false);
+
     const openSettings = useCallback(() => {
         void Linking.openSettings();
     }, []);
@@ -46,6 +49,26 @@ export const SettingsScreen = SpThemedComponent(({ navigation }: Props) => {
                             onColor={Colors.primary}
                             value={joinRequestNotificationsAllowed}
                             onValueChange={_settingsManager.setJoinRequestNotificationsAllowed.bind(_settingsManager)}
+                        />
+                    </View>
+                </SettingsGroup>
+
+                <SettingsGroup name={SettingsConfiguration.behavior.displayName} style={{ marginTop: 20 }}>
+                    <View style={[styles.settingsItem, { marginTop: 0, marginBottom: 0 }]}>
+                        <Text body>{SettingsConfiguration.behavior.markPaidOnPay.displayName}</Text>
+                        <Switch
+                            onColor={Colors.primary}
+                            value={markPaidOnPay}
+                            onValueChange={_settingsManager.setMarkPaidOnPay.bind(_settingsManager)}
+                        />
+                    </View>
+
+                    <View style={[styles.settingsItem, { marginBottom: 0 }]}>
+                        <Text body>{SettingsConfiguration.behavior.markPaidOnRequest.displayName}</Text>
+                        <Switch
+                            onColor={Colors.primary}
+                            value={markPaidOnRequest}
+                            onValueChange={_settingsManager.setMarkPaidOnRequest.bind(_settingsManager)}
                         />
                     </View>
                 </SettingsGroup>
@@ -74,6 +97,6 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         alignItems: "center",
         paddingHorizontal: 15,
-        marginVertical: 12,
+        marginVertical: 15,
     },
 });
