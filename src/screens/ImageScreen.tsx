@@ -9,6 +9,8 @@ import { IColorConfiguration } from "../models/configuration/color-config/color-
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { IAdManager } from "../managers/ad-manager/ad-manager-interface";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+import { useInitialize } from "../hooks/use-initialize";
+import { InterstitialAd } from "react-native-google-mobile-ads";
 type Props = NativeStackScreenProps<RootStackParamList, "ImageScreen">;
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
@@ -18,6 +20,12 @@ const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
 export const ImageScreen = ({ navigation, route: { params: image } }: Props): JSX.Element => {
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
+    const ad = useRef<InterstitialAd | null>(null);
+
+    useInitialize(() => {
+        void _expenseManager.scanPreflight();
+        void _adManager.generateInterstitialAd().then((a) => (ad.current = a));
+    });
 
     const onBackPress = () => {
         navigation.goBack();
@@ -25,12 +33,11 @@ export const ImageScreen = ({ navigation, route: { params: image } }: Props): JS
 
     const onConfirm = async (): Promise<void> => {
         setIsProcessing(true);
-        const ad = await _adManager.generateInterstitialAd();
         const result = await _expenseManager.createExpense(image.image.base64);
         setIsProcessing(false);
 
         if (result) {
-            if (ad?.loaded) ad.show();
+            if (ad.current?.loaded) ad.current.show();
             setTimeout(() => navigation.navigate("ExpenseScreen"), _uiConfig.durations.adBufferMs);
         } else {
             Alert.alert("Processing Error", "Unable to read the receipt. Please try again with another image.", [

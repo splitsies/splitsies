@@ -114,12 +114,13 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
     const onRequestPress = (): void => {
         Alert.alert(`Request payment with Venmo for ${person.givenName}?`, "", [
             {
-                text: "Yes", onPress: () => {
+                text: "Yes",
+                onPress: () => {
                     _venmoLinker.link("charge", personalExpense);
                     if (_settingsManager.markPaidOnRequest && !settled) {
                         onTogglePayerStatus();
                     }
-                }
+                },
             },
             { text: "No", style: "cancel" },
         ]);

@@ -46,6 +46,12 @@ export interface IExpenseManager {
     ): void;
     updateExpenseName(expenseId: string, expenseName: string): void;
     updateExpenseTransactionDate(expenseId: string, transactionDate: Date): void;
+
+    /**
+     * Sends a ping event to the image scan function to ensure a warm execution
+     * environment by the time the receipt needs to be scanned
+     */
+    scanPreflight(): Promise<void>;
 }
 
 export const IExpenseManager = Symbol.for("IExpenseManager");
