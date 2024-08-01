@@ -133,7 +133,6 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
 
     async createFromExpense(expenseDto: IExpenseDto): Promise<boolean> {
         try {
-            console.log({ expenseDto });
             const body = { userId: this._authProvider.provideIdentity(), expense: expenseDto };
 
             const response = await this.postJson<IExpenseDto>(
@@ -189,7 +188,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
                 this._scanPageKeys.delete(pageKey);
             }
 
-            const pagination = this._scanPageKeys.get(pageKey)?.nextPage ?? { limit: 1, offset: 0 };
+            const pagination = this._scanPageKeys.get(pageKey)?.nextPage ?? { limit: 10, offset: 0 };
             let url = `${this._config.expense}/requests/${this._authProvider.provideIdentity()}`;
             url += `?pagination=${encodeURIComponent(JSON.stringify(pagination))}`;
 

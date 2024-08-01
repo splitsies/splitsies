@@ -163,6 +163,10 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         await this._api.requestSetExpensePayerStatus(expenseId, userId, settled);
     }
 
+    scanPreflight(): Promise<void> {
+        return this._ocr.preflight();
+    }
+
     sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void> {
         return this._api.sendExpenseJoinRequest(userId, expenseId);
     }
@@ -234,13 +238,5 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         } finally {
             this._isPendingExpenseData$.next(false);
         }
-    }
-
-    private userSortCompare(user1: IExpenseUserDetails, user2: IExpenseUserDetails): number {
-        return user1.givenName.toUpperCase() > user2.givenName.toUpperCase()
-            ? 1
-            : user1.givenName.toUpperCase() < user2.givenName.toUpperCase()
-            ? -1
-            : 0;
     }
 }
