@@ -21,7 +21,7 @@ export const EditItemsControl = SpThemedComponent(() => {
             <View flex row centerV style={{ columnGap: 10 }}>
                 <ActivityIndicator animating={awaitingResponse} hidesWhenStopped color={Colors.textColor} />
                 <Text bodyBold color={Colors.textColor}>
-                    {!editing ? "Edit" : "Done"}
+                    {!editing ? "Edit Items" : "Done"}
                 </Text>
             </View>
         </TouchableOpacity>

@@ -38,6 +38,12 @@ export interface IExpenseApiClient extends IBaseManager {
     ): void;
     updateExpenseName(expenseId: string, expenseName: string): void;
     updateExpenseTransactionDate(expenseId: string, transactionDate: Date): void;
+    updateSingleItemSelected(
+        expenseId: string,
+        user: IExpenseUserDetails,
+        item: IExpenseItem,
+        itemSelected: boolean,
+    ): void;
 }
 
 export const IExpenseApiClient = Symbol.for("IExpenseApiClient");

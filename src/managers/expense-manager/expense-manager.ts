@@ -207,6 +207,15 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         this._api.updateExpenseTransactionDate(expenseId, transactionDate);
     }
 
+    updateSingleItemSelected(
+        expenseId: string,
+        user: IExpenseUserDetails,
+        item: IExpenseItem,
+        itemSelected: boolean,
+    ): void {
+        this._api.updateSingleItemSelected(expenseId, user, item, itemSelected);
+    }
+
     private async onSessionExpenseUpdated(expenseDto: IExpenseDto | null): Promise<void> {
         if (expenseDto == null) {
             this._currentExpense$.next(null);
