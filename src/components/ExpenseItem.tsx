@@ -26,9 +26,7 @@ const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 export const ExpenseItem = ({ item, selected, selectable, editable, showOwners, style, onPress, onSelect }: Props) => {
     useThemeWatcher();
     const ownerList = item.owners
-        .map(
-            (userDetails) => `${userDetails.givenName}${userDetails.familyName ? " " + userDetails.familyName[0] : ""}`,
-        )
+        .map((userDetails) => `${userDetails.isRegistered ? "@" + userDetails.username : userDetails.givenName}`)
         .filter((entry) => !!entry)
         .join(", ");
 

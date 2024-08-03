@@ -321,9 +321,33 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         this._connection.send(JSON.stringify({ id: expenseId, method: "updateTransactionDate", params }));
     }
 
+    updateSingleItemSelected(
+        expenseId: string,
+        user: IExpenseUserDetails,
+        item: IExpenseItem,
+        itemSelected: boolean,
+    ): void {
+        const params = this._expenseMessageParametersMapper.toDtoModel(
+            new ExpenseMessageParameters({ expenseId, item, itemSelected, user }),
+        );
+
+        console.log({ params });
+
+        this._connection.send(JSON.stringify({ id: expenseId, method: "updateSingleItemSelected", params }));
+    }
+
     private async onExpenseConnection(promiseResolver: () => void, expenseId: string): Promise<void> {
         await this.getExpense(expenseId);
         promiseResolver();
+
+        // Ping the message endpoint to warm up an execution environment
+        this._connection.send(
+            JSON.stringify({
+                id: expenseId,
+                method: "ping",
+                params: new ExpenseMessageParameters({ expenseId }),
+            }),
+        );
     }
 
     private async onMessage(e: WebSocketMessageEvent): Promise<void> {

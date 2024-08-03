@@ -103,33 +103,23 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
     );
 
     const onItemSelected = (itemId: string): void => {
-        const selectedItems = expense.items
-            .filter((item) => item.owners.some((o) => o.id === _userManager.userId))
-            .map((item) => item.id);
+        const item = expense.items.find((i) => i.id === itemId);
+        if (!item) return;
 
-        const itemIndex = selectedItems.findIndex((id) => id === itemId);
-        if (itemIndex === -1) {
-            selectedItems.push(itemId);
+        const userIndex = item.owners.findIndex((o) => o.id === _userManager.userId);
+        const updatedSelected = userIndex === -1;
+
+        _expenseViewModel.setAwaitingResponse(true);
+        _expenseManager.updateSingleItemSelected(expense.id, _userManager.expenseUserDetails, item, updatedSelected);
+
+        if (updatedSelected) {
+            item.owners.push(_userManager.expenseUserDetails);
         } else {
-            selectedItems.splice(itemIndex, 1);
+            item.owners.splice(userIndex, 1);
         }
 
-        // Due to socket performance, managing selections locally first gives the illusion of
-        // the selection persisting sooner to avoid additional attempts
-        for (const item of expense.items) {
-            const itemSelected = selectedItems.includes(item.id);
-            const userOwnsItem = !!item.owners.find((o) => o.id === _userManager.userId);
-
-            if (itemSelected && !userOwnsItem) {
-                item.owners.push(_userManager.expenseUserDetails);
-            } else if (!itemSelected && userOwnsItem) {
-                const index = item.owners.findIndex((o) => o.id === _userManager.userId);
-                if (index !== -1) item.owners.splice(index, 1);
-            } else {
-                continue;
-            }
-        }
-
+        // Update the local state for a smoother UX. The data response from the connection
+        // should be the same as what we're updating to
         setExpense(
             new Expense(
                 expense.id,
@@ -138,10 +128,9 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                 expense.items,
                 expense.users,
                 expense.payers,
+                expense.payerStatuses,
             ),
         );
-
-        updateExpenseItemOwners(_userManager.userId, selectedItems);
     };
 
     const onItemDelete = useCallback((): void => {

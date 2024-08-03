@@ -46,6 +46,12 @@ export interface IExpenseManager {
     ): void;
     updateExpenseName(expenseId: string, expenseName: string): void;
     updateExpenseTransactionDate(expenseId: string, transactionDate: Date): void;
+    updateSingleItemSelected(
+        expenseId: string,
+        user: IExpenseUserDetails,
+        item: IExpenseItem,
+        itemSelected: boolean,
+    ): void;
 
     /**
      * Sends a ping event to the image scan function to ensure a warm execution
