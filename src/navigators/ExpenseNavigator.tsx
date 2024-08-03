@@ -16,8 +16,10 @@ import { ExpenseNavigationHeader } from "../components/ExpenseNavigatorHeader";
 import Receipt from "../../assets/icons/receipt.svg";
 import People from "../../assets/icons/people.svg";
 import AddPerson from "../../assets/icons/add-person.svg";
+import ShareIcon from "../../assets/icons/share.svg";
 import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
+import { Pressable, Share } from "react-native";
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -51,6 +53,19 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
         };
     });
 
+    const onShare = async () => {
+        await Share.share(
+            {
+                message: `Hello! Let's go Splitsies.`,
+                url: `splitsies://expenses/${_expenseManager.currentExpense?.id}/${_userManager.userId}`,
+                title: "Share",
+            },
+            {
+                dialogTitle: "Share to...",
+            },
+        );
+    };
+
     return (
         <Tab.Navigator
             initialRouteName="Items"
@@ -82,6 +97,14 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
                 options={{
                     lazy: false,
                     tabBarIcon: ({ color, size }) => <AddPerson width={size} height={size} fill={color} />,
+                }}
+            />
+            <Tab.Screen
+                name="Share"
+                component={ExpenseNavigationHeader}
+                options={{
+                    tabBarButton: (props) => <Pressable {...props} onPress={onShare} />,
+                    tabBarIcon: ({ color, size }) => <ShareIcon width={size} height={size} fill={color} />,
                 }}
             />
         </Tab.Navigator>

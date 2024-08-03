@@ -110,11 +110,19 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
     }
 
-    async addUserToExpense(userId: string, expenseId: string): Promise<void> {
+    async addUserToExpense(
+        userId: string,
+        expenseId: string,
+        requestingUserId: string | undefined = undefined,
+    ): Promise<void> {
         const url = `${this._config.expense}/${expenseId}/users`;
 
         try {
-            const response = await this.postJson<void>(url, { userId }, this._authProvider.provideAuthHeader());
+            const response = await this.postJson<void>(
+                url,
+                { userId, requestingUserId },
+                this._authProvider.provideAuthHeader(),
+            );
             if (!response.success) throw new Error(`${response.data}`);
         } catch (e) {
             console.error(e);
