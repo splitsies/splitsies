@@ -8,9 +8,7 @@ export interface ITutorialManager extends IBaseManager {
     readonly tutorialDisabled$: Observable<boolean>;
     readonly state: TutorialState;
     disableTutorial(): Promise<void>;
-    advance(): Promise<void>;
     set(group: string, index: number): Promise<void>;
-    back(): Promise<void>;
     reset(): Promise<void>;
 }
 export const ITutorialManager = Symbol.for("ITutorialManager");

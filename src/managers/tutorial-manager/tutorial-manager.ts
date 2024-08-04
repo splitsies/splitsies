@@ -1,7 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { injectable } from "inversify";
 import { BehaviorSubject, Observable } from "rxjs";
-import { tutorialConfig } from "../../config/tutorial.config";
 import { ITutorialManager } from "./tutorial-manager.i";
 import { TutorialState } from "../../models/tutorial-state";
 import { lazyInject } from "../../utils/lazy-inject";
@@ -40,7 +39,6 @@ export class TutorialManager extends BaseManager implements ITutorialManager {
         this._tutorialDisabled$.next(disabled === "true");
 
         const value = await AsyncStorage.getItem("tutorialState");
-        console.log({ disabled, value });
         if (!value) return;
 
         const state = { ...this._state$.value };
@@ -62,13 +60,6 @@ export class TutorialManager extends BaseManager implements ITutorialManager {
         this._tutorialDisabled$.next(true);
     }
 
-    async advance(): Promise<void> {
-        // if (this._groupSteps$.value >= tutorialConfig.steps.length) return;
-        // // await AsyncStorage.setItem("tutorialStep", `${this._tutorialStep$.value + 1}`);
-        // console.log("going one more");
-        // this._groupSteps$.next(this._groupSteps$.value + 1);
-    }
-
     async set(group: TutorialGroup, index: number): Promise<void> {
         if (index < 0 || index > this._tutorialConfiguration.groups[group].length) return;
 
@@ -76,13 +67,6 @@ export class TutorialManager extends BaseManager implements ITutorialManager {
         updatedState[group] = index;
 
         await AsyncStorage.setItem("tutorialState", JSON.stringify(updatedState));
-        console.log(`moving ${group} to ${index}`);
         this._state$.next(updatedState);
-    }
-
-    async back(): Promise<void> {
-        // if (this._state$.value <= 0) return;
-        // await AsyncStorage.setItem("tutorialStep", `${this._state$.value - 1}`);
-        // this._state$.next(this._state$.value - 1);
     }
 }
