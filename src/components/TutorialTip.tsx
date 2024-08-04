@@ -69,7 +69,7 @@ export const TutorialTip = SpThemedComponent((props: Props) => {
                             <TipsOff
                                 width={_uiConfig.sizes.icon - 8}
                                 height={_uiConfig.sizes.icon - 8}
-                                fill={Colors.textColor}
+                                fill={Colors.black}
                             />
                         </TouchableOpacity>
                         <TouchableOpacity onPress={onNext}>
@@ -77,17 +77,17 @@ export const TutorialTip = SpThemedComponent((props: Props) => {
                                 <Next
                                     width={_uiConfig.sizes.icon - 2}
                                     height={_uiConfig.sizes.icon - 2}
-                                    fill={Colors.textColor}
+                                    fill={Colors.black}
                                 /> :
                                 <Close
                                     width={_uiConfig.sizes.icon - 4}
                                     height={_uiConfig.sizes.icon - 4}
-                                    fill={Colors.textColor}
+                                    fill={Colors.black}
                                 />
                             }
                         </TouchableOpacity>
                     </View>
-                    <Text>{step.message}</Text>
+                    <Text black>{step.message}</Text>
                 </View>
             }
             {...props}

@@ -26,6 +26,7 @@ import { IExpenseViewModel } from "../view-models/expense-view-model/expense-vie
 import Add from "../../assets/icons/add.svg";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { Expense } from "../models/expense/expense";
+import { TutorialTip } from "../components/TutorialTip";
 
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
@@ -168,15 +169,17 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                         </Text>
                     </TouchableOpacity>
 
-                    <DateTimePicker
-                        style={_styleManager.typography.letter}
-                        color={Colors.textColor}
-                        maximumDate={new Date()}
-                        dateTimeFormatter={(date) => format(date)}
-                        mode="date"
-                        value={expense.transactionDate}
-                        onChange={onExpenseDateUpdated}
-                    />
+                    <TutorialTip group="expense" stepKey="editNameAndDate" placement="bottom">
+                        <DateTimePicker
+                            style={_styleManager.typography.letter}
+                            color={Colors.textColor}
+                            maximumDate={new Date()}
+                            dateTimeFormatter={(date) => format(date)}
+                            mode="date"
+                            value={expense.transactionDate}
+                            onChange={onExpenseDateUpdated}
+                            />
+                    </TutorialTip>
                 </View>
             </SafeAreaView>
 
@@ -198,7 +201,8 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                         </View>
                     </TouchableOpacity>
                 }
-                renderItem={({ item }) => (
+                renderItem={({ item, index }) => (
+                    index !== 0 ?
                     <ExpenseItem
                         item={item}
                         style={{ marginVertical: 15 }}
@@ -206,7 +210,18 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                         editable={isEditing}
                         onPress={() => setSelectedItem(item)}
                         onSelect={onItemSelected}
-                    />
+                        />
+                        :
+                        <TutorialTip group="expense" stepKey="selectItem" placement="bottom">
+                                                <ExpenseItem
+                        item={item}
+                        style={{ marginVertical: 15 }}
+                        showOwners
+                        editable={isEditing}
+                        onPress={() => setSelectedItem(item)}
+                        onSelect={onItemSelected}
+                        />
+                        </TutorialTip>
                 )}
             />
 

@@ -3,6 +3,7 @@ import { ExpenseItem } from "./ExpenseItem";
 import React from "react";
 import { IExpenseItem } from "@splitsies/shared-models";
 import { IExpense } from "../models/expense/expense-interface";
+import { TutorialTip } from "./TutorialTip";
 
 type Props = {
     expense: IExpense;
@@ -11,7 +12,7 @@ type Props = {
 };
 
 export const ExpenseFooter = ({ expense, onItemSelected, isEditing }: Props): JSX.Element => {
-    return (
+    return (<TutorialTip group="expense" stepKey="total">
         <View>
             {expense.items.filter((i) => i.isProportional).length > 0 && (
                 <ExpenseItem
@@ -24,7 +25,9 @@ export const ExpenseFooter = ({ expense, onItemSelected, isEditing }: Props): JS
                     <ExpenseItem key={pi.id} item={pi} editable={isEditing} onPress={() => onItemSelected(pi)} />
                 ))}
 
-            <ExpenseItem item={{ name: "Total", price: expense.total, owners: [] } as unknown as IExpenseItem} />
+            
+                <ExpenseItem item={{ name: "Total", price: expense.total, owners: [] } as unknown as IExpenseItem} />
         </View>
+        </TutorialTip>
     );
 };

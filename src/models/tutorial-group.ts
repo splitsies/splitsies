@@ -1,1 +1,1 @@
-export type TutorialGroup = "home";
+export type TutorialGroup = "home" | "expense" | "editItem";
