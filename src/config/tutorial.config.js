@@ -18,7 +18,7 @@ export const tutorialConfig = {
         {
             key: "total",
             message: "Always double check for accuracy. If you find something off, you can edit items manually."
-        },        
+        },
         {
             key: "editItems",
             message: "To edit items, go into edit mode and tap an item to change its details or delete it altogether. To add additional items, tap the + at the bottom of the items list."
@@ -30,7 +30,7 @@ export const tutorialConfig = {
         {
             key: "selectItem",
             message: "Tap an item to select or unselect it. You'll see everyone who has the item selected."
-        },        
+        },  
         {
             key: "invite",
             message: "You can lookup your friends and invite them here."

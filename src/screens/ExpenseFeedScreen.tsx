@@ -126,7 +126,7 @@ export const ExpenseFeedScreen = SpThemedComponent(({ navigation, route }: Props
                             person={_userManager.expenseUserDetails}
                             onLongPress={() => console.log("LONG")}
                         /> :
-                        <TutorialTip group="home" stepKey="expenseItem" placement="bottom">
+                        <TutorialTip group="home" stepKey="expenseItem" placement="bottom" renderOnLayout>
                                 <ExpensePreview
                                     key={item.id}
                                     data={item}

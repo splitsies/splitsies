@@ -221,6 +221,29 @@ export const PersonalOrder = ({ person, expense, style, isSelectedPerson }: Prop
         );
     };
 
+    const renderButtons = () => (
+        <View style={styles.buttonContainer}>
+            <Button
+                body
+                bg-primary
+                borderless
+                style={styles.button}
+                labelStyle={{ color: "black" }}
+                label="Pay"
+                onPress={onPayPress}
+            />
+            <Button
+                body
+                bg-primary
+                borderless
+                style={styles.button}
+                labelStyle={{ color: "black" }}
+                label="Request"
+                onPress={onRequestPress}
+            />
+        </View>
+    );
+
     return (
         <View style={[styles.container, { borderColor }, style]}>
             {renderHeader()}
@@ -228,43 +251,28 @@ export const PersonalOrder = ({ person, expense, style, isSelectedPerson }: Prop
                 {personalExpense.items
                     .filter((i) => !i.isProportional)
                     .map((item) => (
-                        <ExpenseItem item={item} key={item.id} onPress={() => {}} />
+                        <ExpenseItem item={item} key={item.id} onPress={() => { }} />
                     ))}
             </ScrollView>
 
             <View style={{ borderTopWidth: 0.5, borderTopColor: Colors.divider, paddingTop: 5 }}>
                 {expense.items.filter((i) => i.isProportional).length > 0 && (
-                    <ExpenseItem item={subtotalItem} key={"subtotal"} onPress={() => {}} />
+                    <ExpenseItem item={subtotalItem} key={"subtotal"} onPress={() => { }} />
                 )}
                 {personalExpense.items
                     .filter((i) => i.isProportional)
                     .map((item) => (
-                        <ExpenseItem item={item} key={item.id} onPress={() => {}} />
+                        <ExpenseItem item={item} key={item.id} onPress={() => { }} />
                     ))}
-                <ExpenseItem item={totalItem} key={"total"} onPress={() => {}} />
+                <ExpenseItem item={totalItem} key={"total"} onPress={() => { }} />
             </View>
-            <TutorialTip group="people" stepKey="pay">
-            <View style={styles.buttonContainer}>
-                <Button
-                    body
-                    bg-primary
-                    borderless
-                    style={styles.button}
-                    labelStyle={{ color: "black" }}
-                    label="Pay"
-                    onPress={onPayPress}
-                />
-                <Button
-                    body
-                    bg-primary
-                    borderless
-                    style={styles.button}
-                    labelStyle={{ color: "black" }}
-                    label="Request"
-                    onPress={onRequestPress}
-                    />
-            </View>
-            </TutorialTip>
+
+            {isSelectedPerson ?
+                <TutorialTip group="people" stepKey="pay">
+                    {renderButtons()}
+                </TutorialTip> :
+                renderButtons()
+            }
 
             <Toast
                 body

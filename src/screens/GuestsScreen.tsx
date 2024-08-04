@@ -57,6 +57,7 @@ export const GuestScreen = SpThemedComponent(() => {
                     style={styles.list}
                     data={expenseUsers.filter(
                         (u) =>
+                            !u.isRegistered &&
                             !u.phoneNumber &&
                             (!searchFilter || u.givenName.toLowerCase().includes(searchFilter.toLowerCase())),
                     )}

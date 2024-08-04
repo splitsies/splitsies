@@ -7,12 +7,13 @@ import { TutorialState } from "../../models/tutorial-state";
 import { lazyInject } from "../../utils/lazy-inject";
 import { ITutorialConfiguration } from "../../models/configuration/tutorial-configuration/tutorial-configuration.i";
 import { TutorialGroup } from "../../models/tutorial-group";
+import { BaseManager } from "../base-manager";
 
 @injectable()
-export class TutorialManager implements ITutorialManager {
+export class TutorialManager extends BaseManager implements ITutorialManager {
     private readonly _tutorialConfiguration = lazyInject<ITutorialConfiguration>(ITutorialConfiguration);
     private readonly _tutorialDisabled$ = new BehaviorSubject<boolean>(false);
-    private readonly _state$ = new BehaviorSubject<Record<TutorialGroup, number>>({ home: 90, expense: 90, editItem: 90, people: 90, contacts: 0, guests: 0, search: 0 });
+    private readonly _state$ = new BehaviorSubject<Record<TutorialGroup, number>>({ home: 0, expense: 0, editItem: 0, people: 0, contacts: 0, guests: 0, search: 0 });
 
     get state$(): Observable<Record<TutorialGroup, number>> {
         return this._state$.asObservable();
@@ -25,31 +26,32 @@ export class TutorialManager implements ITutorialManager {
     get state(): TutorialState {
         return new TutorialState(this._tutorialDisabled$.value, this._state$.value);
     }
+    
+    protected async initialize(): Promise<void> {        
+        const disabled = await AsyncStorage.getItem("tutorialDisabled");
+        this._tutorialDisabled$.next(disabled === "true");
+        
 
-    constructor() {
-        // AsyncStorage.getItem("tutorialDisabled").then((value) => {
-        //     this._tutorialDisabled$.next(value === "true") 
-        // });
+        const value = await AsyncStorage.getItem("tutorialState");
+        console.log({ disabled, value });
+        if (!value) return;
 
-        // AsyncStorage.getItem("tutorialStep").then((value) => {
-        //     let step = tutorialConfig.steps.length;
-        //     if (!value) {
-        //         this._tutorialStep$.next(step);
-        //         return;
-        //     }
+        const state = { ...this._state$.value };
+        const savedState = JSON.parse(value) as Record<TutorialGroup, number>;
+        for (const group of Object.keys(state)) {
+            state[group as TutorialGroup] = savedState[group as TutorialGroup] ?? 0;
+        }
 
-        //     step = parseInt(value);
-        //     if (isNaN(step)) {
-        //         this._tutorialStep$.next(step)
-        //         return;
-        //     }
+        this._state$.next(state);
+    }
 
-        //     this._tutorialStep$.next(step)
-        // });
+    async reset(): Promise<void> {
+        await AsyncStorage.removeItem("tutorialState");
+        await AsyncStorage.removeItem("tutorialDisabled");
     }
 
     async disableTutorial(): Promise<void> {
-        // await AsyncStorage.setItem("tutorialDisabled", "true");
+        await AsyncStorage.setItem("tutorialDisabled", "true");
         this._tutorialDisabled$.next(true);
     }
 
@@ -67,10 +69,8 @@ export class TutorialManager implements ITutorialManager {
         const updatedState = { ...this._state$.value };
         updatedState[group] = index;
 
-        JSON.stringify(updatedState);
-
-        // await AsyncStorage.setItem("tutorialState", updatedState);
-        console.log("going one more");
+        await AsyncStorage.setItem("tutorialState", JSON.stringify(updatedState));
+        console.log(`moving ${group} to ${index}`);
         this._state$.next(updatedState);
     }
 

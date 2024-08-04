@@ -82,6 +82,7 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
                 name="Items"
                 component={ExpenseScreen}
                 options={{
+                    lazy: true,
                     tabBarIcon: ({ color, size }) => <Receipt width={size} height={size} fill={color} />,
                 }}
             />
@@ -89,7 +90,7 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
                 name="People"
                 component={PeopleScreen}
                 options={{
-                    lazy: false,
+                    lazy: true,
                     tabBarButton: (props) => <View style={props.style}><TutorialTip group="expense" stepKey="people"><Pressable {...props} /></TutorialTip></View>,
                     tabBarIcon: ({ color, size }) => <People width={size} height={size} fill={color} />,
                 }}
@@ -98,7 +99,7 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
                 name="Invite"
                 component={InviteNavigator}
                 options={{
-                    lazy: false,
+                    lazy: true,
                     tabBarButton: (props) => <View style={props.style}><TutorialTip group="expense" stepKey="invite"><Pressable {...props} /></TutorialTip></View>,
                     tabBarIcon: ({ color, size }) => <AddPerson width={size} height={size} fill={color} />,
                 }}

@@ -22,6 +22,7 @@ type Props = TooltipProps & {
     children: React.ReactNode;
     group: TutorialGroup;
     stepKey: string;
+    renderOnLayout?: boolean;
 };
 
 const _tutorialConfig = lazyInject<ITutorialConfiguration>(ITutorialConfiguration);
@@ -37,21 +38,30 @@ export const TutorialTip = SpThemedComponent((props: Props) => {
     const isLastStep = useComputed(([steps]) => stepIndex === (steps as TutorialStep[]).length - 1, [_tutorialConfig.groups[props.group]])
 
     useEffect(() => {
-        setTimeout(() => setVisible(!tutorialState.disabled && tutorialState.stepState[props.group] === stepIndex), 450);
+        const updatedVisible = !tutorialState.disabled && tutorialState.stepState[props.group] === stepIndex;
+
+        // Need to time the visible flag updates so that a previous tooltip's modal can be hidden first.
+        if (updatedVisible && props.renderOnLayout) {
+            setTimeout(() => setVisible(updatedVisible), 450);
+        } else if (updatedVisible) {
+            requestAnimationFrame(() => setVisible(updatedVisible));
+        } else {
+            setVisible(updatedVisible);
+        }
     }, [tutorialState, stepIndex]);
 
     const onDisablePress = useCallback(() => {
         Alert.alert(`Turn off Tips?`, "These will help guide you through using Splitsies. Are you sure you want to disable?", [
             {
                 text: "Yes",
-                onPress: () => _tutorialManager.disableTutorial(),
+                onPress: () => void _tutorialManager.disableTutorial(),
             },
             { text: "No", style: "cancel" },
         ]);
     }, []);
 
-    const onNext = useCallback(() => {
-        _tutorialManager.set(props.group, stepIndex + 1);
+    const onNext = useCallback(async () => {
+        await _tutorialManager.set(props.group, stepIndex + 1);
     }, [stepIndex]);
     
     return (
@@ -59,9 +69,9 @@ export const TutorialTip = SpThemedComponent((props: Props) => {
             isVisible={visible}
             disableShadow
             childContentSpacing={-1}
-            displayInsets={{ top: 24, bottom: 24, left: 2, right: 2}}
+            displayInsets={{ top: 24, bottom: 24, left: 5, right: 5}}
             showChildInTooltip={true}
-            backgroundColor={theme === "dark" ? "rgba(0,0,0,0.45)" : "rgba(0,0,0,0)"}
+            backgroundColor={theme === "dark" ? "rgba(0,0,0,0.65)" : "rgba(0,0,0,0)"}
             closeOnContentInteraction={false}
             contentStyle={{ borderRadius: 15, paddingHorizontal: 15, paddingBottom: 38, borderWidth: 1, borderColor: Colors.divider, backgroundColor: Colors.primary }}
             arrowStyle={{ marginTop: props.placement === "bottom" ? 0 : -15 }}

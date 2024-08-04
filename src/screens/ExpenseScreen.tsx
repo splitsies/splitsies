@@ -161,6 +161,9 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
 
     return (
         <Container>
+
+
+        <TutorialTip group="expense" stepKey="editNameAndDate" placement="bottom">
             <SafeAreaView style={{ marginBottom: 10 }}>
                 <View centerH>
                     <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
@@ -168,8 +171,6 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                             {expense.name}
                         </Text>
                     </TouchableOpacity>
-
-                    <TutorialTip group="expense" stepKey="editNameAndDate" placement="bottom">
                         <DateTimePicker
                             style={_styleManager.typography.letter}
                             color={Colors.textColor}
@@ -178,10 +179,10 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                             mode="date"
                             value={expense.transactionDate}
                             onChange={onExpenseDateUpdated}
-                            />
-                    </TutorialTip>
+                        />
                 </View>
             </SafeAreaView>
+            </TutorialTip>
 
             <FlatList
                 style={styles.list}
@@ -213,14 +214,14 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                         />
                         :
                         <TutorialTip group="expense" stepKey="selectItem" placement="bottom">
-                                                <ExpenseItem
-                        item={item}
-                        style={{ marginVertical: 15 }}
-                        showOwners
-                        editable={isEditing}
-                        onPress={() => setSelectedItem(item)}
-                        onSelect={onItemSelected}
-                        />
+                            <ExpenseItem
+                                item={item}
+                                style={{ marginVertical: 15 }}
+                                showOwners
+                                editable={isEditing}
+                                onPress={() => setSelectedItem(item)}
+                                onSelect={onItemSelected}
+                            />
                         </TutorialTip>
                 )}
             />

@@ -12,7 +12,8 @@ type Props = {
 };
 
 export const ExpenseFooter = ({ expense, onItemSelected, isEditing }: Props): JSX.Element => {
-    return (<TutorialTip group="expense" stepKey="total">
+    return (
+        <TutorialTip group="expense" stepKey="total" renderOnLayout>
         <View>
             {expense.items.filter((i) => i.isProportional).length > 0 && (
                 <ExpenseItem

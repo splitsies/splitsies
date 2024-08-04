@@ -18,15 +18,15 @@ export const EditItemsControl = SpThemedComponent(() => {
     };
 
     return (
-        <TutorialTip group="expense" stepKey="editItems" placement="bottom">
-            <TouchableOpacity onPress={onSelectAction}>
+        <TouchableOpacity onPress={onSelectAction}>
+            <TutorialTip group="expense" stepKey="editItems" placement="bottom">
                 <View flex row centerV style={{ columnGap: 10 }}>
                     <ActivityIndicator animating={awaitingResponse} hidesWhenStopped color={Colors.textColor} />
                     <Text bodyBold color={Colors.textColor}>
                         {!editing ? "Edit Items" : "Done"}
                     </Text>
                 </View>
-            </TouchableOpacity>
-        </TutorialTip>
+            </TutorialTip>
+        </TouchableOpacity>
     );
 });
