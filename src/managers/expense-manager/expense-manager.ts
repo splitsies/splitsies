@@ -86,10 +86,11 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     }
 
     async requestForUser(reset = true): Promise<void> {
+        const ids = new Set<string>(this.expenses.map((e) => e.id));
         const expenseDtos = await this._api.getAllExpenses(reset);
         const expenses = await this._expenseMapper.toDomainBatch(expenseDtos);
 
-        const newCollection = reset ? expenses : [...this.expenses, ...expenses];
+        const newCollection = reset ? expenses : [...this.expenses, ...expenses.filter((e) => !ids.has(e.id))];
 
         this._expenses$.next(newCollection.sort((a, b) => b.transactionDate.getTime() - a.transactionDate.getTime()));
     }
@@ -98,8 +99,12 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         await this._api.connectToExpense(expenseId);
     }
 
-    requestAddUserToExpense(userId: string, expenseId: string): Promise<void> {
-        return this._api.addUserToExpense(userId, expenseId);
+    requestAddUserToExpense(
+        userId: string,
+        expenseId: string,
+        requestingUserId: string | undefined = undefined,
+    ): Promise<void> {
+        return this._api.addUserToExpense(userId, expenseId, requestingUserId);
     }
 
     async requestRemoveUserFromExpense(userId: string, expenseId: string): Promise<void> {

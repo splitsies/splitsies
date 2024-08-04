@@ -79,6 +79,8 @@ import { IPushMessageHandlerProvider } from "../providers/push-message-handler-p
 import { PushMessageHandlerProvider } from "../providers/push-message-handler-provider/push-message-handler-provider";
 import { IBalanceCalculator } from "../utils/balance-calculator/balance-calculator-interface";
 import { BalanceCalculator } from "../utils/balance-calculator/balance-calculator";
+import { IAuthenticatedLinkingConfigurationProvider } from "../providers/authenticated-linking-configuration-provider/authenticated-linking-configuration-provider.i";
+import { AuthenticatedLinkingConfigurationProvider } from "../providers/authenticated-linking-configuration-provider/authenticated-linking-configuration-provider";
 const container = new Container({ defaultScope: "Singleton" });
 
 const messageHub = new WritableMessageHub();
@@ -123,4 +125,7 @@ container.bind<IAppManager>(IAppManager).to(AppManager);
 container.bind<IExpenseViewModel>(IExpenseViewModel).to(ExpenseViewModel);
 container.bind<IPushMessageHandlerProvider>(IPushMessageHandlerProvider).to(PushMessageHandlerProvider);
 container.bind<IBalanceCalculator>(IBalanceCalculator).to(BalanceCalculator);
+container
+    .bind<IAuthenticatedLinkingConfigurationProvider>(IAuthenticatedLinkingConfigurationProvider)
+    .to(AuthenticatedLinkingConfigurationProvider);
 export { container };
