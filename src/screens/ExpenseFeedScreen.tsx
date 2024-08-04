@@ -117,16 +117,17 @@ export const ExpenseFeedScreen = SpThemedComponent(({ navigation, route }: Props
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
                     onEndReached={(_) => void fetchPage()}
                     ItemSeparatorComponent={ListSeparator}
-                    renderItem={({ item, index }) => (
-                    index !== 0 ?
-                        <ExpensePreview
-                            key={item.id}
-                            data={item}
-                            onPress={onExpenseClick}
-                            person={_userManager.expenseUserDetails}
-                            onLongPress={() => console.log("LONG")}
-                        /> :
-                        <TutorialTip group="home" stepKey="expenseItem" placement="bottom" renderOnLayout>
+                    renderItem={({ item, index }) =>
+                        index !== 0 ? (
+                            <ExpensePreview
+                                key={item.id}
+                                data={item}
+                                onPress={onExpenseClick}
+                                person={_userManager.expenseUserDetails}
+                                onLongPress={() => console.log("LONG")}
+                            />
+                        ) : (
+                            <TutorialTip group="home" stepKey="expenseItem" placement="bottom" renderOnLayout>
                                 <ExpensePreview
                                     key={item.id}
                                     data={item}
@@ -134,8 +135,9 @@ export const ExpenseFeedScreen = SpThemedComponent(({ navigation, route }: Props
                                     person={_userManager.expenseUserDetails}
                                     onLongPress={() => console.log("LONG")}
                                 />
-                        </TutorialTip>
-                    )}
+                            </TutorialTip>
+                        )
+                    }
                     data={expenses}
                 />
             )}

@@ -58,7 +58,10 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
     const onShare = async () => {
         await Share.share(
             {
-                message: Platform.OS === "ios" ? `Hello! Let's go Splitsies on ${_expenseManager.currentExpense?.name}, click the link the join.\n` : `splitsies://expenses/${_expenseManager.currentExpense?.id}/${_userManager.userId}`,
+                message:
+                    Platform.OS === "ios"
+                        ? `Hello! Let's go Splitsies on ${_expenseManager.currentExpense?.name}, click the link the join.\n`
+                        : `splitsies://expenses/${_expenseManager.currentExpense?.id}/${_userManager.userId}`,
                 url: `splitsies://expenses/${_expenseManager.currentExpense?.id}/${_userManager.userId}`,
                 title: "`Hello! Let's go Splitsies on ${_expenseManager.currentExpense?.name}, click the link the join.`",
             },
@@ -91,7 +94,13 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
                 component={PeopleScreen}
                 options={{
                     lazy: true,
-                    tabBarButton: (props) => <View style={props.style}><TutorialTip group="expense" stepKey="people"><Pressable {...props} /></TutorialTip></View>,
+                    tabBarButton: (props) => (
+                        <View style={props.style}>
+                            <TutorialTip group="expense" stepKey="people">
+                                <Pressable {...props} />
+                            </TutorialTip>
+                        </View>
+                    ),
                     tabBarIcon: ({ color, size }) => <People width={size} height={size} fill={color} />,
                 }}
             />
@@ -100,7 +109,13 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
                 component={InviteNavigator}
                 options={{
                     lazy: true,
-                    tabBarButton: (props) => <View style={props.style}><TutorialTip group="expense" stepKey="invite"><Pressable {...props} /></TutorialTip></View>,
+                    tabBarButton: (props) => (
+                        <View style={props.style}>
+                            <TutorialTip group="expense" stepKey="invite">
+                                <Pressable {...props} />
+                            </TutorialTip>
+                        </View>
+                    ),
                     tabBarIcon: ({ color, size }) => <AddPerson width={size} height={size} fill={color} />,
                 }}
             />
@@ -108,7 +123,13 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
                 name="Share"
                 component={ExpenseNavigationHeader}
                 options={{
-                    tabBarButton: (props) => <View style={props.style}><TutorialTip group="expense" stepKey="share"><Pressable {...props} onPress={onShare} /></TutorialTip></View>,
+                    tabBarButton: (props) => (
+                        <View style={props.style}>
+                            <TutorialTip group="expense" stepKey="share">
+                                <Pressable {...props} onPress={onShare} />
+                            </TutorialTip>
+                        </View>
+                    ),
                     tabBarIcon: ({ color, size }) => <ShareIcon width={size} height={size} fill={color} />,
                 }}
             />

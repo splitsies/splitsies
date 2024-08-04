@@ -13,7 +13,15 @@ import { BaseManager } from "../base-manager";
 export class TutorialManager extends BaseManager implements ITutorialManager {
     private readonly _tutorialConfiguration = lazyInject<ITutorialConfiguration>(ITutorialConfiguration);
     private readonly _tutorialDisabled$ = new BehaviorSubject<boolean>(false);
-    private readonly _state$ = new BehaviorSubject<Record<TutorialGroup, number>>({ home: 0, expense: 0, editItem: 0, people: 0, contacts: 0, guests: 0, search: 0 });
+    private readonly _state$ = new BehaviorSubject<Record<TutorialGroup, number>>({
+        home: 0,
+        expense: 0,
+        editItem: 0,
+        people: 0,
+        contacts: 0,
+        guests: 0,
+        search: 0,
+    });
 
     get state$(): Observable<Record<TutorialGroup, number>> {
         return this._state$.asObservable();
@@ -26,11 +34,10 @@ export class TutorialManager extends BaseManager implements ITutorialManager {
     get state(): TutorialState {
         return new TutorialState(this._tutorialDisabled$.value, this._state$.value);
     }
-    
-    protected async initialize(): Promise<void> {        
+
+    protected async initialize(): Promise<void> {
         const disabled = await AsyncStorage.getItem("tutorialDisabled");
         this._tutorialDisabled$.next(disabled === "true");
-        
 
         const value = await AsyncStorage.getItem("tutorialState");
         console.log({ disabled, value });
@@ -57,7 +64,6 @@ export class TutorialManager extends BaseManager implements ITutorialManager {
 
     async advance(): Promise<void> {
         // if (this._groupSteps$.value >= tutorialConfig.steps.length) return;
-
         // // await AsyncStorage.setItem("tutorialStep", `${this._tutorialStep$.value + 1}`);
         // console.log("going one more");
         // this._groupSteps$.next(this._groupSteps$.value + 1);
@@ -76,7 +82,6 @@ export class TutorialManager extends BaseManager implements ITutorialManager {
 
     async back(): Promise<void> {
         // if (this._state$.value <= 0) return;
-
         // await AsyncStorage.setItem("tutorialStep", `${this._state$.value - 1}`);
         // this._state$.next(this._state$.value - 1);
     }

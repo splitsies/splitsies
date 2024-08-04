@@ -161,16 +161,14 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
 
     return (
         <Container>
-
-
-        <TutorialTip group="expense" stepKey="editNameAndDate" placement="bottom">
-            <SafeAreaView style={{ marginBottom: 10 }}>
-                <View centerH>
-                    <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
-                        <Text letterHeading color={Colors.textColor} style={styles.headerLabel}>
-                            {expense.name}
-                        </Text>
-                    </TouchableOpacity>
+            <TutorialTip group="expense" stepKey="editNameAndDate" placement="bottom">
+                <SafeAreaView style={{ marginBottom: 10 }}>
+                    <View centerH>
+                        <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
+                            <Text letterHeading color={Colors.textColor} style={styles.headerLabel}>
+                                {expense.name}
+                            </Text>
+                        </TouchableOpacity>
                         <DateTimePicker
                             style={_styleManager.typography.letter}
                             color={Colors.textColor}
@@ -180,8 +178,8 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                             value={expense.transactionDate}
                             onChange={onExpenseDateUpdated}
                         />
-                </View>
-            </SafeAreaView>
+                    </View>
+                </SafeAreaView>
             </TutorialTip>
 
             <FlatList
@@ -202,17 +200,17 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                         </View>
                     </TouchableOpacity>
                 }
-                renderItem={({ item, index }) => (
-                    index !== 0 ?
-                    <ExpenseItem
-                        item={item}
-                        style={{ marginVertical: 15 }}
-                        showOwners
-                        editable={isEditing}
-                        onPress={() => setSelectedItem(item)}
-                        onSelect={onItemSelected}
+                renderItem={({ item, index }) =>
+                    index !== 0 ? (
+                        <ExpenseItem
+                            item={item}
+                            style={{ marginVertical: 15 }}
+                            showOwners
+                            editable={isEditing}
+                            onPress={() => setSelectedItem(item)}
+                            onSelect={onItemSelected}
                         />
-                        :
+                    ) : (
                         <TutorialTip group="expense" stepKey="selectItem" placement="bottom">
                             <ExpenseItem
                                 item={item}
@@ -223,7 +221,8 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                                 onSelect={onItemSelected}
                             />
                         </TutorialTip>
-                )}
+                    )
+                }
             />
 
             <View style={styles.footer}>

@@ -13,8 +13,8 @@ const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 export const AddGuestControl = SpThemedComponent(() => {
     return (
         <TutorialTip group="guests" stepKey="addGuest" placement="bottom">
-        <TouchableOpacity onPress={() => _inviteViewModel.setInviteMenuOpen(true)}>
-            <AddPerson height={_uiConfig.sizes.icon} width={_uiConfig.sizes.icon} fill={Colors.textColor} />
+            <TouchableOpacity onPress={() => _inviteViewModel.setInviteMenuOpen(true)}>
+                <AddPerson height={_uiConfig.sizes.icon} width={_uiConfig.sizes.icon} fill={Colors.textColor} />
             </TouchableOpacity>
         </TutorialTip>
     );

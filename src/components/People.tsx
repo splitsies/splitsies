@@ -40,10 +40,9 @@ export const People = ({ isSelecting, people, expense, updateItemOwners, endSele
 
     return (
         <Container style={styles.container}>
-
-            <TutorialTip group="people" stepKey="personalOrder"/> 
+            <TutorialTip group="people" stepKey="personalOrder" />
             <View style={{ display: "flex", flex: 1 }}>
-                    <Carousel
+                <Carousel
                     onChangePage={onChangePage}
                     disableIntervalMomentum
                     pagingEnabled
@@ -51,10 +50,15 @@ export const People = ({ isSelecting, people, expense, updateItemOwners, endSele
                     containerStyle={{ width: "100%", alignItems: "center" }}
                 >
                     {people.map((person, index) => (
-                        <PersonalOrder key={person.id} person={person} expense={expense} isSelectedPerson={index === pageIndex} />
+                        <PersonalOrder
+                            key={person.id}
+                            person={person}
+                            expense={expense}
+                            isSelectedPerson={index === pageIndex}
+                        />
                     ))}
                 </Carousel>
-                </View>
+            </View>
             <View style={{ display: "flex" }}>
                 <PageControl
                     containerStyle={{ paddingVertical: 15 }}

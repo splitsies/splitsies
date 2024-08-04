@@ -26,7 +26,7 @@ export class AppManager implements IAppManager {
                 StatusBar.setBarStyle(this._themeManager.theme === "light" ? "dark-content" : "light-content");
             },
         });
-        
+
         await this._tutorialManager.initialized;
         this._resolver();
     }

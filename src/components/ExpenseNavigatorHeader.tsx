@@ -35,7 +35,7 @@ export const ExpenseNavigationHeader = () => {
                 </View>
 
                 <View style={styles.inputContainer}>
-                    {searchVisible &&
+                    {searchVisible && (
                         <TextField
                             body
                             autoCapitalize="none"
@@ -46,7 +46,7 @@ export const ExpenseNavigationHeader = () => {
                             style={styles.textInput}
                             onChangeText={(text) => _inviteViewModel.setSearchFilter(text)}
                         />
-                    }
+                    )}
                 </View>
 
                 <View style={styles.actionContainer}>

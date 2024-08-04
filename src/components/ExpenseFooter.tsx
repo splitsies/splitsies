@@ -14,21 +14,20 @@ type Props = {
 export const ExpenseFooter = ({ expense, onItemSelected, isEditing }: Props): JSX.Element => {
     return (
         <TutorialTip group="expense" stepKey="total" renderOnLayout>
-        <View>
-            {expense.items.filter((i) => i.isProportional).length > 0 && (
-                <ExpenseItem
-                    item={{ name: "Subtotal", price: expense.subtotal, owners: [] } as unknown as IExpenseItem}
-                />
-            )}
-            {expense.items
-                .filter((i) => i.isProportional)
-                .map((pi) => (
-                    <ExpenseItem key={pi.id} item={pi} editable={isEditing} onPress={() => onItemSelected(pi)} />
-                ))}
+            <View>
+                {expense.items.filter((i) => i.isProportional).length > 0 && (
+                    <ExpenseItem
+                        item={{ name: "Subtotal", price: expense.subtotal, owners: [] } as unknown as IExpenseItem}
+                    />
+                )}
+                {expense.items
+                    .filter((i) => i.isProportional)
+                    .map((pi) => (
+                        <ExpenseItem key={pi.id} item={pi} editable={isEditing} onPress={() => onItemSelected(pi)} />
+                    ))}
 
-            
                 <ExpenseItem item={{ name: "Total", price: expense.total, owners: [] } as unknown as IExpenseItem} />
-        </View>
+            </View>
         </TutorialTip>
     );
 };

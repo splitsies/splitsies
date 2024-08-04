@@ -4,7 +4,7 @@ import { useObservable } from "./use-observable";
 
 const _themeViewModel = lazyInject<IThemeViewModel>(IThemeViewModel);
 
-export const useThemeWatcher = ()  => {
+export const useThemeWatcher = () => {
     const theme = useObservable(_themeViewModel.theme$, _themeViewModel.theme);
     return theme;
 };

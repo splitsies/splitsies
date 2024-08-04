@@ -12,7 +12,13 @@ const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
 export const ScanUserQrControl = SpThemedComponent(() => {
     return (
-        <TutorialTip group="contacts" stepKey="qr" placement="bottom" showChildInTooltip={false} horizontalAdjustment={20}>
+        <TutorialTip
+            group="contacts"
+            stepKey="qr"
+            placement="bottom"
+            showChildInTooltip={false}
+            horizontalAdjustment={20}
+        >
             <TouchableOpacity onPress={() => _inviteViewModel.setInviteMenuOpen(true)}>
                 <QrAdd height={_uiConfig.sizes.icon} width={_uiConfig.sizes.icon} fill={Colors.textColor} />
             </TouchableOpacity>

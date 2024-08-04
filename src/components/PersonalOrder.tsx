@@ -205,16 +205,17 @@ export const PersonalOrder = ({ person, expense, style, isSelectedPerson }: Prop
                             <CheckCircle width={icon} height={icon} fill={Colors.ready} />
                         )}
 
-                        {isSelectedPerson ?
+                        {isSelectedPerson ? (
                             <TutorialTip group="people" stepKey="menu" placement="bottom">
                                 <TouchableOpacity onPress={() => setActionsVisible(true)}>
                                     <More width={icon} height={icon} fill={Colors.textColor} />
                                 </TouchableOpacity>
-                            </TutorialTip> :
+                            </TutorialTip>
+                        ) : (
                             <TouchableOpacity onPress={() => setActionsVisible(true)}>
                                 <More width={icon} height={icon} fill={Colors.textColor} />
                             </TouchableOpacity>
-                        }
+                        )}
                     </View>
                 </View>
             </View>
@@ -251,28 +252,29 @@ export const PersonalOrder = ({ person, expense, style, isSelectedPerson }: Prop
                 {personalExpense.items
                     .filter((i) => !i.isProportional)
                     .map((item) => (
-                        <ExpenseItem item={item} key={item.id} onPress={() => { }} />
+                        <ExpenseItem item={item} key={item.id} onPress={() => {}} />
                     ))}
             </ScrollView>
 
             <View style={{ borderTopWidth: 0.5, borderTopColor: Colors.divider, paddingTop: 5 }}>
                 {expense.items.filter((i) => i.isProportional).length > 0 && (
-                    <ExpenseItem item={subtotalItem} key={"subtotal"} onPress={() => { }} />
+                    <ExpenseItem item={subtotalItem} key={"subtotal"} onPress={() => {}} />
                 )}
                 {personalExpense.items
                     .filter((i) => i.isProportional)
                     .map((item) => (
-                        <ExpenseItem item={item} key={item.id} onPress={() => { }} />
+                        <ExpenseItem item={item} key={item.id} onPress={() => {}} />
                     ))}
-                <ExpenseItem item={totalItem} key={"total"} onPress={() => { }} />
+                <ExpenseItem item={totalItem} key={"total"} onPress={() => {}} />
             </View>
 
-            {isSelectedPerson ?
+            {isSelectedPerson ? (
                 <TutorialTip group="people" stepKey="pay">
                     {renderButtons()}
-                </TutorialTip> :
+                </TutorialTip>
+            ) : (
                 renderButtons()
-            }
+            )}
 
             <Toast
                 body

@@ -86,7 +86,13 @@ export const FeedNavigator = () => {
                 name="Requests"
                 component={RequestsFeedScreen}
                 options={{
-                    tabBarButton: (props) => <View style={props.style}><TutorialTip group="home" stepKey="requests"><Pressable {...props} /></TutorialTip></View>,
+                    tabBarButton: (props) => (
+                        <View style={props.style}>
+                            <TutorialTip group="home" stepKey="requests">
+                                <Pressable {...props} />
+                            </TutorialTip>
+                        </View>
+                    ),
                     tabBarIcon: ({ color, size }) => <People width={size} height={size} fill={color} />,
                     tabBarBadge: requestsBadge,
                     tabBarBadgeStyle: styles.badge,

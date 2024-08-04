@@ -22,7 +22,7 @@ import Add from "../../assets/icons/add.svg";
 import Menu from "../../assets/icons/menu.svg";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { SettingsScreen } from "../screens/SettingsScreen";
-import Tooltip from 'react-native-walkthrough-tooltip';
+import Tooltip from "react-native-walkthrough-tooltip";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
@@ -74,10 +74,9 @@ export const HomeNavigator = SpThemedComponent(({ navigation }: Props) => {
                     <View row style={{ columnGap: 10 }}>
                         <ActivityIndicator color={Colors.textColor} animating={pendingData} hidesWhenStopped />
 
-                        
-                            <TouchableOpacity onPress={onAddPress}>
-                                <Add width={icon} height={icon} fill={Colors.textColor} />
-                            </TouchableOpacity>
+                        <TouchableOpacity onPress={onAddPress}>
+                            <Add width={icon} height={icon} fill={Colors.textColor} />
+                        </TouchableOpacity>
 
                         <TouchableOpacity onPress={navigation.openDrawer}>
                             <Menu width={icon} height={icon} fill={Colors.textColor} />
