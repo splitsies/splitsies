@@ -244,6 +244,8 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     private async onUserCredentialUpdated(userCredential: IUserCredential | null): Promise<void> {
         if (!userCredential) {
             this._expenses$.next([]);
+        } else {
+            void this._api.pingConnection();
         }
 
         this._isPendingExpenseData$.next(true);

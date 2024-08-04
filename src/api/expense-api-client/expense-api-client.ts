@@ -89,6 +89,24 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         return onConnected;
     }
 
+    async pingConnection(): Promise<void> {
+        const socketUri = `${this._config.expenseSocket}?ping=true`;
+
+        const onConnected = new Promise<void>((res, rej) => {
+            try {
+                const conn = new WebSocket(socketUri);
+                conn.onopen = () => {
+                    res();
+                };
+            } catch (e) {
+                console.error(e);
+                rej(e);
+            }
+        });
+
+        return onConnected;
+    }
+
     disconnectFromExpense(): void {
         if (!this._connection || this._connection.readyState >= 2) {
             this._sessionExpense$.next(null);

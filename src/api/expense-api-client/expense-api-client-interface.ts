@@ -9,6 +9,7 @@ export interface IExpenseApiClient extends IBaseManager {
     getExpense(expenseId: string): Promise<void>;
     getUserIdsForExpense(expenseId: string): Promise<string[]>;
     connectToExpense(expenseId: string): Promise<void>;
+    pingConnection(): Promise<void>;
     disconnectFromExpense(): void;
     addUserToExpense(userId: string, expenseId: string, requestingUserId?: string): Promise<void>;
     removeUserFromExpense(userId: string, expenseId: string): Promise<void>;
