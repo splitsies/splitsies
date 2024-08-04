@@ -83,6 +83,8 @@ import { IAuthenticatedLinkingConfigurationProvider } from "../providers/authent
 import { AuthenticatedLinkingConfigurationProvider } from "../providers/authenticated-linking-configuration-provider/authenticated-linking-configuration-provider";
 import { ITutorialManager } from "../managers/tutorial-manager/tutorial-manager.i";
 import { TutorialManager } from "../managers/tutorial-manager/tutorial-manager";
+import { ITutorialConfiguration } from "../models/configuration/tutorial-configuration/tutorial-configuration.i";
+import { TutorialConfiguration } from "../models/configuration/tutorial-configuration/tutorial-configuration";
 const container = new Container({ defaultScope: "Singleton" });
 
 const messageHub = new WritableMessageHub();
@@ -131,4 +133,5 @@ container
     .bind<IAuthenticatedLinkingConfigurationProvider>(IAuthenticatedLinkingConfigurationProvider)
     .to(AuthenticatedLinkingConfigurationProvider);
 container.bind<ITutorialManager>(ITutorialManager).to(TutorialManager);
+container.bind<ITutorialConfiguration>(ITutorialConfiguration).to(TutorialConfiguration);
 export { container };

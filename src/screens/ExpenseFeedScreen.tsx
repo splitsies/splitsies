@@ -17,6 +17,7 @@ import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-i
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
 import { Container } from "../components/Container";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { TutorialTip } from "../components/TutorialTip";
 
 type Props = CompositeScreenProps<
     BottomTabScreenProps<FeedParamList, "Feed">,
@@ -116,14 +117,24 @@ export const ExpenseFeedScreen = SpThemedComponent(({ navigation, route }: Props
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
                     onEndReached={(_) => void fetchPage()}
                     ItemSeparatorComponent={ListSeparator}
-                    renderItem={({ item }) => (
+                    renderItem={({ item, index }) => (
+                    index !== 0 ?
                         <ExpensePreview
                             key={item.id}
                             data={item}
                             onPress={onExpenseClick}
                             person={_userManager.expenseUserDetails}
                             onLongPress={() => console.log("LONG")}
-                        />
+                        /> :
+                        <TutorialTip group="home" stepKey="expenseItem" placement="bottom">
+                                <ExpensePreview
+                                    key={item.id}
+                                    data={item}
+                                    onPress={onExpenseClick}
+                                    person={_userManager.expenseUserDetails}
+                                    onLongPress={() => console.log("LONG")}
+                                />
+                        </TutorialTip>
                     )}
                     data={expenses}
                 />

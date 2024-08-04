@@ -1,6 +1,8 @@
+import { TutorialGroup } from "./tutorial-group";
+
 export class TutorialState {
     constructor(
-        readonly tutorialDisabled: boolean,
-        readonly tutorialStep: number,
+        readonly disabled: boolean,
+        readonly stepState: Record<TutorialGroup, number>,
     ) { }
 }

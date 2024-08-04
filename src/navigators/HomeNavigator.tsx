@@ -7,7 +7,7 @@ import { lazyInject } from "../utils/lazy-inject";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { TouchableOpacity, View } from "react-native-ui-lib/core";
 import { ActivityIndicator, Alert, SafeAreaView, StyleSheet } from "react-native";
-import { Colors } from "react-native-ui-lib";
+import { Button, Colors, Text } from "react-native-ui-lib";
 import { SplitsiesTitle } from "../components/SplitsiesTitle";
 import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-interface";
 import { useObservable } from "../hooks/use-observable";
@@ -22,6 +22,7 @@ import Add from "../../assets/icons/add.svg";
 import Menu from "../../assets/icons/menu.svg";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { SettingsScreen } from "../screens/SettingsScreen";
+import Tooltip from 'react-native-walkthrough-tooltip';
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
@@ -73,9 +74,10 @@ export const HomeNavigator = SpThemedComponent(({ navigation }: Props) => {
                     <View row style={{ columnGap: 10 }}>
                         <ActivityIndicator color={Colors.textColor} animating={pendingData} hidesWhenStopped />
 
-                        <TouchableOpacity onPress={onAddPress}>
-                            <Add width={icon} height={icon} fill={Colors.textColor} />
-                        </TouchableOpacity>
+                        
+                            <TouchableOpacity onPress={onAddPress}>
+                                <Add width={icon} height={icon} fill={Colors.textColor} />
+                            </TouchableOpacity>
 
                         <TouchableOpacity onPress={navigation.openDrawer}>
                             <Menu width={icon} height={icon} fill={Colors.textColor} />

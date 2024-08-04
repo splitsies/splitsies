@@ -1,8 +1,8 @@
 {
     "primary": "#FFBD2F",
     "primaryTranslucent": "#f9e3bd",
-    "primaryTranslucentLight": "rgba(255,189,47,0.25)",
-    "primaryTranslucentDark": "rgba(255,189,47,0.75)",
+    "primaryTranslucentLight": "rgba(245,195,88,94)",
+    "primaryTranslucentDark": "rgba(255,189,47,0.98)",
     "white": "#FFFFFF",
     "black": "#000000",
     "greyFont": "#B8B8B8",
