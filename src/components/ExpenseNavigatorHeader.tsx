@@ -13,7 +13,6 @@ import { ScanUserQrControl } from "./ScanUserQrControl";
 import { SelectItemsControl } from "./SelectItemsControl";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import ArrowBack from "../../assets/icons/arrow-back.svg";
-import { TutorialTip } from "./TutorialTip";
 
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
