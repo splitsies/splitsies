@@ -5,6 +5,7 @@ import { IExpenseViewModel } from "../view-models/expense-view-model/expense-vie
 import { ActivityIndicator } from "react-native";
 import { useObservable } from "../hooks/use-observable";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
+import { TutorialTip } from "./TutorialTip";
 
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 
@@ -18,12 +19,14 @@ export const EditItemsControl = SpThemedComponent(() => {
 
     return (
         <TouchableOpacity onPress={onSelectAction}>
-            <View flex row centerV style={{ columnGap: 10 }}>
-                <ActivityIndicator animating={awaitingResponse} hidesWhenStopped color={Colors.textColor} />
-                <Text bodyBold color={Colors.textColor}>
-                    {!editing ? "Edit Items" : "Done"}
-                </Text>
-            </View>
+            <TutorialTip group="expense" stepKey="editItems" placement="bottom">
+                <View flex row centerV style={{ columnGap: 10 }}>
+                    <ActivityIndicator animating={awaitingResponse} hidesWhenStopped color={Colors.textColor} />
+                    <Text bodyBold color={Colors.textColor}>
+                        {!editing ? "Edit Items" : "Done"}
+                    </Text>
+                </View>
+            </TutorialTip>
         </TouchableOpacity>
     );
 });

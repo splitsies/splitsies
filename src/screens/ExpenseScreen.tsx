@@ -26,6 +26,7 @@ import { IExpenseViewModel } from "../view-models/expense-view-model/expense-vie
 import Add from "../../assets/icons/add.svg";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { Expense } from "../models/expense/expense";
+import { TutorialTip } from "../components/TutorialTip";
 
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
@@ -160,25 +161,26 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
 
     return (
         <Container>
-            <SafeAreaView style={{ marginBottom: 10 }}>
-                <View centerH>
-                    <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
-                        <Text letterHeading color={Colors.textColor} style={styles.headerLabel}>
-                            {expense.name}
-                        </Text>
-                    </TouchableOpacity>
-
-                    <DateTimePicker
-                        style={_styleManager.typography.letter}
-                        color={Colors.textColor}
-                        maximumDate={new Date()}
-                        dateTimeFormatter={(date) => format(date)}
-                        mode="date"
-                        value={expense.transactionDate}
-                        onChange={onExpenseDateUpdated}
-                    />
-                </View>
-            </SafeAreaView>
+            <TutorialTip group="expense" stepKey="editNameAndDate" placement="bottom">
+                <SafeAreaView style={{ marginBottom: 10 }}>
+                    <View centerH>
+                        <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
+                            <Text letterHeading color={Colors.textColor} style={styles.headerLabel}>
+                                {expense.name}
+                            </Text>
+                        </TouchableOpacity>
+                        <DateTimePicker
+                            style={_styleManager.typography.letter}
+                            color={Colors.textColor}
+                            maximumDate={new Date()}
+                            dateTimeFormatter={(date) => format(date)}
+                            mode="date"
+                            value={expense.transactionDate}
+                            onChange={onExpenseDateUpdated}
+                        />
+                    </View>
+                </SafeAreaView>
+            </TutorialTip>
 
             <FlatList
                 style={styles.list}
@@ -198,16 +200,29 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                         </View>
                     </TouchableOpacity>
                 }
-                renderItem={({ item }) => (
-                    <ExpenseItem
-                        item={item}
-                        style={{ marginVertical: 15 }}
-                        showOwners
-                        editable={isEditing}
-                        onPress={() => setSelectedItem(item)}
-                        onSelect={onItemSelected}
-                    />
-                )}
+                renderItem={({ item, index }) =>
+                    index !== 0 ? (
+                        <ExpenseItem
+                            item={item}
+                            style={{ marginVertical: 15 }}
+                            showOwners
+                            editable={isEditing}
+                            onPress={() => setSelectedItem(item)}
+                            onSelect={onItemSelected}
+                        />
+                    ) : (
+                        <TutorialTip group="expense" stepKey="selectItem" placement="bottom">
+                            <ExpenseItem
+                                item={item}
+                                style={{ marginVertical: 15 }}
+                                showOwners
+                                editable={isEditing}
+                                onPress={() => setSelectedItem(item)}
+                                onSelect={onItemSelected}
+                            />
+                        </TutorialTip>
+                    )
+                }
             />
 
             <View style={styles.footer}>

@@ -338,9 +338,6 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         const params = this._expenseMessageParametersMapper.toDtoModel(
             new ExpenseMessageParameters({ expenseId, item, itemSelected, user }),
         );
-
-        console.log({ params });
-
         this._connection.send(JSON.stringify({ id: expenseId, method: "updateSingleItemSelected", params }));
     }
 
