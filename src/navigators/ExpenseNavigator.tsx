@@ -19,7 +19,7 @@ import AddPerson from "../../assets/icons/add-person.svg";
 import ShareIcon from "../../assets/icons/share.svg";
 import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
-import { Pressable, Share } from "react-native";
+import { Platform, Pressable, Share } from "react-native";
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -56,9 +56,9 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
     const onShare = async () => {
         await Share.share(
             {
-                message: `Hello! Let's go Splitsies.`,
+                message: Platform.OS === "ios" ? `Hello! Let's go Splitsies on ${_expenseManager.currentExpense?.name}, click the link the join.\n` : `splitsies://expenses/${_expenseManager.currentExpense?.id}/${_userManager.userId}`,
                 url: `splitsies://expenses/${_expenseManager.currentExpense?.id}/${_userManager.userId}`,
-                title: "Share",
+                title: "`Hello! Let's go Splitsies on ${_expenseManager.currentExpense?.name}, click the link the join.`",
             },
             {
                 dialogTitle: "Share to...",
