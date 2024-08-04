@@ -13,6 +13,7 @@ import { ScanUserQrControl } from "./ScanUserQrControl";
 import { SelectItemsControl } from "./SelectItemsControl";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import ArrowBack from "../../assets/icons/arrow-back.svg";
+import { TutorialTip } from "./TutorialTip";
 
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
@@ -34,7 +35,7 @@ export const ExpenseNavigationHeader = () => {
                 </View>
 
                 <View style={styles.inputContainer}>
-                    {searchVisible && (
+                    {searchVisible &&
                         <TextField
                             body
                             autoCapitalize="none"
@@ -45,7 +46,7 @@ export const ExpenseNavigationHeader = () => {
                             style={styles.textInput}
                             onChangeText={(text) => _inviteViewModel.setSearchFilter(text)}
                         />
-                    )}
+                    }
                 </View>
 
                 <View style={styles.actionContainer}>

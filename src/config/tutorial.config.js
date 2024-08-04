@@ -29,7 +29,19 @@ export const tutorialConfig = {
         },
         {
             key: "selectItem",
-            message: "Tap and item to select or unselect it. You'll see everyone who has the item selected."
+            message: "Tap an item to select or unselect it. You'll see everyone who has the item selected."
+        },        
+        {
+            key: "invite",
+            message: "You can lookup your friends and invite them here."
+        },
+        {
+            key: "share",
+            message: "Or you can share a link to have people join directly."
+        },        
+        {
+            key: "people",
+            message: "Once people have joined, everyone's individual breakdowns can be found here."
         },
     ],
     editItem: [        
@@ -37,5 +49,49 @@ export const tutorialConfig = {
             key: "proportional",
             message: "You can mark items to be split in proportion to a person's share of the subtotal. For example, if a person has 80% of the subtotal, they'll pay 80% of the cost of the item."
         }
+    ],
+    people: [
+        {
+            key: "personalOrder",
+            message: "Each person's breakdown is listed out here. Prices are split automatically based on the number of people with that item."
+        },
+        {
+            key: "selectItems",
+            message: "Although everyone can select their own items, you can also adjust anyone's selections here."
+        },
+        {
+            key: "menu",
+            message: "You're able to mark a person as the payer in this menu, or mark them as paid/unpaid. Everyone's payment status will be shown on their breakdown."
+        },
+        {
+            key: "pay",
+            message: "Once everything is ready, you can pay or request their breakdown on Venmo."
+        }
+    ],
+    contacts: [
+        {
+            key: "contacts",
+            message: "Find your contacts who are on Splitsies. You can send an invite to anyone who's joined, or add them as a guest if they haven't."
+        },
+        {
+            key: "qr",
+            message: "You can scan a person's QR code to invite them to join. To find their code, go to their Profile in their home screen menu."
+        },
+    ],
+    guests: [
+        {
+            key: "guests",
+            message: "Anyone added who's not registered on Splitsies will be listed here."
+        },              
+        {
+            key: "addGuest",
+            message: "You can add a guest here. You'll have to manage their selections on your own, but it's helpful to break things down properly."
+        },
+    ],
+    search: [
+        {
+            key: "search",
+            message: "You can look up and invite people by their username here."
+        },  
     ]
 };

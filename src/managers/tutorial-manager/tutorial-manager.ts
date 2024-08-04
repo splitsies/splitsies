@@ -12,7 +12,7 @@ import { TutorialGroup } from "../../models/tutorial-group";
 export class TutorialManager implements ITutorialManager {
     private readonly _tutorialConfiguration = lazyInject<ITutorialConfiguration>(ITutorialConfiguration);
     private readonly _tutorialDisabled$ = new BehaviorSubject<boolean>(false);
-    private readonly _state$ = new BehaviorSubject<Record<TutorialGroup, number>>({ home: 4, expense: 0, editItem: 0 });
+    private readonly _state$ = new BehaviorSubject<Record<TutorialGroup, number>>({ home: 90, expense: 90, editItem: 90, people: 90, contacts: 0, guests: 0, search: 0 });
 
     get state$(): Observable<Record<TutorialGroup, number>> {
         return this._state$.asObservable();

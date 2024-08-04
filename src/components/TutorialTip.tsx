@@ -10,17 +10,18 @@ import { useTutorialState } from "../hooks/use-tutorial-state";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 import { useComputed } from "../hooks/use-computed";
 import { TouchableOpacity } from "react-native-gesture-handler";
-import { Alert } from "react-native";
+import { Alert, Platform, Pressable, StatusBar } from "react-native";
 import Next from "../../assets/icons/next.svg";
 import { TutorialGroup } from "../models/tutorial-group";
 import { ITutorialConfiguration } from "../models/configuration/tutorial-configuration/tutorial-configuration.i";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
+import { TutorialStep } from "../models/tutorial-step";
+import { useThemeWatcher } from "../hooks/use-theme-watcher";
 
 type Props = TooltipProps & {
     children: React.ReactNode;
     group: TutorialGroup;
     stepKey: string;
-    useNextIcon?: boolean;
 };
 
 const _tutorialConfig = lazyInject<ITutorialConfiguration>(ITutorialConfiguration);
@@ -28,18 +29,19 @@ const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 const _tutorialManager = lazyInject<ITutorialManager>(ITutorialManager);
 
 export const TutorialTip = SpThemedComponent((props: Props) => {
+    const theme = useThemeWatcher();
     const tutorialState = useTutorialState();
     const [stepIndex] = useState<number>(_tutorialConfig.groups[props.group].findIndex(s => s.key === props.stepKey));
-    const [visible, setVisible] = useState<boolean>(!tutorialState.disabled && tutorialState.stepState[props.group] === stepIndex);
+    const [visible, setVisible] = useState<boolean>(false);
     const step = useComputed(([index]) => _tutorialConfig.groups[props.group][index as number], [stepIndex]);
+    const isLastStep = useComputed(([steps]) => stepIndex === (steps as TutorialStep[]).length - 1, [_tutorialConfig.groups[props.group]])
 
     useEffect(() => {
-        console.log({ stepIndex, step, tutorialState });
-        setVisible(!tutorialState.disabled && tutorialState.stepState[props.group] === stepIndex)
+        setTimeout(() => setVisible(!tutorialState.disabled && tutorialState.stepState[props.group] === stepIndex), 450);
     }, [tutorialState, stepIndex]);
 
     const onDisablePress = useCallback(() => {
-        Alert.alert(`Turn off Tips?`, "Thse will help guide you through using Splitsies. Are you sure you want to disable?", [
+        Alert.alert(`Turn off Tips?`, "These will help guide you through using Splitsies. Are you sure you want to disable?", [
             {
                 text: "Yes",
                 onPress: () => _tutorialManager.disableTutorial(),
@@ -56,46 +58,48 @@ export const TutorialTip = SpThemedComponent((props: Props) => {
         <Tooltip
             isVisible={visible}
             disableShadow
-            childContentSpacing={1}
-            backgroundColor="rgba(0,0,0,0)"
+            childContentSpacing={-1}
+            displayInsets={{ top: 24, bottom: 24, left: 2, right: 2}}
+            showChildInTooltip={true}
+            backgroundColor={theme === "dark" ? "rgba(0,0,0,0.45)" : "rgba(0,0,0,0)"}
             closeOnContentInteraction={false}
             contentStyle={{ borderRadius: 15, paddingHorizontal: 15, paddingBottom: 38, borderWidth: 1, borderColor: Colors.divider, backgroundColor: Colors.primary }}
-            arrowStyle={{ borderRadius: 5, borderWidth: 10, borderColor: Colors.divider, marginTop: props.placement === "bottom" ? 0 : -15 }}
+            arrowStyle={{ marginTop: props.placement === "bottom" ? 0 : -15 }}
             arrowSize={{width: 30, height: 15}}
             content={
                 <View>
-                    <View style={{ marginTop: 10, display: "flex", columnGap: 8, flexGrow: 1, justifyContent: "flex-end", alignItems: "center", flexDirection: "row" }}>
-                        <TouchableOpacity onPress={onDisablePress}>
+                    <View style={{ marginTop: 10, display: "flex", columnGap: 12, flexGrow: 1, justifyContent: "flex-end", alignItems: "center", flexDirection: "row" }}>
+                        <Pressable onPress={onDisablePress}>
                             <TipsOff
-                                width={_uiConfig.sizes.icon - 8}
-                                height={_uiConfig.sizes.icon - 8}
+                                width={_uiConfig.sizes.icon - 7}
+                                height={_uiConfig.sizes.icon - 7}
                                 fill={Colors.black}
                             />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={onNext}>
-                            {props.useNextIcon ? 
-                                <Next
-                                    width={_uiConfig.sizes.icon - 2}
-                                    height={_uiConfig.sizes.icon - 2}
-                                    fill={Colors.black}
-                                /> :
+                        </Pressable>
+                        <Pressable onPress={onNext}>
+                            {isLastStep ? 
                                 <Close
                                     width={_uiConfig.sizes.icon - 4}
                                     height={_uiConfig.sizes.icon - 4}
                                     fill={Colors.black}
-                                />
+                                /> :
+                                <Next
+                                    width={_uiConfig.sizes.icon - 2}
+                                    height={_uiConfig.sizes.icon - 2}
+                                    fill={Colors.black}
+                                /> 
                             }
-                        </TouchableOpacity>
+                        </Pressable>
                     </View>
-                    <Text black>{step.message}</Text>
+                    <Text black style={{ marginTop: 5 }}>{step.message}</Text>
                 </View>
             }
             {...props}
-            onClose={onNext}
-        >
-            {props.children}
+                onClose={onNext}
+            >
         
-        </Tooltip>
+                {props.children}
+            </Tooltip>
     );
 
 });

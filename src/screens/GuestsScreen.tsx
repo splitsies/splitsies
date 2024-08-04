@@ -17,6 +17,7 @@ import { IExpense } from "../models/expense/expense-interface";
 import { IExpenseUserDetails } from "@splitsies/shared-models";
 import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
+import { TutorialTip } from "../components/TutorialTip";
 
 const _userManager = lazyInject<IUserManager>(IUserManager);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
@@ -50,6 +51,7 @@ export const GuestScreen = SpThemedComponent(() => {
 
     return (
         <Container sytle={styles.container}>
+            <TutorialTip group="guests" stepKey="guests" />
             <View style={styles.body}>
                 <FlatList
                     style={styles.list}

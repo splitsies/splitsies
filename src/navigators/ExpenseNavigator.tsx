@@ -20,6 +20,8 @@ import ShareIcon from "../../assets/icons/share.svg";
 import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { Platform, Pressable, Share } from "react-native";
+import { View } from "react-native-ui-lib";
+import { TutorialTip } from "../components/TutorialTip";
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -88,6 +90,7 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
                 component={PeopleScreen}
                 options={{
                     lazy: false,
+                    tabBarButton: (props) => <View style={props.style}><TutorialTip group="expense" stepKey="people"><Pressable {...props} /></TutorialTip></View>,
                     tabBarIcon: ({ color, size }) => <People width={size} height={size} fill={color} />,
                 }}
             />
@@ -96,6 +99,7 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
                 component={InviteNavigator}
                 options={{
                     lazy: false,
+                    tabBarButton: (props) => <View style={props.style}><TutorialTip group="expense" stepKey="invite"><Pressable {...props} /></TutorialTip></View>,
                     tabBarIcon: ({ color, size }) => <AddPerson width={size} height={size} fill={color} />,
                 }}
             />
@@ -103,7 +107,7 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
                 name="Share"
                 component={ExpenseNavigationHeader}
                 options={{
-                    tabBarButton: (props) => <Pressable {...props} onPress={onShare} />,
+                    tabBarButton: (props) => <View style={props.style}><TutorialTip group="expense" stepKey="share"><Pressable {...props} onPress={onShare} /></TutorialTip></View>,
                     tabBarIcon: ({ color, size }) => <ShareIcon width={size} height={size} fill={color} />,
                 }}
             />

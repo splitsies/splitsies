@@ -64,7 +64,7 @@ export const FeedNavigator = () => {
                 name="Camera"
                 options={({ navigation }) => ({
                     tabBarButton: (props) => (
-                        <TutorialTip group="home" stepKey="scanButton" childContentSpacing={35} useNextIcon>
+                        <TutorialTip group="home" stepKey="scanButton" childContentSpacing={35}>
                             <TouchableOpacity
                                 activeOpacity={0.9}
                                 style={styles.tab}

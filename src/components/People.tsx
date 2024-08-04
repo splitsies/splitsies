@@ -9,6 +9,7 @@ import { Container } from "./Container";
 import { IExpense } from "../models/expense/expense-interface";
 import { lazyInject } from "../utils/lazy-inject";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+import { TutorialTip } from "./TutorialTip";
 
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
@@ -39,20 +40,21 @@ export const People = ({ isSelecting, people, expense, updateItemOwners, endSele
 
     return (
         <Container style={styles.container}>
+
+            <TutorialTip group="people" stepKey="personalOrder"/> 
             <View style={{ display: "flex", flex: 1 }}>
-                <Carousel
+                    <Carousel
                     onChangePage={onChangePage}
                     disableIntervalMomentum
                     pagingEnabled
                     itemSpacings={_uiConfig.sizes.carouselPadding}
                     containerStyle={{ width: "100%", alignItems: "center" }}
                 >
-                    {people.map((person) => (
-                        <PersonalOrder key={person.id} person={person} expense={expense} />
+                    {people.map((person, index) => (
+                        <PersonalOrder key={person.id} person={person} expense={expense} isSelectedPerson={index === pageIndex} />
                     ))}
                 </Carousel>
-            </View>
-
+                </View>
             <View style={{ display: "flex" }}>
                 <PageControl
                     containerStyle={{ paddingVertical: 15 }}

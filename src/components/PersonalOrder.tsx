@@ -23,6 +23,7 @@ import { IBalanceCalculator } from "../utils/balance-calculator/balance-calculat
 import { BalanceResult } from "../models/balance-result";
 import { format } from "../utils/format-price";
 import { ISettingsManager } from "../managers/settings-manager/settings-manager-interface";
+import { TutorialTip } from "./TutorialTip";
 
 const _priceCalculator = lazyInject<IPriceCalculator>(IPriceCalculator);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -41,10 +42,11 @@ const icon = _uiConfig.sizes.smallIcon;
 type Props = {
     person: IExpenseUserDetails;
     expense: IExpense;
+    isSelectedPerson: boolean;
     style?: object;
 };
 
-export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element => {
+export const PersonalOrder = ({ person, expense, style, isSelectedPerson }: Props): JSX.Element => {
     useThemeWatcher();
 
     const payer = useComputed<boolean>(
@@ -202,9 +204,17 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                         {balance.hasPayer && balance.balance === 0 && (
                             <CheckCircle width={icon} height={icon} fill={Colors.ready} />
                         )}
-                        <TouchableOpacity onPress={() => setActionsVisible(true)}>
-                            <More width={icon} height={icon} fill={Colors.textColor} />
-                        </TouchableOpacity>
+
+                        {isSelectedPerson ?
+                            <TutorialTip group="people" stepKey="menu" placement="bottom">
+                                <TouchableOpacity onPress={() => setActionsVisible(true)}>
+                                    <More width={icon} height={icon} fill={Colors.textColor} />
+                                </TouchableOpacity>
+                            </TutorialTip> :
+                            <TouchableOpacity onPress={() => setActionsVisible(true)}>
+                                <More width={icon} height={icon} fill={Colors.textColor} />
+                            </TouchableOpacity>
+                        }
                     </View>
                 </View>
             </View>
@@ -233,6 +243,7 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                     ))}
                 <ExpenseItem item={totalItem} key={"total"} onPress={() => {}} />
             </View>
+            <TutorialTip group="people" stepKey="pay">
             <View style={styles.buttonContainer}>
                 <Button
                     body
@@ -251,8 +262,9 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                     labelStyle={{ color: "black" }}
                     label="Request"
                     onPress={onRequestPress}
-                />
+                    />
             </View>
+            </TutorialTip>
 
             <Toast
                 body
