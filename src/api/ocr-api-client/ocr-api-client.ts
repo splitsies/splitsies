@@ -13,6 +13,16 @@ export class OcrApiClient extends ClientBase implements IOcrApiClient {
         super();
     }
 
+    async preflight(): Promise<void> {
+        const uri = `${this._config.ocr}process`;
+
+        try {
+            await this.postJson<void>(uri, { pingEvent: true, image: "" }, this._authProvider.provideAuthHeader());
+        } catch (e) {
+            return;
+        }
+    }
+
     async scanImage(base64Image: string): Promise<IExpenseDto | null> {
         const uri = `${this._config.ocr}process`;
 

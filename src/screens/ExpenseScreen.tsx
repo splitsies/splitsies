@@ -26,6 +26,7 @@ import { IExpenseViewModel } from "../view-models/expense-view-model/expense-vie
 import Add from "../../assets/icons/add.svg";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { Expense } from "../models/expense/expense";
+import { TutorialTip } from "../components/TutorialTip";
 
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
@@ -103,33 +104,23 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
     );
 
     const onItemSelected = (itemId: string): void => {
-        const selectedItems = expense.items
-            .filter((item) => item.owners.some((o) => o.id === _userManager.userId))
-            .map((item) => item.id);
+        const item = expense.items.find((i) => i.id === itemId);
+        if (!item) return;
 
-        const itemIndex = selectedItems.findIndex((id) => id === itemId);
-        if (itemIndex === -1) {
-            selectedItems.push(itemId);
+        const userIndex = item.owners.findIndex((o) => o.id === _userManager.userId);
+        const updatedSelected = userIndex === -1;
+
+        _expenseViewModel.setAwaitingResponse(true);
+        _expenseManager.updateSingleItemSelected(expense.id, _userManager.expenseUserDetails, item, updatedSelected);
+
+        if (updatedSelected) {
+            item.owners.push(_userManager.expenseUserDetails);
         } else {
-            selectedItems.splice(itemIndex, 1);
+            item.owners.splice(userIndex, 1);
         }
 
-        // Due to socket performance, managing selections locally first gives the illusion of
-        // the selection persisting sooner to avoid additional attempts
-        for (const item of expense.items) {
-            const itemSelected = selectedItems.includes(item.id);
-            const userOwnsItem = !!item.owners.find((o) => o.id === _userManager.userId);
-
-            if (itemSelected && !userOwnsItem) {
-                item.owners.push(_userManager.expenseUserDetails);
-            } else if (!itemSelected && userOwnsItem) {
-                const index = item.owners.findIndex((o) => o.id === _userManager.userId);
-                if (index !== -1) item.owners.splice(index, 1);
-            } else {
-                continue;
-            }
-        }
-
+        // Update the local state for a smoother UX. The data response from the connection
+        // should be the same as what we're updating to
         setExpense(
             new Expense(
                 expense.id,
@@ -138,10 +129,9 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                 expense.items,
                 expense.users,
                 expense.payers,
+                expense.payerStatuses,
             ),
         );
-
-        updateExpenseItemOwners(_userManager.userId, selectedItems);
     };
 
     const onItemDelete = useCallback((): void => {
@@ -171,25 +161,26 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
 
     return (
         <Container>
-            <SafeAreaView style={{ marginBottom: 10 }}>
-                <View centerH>
-                    <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
-                        <Text letterHeading color={Colors.textColor} style={styles.headerLabel}>
-                            {expense.name}
-                        </Text>
-                    </TouchableOpacity>
-
-                    <DateTimePicker
-                        style={_styleManager.typography.letter}
-                        color={Colors.textColor}
-                        maximumDate={new Date()}
-                        dateTimeFormatter={(date) => format(date)}
-                        mode="date"
-                        value={expense.transactionDate}
-                        onChange={onExpenseDateUpdated}
-                    />
-                </View>
-            </SafeAreaView>
+            <TutorialTip group="expense" stepKey="editNameAndDate" placement="bottom">
+                <SafeAreaView style={{ marginBottom: 10 }}>
+                    <View centerH>
+                        <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
+                            <Text letterHeading color={Colors.textColor} style={styles.headerLabel}>
+                                {expense.name}
+                            </Text>
+                        </TouchableOpacity>
+                        <DateTimePicker
+                            style={_styleManager.typography.letter}
+                            color={Colors.textColor}
+                            maximumDate={new Date()}
+                            dateTimeFormatter={(date) => format(date)}
+                            mode="date"
+                            value={expense.transactionDate}
+                            onChange={onExpenseDateUpdated}
+                        />
+                    </View>
+                </SafeAreaView>
+            </TutorialTip>
 
             <FlatList
                 style={styles.list}
@@ -209,16 +200,29 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                         </View>
                     </TouchableOpacity>
                 }
-                renderItem={({ item }) => (
-                    <ExpenseItem
-                        item={item}
-                        style={{ marginVertical: 15 }}
-                        showOwners
-                        editable={isEditing}
-                        onPress={() => setSelectedItem(item)}
-                        onSelect={onItemSelected}
-                    />
-                )}
+                renderItem={({ item, index }) =>
+                    index !== 0 ? (
+                        <ExpenseItem
+                            item={item}
+                            style={{ marginVertical: 15 }}
+                            showOwners
+                            editable={isEditing}
+                            onPress={() => setSelectedItem(item)}
+                            onSelect={onItemSelected}
+                        />
+                    ) : (
+                        <TutorialTip group="expense" stepKey="selectItem" placement="bottom">
+                            <ExpenseItem
+                                item={item}
+                                style={{ marginVertical: 15 }}
+                                showOwners
+                                editable={isEditing}
+                                onPress={() => setSelectedItem(item)}
+                                onSelect={onItemSelected}
+                            />
+                        </TutorialTip>
+                    )
+                }
             />
 
             <View style={styles.footer}>

@@ -15,6 +15,7 @@ import { SpThemedComponent } from "../hocs/SpThemedComponent";
 import { useObservableReducer } from "../hooks/use-observable-reducer";
 import { IExpense } from "../models/expense/expense-interface";
 import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
+import { TutorialTip } from "../components/TutorialTip";
 
 const _userManager = lazyInject<IUserManager>(IUserManager);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
@@ -63,6 +64,7 @@ export const ContactsScreen = SpThemedComponent(() => {
 
     return (
         <Container style={styles.container}>
+            <TutorialTip group="contacts" stepKey="contacts" />
             <View style={styles.body}>
                 <FlatList
                     style={styles.list}

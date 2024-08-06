@@ -6,11 +6,21 @@ export const linking = {
         screens: {
           Home: {
             screens: {
-              Requests: "requests/:expenseId"
+                Requests: "requests/:expenseId",
+                Feed: "expenses/:expenseId/:requestingUserId"
             }
           }
         }
       }
     },
   },
+};
+
+export const unauthenticatedLinking = {
+    prefixes: ['splitsies://'],
+    config: {
+        screens: {
+            LoginScreen: "*"
+        }
+    }
 };

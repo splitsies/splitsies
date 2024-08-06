@@ -16,6 +16,7 @@ import { debounce } from "../utils/debounce";
 import { useObservableReducer } from "../hooks/use-observable-reducer";
 import { IExpense } from "../models/expense/expense-interface";
 import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
+import { TutorialTip } from "../components/TutorialTip";
 
 const _userManager = lazyInject<IUserManager>(IUserManager);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
@@ -81,6 +82,7 @@ export const SearchScreen = SpThemedComponent(() => {
 
     return (
         <Container style={styles.container}>
+            <TutorialTip group="search" stepKey="search" />
             <View style={styles.body}>
                 {fetchingPage || searchFilter === "" || users.length > 0 ? (
                     <FlatList

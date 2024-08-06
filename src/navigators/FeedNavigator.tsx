@@ -2,10 +2,10 @@ import React from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
-import { TouchableOpacity, View } from "react-native-ui-lib";
+import { Button, Colors, Text, TouchableOpacity, View } from "react-native-ui-lib";
 import { RequestsFeedScreen } from "../screens/RequestsFeedScreen";
 import { ExpenseFeedScreen } from "../screens/ExpenseFeedScreen";
-import { PixelRatio, StyleSheet } from "react-native";
+import { PixelRatio, Pressable, StyleSheet } from "react-native";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 import Camera from "../../assets/icons/camera.svg";
@@ -14,6 +14,7 @@ import People from "../../assets/icons/people.svg";
 import { useInitialize } from "../hooks/use-initialize";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { useObservableReducer } from "../hooks/use-observable-reducer";
+import { TutorialTip } from "../components/TutorialTip";
 
 const Tab = createBottomTabNavigator();
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -63,19 +64,21 @@ export const FeedNavigator = () => {
                 name="Camera"
                 options={({ navigation }) => ({
                     tabBarButton: (props) => (
-                        <TouchableOpacity
-                            activeOpacity={0.9}
-                            style={styles.tab}
-                            onPress={() => navigation.navigate("CameraScreen")}
-                        >
-                            <View style={styles.cameraButton}>
-                                <Camera
-                                    width={_uiConfig.sizes.largeIcon}
-                                    height={_uiConfig.sizes.largeIcon}
-                                    fill={_colorConfiguration.black}
-                                />
-                            </View>
-                        </TouchableOpacity>
+                        <TutorialTip group="home" stepKey="scanButton" childContentSpacing={35} renderOnLayout>
+                            <TouchableOpacity
+                                activeOpacity={0.9}
+                                style={styles.tab}
+                                onPress={() => navigation.navigate("CameraScreen")}
+                            >
+                                <View style={styles.cameraButton}>
+                                    <Camera
+                                        width={_uiConfig.sizes.largeIcon}
+                                        height={_uiConfig.sizes.largeIcon}
+                                        fill={_colorConfiguration.black}
+                                    />
+                                </View>
+                            </TouchableOpacity>
+                        </TutorialTip>
                     ),
                 })}
             />
@@ -83,6 +86,13 @@ export const FeedNavigator = () => {
                 name="Requests"
                 component={RequestsFeedScreen}
                 options={{
+                    tabBarButton: (props) => (
+                        <View style={props.style}>
+                            <TutorialTip group="home" stepKey="requests">
+                                <Pressable {...props} />
+                            </TutorialTip>
+                        </View>
+                    ),
                     tabBarIcon: ({ color, size }) => <People width={size} height={size} fill={color} />,
                     tabBarBadge: requestsBadge,
                     tabBarBadgeStyle: styles.badge,
