@@ -1,8 +1,8 @@
 import React, { useState, useCallback } from "react";
 import { StyleSheet, Alert, Dimensions } from "react-native";
 import { IExpenseItem, IExpenseUserDetails, ExpenseItem as ExpenseItemModel } from "@splitsies/shared-models";
-import { Text, View } from "react-native-ui-lib/core";
-import { ActionSheet, Button, ButtonProps, Colors, Toast } from "react-native-ui-lib";
+import { View } from "react-native-ui-lib/core";
+import { ActionSheet, ButtonProps, Colors, Toast } from "react-native-ui-lib";
 import { ExpenseItem } from "./ExpenseItem";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
@@ -14,13 +14,12 @@ import { IExpense } from "../models/expense/expense-interface";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { useComputed } from "../hooks/use-computed";
 import { IBalanceCalculator } from "../utils/balance-calculator/balance-calculator-interface";
-import { TutorialTip } from "./TutorialTip";
 import { ListSeparator } from "./ListSeparator";
 import { GroupBalanceSection } from "./GroupBalanceSection";
-import More from "../../assets/icons/more.svg";
 import { CollapseableIndicator } from "./CollapseableIndicator";
 import { ITransactionNoteBuilder } from "../utils/transaction-note-builder/transaction-note-builder-interface";
 import { IClipboardUtility } from "../utils/clipboard-utility/clipboard-utility-interface";
+import { CardHeader } from "./CardHeader";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
@@ -31,7 +30,6 @@ const _balanceCalculator = lazyInject<IBalanceCalculator>(IBalanceCalculator);
 const _transactionNoteBuilder = lazyInject<ITransactionNoteBuilder>(ITransactionNoteBuilder);
 const _clipboardUtility = lazyInject<IClipboardUtility>(IClipboardUtility);
 
-const icon = _uiConfig.sizes.smallIcon;
 
 type Props = {
     person: IExpenseUserDetails;
@@ -91,43 +89,18 @@ export const PersonalGroupSummary = ({ person, expense, style, isSelectedPerson 
         },
         [balances]);
 
-    const renderHeader = (): JSX.Element => {
-        return (
-            <View style={{ alignItems: "center" }}>
-                <View style={styles.header}>
-                    <View style={styles.iconContainer}>
-                        <TouchableOpacity onPress={() => setAllExpanded(!allExpanded)}>
-                            <CollapseableIndicator collapsed={!allExpanded} size={_uiConfig.sizes.icon} />
-                        </TouchableOpacity>
-                    </View>
-
-                    <View style={styles.nameContainer}>
-                        <Text body numberOfLines={1} ellipsizeMode={"tail"} color={Colors.textColor}>
-                            {person.givenName + (person.familyName ? " " + person.familyName : "")}
-                        </Text>
-                    </View>
-
-                    <View style={[styles.iconContainer, { columnGap: 5, justifyContent: "flex-end" }]}>
-                        {isSelectedPerson ? (
-                            <TutorialTip group="people" stepKey="menu" placement="bottom">
-                                <TouchableOpacity onPress={() => setActionsVisible(true)}>
-                                    <More width={icon} height={icon} fill={Colors.textColor} />
-                                </TouchableOpacity>
-                            </TutorialTip>
-                        ) : (
-                            <TouchableOpacity onPress={() => setActionsVisible(true)}>
-                                <More width={icon} height={icon} fill={Colors.textColor} />
-                            </TouchableOpacity>
-                        )}
-                    </View>
-                </View>
-            </View>
-        );
-    };
-
     return (
         <View style={[styles.container, style, { borderColor: Colors.divider}]}>
-            {renderHeader()}
+            <CardHeader
+                person={person}
+                isSelected={isSelectedPerson}
+                setActionsVisible={setActionsVisible}
+                iconContent={() =>
+                    <TouchableOpacity onPress={() => setAllExpanded(!allExpanded)}>
+                        <CollapseableIndicator collapsed={!allExpanded} size={_uiConfig.sizes.icon} />
+                    </TouchableOpacity>
+            } />
+            
             <FlatList style={styles.orderContainer}
                 data={Array.from(balances.entries())}
                 renderItem={({ item: [userId, balance] }) => (
@@ -145,8 +118,6 @@ export const PersonalGroupSummary = ({ person, expense, style, isSelectedPerson 
                 )}
                 ItemSeparatorComponent={ListSeparator}                
             />
-
-
 
             <View style={{ borderTopWidth: 0.5, borderTopColor: Colors.divider, paddingTop: 5 }}>
                 <ExpenseItem item={totalItem} key={"total"} onPress={() => {}} />
@@ -191,52 +162,10 @@ const styles = StyleSheet.create({
         padding: 15,
         display: "flex",
     },
-    itemContainer: {
-        paddingHorizontal: 10,
-        marginVertical: 2,
-    },
-    nameContainer: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "center",
-        flexGrow: 1,
-    },
-    header: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        alignItems: "center",
-        width: "100%",
-        padding: 5,
-    },
     orderContainer: {
         flexGrow: 1,
         flex: 1,
         width: "100%",
-    },
-    individualItemContainer: {
-        flexDirection: "row",
-        width: "100%",
-        justifyContent: "space-between",
-        marginVertical: 5,
-    },
-    buttonContainer: {
-        flexDirection: "row",
-        columnGap: 25,
-        justifyContent: "space-between",
-        alignItems: "flex-end",
-        width: "100%",
-        marginTop: 5,
-        paddingHorizontal: 10,
-        paddingBottom: 5,
-    },
-    button: {
-        flex: 1,
-    },
-    iconContainer: {
-        overflow: "visible",
-        flexDirection: "row",
-        alignItems: "center",
-        width: 35,
     },
     icon: {
         backgroundColor: _colorConfiguration.primary,

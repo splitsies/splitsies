@@ -33,6 +33,8 @@ export const PeopleScreen = SpThemedComponent(({ navigation }: Props): JSX.Eleme
         () => _expenseViewModel.setAwaitingResponse(false),
     );
 
+    const selectedChild = useObservable(_expenseViewModel.selectedChild$, undefined);
+
     useFocusEffect(
         useCallback(() => {
             _expenseViewModel.onBackPress = onBackPress;
@@ -47,7 +49,7 @@ export const PeopleScreen = SpThemedComponent(({ navigation }: Props): JSX.Eleme
     const updateExpenseItemOwners = (userId: string, selectedItemIds: string[]): void => {
         const user = expense.users.find((u) => u.id === userId);
         if (!user) return;
-        _expenseManager.updateItemSelections(expense.id, user, selectedItemIds);
+        _expenseManager.updateItemSelections(selectedChild?.id ?? expense.id, user, selectedItemIds);
         _expenseViewModel.setAwaitingResponse(true);
     };
 
@@ -68,7 +70,7 @@ export const PeopleScreen = SpThemedComponent(({ navigation }: Props): JSX.Eleme
 
                 <View style={styles.footer}>
                     <ListSeparator />
-                    <PeopleFooter expense={expense} />
+                    <PeopleFooter expense={selectedChild ?? expense} />
                 </View>
             </SafeAreaView>
         </Container>
