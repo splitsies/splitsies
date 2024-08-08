@@ -4,7 +4,6 @@ import {
     ExpensePayerDto,
     IExpenseDto,
     IExpenseItem,
-    IExpensePayerDto,
     IExpenseUserDetails,
     IUserCredential,
     PayerShare,
@@ -120,8 +119,19 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
             const expense = await this._ocr.scanImage(base64Image);
             if (!expense) return false;
 
+            if (this.currentExpense) {
+                await this._api.requestAddToExpenseGroup(this.currentExpense.id, expense);
+                return true;
+            }
+
             return this._api.createFromExpense(expense);
         }
+
+        if (this.currentExpense) {
+            await this._api.requestAddToExpenseGroup(this.currentExpense.id);
+            return true;
+        }
+        
         return this._api.createExpense(base64Image);
     }
 

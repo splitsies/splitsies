@@ -34,4 +34,30 @@ export class BalanceCalculator implements IBalanceCalculator {
             payer.givenName,
         );
     }
+
+    calculatePersonBreakdown(expense: IExpense, personId: string): Map<string, number> {
+        const otherUserIds = expense.users.map(u => u.id).filter(id => id !== personId);
+        const balances = new Map<string, number>();
+        
+        for (const userId of otherUserIds) {
+            balances.set(userId, 0);
+        }
+
+        for (const ex of expense.children) {
+            const payerId = ex.payers[0].userId;
+
+            if (payerId === personId) {
+                // This person is the payer, need to subtract the amount any other payer owes
+                for (const userId of otherUserIds) {
+                    const theirBalance = this.calculate(ex, userId);
+                    balances.set(userId, balances.get(userId)! - theirBalance.balance);
+                }
+            } else {
+                // This person owes money to the payer
+                const balanceResult = this.calculate(ex, personId);
+                balances.set(payerId, balances.get(payerId)! + balanceResult.balance);
+            }
+        }
+        return balances;
+    }
 }

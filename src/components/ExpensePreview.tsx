@@ -35,6 +35,7 @@ const iconSize = _uiConfig.sizes.smallIcon;
 interface propTypes {
     data: IExpense;
     person: IExpenseUserDetails;
+    hidePeople?: boolean;
     onPress?: (expenseId: string) => void;
     onLongPress?: () => void;
 }
@@ -42,7 +43,7 @@ interface propTypes {
 /**
  * @{@link propTypes}
  */
-export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress, person }: propTypes) => {
+export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress, person, hidePeople }: propTypes) => {
     const [peopleContainerWidth, setPeopleContainerWidth] = useState<number>(Dimensions.get("window").width);
     const PERSON_LIMIT = Math.floor((peopleContainerWidth - 20) / 34) - 1;
 
@@ -76,34 +77,36 @@ export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress, p
                     </View>
                 </View>
 
-                <View style={styles.rowContainer}>
-                    <View style={styles.leftBox}>
-                        <People width={iconSize} height={iconSize} fill={Colors.textColor} />
-                    </View>
-                    <View style={styles.rightBox}>
-                        <View
-                            style={styles.peopleContainer}
-                            onLayout={({ nativeEvent }) => setPeopleContainerWidth(nativeEvent.layout.width)}
-                        >
-                            {data.users.length === 0 && <Text hint>None</Text>}
-                            {data.users.length > PERSON_LIMIT
-                                ? data.users
-                                      .slice(0, PERSON_LIMIT)
-                                      .map(({ id, givenName }) => (
-                                          <UserIcon key={id} letter={givenName[0]} style={{ marginRight: 6 }} />
-                                      ))
-                                : data.users.map(({ id, givenName }) => (
-                                      <UserIcon key={id} letter={givenName[0]} style={{ marginRight: 6 }} />
-                                  ))}
+                {!hidePeople &&
+                    <View style={styles.rowContainer}>
+                        <View style={styles.leftBox}>
+                            <People width={iconSize} height={iconSize} fill={Colors.textColor} />
+                        </View>
+                        <View style={styles.rightBox}>
+                            <View
+                                style={styles.peopleContainer}
+                                onLayout={({ nativeEvent }) => setPeopleContainerWidth(nativeEvent.layout.width)}
+                            >
+                                {data.users.length === 0 && <Text hint>None</Text>}
+                                {data.users.length > PERSON_LIMIT
+                                    ? data.users
+                                        .slice(0, PERSON_LIMIT)
+                                        .map(({ id, givenName }) => (
+                                            <UserIcon key={id} letter={givenName[0]} style={{ marginRight: 6 }} />
+                                        ))
+                                    : data.users.map(({ id, givenName }) => (
+                                        <UserIcon key={id} letter={givenName[0]} style={{ marginRight: 6 }} />
+                                    ))}
 
-                            {data.users.length > PERSON_LIMIT && (
-                                <Text body color={Colors.textColor}>
-                                    + {data.users.length - PERSON_LIMIT}
-                                </Text>
-                            )}
+                                {data.users.length > PERSON_LIMIT && (
+                                    <Text body color={Colors.textColor}>
+                                        + {data.users.length - PERSON_LIMIT}
+                                    </Text>
+                                )}
+                            </View>
                         </View>
                     </View>
-                </View>
+                }
 
                 <View style={styles.rowContainer}>
                     <View style={styles.leftBox}>
@@ -111,7 +114,7 @@ export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress, p
                     </View>
                     <View style={styles.rightBox}>
                         <Text subtext color={Colors.textColor}>
-                            ${data.total.toFixed(2)}
+                            ${data.groupTotal.toFixed(2)}
                         </Text>
                     </View>
                 </View>

@@ -15,6 +15,7 @@ type Props = {
     editable?: boolean;
     selectable?: boolean;
     showOwners?: boolean;
+    pricePrefix?: string;
     style?: object;
     onPress?: () => void;
     onSelect?: (id: string) => void;
@@ -23,7 +24,7 @@ type Props = {
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
-export const ExpenseItem = ({ item, selected, selectable, editable, showOwners, style, onPress, onSelect }: Props) => {
+export const ExpenseItem = ({ item, selected, selectable, editable, showOwners, style, onPress, onSelect, pricePrefix }: Props) => {
     useThemeWatcher();
     const ownerList = item.owners
         .map((userDetails) => `${userDetails.isRegistered ? "@" + userDetails.username : userDetails.givenName}`)
@@ -65,7 +66,7 @@ export const ExpenseItem = ({ item, selected, selectable, editable, showOwners, 
                     </View>
                 </View>
                 <Text hint>
-                    {item.price < 0 ? "-" : null}${Math.abs(item.price).toFixed(2)}
+                    {pricePrefix ? pricePrefix + " " : ""}{item.price < 0 ? "-" : null}${Math.abs(item.price).toFixed(2)}
                 </Text>
             </View>
         </TouchableOpacity>
