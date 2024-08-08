@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { FlatList, SafeAreaView, StyleSheet } from "react-native";
 import { lazyInject } from "../utils/lazy-inject";
@@ -27,6 +27,9 @@ import Add from "../../assets/icons/add.svg";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { Expense } from "../models/expense/expense";
 import { TutorialTip } from "../components/TutorialTip";
+import { ExpensePreviewList } from "../components/ExpensePreviewList";
+import { ExpenseGroupFooter } from "../components/ExpenseGroupFooter";
+import { UserIcon } from "../components/UserIcon";
 
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
@@ -39,12 +42,14 @@ type Props = CompositeScreenProps<
     DrawerScreenProps<DrawerParamList, "Home">
 >;
 
-export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
+export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
     const [expense, setExpense] = useState<IExpense>(_expenseManager.currentExpense!);
     const [selectedItem, setSelectedItem] = useState<IExpenseItem | null>(null);
     const [editingTitle, setEditingTitle] = useState<boolean>(false);
     const [isAddingItem, setIsAddingItem] = useState<boolean>(false);
     const isEditing = useObservable(_expenseViewModel.isEditingItems$, false);
+    const [items, setItems] = useState<IExpenseItem[]>([]);
+    const selectedChild = useObservable<IExpense | undefined>(_expenseViewModel.selectedChild$, undefined);
 
     useObservable<IExpense>(
         _expenseManager.currentExpense$.pipe(filter((e) => e != null)) as Observable<IExpense>,
@@ -55,24 +60,31 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
         },
     );
 
+    useEffect(() => {
+        if (selectedChild) {
+            _expenseViewModel.setSelectedChild(expense.children.find(e => e.id === selectedChild.id));
+        }
+    }, [expense])
+
+    useEffect(() => {
+        _expenseViewModel.onBackPress = onBackPress;
+    }, [selectedChild]);
+
     useFocusEffect(
         useCallback(() => {
             _expenseViewModel.setScreen("Items");
             _expenseViewModel.onBackPress = onBackPress;
-            _expenseViewModel.setSelectedChild(undefined);
         }, []),
     );
 
     const onBackPress = useCallback(() => {
-        _expenseManager.disconnectFromExpense();
-        navigation.navigate("RootScreen");
-    }, [_expenseManager, navigation]);
-
-    const onTitleSave = ({ name }: EditResult) => {
-        _expenseManager.updateExpenseName(expense.id, name ?? "");
-        setEditingTitle(false);
-        _expenseViewModel.setAwaitingResponse(true);
-    };
+        if (!selectedChild) {
+            _expenseManager.disconnectFromExpense();
+            navigation.navigate("RootScreen");
+        } else {
+            _expenseViewModel.setSelectedChild(undefined);
+        }
+    }, [_expenseManager, navigation, selectedChild]);
 
     const onItemSave = useCallback(
         ({ name, price, isProportional }: EditResult) => {
@@ -96,29 +108,32 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
 
     const onItemAdded = useCallback(
         ({ name, price, isProportional }: EditResult) => {
-            if (!name || !price) return;
-            _expenseManager.addItem(expense.id, name, price, [], !!isProportional);
+            if (!name || !price || !selectedChild) return;
+            _expenseManager.addItem(selectedChild.id, name, price, [], !!isProportional);
             setIsAddingItem(false);
             _expenseViewModel.setAwaitingResponse(true);
         },
-        [expense],
+        [selectedChild],
     );
 
     const onItemSelected = (itemId: string): void => {
-        const item = expense.items.find((i) => i.id === itemId);
+        const item = expense.children.flatMap(c => c.items).find((i) => i.id === itemId);
         if (!item) return;
 
         const userIndex = item.owners.findIndex((o) => o.id === _userManager.userId);
         const updatedSelected = userIndex === -1;
 
         _expenseViewModel.setAwaitingResponse(true);
-        _expenseManager.updateSingleItemSelected(expense.id, _userManager.expenseUserDetails, item, updatedSelected);
+        _expenseManager.updateSingleItemSelected(item.expenseId, _userManager.expenseUserDetails, item, updatedSelected);
 
         if (updatedSelected) {
             item.owners.push(_userManager.expenseUserDetails);
         } else {
             item.owners.splice(userIndex, 1);
         }
+
+        // const updatedChild = expense.children.find(e => e.id === item.expenseId);
+
 
         // Update the local state for a smoother UX. The data response from the connection
         // should be the same as what we're updating to
@@ -157,7 +172,7 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
     };
 
     const onExpenseDateUpdated = (date: Date): void => {
-        _expenseManager.updateExpenseTransactionDate(expense.id, date);
+        _expenseManager.updateExpenseTransactionDate(selectedChild?.id ?? expense.id, date);
         _expenseViewModel.setAwaitingResponse(true);
     };
 
@@ -166,54 +181,52 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
             <TutorialTip group="expense" stepKey="editNameAndDate" placement="bottom">
                 <SafeAreaView style={{ marginBottom: 10 }}>
                     <View centerH>
-                        <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
-                            <Text letterSubheading color={Colors.textColor} style={styles.headerLabel}>
-                                {expense.name}
-                            </Text>
-                        </TouchableOpacity>
+                    {selectedChild === undefined ?
+                        <View style={{flexDirection: "row"}}>
+                            {expense.users.map(({ id, givenName }) => (
+                                <UserIcon key={id} letter={givenName[0]} style={{ marginRight: 6 }} />
+                            ))}
+                        </View>
+                        :
                         <DateTimePicker
                             style={_styleManager.typography.letter}
                             color={Colors.textColor}
                             maximumDate={new Date()}
                             dateTimeFormatter={(date) => format(date)}
                             mode="date"
-                            value={expense.transactionDate}
+                            value={selectedChild.transactionDate}
                             onChange={onExpenseDateUpdated}
-                        />
+                        />}
                     </View>
                 </SafeAreaView>
             </TutorialTip>
 
-            <FlatList
-                style={styles.list}
-                data={expense.items.filter((i) => !i.isProportional)}
-                ItemSeparatorComponent={ListSeparator}
-                ListFooterComponent={
-                    <TouchableOpacity onPress={() => setIsAddingItem(true)}>
-                        <View>
-                            <ListSeparator />
-                            <View style={{ width: "100%", marginVertical: 20, alignItems: "center" }}>
-                                <Add
-                                    width={_uiConfig.sizes.icon}
-                                    height={_uiConfig.sizes.icon}
-                                    fill={Colors.textColor}
-                                />
+            {selectedChild === undefined ?
+                <ExpensePreviewList
+                    hidePeople
+                    expenses={expense.children}
+                    onExpenseClick={(id) => { _expenseViewModel.setSelectedChild(expense.id === id ? expense : expense.children.find(c => c.id === id)) }}
+                /> :
+                <FlatList
+                    style={styles.list}
+                    data={selectedChild.items.filter((i) => !i.isProportional)}
+                    ItemSeparatorComponent={ListSeparator}
+                    ListFooterComponent={
+                        <TouchableOpacity onPress={() => setIsAddingItem(true)}>
+                            <View>
+                                <ListSeparator />
+                                <View style={{ width: "100%", marginVertical: 20, alignItems: "center" }}>
+                                    <Add
+                                        width={_uiConfig.sizes.icon}
+                                        height={_uiConfig.sizes.icon}
+                                        fill={Colors.textColor}
+                                    />
+                                </View>
                             </View>
-                        </View>
-                    </TouchableOpacity>
-                }
-                renderItem={({ item, index }) =>
-                    index !== 0 ? (
-                        <ExpenseItem
-                            item={item}
-                            style={{ marginVertical: 15 }}
-                            showOwners
-                            editable={isEditing}
-                            onPress={() => setSelectedItem(item)}
-                            onSelect={onItemSelected}
-                        />
-                    ) : (
-                        <TutorialTip group="expense" stepKey="selectItem" placement="bottom">
+                        </TouchableOpacity>
+                    }
+                    renderItem={({ item, index }) =>
+                        index !== 0 ? (
                             <ExpenseItem
                                 item={item}
                                 style={{ marginVertical: 15 }}
@@ -222,22 +235,26 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                                 onPress={() => setSelectedItem(item)}
                                 onSelect={onItemSelected}
                             />
-                        </TutorialTip>
-                    )
-                }
-            />
+                        ) : (
+                            <TutorialTip group="expense" stepKey="selectItem" placement="bottom">
+                                <ExpenseItem
+                                    item={item}
+                                    style={{ marginVertical: 15 }}
+                                    showOwners
+                                    editable={isEditing}
+                                    onPress={() => setSelectedItem(item)}
+                                    onSelect={onItemSelected}
+                                />
+                            </TutorialTip>
+                        )
+                    }
+                />
+            }
 
             <View style={styles.footer}>
                 <ListSeparator />
-                <ExpenseFooter expense={expense} onItemSelected={setSelectedItem} isEditing={isEditing} />
+                <ExpenseGroupFooter expense={expense} />
             </View>
-
-            <EditModal
-                visible={editingTitle}
-                nameValue={expense.name}
-                onSave={onTitleSave}
-                onCancel={() => setEditingTitle(false)}
-            />
 
             <EditModal
                 visible={!!selectedItem}

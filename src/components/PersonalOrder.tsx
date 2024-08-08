@@ -49,16 +49,16 @@ type Props = {
 export const PersonalOrder = ({ person, expense, style, isSelectedPerson }: Props): JSX.Element => {
     useThemeWatcher();
 
-    const payer = useComputed<boolean>(
+    const payer = useComputed<boolean, [IExpense]>(
         ([expense]) => !!(expense as IExpense).payers.find((p) => p.userId === person.id),
         [expense],
     );
-    const settled = useComputed<boolean>(
+    const settled = useComputed<boolean, [IExpense]>(
         ([expense]) => !!(expense as IExpense).payerStatuses.find((s) => s.userId === person.id)?.settled,
         [expense],
     );
-    const balance = useComputed<BalanceResult>(
-        ([expense, person]) => _balanceCalculator.calculate(expense as IExpense, (person as IExpenseUserDetails).id),
+    const balance = useComputed<BalanceResult, [IExpense, IExpenseUserDetails]>(
+        ([expense, person]) => _balanceCalculator.calculate(expense, person.id),
         [expense, person],
     );
 

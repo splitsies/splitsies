@@ -10,6 +10,7 @@ export class Expense implements IExpense {
         readonly users: IExpenseUserDetails[],
         readonly payers: IPayerShare[],
         readonly payerStatuses: ExpensePayerStatus[],
+        readonly children: IExpense[],
     ) {}
 
     get subtotal(): number {
@@ -18,5 +19,9 @@ export class Expense implements IExpense {
 
     get total(): number {
         return this.items.reduce((prev, curr) => prev + curr.price, 0);
+    }
+
+    get groupTotal(): number {
+        return this.total + this.children.reduce((prev, curr) => prev + curr.total, 0);
     }
 }

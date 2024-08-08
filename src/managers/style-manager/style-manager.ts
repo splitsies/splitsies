@@ -17,6 +17,7 @@ export class StyleManager implements IStyleManager {
         subtext: { fontSize: 13, fontFamily: "Avenir-Heavy" },
         letter: { fontFamily: "ZillaSlab-Bold" },
         letterHeading: { fontFamily: "ZillaSlab-Bold", fontSize: 36 },
+        letterSubheading: { fontFamily: "ZillaSlab-Bold", fontSize: 28 },
         hint: { fontSize: 14, fontFamily: "Avenir-Medium", color: this.colorConfiguration.greyFont },
     };
 

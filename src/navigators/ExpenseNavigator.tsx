@@ -22,6 +22,10 @@ import { IExpenseManager } from "../managers/expense-manager/expense-manager-int
 import { Platform, Pressable, Share } from "react-native";
 import { View } from "react-native-ui-lib";
 import { TutorialTip } from "../components/TutorialTip";
+import { useObservable } from "../hooks/use-observable";
+import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+import { ExpenseGroupHeader } from "../components/ExpenseGroupHeader";
+import { GroupExpenseNavigator } from "./GroupExpenseNavigator";
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -34,9 +38,10 @@ const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 type Props = NativeStackScreenProps<RootStackParamList, "ExpenseScreen">;
 
 export const ExpenseNavigator = SpThemedComponent(() => {
+    const currentExpense = useObservable(_expenseManager.currentExpense$, _expenseManager.currentExpense);
     return (
-        <Drawer.Navigator screenOptions={{ header: ExpenseNavigationHeader, swipeEnabled: false }}>
-            <Drawer.Screen name="Expense" component={InternalExpenseNavigator} />
+        <Drawer.Navigator screenOptions={{ header: currentExpense?.children.length === 0 ?  ExpenseNavigationHeader : ExpenseGroupHeader , swipeEnabled: false }}>
+            <Drawer.Screen name="Expense" component={currentExpense?.children.length === 0 ? InternalExpenseNavigator : GroupExpenseNavigator } />
         </Drawer.Navigator>
     );
 });

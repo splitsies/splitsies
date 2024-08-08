@@ -14,6 +14,7 @@ import { ClientBase } from "../client-base";
 import { lazyInject } from "../../utils/lazy-inject";
 import { IAuthProvider } from "../../providers/auth-provider/auth-provider-interface";
 import { IUserExpenseDto } from "../../models/user-expense-dto/user-expense-dto-interface";
+import { IExpense } from "../../models/expense/expense-interface";
 
 @injectable()
 export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
@@ -283,6 +284,15 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         try {
             const url = `${this._config.expense}/${expenseId}/payers/${userId}`;
             await this.putJson<IExpenseDto>(url, { settled }, this._authProvider.provideAuthHeader());
+        } catch (e) {
+            return;
+        }
+    }
+    
+    async requestAddToExpenseGroup(expenseId: string, expense: IExpenseDto | undefined): Promise<void> {
+        try {
+            const url = `${this._config.expense}/${expenseId}/children`;
+            await this.postJson<IExpenseDto>(url, { expense }, this._authProvider.provideAuthHeader());
         } catch (e) {
             return;
         }
