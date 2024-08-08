@@ -14,7 +14,6 @@ import { EditModal } from "../components/EditModal";
 import { EditResult } from "../models/edit-result";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { ListSeparator } from "../components/ListSeparator";
-import { ExpenseFooter } from "../components/ExpenseFooter";
 import { useObservable } from "../hooks/use-observable";
 import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
 import { DrawerScreenProps } from "@react-navigation/drawer";
@@ -23,13 +22,13 @@ import { Container } from "../components/Container";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 import { IExpense } from "../models/expense/expense-interface";
 import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
-import Add from "../../assets/icons/add.svg";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
 import { Expense } from "../models/expense/expense";
 import { TutorialTip } from "../components/TutorialTip";
 import { ExpensePreviewList } from "../components/ExpensePreviewList";
 import { ExpenseGroupFooter } from "../components/ExpenseGroupFooter";
 import { UserIcon } from "../components/UserIcon";
+import Add from "../../assets/icons/add.svg";
 
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
@@ -132,9 +131,6 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
             item.owners.splice(userIndex, 1);
         }
 
-        // const updatedChild = expense.children.find(e => e.id === item.expenseId);
-
-
         // Update the local state for a smoother UX. The data response from the connection
         // should be the same as what we're updating to
         setExpense(
@@ -163,13 +159,6 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
         setSelectedItem(null);
         _expenseViewModel.setAwaitingResponse(true);
     }, [expense, selectedItem]);
-
-    const updateExpenseItemOwners = (userId: string, selectedItemIds: string[]): void => {
-        const user = expense.users.find((u) => u.id === userId);
-        if (!user) return;
-        _expenseManager.updateItemSelections(expense.id, user, selectedItemIds);
-        _expenseViewModel.setAwaitingResponse(true);
-    };
 
     const onExpenseDateUpdated = (date: Date): void => {
         _expenseManager.updateExpenseTransactionDate(selectedChild?.id ?? expense.id, date);
