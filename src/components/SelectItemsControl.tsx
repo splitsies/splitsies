@@ -6,7 +6,7 @@ import { IExpenseViewModel } from "../view-models/expense-view-model/expense-vie
 import { useObservable } from "../hooks/use-observable";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
 import { TutorialTip } from "./TutorialTip";
-import Select from "../../assets/icons/select.svg"
+import Select from "../../assets/icons/select.svg";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);

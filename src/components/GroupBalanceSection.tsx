@@ -21,48 +21,50 @@ type Props = {
     person: IExpenseUserDetails;
     onCopyPress: (id: string) => void;
     allExpanded?: boolean;
-}
+};
 
-export const GroupBalanceSection = SpThemedComponent(({ expense, userId, balance, person, onCopyPress, allExpanded }: Props) => {
-    const [expanded, setExpanded] = useState<boolean>(false);
+export const GroupBalanceSection = SpThemedComponent(
+    ({ expense, userId, balance, person, onCopyPress, allExpanded }: Props) => {
+        const [expanded, setExpanded] = useState<boolean>(false);
 
-    useEffect(() => {
-        setExpanded(!!allExpanded);
-    }, [allExpanded]);
+        useEffect(() => {
+            setExpanded(!!allExpanded);
+        }, [allExpanded]);
 
-    const balanceDetails = useComputed<string[], [IExpense, string, IExpenseUserDetails]>(
-        ([expense, userId, person]) => _transactionNoteBuilder.buildLinesForGroup(expense, person.id, userId),
-        [expense, userId, person]
-    );
+        const balanceDetails = useComputed<string[], [IExpense, string, IExpenseUserDetails]>(
+            ([expense, userId, person]) => _transactionNoteBuilder.buildLinesForGroup(expense, person.id, userId),
+            [expense, userId, person],
+        );
 
-    const onChipPress = () => {
-        Alert.alert(`Settle with Venmo?`, "", [
-            {
-                text: "Yes",
-                onPress: () => {
-                    _venmoLinker.linkWithNote(balance > 0 ? "charge" : "pay", balanceDetails.join("\n"));
+        const onChipPress = () => {
+            Alert.alert(`Settle with Venmo?`, "", [
+                {
+                    text: "Yes",
+                    onPress: () => {
+                        _venmoLinker.linkWithNote(balance > 0 ? "charge" : "pay", balanceDetails.join("\n"));
+                    },
                 },
-            },
-            { text: "No", style: "cancel" },
-        ]);
-    };
+                { text: "No", style: "cancel" },
+            ]);
+        };
 
-    return (
-        <ExpandableSection
-            expanded={expanded}
-            onPress={() => setExpanded(!expanded)}
-            sectionHeader={
-                <IndividualBalanceHeader
-                    balance={balance}
-                    expense={expense}
-                    expanded={expanded}
-                    userId={userId}
-                    onSettle={onChipPress}
-                    onCopyPress={onCopyPress}
-                />
-            }>
-            <BalanceSummary expense={expense} primaryUserId={person.id} comparedUserId={userId} />
-            
-        </ExpandableSection>
-    );
-});
+        return (
+            <ExpandableSection
+                expanded={expanded}
+                onPress={() => setExpanded(!expanded)}
+                sectionHeader={
+                    <IndividualBalanceHeader
+                        balance={balance}
+                        expense={expense}
+                        expanded={expanded}
+                        userId={userId}
+                        onSettle={onChipPress}
+                        onCopyPress={onCopyPress}
+                    />
+                }
+            >
+                <BalanceSummary expense={expense} primaryUserId={person.id} comparedUserId={userId} />
+            </ExpandableSection>
+        );
+    },
+);

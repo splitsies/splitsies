@@ -28,10 +28,7 @@ export class VenmoLinker implements IVenmoLinker {
         const deepLinkUrl = this._configuration.deepLinkUrl
             .replace(this._configuration.placeholders.txn, transaction)
             .replace(this._configuration.placeholders.amount, `${personalExpense.total.toFixed(2)}`)
-            .replace(
-                this._configuration.placeholders.note,
-                note,
-            );
+            .replace(this._configuration.placeholders.note, note);
 
         const uri = encodeURI(deepLinkUrl);
         Linking.openURL(uri).catch((_) => Alert.alert("Venmo not found", "Install Venmo to settle the bill!"));

@@ -42,7 +42,7 @@ export const ExpenseFeedScreen = SpThemedComponent(({ navigation, route }: Props
 
     useEffect(() => {
         const unsubscribe = navigation.addListener("blur", () => {
-            navigation.setParams({ expenseId: undefined, requestingUserId: undefined});
+            navigation.setParams({ expenseId: undefined, requestingUserId: undefined });
         });
 
         return unsubscribe;

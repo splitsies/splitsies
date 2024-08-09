@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import { Colors, ProgressBar, Text, View } from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
 import { IExpense } from "../models/expense/expense-interface";
-import { IRunningTotalCalculator, IRunningTotalculator } from "../utils/running-total-calculator/running-total-calculator.i";
+import {
+    IRunningTotalCalculator,
+    IRunningTotalculator,
+} from "../utils/running-total-calculator/running-total-calculator.i";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 const _runningTotalCalculator = lazyInject<IRunningTotalCalculator>(IRunningTotalculator);
@@ -11,11 +14,10 @@ type Props = {
     expense: IExpense;
 };
 export const PeopleFooter = SpThemedComponent(({ expense }: Props): JSX.Element => {
-
     const [percentage, setPercentage] = useState<number>(_runningTotalCalculator.calculate(expense));
     useEffect(() => {
         setPercentage(_runningTotalCalculator.calculate(expense));
-    }, [expense])    
+    }, [expense]);
 
     return (
         <View>

@@ -77,7 +77,7 @@ export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress, p
                     </View>
                 </View>
 
-                {!hidePeople &&
+                {!hidePeople && (
                     <View style={styles.rowContainer}>
                         <View style={styles.leftBox}>
                             <People width={iconSize} height={iconSize} fill={Colors.textColor} />
@@ -90,13 +90,13 @@ export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress, p
                                 {data.users.length === 0 && <Text hint>None</Text>}
                                 {data.users.length > PERSON_LIMIT
                                     ? data.users
-                                        .slice(0, PERSON_LIMIT)
-                                        .map(({ id, givenName }) => (
-                                            <UserIcon key={id} letter={givenName[0]} style={{ marginRight: 6 }} />
-                                        ))
+                                          .slice(0, PERSON_LIMIT)
+                                          .map(({ id, givenName }) => (
+                                              <UserIcon key={id} letter={givenName[0]} style={{ marginRight: 6 }} />
+                                          ))
                                     : data.users.map(({ id, givenName }) => (
-                                        <UserIcon key={id} letter={givenName[0]} style={{ marginRight: 6 }} />
-                                    ))}
+                                          <UserIcon key={id} letter={givenName[0]} style={{ marginRight: 6 }} />
+                                      ))}
 
                                 {data.users.length > PERSON_LIMIT && (
                                     <Text body color={Colors.textColor}>
@@ -106,7 +106,7 @@ export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress, p
                             </View>
                         </View>
                     </View>
-                }
+                )}
 
                 <View style={styles.rowContainer}>
                     <View style={styles.leftBox}>

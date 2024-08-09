@@ -41,15 +41,12 @@ export const ExpenseGroupHeader = () => {
     const centerOffset = useSharedValue<number>(0);
 
     const animatedPadding = useAnimatedStyle(() => ({
-        transform: [{translateX: centerOffset.value}]
+        transform: [{ translateX: centerOffset.value }],
     }));
 
     useEffect(() => {
-        centerOffset.value = withSpring(
-            (actionWidth - arrowWidth) / 2,
-            { duration: 500 }
-        );
-    }, [actionWidth, arrowWidth])
+        centerOffset.value = withSpring((actionWidth - arrowWidth) / 2, { duration: 500 });
+    }, [actionWidth, arrowWidth]);
 
     const onAddPress = () => {
         Alert.alert(`Create an empty expense?`, "", [
@@ -75,20 +72,27 @@ export const ExpenseGroupHeader = () => {
         _expenseViewModel.setAwaitingResponse(true);
     };
 
-
     return (
         <SafeAreaView>
             <View style={styles.header} bg-screenBG>
-                <View style={[styles.arrowContainer, {  }]}
-                    onLayout={(e) => setArrowWidth(e.nativeEvent.layout.width)}>
-                    {!selectedChild ?
+                <View style={[styles.arrowContainer, {}]} onLayout={(e) => setArrowWidth(e.nativeEvent.layout.width)}>
+                    {!selectedChild ? (
                         <TouchableOpacity onPress={() => _expenseViewModel.onBackPress()}>
-                            <ArrowBack height={_uiConfig.sizes.icon} width={_uiConfig.sizes.icon} fill={Colors.textColor} />
-                        </TouchableOpacity> :
-                        <TouchableOpacity onPress={() => _expenseViewModel.setSelectedChild(undefined)}>
-                            <Collapse height={_uiConfig.sizes.icon} width={_uiConfig.sizes.icon} fill={Colors.textColor} />
+                            <ArrowBack
+                                height={_uiConfig.sizes.icon}
+                                width={_uiConfig.sizes.icon}
+                                fill={Colors.textColor}
+                            />
                         </TouchableOpacity>
-                    }
+                    ) : (
+                        <TouchableOpacity onPress={() => _expenseViewModel.setSelectedChild(undefined)}>
+                            <Collapse
+                                height={_uiConfig.sizes.icon}
+                                width={_uiConfig.sizes.icon}
+                                fill={Colors.textColor}
+                            />
+                        </TouchableOpacity>
+                    )}
                 </View>
 
                 <Animated.View style={[styles.inputContainer, animatedPadding]}>
@@ -100,36 +104,44 @@ export const ExpenseGroupHeader = () => {
                             placeholder="Search"
                             placeholderTextColor={_colorConfiguration.greyFont}
                             value={searchFilter}
-                            containerStyle={{width: "100%"}}
+                            containerStyle={{ width: "100%" }}
                             style={styles.textInput}
                             onChangeText={(text) => _inviteViewModel.setSearchFilter(text)}
                         />
-                    ) : <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
-                            <Text letterSubheading color={Colors.textColor} style={[styles.headerLabel]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
-                        {selectedChild?.name ?? currentExpense!.name}
-                    </Text>
-                </TouchableOpacity>}
+                    ) : (
+                        <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
+                            <Text
+                                letterSubheading
+                                color={Colors.textColor}
+                                style={[styles.headerLabel]}
+                                numberOfLines={1}
+                                adjustsFontSizeToFit
+                                minimumFontScale={0.75}
+                            >
+                                {selectedChild?.name ?? currentExpense!.name}
+                            </Text>
+                        </TouchableOpacity>
+                    )}
                 </Animated.View>
 
-                <View
-                    style={[styles.actionContainer, {  }]}
-                    onLayout={(e) => setActionWidth(e.nativeEvent.layout.width)}>
+                <View style={[styles.actionContainer, {}]} onLayout={(e) => setActionWidth(e.nativeEvent.layout.width)}>
                     {screen === "Items" &&
-                        (currentExpense?.children.length === 0 || !!selectedChild ?
-                        <EditItemsControl />
-                        :
-                        <View>
-                            <TouchableOpacity onPress={onAddPress}>
-                                <Add width={icon} height={icon} fill={Colors.textColor} />
-                            </TouchableOpacity>
-                        </View>)
-                    }
-                    {screen === "People" && (currentExpense?.children.length === 0 || !!selectedChild) && <SelectItemsControl />}
+                        (currentExpense?.children.length === 0 || !!selectedChild ? (
+                            <EditItemsControl />
+                        ) : (
+                            <View>
+                                <TouchableOpacity onPress={onAddPress}>
+                                    <Add width={icon} height={icon} fill={Colors.textColor} />
+                                </TouchableOpacity>
+                            </View>
+                        ))}
+                    {screen === "People" && (currentExpense?.children.length === 0 || !!selectedChild) && (
+                        <SelectItemsControl />
+                    )}
                     {screen === "Guests" && <AddGuestControl />}
                     {(screen === "Contacts" || screen === "Search") && <ScanUserQrControl />}
                 </View>
             </View>
-
 
             <EditModal
                 visible={editingTitle}

@@ -15,7 +15,7 @@ export class BalanceCalculator implements IBalanceCalculator {
             return new BalanceResult(
                 true,
                 Array.from(balances.values()).reduce((p, c) => p + c, 0),
-                ""
+                "",
             );
         }
 
@@ -49,9 +49,9 @@ export class BalanceCalculator implements IBalanceCalculator {
     }
 
     calculatePersonBreakdown(expense: IExpense, personId: string): Map<string, number> {
-        const otherUserIds = expense.users.map(u => u.id).filter(id => id !== personId);
+        const otherUserIds = expense.users.map((u) => u.id).filter((id) => id !== personId);
         const balances = new Map<string, number>();
-        
+
         for (const userId of otherUserIds) {
             balances.set(userId, 0);
         }

@@ -59,9 +59,9 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
 
     useEffect(() => {
         if (selectedChild) {
-            _expenseViewModel.setSelectedChild(expense.children.find(e => e.id === selectedChild.id));
+            _expenseViewModel.setSelectedChild(expense.children.find((e) => e.id === selectedChild.id));
         }
-    }, [expense])
+    }, [expense]);
 
     useEffect(() => {
         _expenseViewModel.onBackPress = onBackPress;
@@ -114,14 +114,19 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
     );
 
     const onItemSelected = (itemId: string): void => {
-        const item = expense.children.flatMap(c => c.items).find((i) => i.id === itemId);
+        const item = expense.children.flatMap((c) => c.items).find((i) => i.id === itemId);
         if (!item) return;
 
         const userIndex = item.owners.findIndex((o) => o.id === _userManager.userId);
         const updatedSelected = userIndex === -1;
 
         _expenseViewModel.setAwaitingResponse(true);
-        _expenseManager.updateSingleItemSelected(item.expenseId, _userManager.expenseUserDetails, item, updatedSelected);
+        _expenseManager.updateSingleItemSelected(
+            item.expenseId,
+            _userManager.expenseUserDetails,
+            item,
+            updatedSelected,
+        );
 
         if (updatedSelected) {
             item.owners.push(_userManager.expenseUserDetails);
@@ -146,8 +151,7 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
     };
 
     const onItemDelete = useCallback((): void => {
-        const item = expense.children.flatMap(c => c.items).find((i) => i.id === selectedItem?.id);
-
+        const item = expense.children.flatMap((c) => c.items).find((i) => i.id === selectedItem?.id);
 
         if (!item) {
             setSelectedItem(null);
@@ -169,32 +173,38 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
             <TutorialTip group="expense" stepKey="editNameAndDate" placement="bottom">
                 <SafeAreaView style={{ marginBottom: 10 }}>
                     <View centerH>
-                    {selectedChild === undefined ?
-                        <View style={{flexDirection: "row"}}>
-                            {expense.users.map(({ id, givenName }) => (
-                                <UserIcon key={id} letter={givenName[0]} style={{ marginRight: 6 }} />
-                            ))}
-                        </View>
-                        :
-                        <DateTimePicker
-                            style={_styleManager.typography.letter}
-                            color={Colors.textColor}
-                            maximumDate={new Date()}
-                            dateTimeFormatter={(date) => format(date)}
-                            mode="date"
-                            value={selectedChild.transactionDate}
-                            onChange={onExpenseDateUpdated}
-                        />}
+                        {selectedChild === undefined ? (
+                            <View style={{ flexDirection: "row" }}>
+                                {expense.users.map(({ id, givenName }) => (
+                                    <UserIcon key={id} letter={givenName[0]} style={{ marginRight: 6 }} />
+                                ))}
+                            </View>
+                        ) : (
+                            <DateTimePicker
+                                style={_styleManager.typography.letter}
+                                color={Colors.textColor}
+                                maximumDate={new Date()}
+                                dateTimeFormatter={(date) => format(date)}
+                                mode="date"
+                                value={selectedChild.transactionDate}
+                                onChange={onExpenseDateUpdated}
+                            />
+                        )}
                     </View>
                 </SafeAreaView>
             </TutorialTip>
 
-            {selectedChild === undefined ?
+            {selectedChild === undefined ? (
                 <ExpensePreviewList
                     hidePeople
                     expenses={expense.children}
-                    onExpenseClick={(id) => { _expenseViewModel.setSelectedChild(expense.id === id ? expense : expense.children.find(c => c.id === id)) }}
-                /> :
+                    onExpenseClick={(id) => {
+                        _expenseViewModel.setSelectedChild(
+                            expense.id === id ? expense : expense.children.find((c) => c.id === id),
+                        );
+                    }}
+                />
+            ) : (
                 <FlatList
                     style={styles.list}
                     data={selectedChild.items.filter((i) => !i.isProportional)}
@@ -237,14 +247,15 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
                         )
                     }
                 />
-            }
+            )}
 
             <View style={styles.footer}>
                 <ListSeparator />
-                {selectedChild
-                    ? <ExpenseFooter expense={selectedChild} isEditing={isEditing} onItemSelected={setSelectedItem} />
-                    : <ExpenseGroupFooter expense={expense} />
-                }
+                {selectedChild ? (
+                    <ExpenseFooter expense={selectedChild} isEditing={isEditing} onItemSelected={setSelectedItem} />
+                ) : (
+                    <ExpenseGroupFooter expense={expense} />
+                )}
             </View>
 
             <EditModal

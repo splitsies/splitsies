@@ -85,7 +85,10 @@ import { ITutorialManager } from "../managers/tutorial-manager/tutorial-manager.
 import { TutorialManager } from "../managers/tutorial-manager/tutorial-manager";
 import { ITutorialConfiguration } from "../models/configuration/tutorial-configuration/tutorial-configuration.i";
 import { TutorialConfiguration } from "../models/configuration/tutorial-configuration/tutorial-configuration";
-import { IRunningTotalCalculator, IRunningTotalculator } from "../utils/running-total-calculator/running-total-calculator.i";
+import {
+    IRunningTotalCalculator,
+    IRunningTotalculator,
+} from "../utils/running-total-calculator/running-total-calculator.i";
 import { RunningTotalCalculator } from "../utils/running-total-calculator/running-total-calculator";
 const container = new Container({ defaultScope: "Singleton" });
 

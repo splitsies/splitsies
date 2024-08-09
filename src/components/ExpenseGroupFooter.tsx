@@ -7,13 +7,15 @@ import { TutorialTip } from "./TutorialTip";
 
 type Props = {
     expense: IExpense;
-}
+};
 
 export const ExpenseGroupFooter = ({ expense }: Props): JSX.Element => {
     return (
         <TutorialTip group="expense" stepKey="total" renderOnLayout>
             <View>
-                <ExpenseItem item={{ name: "Total", price: expense.groupTotal, owners: [] } as unknown as IExpenseItem} />
+                <ExpenseItem
+                    item={{ name: "Total", price: expense.groupTotal, owners: [] } as unknown as IExpenseItem}
+                />
             </View>
         </TutorialTip>
     );

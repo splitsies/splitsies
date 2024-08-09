@@ -50,7 +50,13 @@ export const SelectItemsModal = SpThemedComponent(({ user, expense, visible, onC
     );
 
     return (
-        <Modal enableModalBlur visible={visible} animationType="slide" style={{ backgroundColor: Colors.screenBG }} presentationStyle="formSheet">
+        <Modal
+            enableModalBlur
+            visible={visible}
+            animationType="slide"
+            style={{ backgroundColor: Colors.screenBG }}
+            presentationStyle="formSheet"
+        >
             {user && (
                 <SafeAreaView style={[styles.container, { backgroundColor: Colors.screenBG }]}>
                     <View style={styles.header}>

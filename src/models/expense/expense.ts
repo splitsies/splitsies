@@ -11,8 +11,8 @@ export class Expense implements IExpense {
         readonly payers: IPayerShare[],
         readonly payerStatuses: ExpensePayerStatus[],
         readonly children: IExpense[],
-    ) { }
-    
+    ) {}
+
     get groupable(): boolean {
         return this.items.length === 0 || this.children.length > 0;
     }

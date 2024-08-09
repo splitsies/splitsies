@@ -16,9 +16,14 @@ type Props = {
     expenses: IExpense[];
     setFetchingPage?: (value: boolean) => void;
     onExpenseClick: (id: string) => void;
-}
+};
 
-export const ExpensePreviewList = ({ expenses, setFetchingPage, onExpenseClick, hidePeople }: Props): React.ReactNode => {
+export const ExpensePreviewList = ({
+    expenses,
+    setFetchingPage,
+    onExpenseClick,
+    hidePeople,
+}: Props): React.ReactNode => {
     const [refreshing, setRefreshing] = useState<boolean>(false);
 
     const refresh = async (): Promise<void> => {
@@ -64,5 +69,5 @@ export const ExpensePreviewList = ({ expenses, setFetchingPage, onExpenseClick, 
             }
             data={expenses}
         />
-    )
-}
+    );
+};
