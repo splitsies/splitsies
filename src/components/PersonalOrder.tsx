@@ -202,6 +202,8 @@ export const PersonalOrder = ({ person, expense, style, isSelectedPerson }: Prop
                 person={person}
                 isSelected={isSelectedPerson}
                 setActionsVisible={setActionsVisible}
+                balance={balance}
+                isPayer={payer}
                 iconContent={() => payer && <Icon assetName="logoPrimary" size={_uiConfig.sizes.largeIcon} />}
             />
             <ScrollView style={styles.orderContainer}>
