@@ -18,7 +18,12 @@ const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration)
 const _adManager = lazyInject<IAdManager>(IAdManager);
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
-export const ImageScreen = ({ navigation, route: { params: image } }: Props): JSX.Element => {
+export const ImageScreen = ({
+    navigation,
+    route: {
+        params: { image },
+    },
+}: Props): JSX.Element => {
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const ad = useRef<InterstitialAd | null>(null);
 
@@ -33,7 +38,7 @@ export const ImageScreen = ({ navigation, route: { params: image } }: Props): JS
 
     const onConfirm = async (): Promise<void> => {
         setIsProcessing(true);
-        const result = await _expenseManager.createExpense(image.image.base64);
+        const result = await _expenseManager.createExpense(image.base64);
         setIsProcessing(false);
 
         if (result) {
@@ -47,7 +52,7 @@ export const ImageScreen = ({ navigation, route: { params: image } }: Props): JS
     };
 
     return (
-        <ImageBackground source={{ uri: image.image.uri }} resizeMode="contain" style={styles.background}>
+        <ImageBackground source={{ uri: image.uri }} resizeMode="contain" style={styles.background}>
             <View style={styles.contentContainer}>
                 <ActionBar
                     style={{ zIndex: 2, backgroundColor: "rgba(0,0,0,0)" }}

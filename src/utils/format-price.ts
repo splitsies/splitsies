@@ -1,3 +1,4 @@
 export const format = (price: number): string => {
-    return `$${price.toFixed(2)}`;
+    const isNegative = price < 0;
+    return `${isNegative ? "-" : ""}$${Math.abs(price).toFixed(2)}`;
 };

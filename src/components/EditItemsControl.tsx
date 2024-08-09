@@ -6,8 +6,12 @@ import { ActivityIndicator } from "react-native";
 import { useObservable } from "../hooks/use-observable";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
 import { TutorialTip } from "./TutorialTip";
+import Edit from "../../assets/icons/edit.svg";
+import Check from "../../assets/icons/check.svg";
+import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
+const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
 export const EditItemsControl = SpThemedComponent(() => {
     const editing = useObservable(_expenseViewModel.isEditingItems$, false);
@@ -22,9 +26,11 @@ export const EditItemsControl = SpThemedComponent(() => {
             <TutorialTip group="expense" stepKey="editItems" placement="bottom">
                 <View flex row centerV style={{ columnGap: 10 }}>
                     <ActivityIndicator animating={awaitingResponse} hidesWhenStopped color={Colors.textColor} />
-                    <Text bodyBold color={Colors.textColor}>
-                        {!editing ? "Edit Items" : "Done"}
-                    </Text>
+                    {editing ? (
+                        <Check height={_uiConfig.sizes.icon} width={_uiConfig.sizes.icon} fill={Colors.textColor} />
+                    ) : (
+                        <Edit height={_uiConfig.sizes.icon} width={_uiConfig.sizes.icon} fill={Colors.textColor} />
+                    )}
                 </View>
             </TutorialTip>
         </TouchableOpacity>

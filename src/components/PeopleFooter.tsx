@@ -1,28 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { Colors, ProgressBar, Slider, Text, View } from "react-native-ui-lib";
-import { ExpenseItem } from "./ExpenseItem";
-import { IExpenseItem, IExpenseUserDetails } from "@splitsies/shared-models";
+import { Colors, ProgressBar, Text, View } from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
-import { IPriceCalculator } from "../utils/price-calculator/price-calculator-interface";
 import { IExpense } from "../models/expense/expense-interface";
+import {
+    IRunningTotalCalculator,
+    IRunningTotalculator,
+} from "../utils/running-total-calculator/running-total-calculator.i";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
-const _priceCalculator = lazyInject<IPriceCalculator>(IPriceCalculator);
+const _runningTotalCalculator = lazyInject<IRunningTotalCalculator>(IRunningTotalculator);
 
 type Props = {
     expense: IExpense;
 };
-
-const calculateRunningTotal = (expense: IExpense): number => {
-    const personalExpenses = expense.users.map((u) => _priceCalculator.calculatePersonalExpense(u.id, expense));
-    return personalExpenses.reduce((previous, current) => previous + parseFloat(current.total.toFixed(2)), 0);
-};
-
-export const PeopleFooter = ({ expense }: Props): JSX.Element => {
-    const [runningTotal, setRunningTotal] = useState<number>(calculateRunningTotal(expense));
-    const percentage = expense.total === 0 ? 0 : Math.min(Math.ceil((runningTotal * 100) / expense.total), 100);
-
+export const PeopleFooter = SpThemedComponent(({ expense }: Props): JSX.Element => {
+    const [percentage, setPercentage] = useState<number>(_runningTotalCalculator.calculate(expense));
     useEffect(() => {
-        setRunningTotal(calculateRunningTotal(expense));
+        setPercentage(_runningTotalCalculator.calculate(expense));
     }, [expense]);
 
     return (
@@ -43,9 +37,9 @@ export const PeopleFooter = ({ expense }: Props): JSX.Element => {
                     progress={percentage}
                 />
                 <Text hint style={{ display: "flex", minWidth: 40, textAlign: "right" }}>
-                    {percentage}%
+                    {percentage.toFixed(0)}%
                 </Text>
             </View>
         </View>
     );
-};
+});

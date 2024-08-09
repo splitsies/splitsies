@@ -4,12 +4,11 @@ import {
     ExpensePayerDto,
     IExpenseDto,
     IExpenseItem,
-    IExpensePayerDto,
     IExpenseUserDetails,
     IUserCredential,
     PayerShare,
 } from "@splitsies/shared-models";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, Subscription } from "rxjs";
 import { IExpenseApiClient } from "../../api/expense-api-client/expense-api-client-interface";
 import { lazyInject } from "../../utils/lazy-inject";
 import { BaseManager } from "../base-manager";
@@ -32,7 +31,6 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     private readonly _isPendingExpenseData$ = new BehaviorSubject<boolean>(false);
     private readonly _expenseJoinRequests$ = new BehaviorSubject<IExpenseJoinRequest[]>([]);
     private readonly _expenseJoinRequestCount$ = new BehaviorSubject<number>(0);
-
     get expenses$(): Observable<IExpense[]> {
         return this._expenses$.asObservable();
     }
@@ -96,7 +94,18 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     }
 
     async connectToExpense(expenseId: string): Promise<void> {
-        await this._api.connectToExpense(expenseId);
+        try {
+            const expense = this.expenses.find((e) => e.id === expenseId);
+
+            if (!expense) {
+                await this._api.connectToExpense(expenseId);
+            } else {
+                void this._api.connectToExpense(expenseId);
+                this._currentExpense$.next(expense);
+            }
+        } catch {
+            this._currentExpense$.next(null);
+        }
     }
 
     requestAddUserToExpense(
@@ -113,6 +122,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     disconnectFromExpense(): void {
         this._api.disconnectFromExpense();
+        this._currentExpense$.next(null);
     }
 
     async createExpense(base64Image?: string): Promise<boolean> {
@@ -120,8 +130,19 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
             const expense = await this._ocr.scanImage(base64Image);
             if (!expense) return false;
 
+            if (this.currentExpense) {
+                await this._api.requestAddToExpenseGroup(this.currentExpense.id, expense);
+                return true;
+            }
+
             return this._api.createFromExpense(expense);
         }
+
+        if (this.currentExpense) {
+            await this._api.requestAddToExpenseGroup(this.currentExpense.id);
+            return true;
+        }
+
         return this._api.createExpense(base64Image);
     }
 
@@ -223,7 +244,6 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     private async onSessionExpenseUpdated(expenseDto: IExpenseDto | null): Promise<void> {
         if (expenseDto == null) {
-            this._currentExpense$.next(null);
             return;
         }
 
