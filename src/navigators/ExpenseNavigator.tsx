@@ -12,7 +12,6 @@ import { useInitialize } from "../hooks/use-initialize";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
 import { createDrawerNavigator } from "@react-navigation/drawer";
-import { ExpenseNavigationHeader } from "../components/ExpenseNavigatorHeader";
 import Receipt from "../../assets/icons/receipt.svg";
 import People from "../../assets/icons/people.svg";
 import AddPerson from "../../assets/icons/add-person.svg";
@@ -24,10 +23,10 @@ import { TouchableOpacity, View } from "react-native-ui-lib";
 import { TutorialTip } from "../components/TutorialTip";
 import { useObservable } from "../hooks/use-observable";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
-import { ExpenseGroupHeader } from "../components/ExpenseGroupHeader";
 import Animated, { useAnimatedProps, useAnimatedStyle, useSharedValue, withSpring } from "react-native-reanimated";
 import Svg, { Path } from "react-native-svg";
 import { ExpenseGroupScreen } from "../screens/ExpenseGroupScreen";
+import { ExpenseNavigatorHeader } from "../components/ExpenseNavigatorHeader";
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -44,7 +43,7 @@ const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 export const ExpenseNavigator = SpThemedComponent(() => {
     const currentExpense = useObservable(_expenseManager.currentExpense$, _expenseManager.currentExpense);
     return (
-        <Drawer.Navigator screenOptions={{ header: ExpenseGroupHeader, swipeEnabled: false }}>
+        <Drawer.Navigator screenOptions={{ header: ExpenseNavigatorHeader, swipeEnabled: false }}>
             <Drawer.Screen name="Expense" component={InternalExpenseNavigator} />
         </Drawer.Navigator>
     );
@@ -190,7 +189,7 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
             />
             <Tab.Screen
                 name="Share"
-                component={ExpenseNavigationHeader}
+                component={ExpenseNavigatorHeader}
                 options={{
                     tabBarButton: (props) => (
                         <View style={props.style}>
