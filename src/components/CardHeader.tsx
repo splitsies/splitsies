@@ -7,6 +7,8 @@ import { lazyInject } from "../utils/lazy-inject";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 import { IExpenseUserDetails } from "@splitsies/shared-models";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
+import { BalanceResult } from "../models/balance-result";
+import { format } from "../utils/format-price";
 
 const icon = lazyInject<IUiConfiguration>(IUiConfiguration).sizes.smallIcon;
 
@@ -15,10 +17,12 @@ type Props = {
     person: IExpenseUserDetails;
     isSelected: boolean;
     setActionsVisible: (value: boolean) => void;
+    balance?: BalanceResult;
+    isPayer?: boolean;
 };
 
 export const CardHeader = SpThemedComponent(
-    ({ iconContent, person, isSelected, setActionsVisible }: Props): React.ReactNode => {
+    ({ iconContent, person, isSelected, setActionsVisible, balance, isPayer }: Props): React.ReactNode => {
         return (
             <View style={{ alignItems: "center" }}>
                 <View style={styles.header}>
@@ -28,6 +32,14 @@ export const CardHeader = SpThemedComponent(
                         <Text body numberOfLines={1} ellipsizeMode={"tail"} color={Colors.textColor}>
                             {person.givenName + (person.familyName ? " " + person.familyName : "")}
                         </Text>
+
+                        {balance?.hasPayer && balance.balance !== 0 && (
+                            <Text hint style={{ fontSize: 12 }}>
+                                {isPayer
+                                    ? `Owed ${format(balance.balance)}`
+                                    : `Owes ${balance.payerName} ${format(-balance.balance)}`}
+                            </Text>
+                        )}
                     </View>
 
                     <View style={[styles.iconContainer, { columnGap: 5, justifyContent: "flex-end" }]}>

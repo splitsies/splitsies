@@ -21,6 +21,7 @@ import { BalanceResult } from "../models/balance-result";
 import { ISettingsManager } from "../managers/settings-manager/settings-manager-interface";
 import { TutorialTip } from "./TutorialTip";
 import { CardHeader } from "./CardHeader";
+import CheckCircle from "../../assets/icons/check-circle.svg";
 
 const _priceCalculator = lazyInject<IPriceCalculator>(IPriceCalculator);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -202,7 +203,14 @@ export const PersonalOrder = ({ person, expense, style, isSelectedPerson }: Prop
                 person={person}
                 isSelected={isSelectedPerson}
                 setActionsVisible={setActionsVisible}
-                iconContent={() => payer && <Icon assetName="logoPrimary" size={_uiConfig.sizes.largeIcon} />}
+                balance={balance}
+                isPayer={payer}
+                iconContent={() => payer
+                    ? <Icon assetName="logoPrimary" size={_uiConfig.sizes.largeIcon} />
+                    : settled && (
+                        <CheckCircle width={_uiConfig.sizes.icon} height={_uiConfig.sizes.icon} fill={Colors.ready} />
+                    )
+                }
             />
             <ScrollView style={styles.orderContainer}>
                 {personalExpense.items
