@@ -50,7 +50,13 @@ export const SelectItemsModal = SpThemedComponent(({ user, expense, visible, onC
     );
 
     return (
-        <Modal enableModalBlur visible={visible} animationType="slide" style={{ backgroundColor: Colors.screenBG }}>
+        <Modal
+            enableModalBlur
+            visible={visible}
+            animationType="slide"
+            style={{ backgroundColor: Colors.screenBG }}
+            presentationStyle="formSheet"
+        >
             {user && (
                 <SafeAreaView style={[styles.container, { backgroundColor: Colors.screenBG }]}>
                     <View style={styles.header}>
@@ -63,7 +69,7 @@ export const SelectItemsModal = SpThemedComponent(({ user, expense, visible, onC
                                 />
                             </TouchableOpacity>
                         </View>
-                        <Text heading color={Colors.textColor}>
+                        <Text letterHeading color={Colors.textColor} adjustsFontSizeToFit>
                             {user.givenName + " " + user.familyName}
                         </Text>
                         <View style={styles.arrowContainer} />
@@ -105,6 +111,7 @@ const styles = StyleSheet.create({
     header: {
         display: "flex",
         flexDirection: "row",
+        alignItems: "center",
         width: "100%",
         justifyContent: "space-between",
         paddingVertical: 20,

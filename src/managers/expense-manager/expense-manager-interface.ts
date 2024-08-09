@@ -19,7 +19,7 @@ export interface IExpenseManager {
     requestForUser(reset?: boolean): Promise<void>;
     connectToExpense(expenseId: string): Promise<void>;
     disconnectFromExpense(): void;
-    requestAddUserToExpense(userId: string, expenseId: string): Promise<void>;
+    requestAddUserToExpense(userId: string, expenseId: string, requestingUserId?: string): Promise<void>;
     requestRemoveUserFromExpense(userId: string, expenseId: string): Promise<void>;
     createExpense(base64Image?: string): Promise<boolean>;
     requestExpenseJoinRequests(reset?: boolean): Promise<void>;
@@ -46,6 +46,18 @@ export interface IExpenseManager {
     ): void;
     updateExpenseName(expenseId: string, expenseName: string): void;
     updateExpenseTransactionDate(expenseId: string, transactionDate: Date): void;
+    updateSingleItemSelected(
+        expenseId: string,
+        user: IExpenseUserDetails,
+        item: IExpenseItem,
+        itemSelected: boolean,
+    ): void;
+
+    /**
+     * Sends a ping event to the image scan function to ensure a warm execution
+     * environment by the time the receipt needs to be scanned
+     */
+    scanPreflight(): Promise<void>;
 }
 
 export const IExpenseManager = Symbol.for("IExpenseManager");

@@ -99,9 +99,9 @@ export const InviteNavigator = SpThemedComponent(({ navigation }: Props) => {
                         tabBarIndicatorStyle: { backgroundColor: _colorConfiguration.primary },
                     }}
                 >
-                    <Tab.Screen name="Contacts" component={ContactsScreen} />
-                    <Tab.Screen name="Guests" component={GuestScreen} />
-                    <Tab.Screen name="Search" component={SearchScreen} />
+                    <Tab.Screen name="Contacts" component={ContactsScreen} options={{ lazy: true }} />
+                    <Tab.Screen name="Guests" component={GuestScreen} options={{ lazy: true }} />
+                    <Tab.Screen name="Search" component={SearchScreen} options={{ lazy: true }} />
                 </Tab.Navigator>
             </View>
 

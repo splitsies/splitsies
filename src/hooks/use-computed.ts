@@ -1,6 +1,6 @@
 import { DependencyList, useEffect, useState } from "react";
 
-export const useComputed = <T>(compute: (dependencies: DependencyList) => T, deps: DependencyList) => {
+export const useComputed = <T, U extends DependencyList>(compute: (dependencies: U) => T, deps: U) => {
     const [value, setValue] = useState<T>(compute(deps));
 
     useEffect(() => {

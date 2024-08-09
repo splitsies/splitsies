@@ -19,6 +19,7 @@ export class ExpenseMapper implements IExpenseMapper {
             expense.users.map((u) => u.id),
             expense.payers,
             expense.payerStatuses,
+            expense.children.map((c) => this.toDto(c)),
         );
     }
 
@@ -34,26 +35,32 @@ export class ExpenseMapper implements IExpenseMapper {
                 .filter((u) => u !== undefined) as IExpenseUserDetails[],
             dto.payers,
             dto.payerStatuses,
+            await this.toDomainBatch(dto.children),
         );
     }
 
     async toDomainBatch(dtos: IExpenseDto[]): Promise<IExpense[]> {
+        if (dtos.length === 0) return [];
+
         const userIds = new Set(dtos.map((dto) => dto.userIds).reduce((p, c) => [...p, ...c], []));
         const users = await this._usersApiClient.requestUsersByIds(Array.from(userIds));
 
-        return dtos.map(
-            (dto) =>
-                new Expense(
-                    dto.id,
-                    dto.name,
-                    new Date(dto.transactionDate),
-                    dto.items,
-                    dto.userIds
-                        .map((id) => users.find((u) => u.id === id))
-                        .filter((u) => u !== undefined) as IExpenseUserDetails[],
-                    dto.payers,
-                    dto.payerStatuses,
-                ),
+        return Promise.all(
+            dtos.map(
+                async (dto) =>
+                    new Expense(
+                        dto.id,
+                        dto.name,
+                        new Date(dto.transactionDate),
+                        dto.items,
+                        dto.userIds
+                            .map((id) => users.find((u) => u.id === id))
+                            .filter((u) => u !== undefined) as IExpenseUserDetails[],
+                        dto.payers,
+                        dto.payerStatuses,
+                        await this.toDomainBatch(dto.children),
+                    ),
+            ),
         );
     }
 }

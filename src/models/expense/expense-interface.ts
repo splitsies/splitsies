@@ -10,4 +10,7 @@ export interface IExpense {
     readonly total: number;
     readonly payers: IPayerShare[];
     readonly payerStatuses: ExpensePayerStatus[];
+    readonly children: IExpense[];
+    readonly groupTotal: number;
+    readonly groupable: boolean;
 }

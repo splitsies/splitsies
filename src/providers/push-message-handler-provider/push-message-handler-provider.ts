@@ -5,9 +5,10 @@ import { IWritableMessageHub } from "../../hubs/writable-message-hub/writable-me
 import { PushMessage } from "../../models/push-message/push-message";
 import { Linking } from "react-native";
 import { IPushMessage } from "../../models/push-message/push-message-interface";
+import { IPushMessageHandlerProvider } from "./push-message-handler-provider-interface";
 
 @injectable()
-export class PushMessageHandlerProvider {
+export class PushMessageHandlerProvider implements IPushMessageHandlerProvider {
     private readonly _messageHub = lazyInject<IWritableMessageHub>(IWritableMessageHub);
 
     provide(message: IPushMessage): () => void {

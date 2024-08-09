@@ -1,4 +1,6 @@
+import { IExpenseDto } from "@splitsies/shared-models";
 import { Observable } from "rxjs";
+import { IExpense } from "../../models/expense/expense-interface";
 
 export interface IExpenseViewModel {
     resetState(): void;
@@ -17,6 +19,9 @@ export interface IExpenseViewModel {
     onBackPress: () => void;
     searchVisible$: Observable<boolean>;
     setSearchVisible(visible: boolean): void;
+
+    selectedChild$: Observable<IExpense | undefined>;
+    setSelectedChild(expense: IExpense | undefined): void;
 }
 
 export const IExpenseViewModel = Symbol.for("IExpenseViewModel");

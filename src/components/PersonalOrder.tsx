@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { StyleSheet, Alert, ScrollView, Dimensions } from "react-native";
 import { IExpenseItem, IExpenseUserDetails, ExpenseItem as ExpenseItemModel } from "@splitsies/shared-models";
-import { Text, View } from "react-native-ui-lib/core";
+import { View } from "react-native-ui-lib/core";
 import { ActionSheet, Button, ButtonProps, Colors, Icon, Toast } from "react-native-ui-lib";
 import { ExpenseItem } from "./ExpenseItem";
 import { lazyInject } from "../utils/lazy-inject";
@@ -9,20 +9,18 @@ import { IPriceCalculator } from "../utils/price-calculator/price-calculator-int
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { IVenmoLinker } from "../utils/venmo-linker/venmo-linker-interface";
 import { useThemeWatcher } from "../hooks/use-theme-watcher";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 import { ITransactionNoteBuilder } from "../utils/transaction-note-builder/transaction-note-builder-interface";
 import { IClipboardUtility } from "../utils/clipboard-utility/clipboard-utility-interface";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
-import More from "../../assets/icons/more.svg";
-import CheckCircle from "../../assets/icons/check-circle.svg";
 import { IExpense } from "../models/expense/expense-interface";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { useComputed } from "../hooks/use-computed";
 import { IBalanceCalculator } from "../utils/balance-calculator/balance-calculator-interface";
 import { BalanceResult } from "../models/balance-result";
-import { format } from "../utils/format-price";
 import { ISettingsManager } from "../managers/settings-manager/settings-manager-interface";
+import { TutorialTip } from "./TutorialTip";
+import { CardHeader } from "./CardHeader";
 
 const _priceCalculator = lazyInject<IPriceCalculator>(IPriceCalculator);
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -36,27 +34,26 @@ const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _balanceCalculator = lazyInject<IBalanceCalculator>(IBalanceCalculator);
 const _settingsManager = lazyInject<ISettingsManager>(ISettingsManager);
 
-const icon = _uiConfig.sizes.smallIcon;
-
 type Props = {
     person: IExpenseUserDetails;
     expense: IExpense;
+    isSelectedPerson: boolean;
     style?: object;
 };
 
-export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element => {
+export const PersonalOrder = ({ person, expense, style, isSelectedPerson }: Props): JSX.Element => {
     useThemeWatcher();
 
-    const payer = useComputed<boolean>(
+    const payer = useComputed<boolean, [IExpense]>(
         ([expense]) => !!(expense as IExpense).payers.find((p) => p.userId === person.id),
         [expense],
     );
-    const settled = useComputed<boolean>(
+    const settled = useComputed<boolean, [IExpense]>(
         ([expense]) => !!(expense as IExpense).payerStatuses.find((s) => s.userId === person.id)?.settled,
         [expense],
     );
-    const balance = useComputed<BalanceResult>(
-        ([expense, person]) => _balanceCalculator.calculate(expense as IExpense, (person as IExpenseUserDetails).id),
+    const balance = useComputed<BalanceResult, [IExpense, IExpenseUserDetails]>(
+        ([expense, person]) => _balanceCalculator.calculate(expense, person.id),
         [expense, person],
     );
 
@@ -114,12 +111,13 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
     const onRequestPress = (): void => {
         Alert.alert(`Request payment with Venmo for ${person.givenName}?`, "", [
             {
-                text: "Yes", onPress: () => {
+                text: "Yes",
+                onPress: () => {
                     _venmoLinker.link("charge", personalExpense);
                     if (_settingsManager.markPaidOnRequest && !settled) {
                         onTogglePayerStatus();
                     }
-                }
+                },
             },
             { text: "No", style: "cancel" },
         ]);
@@ -175,44 +173,37 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
         setBorderColor(!settled ? Colors.attention : Colors.primary);
     }, [expense, person, settled]);
 
-    const renderHeader = (): JSX.Element => {
-        return (
-            <View style={{ alignItems: "center" }}>
-                <View style={styles.header}>
-                    <View style={styles.iconContainer}>
-                        {payer && <Icon assetName="logoPrimary" size={_uiConfig.sizes.largeIcon} />}
-                    </View>
-
-                    <View style={styles.nameContainer}>
-                        <Text body numberOfLines={1} ellipsizeMode={"tail"} color={Colors.textColor}>
-                            {person.givenName + (person.familyName ? " " + person.familyName : "")}
-                        </Text>
-
-                        {balance.hasPayer && balance.balance !== 0 && (
-                            <Text hint style={{ fontSize: 12 }}>
-                                {payer
-                                    ? `Owed ${format(balance.balance)}`
-                                    : `Owes ${balance.payerName} ${format(-balance.balance)}`}
-                            </Text>
-                        )}
-                    </View>
-
-                    <View style={[styles.iconContainer, { columnGap: 5, justifyContent: "flex-end" }]}>
-                        {balance.hasPayer && balance.balance === 0 && (
-                            <CheckCircle width={icon} height={icon} fill={Colors.ready} />
-                        )}
-                        <TouchableOpacity onPress={() => setActionsVisible(true)}>
-                            <More width={icon} height={icon} fill={Colors.textColor} />
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </View>
-        );
-    };
+    const renderButtons = () => (
+        <View style={styles.buttonContainer}>
+            <Button
+                body
+                bg-primary
+                borderless
+                style={styles.button}
+                labelStyle={{ color: "black" }}
+                label="Pay"
+                onPress={onPayPress}
+            />
+            <Button
+                body
+                bg-primary
+                borderless
+                style={styles.button}
+                labelStyle={{ color: "black" }}
+                label="Request"
+                onPress={onRequestPress}
+            />
+        </View>
+    );
 
     return (
         <View style={[styles.container, { borderColor }, style]}>
-            {renderHeader()}
+            <CardHeader
+                person={person}
+                isSelected={isSelectedPerson}
+                setActionsVisible={setActionsVisible}
+                iconContent={() => payer && <Icon assetName="logoPrimary" size={_uiConfig.sizes.largeIcon} />}
+            />
             <ScrollView style={styles.orderContainer}>
                 {personalExpense.items
                     .filter((i) => !i.isProportional)
@@ -232,26 +223,14 @@ export const PersonalOrder = ({ person, expense, style }: Props): JSX.Element =>
                     ))}
                 <ExpenseItem item={totalItem} key={"total"} onPress={() => {}} />
             </View>
-            <View style={styles.buttonContainer}>
-                <Button
-                    body
-                    bg-primary
-                    borderless
-                    style={styles.button}
-                    labelStyle={{ color: "black" }}
-                    label="Pay"
-                    onPress={onPayPress}
-                />
-                <Button
-                    body
-                    bg-primary
-                    borderless
-                    style={styles.button}
-                    labelStyle={{ color: "black" }}
-                    label="Request"
-                    onPress={onRequestPress}
-                />
-            </View>
+
+            {isSelectedPerson ? (
+                <TutorialTip group="people" stepKey="pay">
+                    {renderButtons()}
+                </TutorialTip>
+            ) : (
+                renderButtons()
+            )}
 
             <Toast
                 body

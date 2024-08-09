@@ -10,7 +10,9 @@ const _themeViewModel = lazyInject<IThemeViewModel>(IThemeViewModel);
  * @param BaseComponent
  * @returns
  */
-export function SpThemedComponent(BaseComponent: (props: any) => JSX.Element | null): (props: any) => JSX.Element {
+export function SpThemedComponent(
+    BaseComponent: (props: any) => JSX.Element | React.ReactNode | null,
+): (props: any) => JSX.Element {
     return (props: any): JSX.Element => {
         useObservable(_themeViewModel.theme$, _themeViewModel.theme);
 

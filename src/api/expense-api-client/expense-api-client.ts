@@ -1,6 +1,6 @@
 import { injectable } from "inversify";
 import { IExpenseApiClient } from "./expense-api-client-interface";
-import { BehaviorSubject, Observable } from "rxjs";
+import { BehaviorSubject, Observable, queue } from "rxjs";
 import {
     ExpenseMessageParameters,
     IExpenseDto,
@@ -23,6 +23,9 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     private readonly _expenseMessageParametersMapper = lazyInject<IExpenseMessageParametersMapper>(
         IExpenseMessageParametersMapper,
     );
+
+    private _allowedExpenseConnection = "";
+    private _connected: Promise<void>;
 
     constructor() {
         super();
@@ -66,6 +69,16 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     async connectToExpense(expenseId: string): Promise<void> {
+        this._allowedExpenseConnection = expenseId;
+
+        if (this._connection?.readyState !== 1) {
+            try {
+                this._connection.close();
+            } catch {
+                // ignore
+            }
+        }
+
         const tokenResponse = await this.postJson<string>(
             `${this._config.expense}/${expenseId}/connections/tokens`,
             {},
@@ -74,7 +87,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         const socketUri = `${
             this._config.expenseSocket
         }?expenseId=${expenseId}&userId=${this._authProvider.provideIdentity()}&connectionToken=${tokenResponse.data}`;
-        const onConnected = new Promise<void>((res, rej) => {
+        this._connected = new Promise<void>((res, rej) => {
             try {
                 this._connection = new WebSocket(socketUri);
                 this._connection.onopen = () => void this.onExpenseConnection(res, expenseId);
@@ -86,10 +99,29 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
             }
         });
 
+        return this._connected;
+    }
+
+    async pingConnection(): Promise<void> {
+        const socketUri = `${this._config.expenseSocket}?ping=true`;
+
+        const onConnected = new Promise<void>((res, rej) => {
+            try {
+                const conn = new WebSocket(socketUri);
+                conn.onopen = () => {
+                    res();
+                };
+            } catch (e) {
+                console.error(e);
+                rej(e);
+            }
+        });
+
         return onConnected;
     }
 
     disconnectFromExpense(): void {
+        this._allowedExpenseConnection = "";
         if (!this._connection || this._connection.readyState >= 2) {
             this._sessionExpense$.next(null);
             return;
@@ -110,11 +142,19 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
     }
 
-    async addUserToExpense(userId: string, expenseId: string): Promise<void> {
+    async addUserToExpense(
+        userId: string,
+        expenseId: string,
+        requestingUserId: string | undefined = undefined,
+    ): Promise<void> {
         const url = `${this._config.expense}/${expenseId}/users`;
 
         try {
-            const response = await this.postJson<void>(url, { userId }, this._authProvider.provideAuthHeader());
+            const response = await this.postJson<void>(
+                url,
+                { userId, requestingUserId },
+                this._authProvider.provideAuthHeader(),
+            );
             if (!response.success) throw new Error(`${response.data}`);
         } catch (e) {
             console.error(e);
@@ -133,7 +173,6 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
 
     async createFromExpense(expenseDto: IExpenseDto): Promise<boolean> {
         try {
-            console.log({ expenseDto });
             const body = { userId: this._authProvider.provideIdentity(), expense: expenseDto };
 
             const response = await this.postJson<IExpenseDto>(
@@ -189,7 +228,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
                 this._scanPageKeys.delete(pageKey);
             }
 
-            const pagination = this._scanPageKeys.get(pageKey)?.nextPage ?? { limit: 1, offset: 0 };
+            const pagination = this._scanPageKeys.get(pageKey)?.nextPage ?? { limit: 10, offset: 0 };
             let url = `${this._config.expense}/requests/${this._authProvider.provideIdentity()}`;
             url += `?pagination=${encodeURIComponent(JSON.stringify(pagination))}`;
 
@@ -263,6 +302,30 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
     }
 
+    async requestAddToExpenseGroup(expenseId: string, expense: IExpenseDto | undefined): Promise<void> {
+        try {
+            const url = `${this._config.expense}/${expenseId}/children`;
+            await this.postJson<IExpenseDto>(url, { expense }, this._authProvider.provideAuthHeader());
+        } catch (e) {
+            return;
+        }
+    }
+
+    private queueIfPendingConnection(expenseId: string, action: () => void): boolean {
+        if (!this._connection || this._connection.readyState >= 2) {
+            // requires reconnection
+            this.connectToExpense(expenseId).then(() => action());
+            return true;
+        }
+
+        if (this._connection.readyState === 0) {
+            this._connected.then(() => action());
+            return true;
+        }
+
+        return false;
+    }
+
     addItem(
         expenseId: string,
         itemName: string,
@@ -270,6 +333,14 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         itemOwners: IExpenseUserDetails[],
         isItemProportional: boolean,
     ): void {
+        if (
+            this.queueIfPendingConnection(expenseId, () =>
+                this.addItem(expenseId, itemName, itemPrice, itemOwners, isItemProportional),
+            )
+        ) {
+            return;
+        }
+
         const params = this._expenseMessageParametersMapper.toDtoModel(
             new ExpenseMessageParameters({ expenseId, itemName, itemPrice, itemOwners, isItemProportional }),
         );
@@ -277,6 +348,10 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     removeItem(expenseId: string, item: IExpenseItem): void {
+        if (this.queueIfPendingConnection(expenseId, () => this.removeItem(expenseId, item))) {
+            return;
+        }
+
         const params = this._expenseMessageParametersMapper.toDtoModel(
             new ExpenseMessageParameters({ expenseId, item }),
         );
@@ -285,6 +360,12 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     updateItemSelections(expenseId: string, user: IExpenseUserDetails, selectedItemIds: string[]): void {
+        if (
+            this.queueIfPendingConnection(expenseId, () => this.updateItemSelections(expenseId, user, selectedItemIds))
+        ) {
+            return;
+        }
+
         const params = this._expenseMessageParametersMapper.toDtoModel(
             new ExpenseMessageParameters({ expenseId, user, selectedItemIds }),
         );
@@ -299,6 +380,14 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         itemPrice: number,
         isItemProportional: boolean,
     ): void {
+        if (
+            this.queueIfPendingConnection(expenseId, () =>
+                this.updateItemDetails(expenseId, item, itemName, itemPrice, isItemProportional),
+            )
+        ) {
+            return;
+        }
+
         const params = this._expenseMessageParametersMapper.toDtoModel(
             new ExpenseMessageParameters({ expenseId, item, itemName, itemPrice, isItemProportional }),
         );
@@ -307,6 +396,10 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     updateExpenseName(expenseId: string, expenseName: string): void {
+        if (this.queueIfPendingConnection(expenseId, () => this.updateExpenseName(expenseId, expenseName))) {
+            return;
+        }
+
         const params = this._expenseMessageParametersMapper.toDtoModel(
             new ExpenseMessageParameters({ expenseId, expenseName }),
         );
@@ -315,6 +408,14 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     updateExpenseTransactionDate(expenseId: string, transactionDate: Date): void {
+        if (
+            this.queueIfPendingConnection(expenseId, () =>
+                this.updateExpenseTransactionDate(expenseId, transactionDate),
+            )
+        ) {
+            return;
+        }
+
         const params = this._expenseMessageParametersMapper.toDtoModel(
             new ExpenseMessageParameters({ expenseId, transactionDate }),
         );
@@ -322,13 +423,64 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         this._connection.send(JSON.stringify({ id: expenseId, method: "updateTransactionDate", params }));
     }
 
+    updateSingleItemSelected(
+        expenseId: string,
+        user: IExpenseUserDetails,
+        item: IExpenseItem,
+        itemSelected: boolean,
+    ): void {
+        if (
+            this.queueIfPendingConnection(expenseId, () =>
+                this.updateSingleItemSelected(expenseId, user, item, itemSelected),
+            )
+        ) {
+            return;
+        }
+
+        const params = this._expenseMessageParametersMapper.toDtoModel(
+            new ExpenseMessageParameters({ expenseId, item, itemSelected, user }),
+        );
+
+        this._connection.send(JSON.stringify({ id: expenseId, method: "updateSingleItemSelected", params }));
+    }
+
     private async onExpenseConnection(promiseResolver: () => void, expenseId: string): Promise<void> {
+        if (!this._allowedExpenseConnection || this._allowedExpenseConnection !== expenseId) {
+            console.warn("Established connection after termination");
+            // On rapid connect/disconnect, ensure that we don't create a background connection when
+            // the connection gets through after we've decided we no longer want to be connected
+            try {
+                this._connection?.close();
+            } catch {}
+            return;
+        }
+
         await this.getExpense(expenseId);
         promiseResolver();
+
+        // Ping the message endpoint to warm up an execution environment
+        this._connection.send(
+            JSON.stringify({
+                id: expenseId,
+                method: "ping",
+                params: new ExpenseMessageParameters({ expenseId }),
+            }),
+        );
     }
 
     private async onMessage(e: WebSocketMessageEvent): Promise<void> {
         const message = JSON.parse(e.data) as IExpenseDto;
+
+        if (this._allowedExpenseConnection !== message.id) {
+            console.warn("Established connection after termination");
+            // On rapid connect/disconnect, ensure that we don't create a background connection when
+            // the connection gets through after we've decided we no longer want to be connected
+            try {
+                this._connection?.close();
+            } catch {}
+            return;
+        }
+
         this._sessionExpense$.next(message);
     }
 }

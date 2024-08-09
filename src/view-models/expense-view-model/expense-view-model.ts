@@ -1,6 +1,8 @@
 import { injectable } from "inversify";
 import { IExpenseViewModel } from "./expense-view-model-interface";
 import { BehaviorSubject, Observable } from "rxjs";
+import { IExpenseDto } from "@splitsies/shared-models";
+import { IExpense } from "../../models/expense/expense-interface";
 
 @injectable()
 export class ExpenseViewModel implements IExpenseViewModel {
@@ -9,6 +11,7 @@ export class ExpenseViewModel implements IExpenseViewModel {
     private readonly _isEditingItems$ = new BehaviorSubject<boolean>(false);
     private readonly _isSelectingItems = new BehaviorSubject<boolean>(false);
     private readonly _searchVisible$ = new BehaviorSubject<boolean>(false);
+    private readonly _selectedChild$ = new BehaviorSubject<IExpense | undefined>(undefined);
     private readonly _screen$ = new BehaviorSubject<"Items" | "People" | "Contacts" | "Guests" | "Search">("Items");
 
     resetState(): void {
@@ -54,5 +57,11 @@ export class ExpenseViewModel implements IExpenseViewModel {
     setScreen(value: "Items" | "People" | "Contacts" | "Guests" | "Search"): void {
         this._screen$.next(value);
         this._searchVisible$.next(["Contacts", "Guests", "Search"].includes(value));
+    }
+    get selectedChild$(): Observable<IExpense | undefined> {
+        return this._selectedChild$.asObservable();
+    }
+    setSelectedChild(expense: IExpense | undefined) {
+        this._selectedChild$.next(expense);
     }
 }

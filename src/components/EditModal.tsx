@@ -14,6 +14,7 @@ import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
 import { useThemeWatcher } from "../hooks/use-theme-watcher";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
+import { TutorialTip } from "./TutorialTip";
 
 const _dimensions = Dimensions.get("screen");
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
@@ -113,13 +114,15 @@ export const EditModal = ({ visible, nameValue, priceValue, onSave, onCancel, pr
                     </KeyboardAvoidingView>
                     <View style={styles.optionsContainer}>
                         {proportional != null && (
-                            <Checkbox
-                                containerStyle={[styles.textInput, { backgroundColor: Colors.screenBG }]}
-                                color={_colorConfiguration.primary}
-                                value={isProportional}
-                                label="Proportional"
-                                onValueChange={() => setIsProportional(!isProportional)}
-                            />
+                            <TutorialTip group="editItem" stepKey="proportional">
+                                <Checkbox
+                                    containerStyle={[styles.textInput, { backgroundColor: Colors.screenBG }]}
+                                    color={_colorConfiguration.primary}
+                                    value={isProportional}
+                                    label="Proportional"
+                                    onValueChange={() => setIsProportional(!isProportional)}
+                                />
+                            </TutorialTip>
                         )}
 
                         {priceValue != null && (
