@@ -10,11 +10,24 @@ export class BalanceCalculator implements IBalanceCalculator {
     private readonly _priceCalculator = lazyInject<IPriceCalculator>(IPriceCalculator);
 
     calculate(expense: IExpense, userId: string): BalanceResult {
+        if (expense.children.length > 0) {
+            const balances = this.calculatePersonBreakdown(expense, userId);
+            return new BalanceResult(
+                true,
+                Array.from(balances.values()).reduce((p, c) => p + c, 0),
+                ""
+            );
+        }
+
         if (expense.payers.length === 0) return new BalanceResult(false, 0, "");
 
         const payer = expense.users.find((u) => u.id === expense.payers[0].userId)!;
 
-        if (payer.id === userId) {
+        if (!payer) {
+            return new BalanceResult(false, 0, "");
+        }
+
+        if (payer?.id === userId) {
             return new BalanceResult(
                 true,
                 expense.users.reduce((p, c) => {

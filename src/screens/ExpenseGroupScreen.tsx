@@ -23,12 +23,12 @@ import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-co
 import { IExpense } from "../models/expense/expense-interface";
 import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
-import { Expense } from "../models/expense/expense";
 import { TutorialTip } from "../components/TutorialTip";
 import { ExpensePreviewList } from "../components/ExpensePreviewList";
 import { ExpenseGroupFooter } from "../components/ExpenseGroupFooter";
 import { UserIcon } from "../components/UserIcon";
 import Add from "../../assets/icons/add.svg";
+import { ExpenseFooter } from "../components/ExpenseFooter";
 
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
@@ -44,10 +44,8 @@ type Props = CompositeScreenProps<
 export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
     const [expense, setExpense] = useState<IExpense>(_expenseManager.currentExpense!);
     const [selectedItem, setSelectedItem] = useState<IExpenseItem | null>(null);
-    const [editingTitle, setEditingTitle] = useState<boolean>(false);
     const [isAddingItem, setIsAddingItem] = useState<boolean>(false);
     const isEditing = useObservable(_expenseViewModel.isEditingItems$, false);
-    const [items, setItems] = useState<IExpenseItem[]>([]);
     const selectedChild = useObservable<IExpense | undefined>(_expenseViewModel.selectedChild$, undefined);
 
     useObservable<IExpense>(
@@ -92,7 +90,7 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
             }
 
             _expenseManager.updateItemDetails(
-                expense.id,
+                selectedItem.expenseId,
                 selectedItem,
                 name ?? selectedItem.name,
                 price ?? selectedItem.price,
@@ -133,29 +131,30 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
 
         // Update the local state for a smoother UX. The data response from the connection
         // should be the same as what we're updating to
-        setExpense(
-            new Expense(
-                expense.id,
-                expense.name,
-                expense.transactionDate,
-                expense.items,
-                expense.users,
-                expense.payers,
-                expense.payerStatuses,
-                expense.children,
-            ),
-        );
+        // setExpense(
+        //     new Expense(
+        //         expense.id,
+        //         expense.name,
+        //         expense.transactionDate,
+        //         expense.items,
+        //         expense.users,
+        //         expense.payers,
+        //         expense.payerStatuses,
+        //         expense.children,
+        //     ),
+        // );
     };
 
     const onItemDelete = useCallback((): void => {
-        const itemIndex = expense.items.findIndex((i) => i.id === selectedItem?.id);
+        const item = expense.children.flatMap(c => c.items).find((i) => i.id === selectedItem?.id);
 
-        if (itemIndex === -1) {
+
+        if (!item) {
             setSelectedItem(null);
             return;
         }
 
-        _expenseManager.removeItem(expense.id, expense.items[itemIndex]);
+        _expenseManager.removeItem(item.expenseId, item);
         setSelectedItem(null);
         _expenseViewModel.setAwaitingResponse(true);
     }, [expense, selectedItem]);
@@ -242,7 +241,10 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
 
             <View style={styles.footer}>
                 <ListSeparator />
-                <ExpenseGroupFooter expense={expense} />
+                {selectedChild
+                    ? <ExpenseFooter expense={selectedChild} isEditing={isEditing} onItemSelected={setSelectedItem} />
+                    : <ExpenseGroupFooter expense={expense} />
+                }
             </View>
 
             <EditModal

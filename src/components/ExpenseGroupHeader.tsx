@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Alert, SafeAreaView, StyleSheet } from "react-native";
 import { Colors, Text, TextField } from "react-native-ui-lib";
 import { TouchableOpacity, View } from "react-native-ui-lib/core";
@@ -17,6 +17,8 @@ import Collapse from "../../assets/icons/collapse.svg";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import { EditModal } from "./EditModal";
 import { EditResult } from "../models/edit-result";
+import { EditItemsControl } from "./EditItemsControl";
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
@@ -33,6 +35,21 @@ export const ExpenseGroupHeader = () => {
     const searchVisible = useObservable(_expenseViewModel.searchVisible$, false);
     const searchFilter = useObservable(_inviteViewModel.searchFilter$, _inviteViewModel.searchFilter);
     const screen = useObservable(_expenseViewModel.screen$, "Items");
+
+    const [actionWidth, setActionWidth] = useState<number>(40);
+    const [arrowWidth, setArrowWidth] = useState<number>(40);
+    const centerOffset = useSharedValue<number>(0);
+
+    const animatedPadding = useAnimatedStyle(() => ({
+        transform: [{translateX: centerOffset.value}]
+    }));
+
+    useEffect(() => {
+        centerOffset.value = withSpring(
+            (actionWidth - arrowWidth) / 2,
+            { duration: 500 }
+        );
+    }, [actionWidth, arrowWidth])
 
     const onAddPress = () => {
         Alert.alert(`Create an empty expense?`, "", [
@@ -62,7 +79,8 @@ export const ExpenseGroupHeader = () => {
     return (
         <SafeAreaView>
             <View style={styles.header} bg-screenBG>
-                <View style={styles.arrowContainer}>
+                <View style={[styles.arrowContainer, {  }]}
+                    onLayout={(e) => setArrowWidth(e.nativeEvent.layout.width)}>
                     {!selectedChild ?
                         <TouchableOpacity onPress={() => _expenseViewModel.onBackPress()}>
                             <ArrowBack height={_uiConfig.sizes.icon} width={_uiConfig.sizes.icon} fill={Colors.textColor} />
@@ -73,7 +91,7 @@ export const ExpenseGroupHeader = () => {
                     }
                 </View>
 
-                <View style={styles.inputContainer}>
+                <Animated.View style={[styles.inputContainer, animatedPadding]}>
                     {searchVisible ? (
                         <TextField
                             body
@@ -82,25 +100,31 @@ export const ExpenseGroupHeader = () => {
                             placeholder="Search"
                             placeholderTextColor={_colorConfiguration.greyFont}
                             value={searchFilter}
+                            containerStyle={{width: "100%"}}
                             style={styles.textInput}
                             onChangeText={(text) => _inviteViewModel.setSearchFilter(text)}
                         />
                     ) : <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
-                    <Text letterSubheading color={Colors.textColor} style={styles.headerLabel}>
+                            <Text letterSubheading color={Colors.textColor} style={[styles.headerLabel]} numberOfLines={1} adjustsFontSizeToFit minimumFontScale={0.75}>
                         {selectedChild?.name ?? currentExpense!.name}
                     </Text>
                 </TouchableOpacity>}
-                </View>
+                </Animated.View>
 
-                <View style={styles.actionContainer}>
+                <View
+                    style={[styles.actionContainer, {  }]}
+                    onLayout={(e) => setActionWidth(e.nativeEvent.layout.width)}>
                     {screen === "Items" &&
+                        (currentExpense?.children.length === 0 || !!selectedChild ?
+                        <EditItemsControl />
+                        :
                         <View>
                             <TouchableOpacity onPress={onAddPress}>
                                 <Add width={icon} height={icon} fill={Colors.textColor} />
                             </TouchableOpacity>
-                        </View>
+                        </View>)
                     }
-                    {screen === "People" && <SelectItemsControl />}
+                    {screen === "People" && (currentExpense?.children.length === 0 || !!selectedChild) && <SelectItemsControl />}
                     {screen === "Guests" && <AddGuestControl />}
                     {(screen === "Contacts" || screen === "Search") && <ScanUserQrControl />}
                 </View>
@@ -132,15 +156,17 @@ const styles = StyleSheet.create({
     },
     arrowContainer: {
         display: "flex",
-        flex: 1,
-        justifyContent: "center",
+        flexDirection: "row",
+        minWidth: 40,
+        columnGap: 10,
+        alignItems: "center",
         height: 50,
         paddingRight: 5,
     },
     actionContainer: {
         display: "flex",
         height: 50,
-        flex: 1,
+        minWidth: 40,
         justifyContent: "center",
         alignItems: "flex-end",
         paddingLeft: 5,

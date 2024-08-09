@@ -47,8 +47,8 @@ export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress, p
     const [peopleContainerWidth, setPeopleContainerWidth] = useState<number>(Dimensions.get("window").width);
     const PERSON_LIMIT = Math.floor((peopleContainerWidth - 20) / 34) - 1;
 
-    const balance = useComputed<BalanceResult>(
-        ([data, person]) => _balanceCalculator.calculate(data as IExpense, (person as IExpenseUserDetails).id),
+    const balance = useComputed<BalanceResult, [IExpense, IExpenseUserDetails]>(
+        ([data, person]) => _balanceCalculator.calculate(data, person.id),
         [data, person],
     );
 
