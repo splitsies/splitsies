@@ -6,6 +6,7 @@ import More from "../../assets/icons/more.svg";
 import { lazyInject } from "../utils/lazy-inject";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 import { IExpenseUserDetails } from "@splitsies/shared-models";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 const icon = lazyInject<IUiConfiguration>(IUiConfiguration).sizes.smallIcon;
 
@@ -16,7 +17,7 @@ type Props = {
     setActionsVisible: (value: boolean) => void;
 }
 
-export const CardHeader = ({ iconContent, person, isSelected, setActionsVisible }: Props): React.ReactNode => {
+export const CardHeader = SpThemedComponent(({ iconContent, person, isSelected, setActionsVisible }: Props): React.ReactNode => {
     return (
         <View style={{ alignItems: "center" }}>
             <View style={styles.header}>
@@ -46,7 +47,7 @@ export const CardHeader = ({ iconContent, person, isSelected, setActionsVisible 
             </View>
         </View>
     );
-};
+});
 
 const styles = StyleSheet.create({
     header: {

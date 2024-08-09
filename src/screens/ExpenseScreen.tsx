@@ -122,18 +122,18 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
 
         // Update the local state for a smoother UX. The data response from the connection
         // should be the same as what we're updating to
-        setExpense(
-            new Expense(
-                expense.id,
-                expense.name,
-                expense.transactionDate,
-                expense.items,
-                expense.users,
-                expense.payers,
-                expense.payerStatuses,
-                expense.children,
-            ),
-        );
+        // setExpense(
+        //     new Expense(
+        //         expense.id,
+        //         expense.name,
+        //         expense.transactionDate,
+        //         expense.items,
+        //         expense.users,
+        //         expense.payers,
+        //         expense.payerStatuses,
+        //         expense.children,
+        //     ),
+        // );
     };
 
     const onItemDelete = useCallback((): void => {
@@ -166,11 +166,6 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
             <TutorialTip group="expense" stepKey="editNameAndDate" placement="bottom">
                 <SafeAreaView style={{ marginBottom: 10 }}>
                     <View centerH>
-                        <TouchableOpacity onPress={() => setEditingTitle(!editingTitle)}>
-                            <Text letterSubheading color={Colors.textColor} style={styles.headerLabel}>
-                                {expense.name}
-                            </Text>
-                        </TouchableOpacity>
                         <DateTimePicker
                             style={_styleManager.typography.letter}
                             color={Colors.textColor}
@@ -231,13 +226,6 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
                 <ListSeparator />
                 <ExpenseFooter expense={expense} onItemSelected={setSelectedItem} isEditing={isEditing} />
             </View>
-
-            <EditModal
-                visible={editingTitle}
-                nameValue={expense.name}
-                onSave={onTitleSave}
-                onCancel={() => setEditingTitle(false)}
-            />
 
             <EditModal
                 visible={!!selectedItem}

@@ -44,7 +44,7 @@ const AnimatedSvg = Animated.createAnimatedComponent(Svg);
 export const ExpenseNavigator = SpThemedComponent(() => {
     const currentExpense = useObservable(_expenseManager.currentExpense$, _expenseManager.currentExpense);
     return (
-        <Drawer.Navigator screenOptions={{ header: currentExpense?.children.length === 0 ?  ExpenseNavigationHeader : ExpenseGroupHeader , swipeEnabled: false }}>
+        <Drawer.Navigator screenOptions={{ header: ExpenseGroupHeader , swipeEnabled: false }}>
             <Drawer.Screen name="Expense" component={InternalExpenseNavigator} />
         </Drawer.Navigator>
     );
@@ -77,7 +77,7 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
     }));
 
     useObservable(_expenseViewModel.screen$, "Items", (screen) => {
-        yPosition.value = withSpring(screen === "People" ? -5 : 22, { duration: 800 });
+        yPosition.value = withSpring(screen === "People" ? -2 : 22, { duration: 800 });
         cameraButtonSize.value = withSpring(screen === "People" ? 41 : 75, { duration: 800 });
         animatedCameraIconSize.value = withSpring(screen === "People" ? _uiConfig.sizes.smallIcon : _uiConfig.sizes.largeIcon, { duration: 800 });
     });
@@ -139,7 +139,7 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
                     tabBarIcon: ({ color, size }) => <People width={size} height={size} fill={color} />,
                 }}
             />
-            <Tab.Screen
+            {currentExpense?.children.length !== 0 && <Tab.Screen
                 component={PeopleScreen}
                 name="Camera"
                 options={({ navigation }) => ({
@@ -162,7 +162,7 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
                         </TutorialTip>
                     ),
                 })}
-            />
+            />}
             <Tab.Screen
                 name="Invite"
                 component={InviteNavigator}

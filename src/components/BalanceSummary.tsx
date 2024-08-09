@@ -5,6 +5,7 @@ import { ExpenseItem } from "./ExpenseItem";
 import { lazyInject } from "../utils/lazy-inject";
 import { IBalanceCalculator } from "../utils/balance-calculator/balance-calculator-interface";
 import { View } from "react-native-ui-lib/core";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 const _balanceCalculator = lazyInject<IBalanceCalculator>(IBalanceCalculator);
 
@@ -14,7 +15,7 @@ type Props = {
     comparedUserId: string;
 };
 
-export const BalanceSummary = ({ expense, primaryUserId, comparedUserId }: Props): React.ReactNode => {
+export const BalanceSummary = SpThemedComponent(({ expense, primaryUserId, comparedUserId }: Props): React.ReactNode => {
 
     const render = (): React.ReactNode[] => {
         const nodes = [];
@@ -40,4 +41,4 @@ export const BalanceSummary = ({ expense, primaryUserId, comparedUserId }: Props
     };
 
     return <View>{render()}</View>;
-};
+});

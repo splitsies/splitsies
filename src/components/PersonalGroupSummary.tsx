@@ -20,6 +20,7 @@ import { CollapseableIndicator } from "./CollapseableIndicator";
 import { ITransactionNoteBuilder } from "../utils/transaction-note-builder/transaction-note-builder-interface";
 import { IClipboardUtility } from "../utils/clipboard-utility/clipboard-utility-interface";
 import { CardHeader } from "./CardHeader";
+import { SpThemedComponent } from "../hocs/SpThemedComponent";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
@@ -38,8 +39,7 @@ type Props = {
     style?: object;
 };
 
-export const PersonalGroupSummary = ({ person, expense, style, isSelectedPerson }: Props): JSX.Element => {
-    useThemeWatcher();
+export const PersonalGroupSummary = SpThemedComponent(({ person, expense, style, isSelectedPerson }: Props): JSX.Element => {
     const [allExpanded, setAllExpanded] = useState<boolean>(false);
     const balances = useComputed<Map<string, number>, [IExpense, IExpenseUserDetails]>(
         ([expense, person]) => _balanceCalculator.calculatePersonBreakdown(expense, person.id),
@@ -149,7 +149,7 @@ export const PersonalGroupSummary = ({ person, expense, style, isSelectedPerson 
             />
         </View>
     );
-};
+});
 
 const styles = StyleSheet.create({
     container: {
