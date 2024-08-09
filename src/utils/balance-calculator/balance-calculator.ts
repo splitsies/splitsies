@@ -10,7 +10,7 @@ export class BalanceCalculator implements IBalanceCalculator {
     private readonly _priceCalculator = lazyInject<IPriceCalculator>(IPriceCalculator);
 
     calculate(expense: IExpense, userId: string): BalanceResult {
-        if (expense.children.length > 0) {
+        if (expense.groupable) {
             const balances = this.calculatePersonBreakdown(expense, userId);
             return new BalanceResult(
                 true,

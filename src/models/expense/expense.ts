@@ -11,7 +11,11 @@ export class Expense implements IExpense {
         readonly payers: IPayerShare[],
         readonly payerStatuses: ExpensePayerStatus[],
         readonly children: IExpense[],
-    ) {}
+    ) { }
+    
+    get groupable(): boolean {
+        return this.items.length === 0 || this.children.length > 0;
+    }
 
     get subtotal(): number {
         return this.items.filter((i) => !i.isProportional).reduce((prev, curr) => prev + curr.price, 0);

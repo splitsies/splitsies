@@ -139,7 +139,7 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
                     tabBarIcon: ({ color, size }) => <People width={size} height={size} fill={color} />,
                 }}
             />
-            {currentExpense?.children.length !== 0 && <Tab.Screen
+            {currentExpense?.groupable && <Tab.Screen
                 component={PeopleScreen}
                 name="Camera"
                 options={({ navigation }) => ({
