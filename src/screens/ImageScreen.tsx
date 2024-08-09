@@ -18,7 +18,12 @@ const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration)
 const _adManager = lazyInject<IAdManager>(IAdManager);
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 
-export const ImageScreen = ({ navigation, route: { params: { image } } }: Props): JSX.Element => {
+export const ImageScreen = ({
+    navigation,
+    route: {
+        params: { image },
+    },
+}: Props): JSX.Element => {
     const [isProcessing, setIsProcessing] = useState<boolean>(false);
     const ad = useRef<InterstitialAd | null>(null);
 

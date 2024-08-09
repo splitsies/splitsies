@@ -6,22 +6,19 @@ import { Colors } from "react-native-ui-lib/core";
 type Props = {
     collapsed: boolean;
     size: number;
-}
+};
 
 export const CollapseableIndicator = ({ collapsed, size }: Props) => {
     const rotation = useSharedValue(0);
 
     useEffect(() => {
-        rotation.value = withSpring(
-            collapsed ? 0 : -180,
-            { damping: 10 }
-        );
+        rotation.value = withSpring(collapsed ? 0 : -180, { damping: 10 });
     }, [collapsed]);
 
     const animatedStyle = useAnimatedStyle(() => {
         return {
-            transform: [{ rotateZ: `${rotation.value}deg` }]
-        }
+            transform: [{ rotateZ: `${rotation.value}deg` }],
+        };
     });
 
     return (

@@ -15,30 +15,41 @@ type Props = {
     comparedUserId: string;
 };
 
-export const BalanceSummary = SpThemedComponent(({ expense, primaryUserId, comparedUserId }: Props): React.ReactNode => {
-
-    const render = (): React.ReactNode[] => {
-        const nodes = [];
-        const expensesPaidByUsers = expense.children
-            .filter(e => e.payers[0]?.userId === primaryUserId || e.payers[0]?.userId === comparedUserId);
-
-        for (const c of expensesPaidByUsers) {
-            const balanceResult = c.payers[0]?.userId === primaryUserId
-                ? _balanceCalculator.calculate(c, comparedUserId)
-                : _balanceCalculator.calculate(c, primaryUserId);
-            
-            const expenseItem = new ExpenseItemModel("", c.id, c.name, Math.abs(balanceResult.balance), [], false, Date.now());
-            
-            nodes.push(
-                <ExpenseItem
-                    item={expenseItem}
-                    pricePrefix={c.payers[0]?.userId === primaryUserId ? "Owes you" : "You owe"}
-                />
+export const BalanceSummary = SpThemedComponent(
+    ({ expense, primaryUserId, comparedUserId }: Props): React.ReactNode => {
+        const render = (): React.ReactNode[] => {
+            const nodes = [];
+            const expensesPaidByUsers = expense.children.filter(
+                (e) => e.payers[0]?.userId === primaryUserId || e.payers[0]?.userId === comparedUserId,
             );
-        }
 
-        return nodes;
-    };
+            for (const c of expensesPaidByUsers) {
+                const balanceResult =
+                    c.payers[0]?.userId === primaryUserId
+                        ? _balanceCalculator.calculate(c, comparedUserId)
+                        : _balanceCalculator.calculate(c, primaryUserId);
 
-    return <View>{render()}</View>;
-});
+                const expenseItem = new ExpenseItemModel(
+                    "",
+                    c.id,
+                    c.name,
+                    Math.abs(balanceResult.balance),
+                    [],
+                    false,
+                    Date.now(),
+                );
+
+                nodes.push(
+                    <ExpenseItem
+                        item={expenseItem}
+                        pricePrefix={c.payers[0]?.userId === primaryUserId ? "Owes you" : "You owe"}
+                    />,
+                );
+            }
+
+            return nodes;
+        };
+
+        return <View>{render()}</View>;
+    },
+);

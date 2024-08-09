@@ -95,7 +95,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     async connectToExpense(expenseId: string): Promise<void> {
         try {
-            const expense = this.expenses.find(e => e.id === expenseId);
+            const expense = this.expenses.find((e) => e.id === expenseId);
 
             if (!expense) {
                 await this._api.connectToExpense(expenseId);

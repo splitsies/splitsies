@@ -15,39 +15,39 @@ type Props = {
     person: IExpenseUserDetails;
     isSelected: boolean;
     setActionsVisible: (value: boolean) => void;
-}
+};
 
-export const CardHeader = SpThemedComponent(({ iconContent, person, isSelected, setActionsVisible }: Props): React.ReactNode => {
-    return (
-        <View style={{ alignItems: "center" }}>
-            <View style={styles.header}>
-                <View style={styles.iconContainer}>
-                    {iconContent?.()}
-                </View>
+export const CardHeader = SpThemedComponent(
+    ({ iconContent, person, isSelected, setActionsVisible }: Props): React.ReactNode => {
+        return (
+            <View style={{ alignItems: "center" }}>
+                <View style={styles.header}>
+                    <View style={styles.iconContainer}>{iconContent?.()}</View>
 
-                <View style={styles.nameContainer}>
-                    <Text body numberOfLines={1} ellipsizeMode={"tail"} color={Colors.textColor}>
-                        {person.givenName + (person.familyName ? " " + person.familyName : "")}
-                    </Text>
-                </View>
+                    <View style={styles.nameContainer}>
+                        <Text body numberOfLines={1} ellipsizeMode={"tail"} color={Colors.textColor}>
+                            {person.givenName + (person.familyName ? " " + person.familyName : "")}
+                        </Text>
+                    </View>
 
-                <View style={[styles.iconContainer, { columnGap: 5, justifyContent: "flex-end" }]}>
-                    {isSelected ? (
-                        <TutorialTip group="people" stepKey="menu" placement="bottom">
+                    <View style={[styles.iconContainer, { columnGap: 5, justifyContent: "flex-end" }]}>
+                        {isSelected ? (
+                            <TutorialTip group="people" stepKey="menu" placement="bottom">
+                                <TouchableOpacity onPress={() => setActionsVisible(true)}>
+                                    <More width={icon} height={icon} fill={Colors.textColor} />
+                                </TouchableOpacity>
+                            </TutorialTip>
+                        ) : (
                             <TouchableOpacity onPress={() => setActionsVisible(true)}>
                                 <More width={icon} height={icon} fill={Colors.textColor} />
                             </TouchableOpacity>
-                        </TutorialTip>
-                    ) : (
-                        <TouchableOpacity onPress={() => setActionsVisible(true)}>
-                            <More width={icon} height={icon} fill={Colors.textColor} />
-                        </TouchableOpacity>
-                    )}
+                        )}
+                    </View>
                 </View>
             </View>
-        </View>
-    );
-});
+        );
+    },
+);
 
 const styles = StyleSheet.create({
     header: {
@@ -62,11 +62,11 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         width: 35,
-    },  
+    },
     nameContainer: {
         flex: 1,
         alignItems: "center",
         justifyContent: "center",
         flexGrow: 1,
-    },  
-})
+    },
+});

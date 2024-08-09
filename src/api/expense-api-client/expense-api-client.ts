@@ -301,7 +301,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
             return;
         }
     }
-    
+
     async requestAddToExpenseGroup(expenseId: string, expense: IExpenseDto | undefined): Promise<void> {
         try {
             const url = `${this._config.expense}/${expenseId}/children`;
@@ -324,7 +324,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
 
         return false;
-    };
+    }
 
     addItem(
         expenseId: string,
@@ -333,7 +333,11 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         itemOwners: IExpenseUserDetails[],
         isItemProportional: boolean,
     ): void {
-        if (this.queueIfPendingConnection(expenseId, () => this.addItem(expenseId, itemName, itemPrice, itemOwners, isItemProportional))) {
+        if (
+            this.queueIfPendingConnection(expenseId, () =>
+                this.addItem(expenseId, itemName, itemPrice, itemOwners, isItemProportional),
+            )
+        ) {
             return;
         }
 
@@ -356,7 +360,9 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     updateItemSelections(expenseId: string, user: IExpenseUserDetails, selectedItemIds: string[]): void {
-        if (this.queueIfPendingConnection(expenseId, () => this.updateItemSelections(expenseId, user, selectedItemIds))) {
+        if (
+            this.queueIfPendingConnection(expenseId, () => this.updateItemSelections(expenseId, user, selectedItemIds))
+        ) {
             return;
         }
 
@@ -374,7 +380,11 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         itemPrice: number,
         isItemProportional: boolean,
     ): void {
-        if (this.queueIfPendingConnection(expenseId, () => this.updateItemDetails(expenseId, item, itemName, itemPrice, isItemProportional))) {
+        if (
+            this.queueIfPendingConnection(expenseId, () =>
+                this.updateItemDetails(expenseId, item, itemName, itemPrice, isItemProportional),
+            )
+        ) {
             return;
         }
 
@@ -398,7 +408,11 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     updateExpenseTransactionDate(expenseId: string, transactionDate: Date): void {
-        if (this.queueIfPendingConnection(expenseId, () => this.updateExpenseTransactionDate(expenseId, transactionDate))) {
+        if (
+            this.queueIfPendingConnection(expenseId, () =>
+                this.updateExpenseTransactionDate(expenseId, transactionDate),
+            )
+        ) {
             return;
         }
 
@@ -415,7 +429,11 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         item: IExpenseItem,
         itemSelected: boolean,
     ): void {
-        if (this.queueIfPendingConnection(expenseId, () => this.updateSingleItemSelected(expenseId, user, item, itemSelected))) {
+        if (
+            this.queueIfPendingConnection(expenseId, () =>
+                this.updateSingleItemSelected(expenseId, user, item, itemSelected),
+            )
+        ) {
             return;
         }
 
@@ -431,10 +449,12 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
             console.warn("Established connection after termination");
             // On rapid connect/disconnect, ensure that we don't create a background connection when
             // the connection gets through after we've decided we no longer want to be connected
-            try { this._connection?.close(); } catch { }
+            try {
+                this._connection?.close();
+            } catch {}
             return;
         }
-        
+
         await this.getExpense(expenseId);
         promiseResolver();
 
@@ -449,14 +469,15 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     private async onMessage(e: WebSocketMessageEvent): Promise<void> {
-
         const message = JSON.parse(e.data) as IExpenseDto;
 
         if (this._allowedExpenseConnection !== message.id) {
             console.warn("Established connection after termination");
             // On rapid connect/disconnect, ensure that we don't create a background connection when
             // the connection gets through after we've decided we no longer want to be connected
-            try { this._connection?.close(); } catch { }
+            try {
+                this._connection?.close();
+            } catch {}
             return;
         }
 

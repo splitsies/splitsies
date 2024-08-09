@@ -31,7 +31,6 @@ const _balanceCalculator = lazyInject<IBalanceCalculator>(IBalanceCalculator);
 const _transactionNoteBuilder = lazyInject<ITransactionNoteBuilder>(ITransactionNoteBuilder);
 const _clipboardUtility = lazyInject<IClipboardUtility>(IClipboardUtility);
 
-
 type Props = {
     person: IExpenseUserDetails;
     expense: IExpense;
@@ -39,117 +38,135 @@ type Props = {
     style?: object;
 };
 
-export const PersonalGroupSummary = SpThemedComponent(({ person, expense, style, isSelectedPerson }: Props): JSX.Element => {
-    const [allExpanded, setAllExpanded] = useState<boolean>(false);
-    const balances = useComputed<Map<string, number>, [IExpense, IExpenseUserDetails]>(
-        ([expense, person]) => _balanceCalculator.calculatePersonBreakdown(expense, person.id),
-        [expense, person],
-    );
+export const PersonalGroupSummary = SpThemedComponent(
+    ({ person, expense, style, isSelectedPerson }: Props): JSX.Element => {
+        const [allExpanded, setAllExpanded] = useState<boolean>(false);
+        const balances = useComputed<Map<string, number>, [IExpense, IExpenseUserDetails]>(
+            ([expense, person]) => _balanceCalculator.calculatePersonBreakdown(expense, person.id),
+            [expense, person],
+        );
 
-    const onCopyPress = useCallback((): void => {
-        _clipboardUtility.copyToClipboard(_transactionNoteBuilder.buildForGroupSummary(expense, balances, person.id));
-        setActionsVisible(false);
-        setToastVisible(true);
-    }, [expense, balances, person]);
+        const onCopyPress = useCallback((): void => {
+            _clipboardUtility.copyToClipboard(
+                _transactionNoteBuilder.buildForGroupSummary(expense, balances, person.id),
+            );
+            setActionsVisible(false);
+            setToastVisible(true);
+        }, [expense, balances, person]);
 
-    const onSectionCopyPress = useCallback((otherId: string): void => {
-        _clipboardUtility.copyToClipboard(_transactionNoteBuilder.buildForIndividualSummary(expense, balances, person.id, otherId));
-        setActionsVisible(false);
-        setToastVisible(true);
-    }, [expense, balances, person]);
-
-    const onRemovePerson = (): void => {
-        Alert.alert(`Remove Person?`, "Any item selections will be reverted. Do you want to continue?", [
-            {
-                text: "Yes",
-                onPress: () => {
-                    
-                    void _expenseManager.requestRemoveUserFromExpense(person.id, expense.id);
-                    setActionsVisible(false);
-                },
+        const onSectionCopyPress = useCallback(
+            (otherId: string): void => {
+                _clipboardUtility.copyToClipboard(
+                    _transactionNoteBuilder.buildForIndividualSummary(expense, balances, person.id, otherId),
+                );
+                setActionsVisible(false);
+                setToastVisible(true);
             },
-            { text: "No", style: "cancel" },
-        ]);
-    };
+            [expense, balances, person],
+        );
 
-    const defaultActions: ButtonProps[] = [
-        { label: "Remove User", onPress: onRemovePerson },
-        { label: "Copy Breakdown to Clipboard", onPress: onCopyPress },
-        { label: "Cancel", onPress: () => setActionsVisible(false) },
-    ];
+        const onRemovePerson = (): void => {
+            Alert.alert(`Remove Person?`, "Any item selections will be reverted. Do you want to continue?", [
+                {
+                    text: "Yes",
+                    onPress: () => {
+                        void _expenseManager.requestRemoveUserFromExpense(person.id, expense.id);
+                        setActionsVisible(false);
+                    },
+                },
+                { text: "No", style: "cancel" },
+            ]);
+        };
 
-    const [actionsVisible, setActionsVisible] = useState<boolean>(false);
-    const [toastVisible, setToastVisible] = useState<boolean>(false);
+        const defaultActions: ButtonProps[] = [
+            { label: "Remove User", onPress: onRemovePerson },
+            { label: "Copy Breakdown to Clipboard", onPress: onCopyPress },
+            { label: "Cancel", onPress: () => setActionsVisible(false) },
+        ];
 
+        const [actionsVisible, setActionsVisible] = useState<boolean>(false);
+        const [toastVisible, setToastVisible] = useState<boolean>(false);
 
-    const totalItem = useComputed<IExpenseItem, [Map<string, number>]>(
-        ([balances]) => {
-            const netTotal = Array.from(balances.values()).reduce((p, c) => p + c, 0);
-            return new ExpenseItemModel("", expense.id, netTotal < 0 ? "Owes" : "Owed", Math.abs(netTotal), [], false, Date.now())
-        },
-        [balances]);
+        const totalItem = useComputed<IExpenseItem, [Map<string, number>]>(
+            ([balances]) => {
+                const netTotal = Array.from(balances.values()).reduce((p, c) => p + c, 0);
+                return new ExpenseItemModel(
+                    "",
+                    expense.id,
+                    netTotal < 0 ? "Owes" : "Owed",
+                    Math.abs(netTotal),
+                    [],
+                    false,
+                    Date.now(),
+                );
+            },
+            [balances],
+        );
 
-    return (
-        <View style={[styles.container, style, { borderColor: Colors.divider}]}>
-            <CardHeader
-                person={person}
-                isSelected={isSelectedPerson}
-                setActionsVisible={setActionsVisible}
-                iconContent={() =>
-                    <TouchableOpacity onPress={() => setAllExpanded(!allExpanded)}>
-                        <CollapseableIndicator collapsed={!allExpanded} size={_uiConfig.sizes.icon} />
-                    </TouchableOpacity>
-            } />
-            
-            <FlatList style={styles.orderContainer}
-                data={Array.from(balances.entries())}
-                renderItem={({ item: [userId, balance] }) => (
-                    <View style={{ marginVertical: 10 }}>
-                        <GroupBalanceSection
-                            key={userId}
-                            expense={expense}
-                            userId={userId}
-                            balance={balance}
-                            person={person}
-                            allExpanded={allExpanded}
-                            onCopyPress={onSectionCopyPress}
-                        />
-                    </View>
-                )}
-                ItemSeparatorComponent={ListSeparator}                
-            />
+        return (
+            <View style={[styles.container, style, { borderColor: Colors.divider }]}>
+                <CardHeader
+                    person={person}
+                    isSelected={isSelectedPerson}
+                    setActionsVisible={setActionsVisible}
+                    iconContent={() => (
+                        <TouchableOpacity onPress={() => setAllExpanded(!allExpanded)}>
+                            <CollapseableIndicator collapsed={!allExpanded} size={_uiConfig.sizes.icon} />
+                        </TouchableOpacity>
+                    )}
+                />
 
-            <View style={{ borderTopWidth: 0.5, borderTopColor: Colors.divider, paddingTop: 5 }}>
-                <ExpenseItem item={totalItem} key={"total"} onPress={() => {}} />
+                <FlatList
+                    style={styles.orderContainer}
+                    data={Array.from(balances.entries())}
+                    renderItem={({ item: [userId, balance] }) => (
+                        <View style={{ marginVertical: 10 }}>
+                            <GroupBalanceSection
+                                key={userId}
+                                expense={expense}
+                                userId={userId}
+                                balance={balance}
+                                person={person}
+                                allExpanded={allExpanded}
+                                onCopyPress={onSectionCopyPress}
+                            />
+                        </View>
+                    )}
+                    ItemSeparatorComponent={ListSeparator}
+                />
+
+                <View style={{ borderTopWidth: 0.5, borderTopColor: Colors.divider, paddingTop: 5 }}>
+                    <ExpenseItem item={totalItem} key={"total"} onPress={() => {}} />
+                </View>
+
+                <Toast
+                    body
+                    centerMessage
+                    swipeable
+                    style={{ borderRadius: 35, margin: 14 }}
+                    messageStyle={{ ..._styleManager.typography.body, color: "black" }}
+                    visible={toastVisible}
+                    position={"bottom"}
+                    autoDismiss={1000}
+                    backgroundColor={_colorConfiguration.primary}
+                    message="Breakdown copied to clipboard"
+                    onDismiss={() => {
+                        setToastVisible(false);
+                    }}
+                />
+
+                <ActionSheet
+                    useNativeIOS
+                    cancelButtonIndex={defaultActions.filter((a) => !a.disabled).length - 1}
+                    destructiveButtonIndex={0}
+                    options={defaultActions.filter((a) => !a.disabled)}
+                    visible={actionsVisible}
+                    onDismiss={() => setActionsVisible(false)}
+                />
             </View>
-
-            <Toast
-                body
-                centerMessage
-                swipeable
-                style={{ borderRadius: 35, margin: 14 }}
-                messageStyle={{ ..._styleManager.typography.body, color: "black" }}
-                visible={toastVisible}
-                position={"bottom"}
-                autoDismiss={1000}
-                backgroundColor={_colorConfiguration.primary}
-                message="Breakdown copied to clipboard"
-                onDismiss={() => {
-                    setToastVisible(false);
-                }}
-            />
-
-            <ActionSheet
-                useNativeIOS
-                cancelButtonIndex={defaultActions.filter((a) => !a.disabled).length - 1}
-                destructiveButtonIndex={0}
-                options={defaultActions.filter((a) => !a.disabled)}
-                visible={actionsVisible}
-                onDismiss={() => setActionsVisible(false)}
-            />
-        </View>
-    );
-});
+        );
+    },
+);
 
 const styles = StyleSheet.create({
     container: {
