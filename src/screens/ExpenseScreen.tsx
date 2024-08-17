@@ -122,18 +122,18 @@ export const ExpenseScreen = SpThemedComponent(({ navigation }: Props) => {
 
         // Update the local state for a smoother UX. The data response from the connection
         // should be the same as what we're updating to
-        // setExpense(
-        //     new Expense(
-        //         expense.id,
-        //         expense.name,
-        //         expense.transactionDate,
-        //         expense.items,
-        //         expense.users,
-        //         expense.payers,
-        //         expense.payerStatuses,
-        //         expense.children,
-        //     ),
-        // );
+        _expenseManager.updateCurrentExpense(
+            new Expense(
+                expense.id,
+                expense.name,
+                expense.transactionDate,
+                expense.items,
+                expense.users,
+                expense.payers,
+                expense.payerStatuses,
+                expense.children,
+            ),
+        );
     };
 
     const onItemDelete = useCallback((): void => {

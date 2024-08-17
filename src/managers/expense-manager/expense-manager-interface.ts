@@ -54,6 +54,12 @@ export interface IExpenseManager {
     ): void;
 
     /**
+     * @deprecated Do not use unless warranted, specifically to reduce server latency in 
+     * updating the current expense 
+     */
+    updateCurrentExpense(expense: IExpense): void;
+
+    /**
      * Sends a ping event to the image scan function to ensure a warm execution
      * environment by the time the receipt needs to be scanned
      */
