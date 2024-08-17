@@ -242,6 +242,15 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         this._api.updateSingleItemSelected(expenseId, user, item, itemSelected);
     }
 
+    /**
+     * To be used sparingly, only to avoid latency in a server response to 
+     * update the current expense
+     * @param expense 
+     */
+    updateCurrentExpense(expense: IExpense): void {
+        this._currentExpense$.next(expense);
+    }
+
     private async onSessionExpenseUpdated(expenseDto: IExpenseDto | null): Promise<void> {
         if (expenseDto == null) {
             return;

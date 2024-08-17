@@ -29,6 +29,7 @@ import { ExpenseGroupFooter } from "../components/ExpenseGroupFooter";
 import { UserIcon } from "../components/UserIcon";
 import Add from "../../assets/icons/add.svg";
 import { ExpenseFooter } from "../components/ExpenseFooter";
+import { Expense } from "../models/expense/expense";
 
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
@@ -120,7 +121,6 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
         const userIndex = item.owners.findIndex((o) => o.id === _userManager.userId);
         const updatedSelected = userIndex === -1;
 
-        _expenseViewModel.setAwaitingResponse(true);
         _expenseManager.updateSingleItemSelected(
             item.expenseId,
             _userManager.expenseUserDetails,
@@ -136,18 +136,18 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
 
         // Update the local state for a smoother UX. The data response from the connection
         // should be the same as what we're updating to
-        // setExpense(
-        //     new Expense(
-        //         expense.id,
-        //         expense.name,
-        //         expense.transactionDate,
-        //         expense.items,
-        //         expense.users,
-        //         expense.payers,
-        //         expense.payerStatuses,
-        //         expense.children,
-        //     ),
-        // );
+        _expenseManager.updateCurrentExpense(
+            new Expense(
+                expense.id,
+                expense.name,
+                expense.transactionDate,
+                expense.items,
+                expense.users,
+                expense.payers,
+                expense.payerStatuses,
+                expense.children,
+            ),
+        );
     };
 
     const onItemDelete = useCallback((): void => {
@@ -196,6 +196,7 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
 
             {selectedChild === undefined ? (
                 <ExpensePreviewList
+                    refreshDisabled
                     hidePeople
                     expenses={expense.children}
                     onExpenseClick={(id) => {

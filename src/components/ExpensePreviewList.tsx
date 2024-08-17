@@ -12,6 +12,7 @@ const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _userManager = lazyInject<IUserManager>(IUserManager);
 
 type Props = {
+    refreshDisabled?: boolean;
     hidePeople?: boolean;
     expenses: IExpense[];
     setFetchingPage?: (value: boolean) => void;
@@ -23,6 +24,7 @@ export const ExpensePreviewList = ({
     setFetchingPage,
     onExpenseClick,
     hidePeople,
+    refreshDisabled,
 }: Props): React.ReactNode => {
     const [refreshing, setRefreshing] = useState<boolean>(false);
 
@@ -41,7 +43,7 @@ export const ExpensePreviewList = ({
     return (
         <FlatList
             contentContainerStyle={{ paddingBottom: 40 }}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
+            refreshControl={refreshDisabled ? undefined : <RefreshControl refreshing={refreshing} onRefresh={refresh} />}
             onEndReached={(_) => void fetchPage()}
             ItemSeparatorComponent={ListSeparator}
             renderItem={({ item, index }) =>
