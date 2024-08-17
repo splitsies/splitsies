@@ -1,13 +1,11 @@
-import React, { useCallback, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FlatList, RefreshControl, ScrollView, StyleSheet } from "react-native";
 import { Colors, Text, View } from "react-native-ui-lib";
 import { ListSeparator } from "../components/ListSeparator";
 import { ExpensePreview } from "../components/ExpensePreview";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import { DrawerParamList, FeedParamList, RootStackParamList } from "../types/params";
-import { DrawerScreenProps } from "@react-navigation/drawer";
-import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { FeedParamList, RootStackParamList } from "../types/params";
+import { CompositeScreenProps } from "@react-navigation/native";
 import { race, first, timer, lastValueFrom } from "rxjs";
 import { useObservable } from "../hooks/use-observable";
 import { useObservableReducer } from "../hooks/use-observable-reducer";
@@ -18,10 +16,12 @@ import { lazyInject } from "../utils/lazy-inject";
 import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-interface";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
 import { Container } from "../components/Container";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { TutorialTip } from "../components/TutorialTip";
 
 type Props = CompositeScreenProps<
-    CompositeScreenProps<NativeStackScreenProps<RootStackParamList>, DrawerScreenProps<DrawerParamList, "Home">>,
-    BottomTabScreenProps<FeedParamList, "Expenses">
+    BottomTabScreenProps<FeedParamList, "Feed">,
+    NativeStackScreenProps<RootStackParamList>
 >;
 
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
@@ -29,26 +29,47 @@ const _userManager = lazyInject<IUserManager>(IUserManager);
 const _requestConfiguration = lazyInject<IRequestConfiguration>(IRequestConfiguration);
 const _viewModel = lazyInject<IHomeViewModel>(IHomeViewModel);
 
-export const ExpenseFeedScreen = SpThemedComponent((): JSX.Element => {
+export const ExpenseFeedScreen = SpThemedComponent(({ navigation, route }: Props): JSX.Element => {
     const [refreshing, setRefreshing] = useState<boolean>(false);
     const expenses = useObservable(_expenseManager.expenses$, _expenseManager.expenses);
     const userName = useObservableReducer(_userManager.user$, "", (userCred) => userCred?.user.givenName ?? "");
     const [fetchingPage, setFetchingPage] = useState<boolean>(false);
+    const pendingConnection = useRef<boolean>(false);
 
-    useFocusEffect(
-        useCallback(() => {
-            void onFocusAsync();
-        }, []),
-    );
+    useEffect(() => {
+        void onLoad();
+    }, [route]);
 
-    const onFocusAsync = async (): Promise<void> => {
+    useEffect(() => {
+        const unsubscribe = navigation.addListener("blur", () => {
+            navigation.setParams({ expenseId: undefined, requestingUserId: undefined});
+        });
+
+        return unsubscribe;
+    }, [navigation]);
+
+    const onLoad = async (): Promise<void> => {
+        if (route.params?.expenseId && route.params?.requestingUserId && _userManager.userId) {
+            await _expenseManager.requestAddUserToExpense(
+                _userManager.userId,
+                route.params.expenseId!,
+                route.params.requestingUserId,
+            );
+            await onExpenseClick(route.params.expenseId);
+        }
+
+        void fetchExpenses();
+    };
+
+    const fetchExpenses = async (): Promise<void> => {
         _viewModel.setPendingData(true);
         await _expenseManager.requestForUser();
         _viewModel.setPendingData(false);
     };
 
     const onExpenseClick = async (expenseId: string) => {
-        if (_viewModel.pendingData) return;
+        if (pendingConnection.current) return;
+        pendingConnection.current = true;
         _viewModel.setPendingData(true);
         void _expenseManager.connectToExpense(expenseId);
 
@@ -59,6 +80,7 @@ export const ExpenseFeedScreen = SpThemedComponent((): JSX.Element => {
 
         await lastValueFrom(timedExpenseObserver);
         _viewModel.setPendingData(false);
+        pendingConnection.current = false;
     };
 
     const refresh = async (): Promise<void> => {
@@ -89,22 +111,36 @@ export const ExpenseFeedScreen = SpThemedComponent((): JSX.Element => {
         </Container>
     ) : (
         <Container>
-            <FlatList
-                contentContainerStyle={{ paddingBottom: 40 }}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
-                onEndReached={(_) => void fetchPage()}
-                ItemSeparatorComponent={ListSeparator}
-                renderItem={({ item }) => (
-                    <ExpensePreview
-                        key={item.id}
-                        data={item}
-                        onPress={onExpenseClick}
-                        person={_userManager.expenseUserDetails}
-                        onLongPress={() => console.log("LONG")}
-                    />
-                )}
-                data={expenses}
-            />
+            {_userManager.user && (
+                <FlatList
+                    contentContainerStyle={{ paddingBottom: 40 }}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
+                    onEndReached={(_) => void fetchPage()}
+                    ItemSeparatorComponent={ListSeparator}
+                    renderItem={({ item, index }) =>
+                        index !== 0 ? (
+                            <ExpensePreview
+                                key={item.id}
+                                data={item}
+                                onPress={onExpenseClick}
+                                person={_userManager.expenseUserDetails}
+                                onLongPress={() => console.log("LONG")}
+                            />
+                        ) : (
+                            <TutorialTip group="home" stepKey="expenseItem" placement="bottom" renderOnLayout>
+                                <ExpensePreview
+                                    key={item.id}
+                                    data={item}
+                                    onPress={onExpenseClick}
+                                    person={_userManager.expenseUserDetails}
+                                    onLongPress={() => console.log("LONG")}
+                                />
+                            </TutorialTip>
+                        )
+                    }
+                    data={expenses}
+                />
+            )}
         </Container>
     );
 });

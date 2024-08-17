@@ -9,8 +9,9 @@ export interface IExpenseApiClient extends IBaseManager {
     getExpense(expenseId: string): Promise<void>;
     getUserIdsForExpense(expenseId: string): Promise<string[]>;
     connectToExpense(expenseId: string): Promise<void>;
+    pingConnection(): Promise<void>;
     disconnectFromExpense(): void;
-    addUserToExpense(userId: string, expenseId: string): Promise<void>;
+    addUserToExpense(userId: string, expenseId: string, requestingUserId?: string): Promise<void>;
     removeUserFromExpense(userId: string, expenseId: string): Promise<void>;
     createFromExpense(expense: IExpenseDto): Promise<boolean>;
     createExpense(base64Image?: string): Promise<boolean>;
@@ -38,6 +39,12 @@ export interface IExpenseApiClient extends IBaseManager {
     ): void;
     updateExpenseName(expenseId: string, expenseName: string): void;
     updateExpenseTransactionDate(expenseId: string, transactionDate: Date): void;
+    updateSingleItemSelected(
+        expenseId: string,
+        user: IExpenseUserDetails,
+        item: IExpenseItem,
+        itemSelected: boolean,
+    ): void;
 }
 
 export const IExpenseApiClient = Symbol.for("IExpenseApiClient");

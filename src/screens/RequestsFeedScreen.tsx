@@ -65,6 +65,7 @@ export const RequestsFeedScreen = ({ navigation }: Props): JSX.Element => {
 
         _viewModel.setPendingData(true);
         void _expenseManager.connectToExpense(joinRequest.expense.id);
+        void _expenseManager.requestForUser(true);
 
         const timedExpenseObserver = race(
             _expenseManager.currentExpense$.pipe(first((e) => !!e)),

@@ -16,8 +16,12 @@ import { ExpenseNavigationHeader } from "../components/ExpenseNavigatorHeader";
 import Receipt from "../../assets/icons/receipt.svg";
 import People from "../../assets/icons/people.svg";
 import AddPerson from "../../assets/icons/add-person.svg";
+import ShareIcon from "../../assets/icons/share.svg";
 import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
+import { Platform, Pressable, Share } from "react-native";
+import { View } from "react-native-ui-lib";
+import { TutorialTip } from "../components/TutorialTip";
 
 const Drawer = createDrawerNavigator();
 const Tab = createBottomTabNavigator();
@@ -51,6 +55,22 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
         };
     });
 
+    const onShare = async () => {
+        await Share.share(
+            {
+                message:
+                    Platform.OS === "ios"
+                        ? `Hello! Let's go Splitsies on ${_expenseManager.currentExpense?.name}, click the link the join.\n`
+                        : `splitsies://expenses/${_expenseManager.currentExpense?.id}/${_userManager.userId}`,
+                url: `splitsies://expenses/${_expenseManager.currentExpense?.id}/${_userManager.userId}`,
+                title: "`Hello! Let's go Splitsies on ${_expenseManager.currentExpense?.name}, click the link the join.`",
+            },
+            {
+                dialogTitle: "Share to...",
+            },
+        );
+    };
+
     return (
         <Tab.Navigator
             initialRouteName="Items"
@@ -65,6 +85,7 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
                 name="Items"
                 component={ExpenseScreen}
                 options={{
+                    lazy: true,
                     tabBarIcon: ({ color, size }) => <Receipt width={size} height={size} fill={color} />,
                 }}
             />
@@ -72,7 +93,14 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
                 name="People"
                 component={PeopleScreen}
                 options={{
-                    lazy: false,
+                    lazy: true,
+                    tabBarButton: (props) => (
+                        <View style={props.style}>
+                            <TutorialTip group="expense" stepKey="people">
+                                <Pressable {...props} />
+                            </TutorialTip>
+                        </View>
+                    ),
                     tabBarIcon: ({ color, size }) => <People width={size} height={size} fill={color} />,
                 }}
             />
@@ -80,8 +108,29 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
                 name="Invite"
                 component={InviteNavigator}
                 options={{
-                    lazy: false,
+                    lazy: true,
+                    tabBarButton: (props) => (
+                        <View style={props.style}>
+                            <TutorialTip group="expense" stepKey="invite">
+                                <Pressable {...props} />
+                            </TutorialTip>
+                        </View>
+                    ),
                     tabBarIcon: ({ color, size }) => <AddPerson width={size} height={size} fill={color} />,
+                }}
+            />
+            <Tab.Screen
+                name="Share"
+                component={ExpenseNavigationHeader}
+                options={{
+                    tabBarButton: (props) => (
+                        <View style={props.style}>
+                            <TutorialTip group="expense" stepKey="share">
+                                <Pressable {...props} onPress={onShare} />
+                            </TutorialTip>
+                        </View>
+                    ),
+                    tabBarIcon: ({ color, size }) => <ShareIcon width={size} height={size} fill={color} />,
                 }}
             />
         </Tab.Navigator>

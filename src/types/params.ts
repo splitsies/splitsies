@@ -28,6 +28,6 @@ export type InviteParamList = {
 };
 
 export type FeedParamList = {
-    Expenses: undefined;
+    Feed: { expenseId: string | undefined; requestingUserId: string | undefined };
     Requests: { expenseId: string | undefined };
 };

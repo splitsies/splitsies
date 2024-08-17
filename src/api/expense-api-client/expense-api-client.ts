@@ -89,6 +89,24 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         return onConnected;
     }
 
+    async pingConnection(): Promise<void> {
+        const socketUri = `${this._config.expenseSocket}?ping=true`;
+
+        const onConnected = new Promise<void>((res, rej) => {
+            try {
+                const conn = new WebSocket(socketUri);
+                conn.onopen = () => {
+                    res();
+                };
+            } catch (e) {
+                console.error(e);
+                rej(e);
+            }
+        });
+
+        return onConnected;
+    }
+
     disconnectFromExpense(): void {
         if (!this._connection || this._connection.readyState >= 2) {
             this._sessionExpense$.next(null);
@@ -110,11 +128,19 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
     }
 
-    async addUserToExpense(userId: string, expenseId: string): Promise<void> {
+    async addUserToExpense(
+        userId: string,
+        expenseId: string,
+        requestingUserId: string | undefined = undefined,
+    ): Promise<void> {
         const url = `${this._config.expense}/${expenseId}/users`;
 
         try {
-            const response = await this.postJson<void>(url, { userId }, this._authProvider.provideAuthHeader());
+            const response = await this.postJson<void>(
+                url,
+                { userId, requestingUserId },
+                this._authProvider.provideAuthHeader(),
+            );
             if (!response.success) throw new Error(`${response.data}`);
         } catch (e) {
             console.error(e);
@@ -133,7 +159,6 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
 
     async createFromExpense(expenseDto: IExpenseDto): Promise<boolean> {
         try {
-            console.log({ expenseDto });
             const body = { userId: this._authProvider.provideIdentity(), expense: expenseDto };
 
             const response = await this.postJson<IExpenseDto>(
@@ -189,7 +214,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
                 this._scanPageKeys.delete(pageKey);
             }
 
-            const pagination = this._scanPageKeys.get(pageKey)?.nextPage ?? { limit: 1, offset: 0 };
+            const pagination = this._scanPageKeys.get(pageKey)?.nextPage ?? { limit: 10, offset: 0 };
             let url = `${this._config.expense}/requests/${this._authProvider.provideIdentity()}`;
             url += `?pagination=${encodeURIComponent(JSON.stringify(pagination))}`;
 
@@ -322,9 +347,30 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         this._connection.send(JSON.stringify({ id: expenseId, method: "updateTransactionDate", params }));
     }
 
+    updateSingleItemSelected(
+        expenseId: string,
+        user: IExpenseUserDetails,
+        item: IExpenseItem,
+        itemSelected: boolean,
+    ): void {
+        const params = this._expenseMessageParametersMapper.toDtoModel(
+            new ExpenseMessageParameters({ expenseId, item, itemSelected, user }),
+        );
+        this._connection.send(JSON.stringify({ id: expenseId, method: "updateSingleItemSelected", params }));
+    }
+
     private async onExpenseConnection(promiseResolver: () => void, expenseId: string): Promise<void> {
         await this.getExpense(expenseId);
         promiseResolver();
+
+        // Ping the message endpoint to warm up an execution environment
+        this._connection.send(
+            JSON.stringify({
+                id: expenseId,
+                method: "ping",
+                params: new ExpenseMessageParameters({ expenseId }),
+            }),
+        );
     }
 
     private async onMessage(e: WebSocketMessageEvent): Promise<void> {
