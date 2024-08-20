@@ -46,6 +46,7 @@ export interface IExpenseApiClient extends IBaseManager {
         item: IExpenseItem,
         itemSelected: boolean,
     ): void;
+    updateSessionExpense(expenseDto: IExpenseDto | null): void;
 }
 
 export const IExpenseApiClient = Symbol.for("IExpenseApiClient");

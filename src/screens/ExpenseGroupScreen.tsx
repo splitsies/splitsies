@@ -30,6 +30,7 @@ import { UserIcon } from "../components/UserIcon";
 import Add from "../../assets/icons/add.svg";
 import { ExpenseFooter } from "../components/ExpenseFooter";
 import { Expense } from "../models/expense/expense";
+import { RefreshControl } from "react-native-gesture-handler";
 
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
@@ -43,6 +44,7 @@ type Props = CompositeScreenProps<
 >;
 
 export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
+    const [refreshing, setRefreshing] = useState<boolean>(false);
     const [expense, setExpense] = useState<IExpense>(_expenseManager.currentExpense!);
     const [selectedItem, setSelectedItem] = useState<IExpenseItem | null>(null);
     const [isAddingItem, setIsAddingItem] = useState<boolean>(false);
@@ -168,6 +170,12 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
         _expenseViewModel.setAwaitingResponse(true);
     };
 
+    const onRefresh = () => {
+        setRefreshing(true);
+        void _expenseManager.refreshCurrentExpense();
+        setRefreshing(false);
+    }
+
     return (
         <Container>
             <TutorialTip group="expense" stepKey="editNameAndDate" placement="bottom">
@@ -196,7 +204,7 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
 
             {selectedChild === undefined ? (
                 <ExpensePreviewList
-                    refreshDisabled
+                    onRefresh={onRefresh}
                     hidePeople
                     expenses={expense.children}
                     onExpenseClick={(id) => {
@@ -208,6 +216,7 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
             ) : (
                 <FlatList
                     style={styles.list}
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
                     data={selectedChild.items.filter((i) => !i.isProportional)}
                     ItemSeparatorComponent={ListSeparator}
                     ListFooterComponent={

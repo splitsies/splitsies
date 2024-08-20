@@ -8,7 +8,7 @@ import {
     IUserCredential,
     PayerShare,
 } from "@splitsies/shared-models";
-import { BehaviorSubject, Observable, Subscription } from "rxjs";
+import { BehaviorSubject, Observable } from "rxjs";
 import { IExpenseApiClient } from "../../api/expense-api-client/expense-api-client-interface";
 import { lazyInject } from "../../utils/lazy-inject";
 import { BaseManager } from "../base-manager";
@@ -31,6 +31,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     private readonly _isPendingExpenseData$ = new BehaviorSubject<boolean>(false);
     private readonly _expenseJoinRequests$ = new BehaviorSubject<IExpenseJoinRequest[]>([]);
     private readonly _expenseJoinRequestCount$ = new BehaviorSubject<number>(0);
+
     get expenses$(): Observable<IExpense[]> {
         return this._expenses$.asObservable();
     }
@@ -93,18 +94,30 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         this._expenses$.next(newCollection.sort((a, b) => b.transactionDate.getTime() - a.transactionDate.getTime()));
     }
 
+    async refreshCurrentExpense(): Promise<void> {
+        if (!this.currentExpense) {
+            console.warn("Attempted to refresh current expense while null");
+            return Promise.resolve();
+        }
+
+        return await this._api.getExpense(this.currentExpense.id);
+    }
+
     async connectToExpense(expenseId: string): Promise<void> {
         try {
             const expense = this.expenses.find((e) => e.id === expenseId);
 
             if (!expense) {
-                await this._api.connectToExpense(expenseId);
-            } else {
-                void this._api.connectToExpense(expenseId);
-                this._currentExpense$.next(expense);
+                throw new Error("Attempted to connect to non-existent expense");
             }
+            
+            void this._api.getExpense(expenseId);
+
+            this._api.updateSessionExpense(this._expenseMapper.toDto(expense));
+            void this._api.connectToExpense(expenseId);
+            
         } catch {
-            this._currentExpense$.next(null);
+            this._api.updateSessionExpense(null);
         }
     }
 
@@ -243,12 +256,13 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     }
 
     /**
+     * @deprecated
      * To be used sparingly, only to avoid latency in a server response to 
      * update the current expense
      * @param expense 
      */
-    updateCurrentExpense(expense: IExpense): void {
-        this._currentExpense$.next(expense);
+    updateCurrentExpense(expense: IExpense): void {        
+        this._api.updateSessionExpense(this._expenseMapper.toDto(expense));
     }
 
     private async onSessionExpenseUpdated(expenseDto: IExpenseDto | null): Promise<void> {
