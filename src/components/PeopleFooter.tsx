@@ -1,24 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { Colors, ProgressBar, Text, View } from "react-native-ui-lib";
-import { lazyInject } from "../utils/lazy-inject";
+import React from "react";
+import { Text, View } from "react-native-ui-lib";
 import { IExpense } from "../models/expense/expense-interface";
-import {
-    IRunningTotalCalculator,
-    IRunningTotalculator,
-} from "../utils/running-total-calculator/running-total-calculator.i";
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
-
-const _runningTotalCalculator = lazyInject<IRunningTotalCalculator>(IRunningTotalculator);
+import { ItemSelectionProgressBar } from "./ItemSelectionProgressBar";
 
 type Props = {
     expense: IExpense;
 };
-export const PeopleFooter = SpThemedComponent(({ expense }: Props): JSX.Element => {
-    const [percentage, setPercentage] = useState<number>(_runningTotalCalculator.calculate(expense));
-    useEffect(() => {
-        setPercentage(_runningTotalCalculator.calculate(expense));
-    }, [expense]);
 
+export const PeopleFooter = SpThemedComponent(({ expense }: Props): JSX.Element => {
     return (
         <View>
             <View
@@ -31,14 +21,7 @@ export const PeopleFooter = SpThemedComponent(({ expense }: Props): JSX.Element 
                 }}
             >
                 <Text hint>Selected</Text>
-                <ProgressBar
-                    style={{ display: "flex", flex: 1, height: 9 }}
-                    progressColor={Colors.primary}
-                    progress={percentage}
-                />
-                <Text hint style={{ display: "flex", minWidth: 40, textAlign: "right" }}>
-                    {percentage.toFixed(0)}%
-                </Text>
+                <ItemSelectionProgressBar expense={expense} />
             </View>
         </View>
     );

@@ -205,10 +205,17 @@ export const PersonalOrder = ({ person, expense, style, isSelectedPerson }: Prop
                 setActionsVisible={setActionsVisible}
                 balance={balance}
                 isPayer={payer}
-                iconContent={() => payer
-                    ? <Icon assetName="logoPrimary" size={_uiConfig.sizes.largeIcon} />
-                    : settled && (
-                        <CheckCircle width={_uiConfig.sizes.icon} height={_uiConfig.sizes.icon} fill={Colors.ready} />
+                iconContent={() =>
+                    payer ? (
+                        <Icon assetName="logoPrimary" size={_uiConfig.sizes.largeIcon} />
+                    ) : (
+                        settled && (
+                            <CheckCircle
+                                width={_uiConfig.sizes.icon}
+                                height={_uiConfig.sizes.icon}
+                                fill={Colors.ready}
+                            />
+                        )
                     )
                 }
             />

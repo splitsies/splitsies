@@ -85,10 +85,7 @@ import { ITutorialManager } from "../managers/tutorial-manager/tutorial-manager.
 import { TutorialManager } from "../managers/tutorial-manager/tutorial-manager";
 import { ITutorialConfiguration } from "../models/configuration/tutorial-configuration/tutorial-configuration.i";
 import { TutorialConfiguration } from "../models/configuration/tutorial-configuration/tutorial-configuration";
-import {
-    IRunningTotalCalculator,
-    IRunningTotalculator,
-} from "../utils/running-total-calculator/running-total-calculator.i";
+import { IRunningTotalCalculator } from "../utils/running-total-calculator/running-total-calculator.i";
 import { RunningTotalCalculator } from "../utils/running-total-calculator/running-total-calculator";
 import { IExpenseMessageStrategy } from "../strategies/expense-message-strategy/expense-message-strategy.i";
 import { ExpenseMessageStrategy } from "../strategies/expense-message-strategy/expense-message-strategy";
@@ -141,7 +138,7 @@ container
     .to(AuthenticatedLinkingConfigurationProvider);
 container.bind<ITutorialManager>(ITutorialManager).to(TutorialManager);
 container.bind<ITutorialConfiguration>(ITutorialConfiguration).to(TutorialConfiguration);
-container.bind<IRunningTotalCalculator>(IRunningTotalculator).to(RunningTotalCalculator);
+container.bind<IRunningTotalCalculator>(IRunningTotalCalculator).to(RunningTotalCalculator);
 container.bind<IExpenseMessageStrategy>(IExpenseMessageStrategy).to(ExpenseMessageStrategy);
 
 export { container };

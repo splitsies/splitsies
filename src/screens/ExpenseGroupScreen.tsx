@@ -31,6 +31,7 @@ import Add from "../../assets/icons/add.svg";
 import { ExpenseFooter } from "../components/ExpenseFooter";
 import { Expense } from "../models/expense/expense";
 import { RefreshControl } from "react-native-gesture-handler";
+import { PeopleIconList } from "../components/PeopleIconList";
 
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
@@ -174,18 +175,16 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
         setRefreshing(true);
         void _expenseManager.refreshCurrentExpense();
         setRefreshing(false);
-    }
+    };
 
     return (
         <Container>
             <TutorialTip group="expense" stepKey="editNameAndDate" placement="bottom">
-                <SafeAreaView style={{ marginBottom: 10 }}>
+                <SafeAreaView style={{ marginBottom: 10, width: "100%" }}>
                     <View centerH>
                         {selectedChild === undefined ? (
-                            <View style={{ flexDirection: "row" }}>
-                                {expense.users.map(({ id, givenName }) => (
-                                    <UserIcon key={id} letter={givenName[0]} style={{ marginRight: 6 }} />
-                                ))}
+                            <View style={{ width: "100%", alignItems: "center" }}>
+                                <PeopleIconList expense={expense} style={{ width: "100%", justifyContent: "center" }} />
                             </View>
                         ) : (
                             <DateTimePicker
@@ -204,6 +203,7 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
 
             {selectedChild === undefined ? (
                 <ExpensePreviewList
+                    showSelectionProgress
                     onRefresh={onRefresh}
                     hidePeople
                     expenses={expense.children}

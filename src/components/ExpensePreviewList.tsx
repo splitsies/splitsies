@@ -15,6 +15,7 @@ type Props = {
     refreshDisabled?: boolean;
     hidePeople?: boolean;
     expenses: IExpense[];
+    showSelectionProgress?: boolean;
     setFetchingPage?: (value: boolean) => void;
     onExpenseClick: (id: string) => void;
     onRefresh?: () => void;
@@ -26,7 +27,8 @@ export const ExpensePreviewList = ({
     onExpenseClick,
     hidePeople,
     refreshDisabled,
-    onRefresh
+    onRefresh,
+    showSelectionProgress,
 }: Props): React.ReactNode => {
     const [refreshing, setRefreshing] = useState<boolean>(false);
 
@@ -35,7 +37,7 @@ export const ExpensePreviewList = ({
             onRefresh();
             return;
         }
-        
+
         setRefreshing(true);
         await _expenseManager.requestForUser();
         setRefreshing(false);
@@ -50,7 +52,9 @@ export const ExpensePreviewList = ({
     return (
         <FlatList
             contentContainerStyle={{ paddingBottom: 40 }}
-            refreshControl={refreshDisabled ? undefined : <RefreshControl refreshing={refreshing} onRefresh={refresh} />}
+            refreshControl={
+                refreshDisabled ? undefined : <RefreshControl refreshing={refreshing} onRefresh={refresh} />
+            }
             onEndReached={(_) => void fetchPage()}
             ItemSeparatorComponent={ListSeparator}
             renderItem={({ item, index }) =>
@@ -61,6 +65,7 @@ export const ExpensePreviewList = ({
                         data={item}
                         onPress={onExpenseClick}
                         person={_userManager.expenseUserDetails}
+                        showSelectionProgress={showSelectionProgress}
                         onLongPress={() => console.log("LONG")}
                     />
                 ) : (
@@ -71,6 +76,7 @@ export const ExpensePreviewList = ({
                             data={item}
                             onPress={onExpenseClick}
                             person={_userManager.expenseUserDetails}
+                            showSelectionProgress={showSelectionProgress}
                             onLongPress={() => console.log("LONG")}
                         />
                     </TutorialTip>
