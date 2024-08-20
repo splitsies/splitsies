@@ -17,6 +17,7 @@ type Props = {
     expenses: IExpense[];
     setFetchingPage?: (value: boolean) => void;
     onExpenseClick: (id: string) => void;
+    onRefresh?: () => void;
 };
 
 export const ExpensePreviewList = ({
@@ -25,10 +26,16 @@ export const ExpensePreviewList = ({
     onExpenseClick,
     hidePeople,
     refreshDisabled,
+    onRefresh
 }: Props): React.ReactNode => {
     const [refreshing, setRefreshing] = useState<boolean>(false);
 
     const refresh = async (): Promise<void> => {
+        if (onRefresh) {
+            onRefresh();
+            return;
+        }
+        
         setRefreshing(true);
         await _expenseManager.requestForUser();
         setRefreshing(false);

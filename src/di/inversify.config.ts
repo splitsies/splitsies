@@ -90,6 +90,8 @@ import {
     IRunningTotalculator,
 } from "../utils/running-total-calculator/running-total-calculator.i";
 import { RunningTotalCalculator } from "../utils/running-total-calculator/running-total-calculator";
+import { IExpenseMessageStrategy } from "../strategies/expense-message-strategy/expense-message-strategy.i";
+import { ExpenseMessageStrategy } from "../strategies/expense-message-strategy/expense-message-strategy";
 const container = new Container({ defaultScope: "Singleton" });
 
 const messageHub = new WritableMessageHub();
@@ -140,4 +142,6 @@ container
 container.bind<ITutorialManager>(ITutorialManager).to(TutorialManager);
 container.bind<ITutorialConfiguration>(ITutorialConfiguration).to(TutorialConfiguration);
 container.bind<IRunningTotalCalculator>(IRunningTotalculator).to(RunningTotalCalculator);
+container.bind<IExpenseMessageStrategy>(IExpenseMessageStrategy).to(ExpenseMessageStrategy);
+
 export { container };

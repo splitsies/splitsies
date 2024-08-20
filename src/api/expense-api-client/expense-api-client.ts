@@ -2,6 +2,7 @@ import { injectable } from "inversify";
 import { IExpenseApiClient } from "./expense-api-client-interface";
 import { BehaviorSubject, Observable, queue } from "rxjs";
 import {
+    ExpenseMessage,
     ExpenseMessageParameters,
     IExpenseDto,
     IExpenseItem,
@@ -14,12 +15,14 @@ import { ClientBase } from "../client-base";
 import { lazyInject } from "../../utils/lazy-inject";
 import { IAuthProvider } from "../../providers/auth-provider/auth-provider-interface";
 import { IUserExpenseDto } from "../../models/user-expense-dto/user-expense-dto-interface";
+import { IExpenseMessageStrategy } from "../../strategies/expense-message-strategy/expense-message-strategy.i";
 
 @injectable()
 export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     private _connection!: WebSocket;
     private readonly _sessionExpense$ = new BehaviorSubject<IExpenseDto | null>(null);
     private readonly _authProvider = lazyInject<IAuthProvider>(IAuthProvider);
+    private readonly _messageStrategy = lazyInject<IExpenseMessageStrategy>(IExpenseMessageStrategy);
     private readonly _expenseMessageParametersMapper = lazyInject<IExpenseMessageParametersMapper>(
         IExpenseMessageParametersMapper,
     );
@@ -69,37 +72,42 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     async connectToExpense(expenseId: string): Promise<void> {
-        this._allowedExpenseConnection = expenseId;
+        try {
+            this._allowedExpenseConnection = expenseId;
 
-        if (this._connection?.readyState !== 1) {
-            try {
-                this._connection.close();
-            } catch {
-                // ignore
+            if (this._connection?.readyState !== 1) {
+                try {
+                    this._connection.close();
+                    await this.waitForConnectionClose();
+                } catch {
+                    // ignore
+                }
             }
+
+            const tokenResponse = await this.postJson<string>(
+                `${this._config.expense}/${expenseId}/connections/tokens`,
+                {},
+                this._authProvider.provideAuthHeader(),
+            );
+            const socketUri = `${this._config.expenseSocket
+                }?expenseId=${expenseId}&userId=${this._authProvider.provideIdentity()}&connectionToken=${tokenResponse.data}`;
+            this._connected = new Promise<void>((res, rej) => {
+                try {
+                    this._connection = new WebSocket(socketUri);
+                    this._connection.onopen = () => void this.onExpenseConnection(res, expenseId);
+                    this._connection.onmessage = (e) => this.onMessage(e);
+                    this._connection.onclose = () => this.disconnectFromExpense();
+                } catch (e) {
+                    console.error(e);
+                    rej(e);
+                }
+            });
+
+            return this._connected;
+        } catch (e) {
+            console.warn("Error on connection attempt", e);
+            return Promise.reject();
         }
-
-        const tokenResponse = await this.postJson<string>(
-            `${this._config.expense}/${expenseId}/connections/tokens`,
-            {},
-            this._authProvider.provideAuthHeader(),
-        );
-        const socketUri = `${
-            this._config.expenseSocket
-        }?expenseId=${expenseId}&userId=${this._authProvider.provideIdentity()}&connectionToken=${tokenResponse.data}`;
-        this._connected = new Promise<void>((res, rej) => {
-            try {
-                this._connection = new WebSocket(socketUri);
-                this._connection.onopen = () => void this.onExpenseConnection(res, expenseId);
-                this._connection.onmessage = (e) => this.onMessage(e);
-                this._connection.onclose = () => this.disconnectFromExpense();
-            } catch (e) {
-                console.error(e);
-                rej(e);
-            }
-        });
-
-        return this._connected;
     }
 
     async pingConnection(): Promise<void> {
@@ -311,21 +319,6 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
     }
 
-    private queueIfPendingConnection(expenseId: string, action: () => void): boolean {
-        if (!this._connection || this._connection.readyState >= 2) {
-            // requires reconnection
-            this.connectToExpense(expenseId).then(() => action());
-            return true;
-        }
-
-        if (this._connection.readyState === 0) {
-            this._connected.then(() => action());
-            return true;
-        }
-
-        return false;
-    }
-
     addItem(
         expenseId: string,
         itemName: string,
@@ -438,49 +431,95 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
 
         const params = this._expenseMessageParametersMapper.toDtoModel(
-            new ExpenseMessageParameters({ expenseId, item, itemSelected, user }),
+            new ExpenseMessageParameters({ expenseId, item, itemSelected, user, ignoreResponse: true }),
         );
 
         this._connection.send(JSON.stringify({ id: expenseId, method: "updateSingleItemSelected", params }));
     }
 
+    updateSessionExpense(expenseDto: IExpenseDto | null): void {
+        this._sessionExpense$.next(expenseDto);
+    }
+
     private async onExpenseConnection(promiseResolver: () => void, expenseId: string): Promise<void> {
-        if (!this._allowedExpenseConnection || this._allowedExpenseConnection !== expenseId) {
+        if (!this._allowedExpenseConnection || this._allowedExpenseConnection !== expenseId || this._connection?.readyState !== 1) {
             console.warn("Established connection after termination");
             // On rapid connect/disconnect, ensure that we don't create a background connection when
             // the connection gets through after we've decided we no longer want to be connected
             try {
                 this._connection?.close();
+                await this.waitForConnectionClose();
             } catch {}
             return;
         }
 
-        await this.getExpense(expenseId);
-        promiseResolver();
-
         // Ping the message endpoint to warm up an execution environment
-        this._connection.send(
-            JSON.stringify({
-                id: expenseId,
-                method: "ping",
-                params: new ExpenseMessageParameters({ expenseId }),
-            }),
-        );
+        try {
+            this._connection.send(
+                JSON.stringify({
+                    id: expenseId,
+                    method: "ping",
+                    params: new ExpenseMessageParameters({ expenseId }),
+                }),
+            );
+        } catch (e) {
+            console.warn("Error sending initial ping event", e);
+        } finally {
+            promiseResolver();
+        }
     }
 
     private async onMessage(e: WebSocketMessageEvent): Promise<void> {
-        const message = JSON.parse(e.data) as IExpenseDto;
+        const message = JSON.parse(e.data) as ExpenseMessage;
 
-        if (this._allowedExpenseConnection !== message.id) {
-            console.warn("Established connection after termination");
-            // On rapid connect/disconnect, ensure that we don't create a background connection when
-            // the connection gets through after we've decided we no longer want to be connected
-            try {
-                this._connection?.close();
-            } catch {}
+        if (message.type === undefined || !this._sessionExpense$.value) {
+            console.warn(this._sessionExpense$.value);
             return;
         }
 
-        this._sessionExpense$.next(message);
+        if (this._allowedExpenseConnection !== message.connectedExpenseId) {
+            console.warn("Established connection after termination");
+            // On rapid connect/disconnect, ensure that we don't create a background connection when
+            // the connection gets through after we've decided we no longer want to be connected
+            if (message.connectedExpenseId) {
+                try {
+                    this._connection?.close();
+                    await this.waitForConnectionClose();
+                } catch { }
+            }
+            return;
+        }
+
+        const updatedExpense = await this._messageStrategy.process(message, this._sessionExpense$.value);
+        this._sessionExpense$.next(updatedExpense);
+    }
+
+    private queueIfPendingConnection(expenseId: string, action: () => void): boolean {
+        if (!this._connection || this._connection.readyState >= 2) {
+            // requires reconnection
+            this.connectToExpense(expenseId).then(() => action());
+            return true;
+        }
+
+        if (this._connection.readyState === 0) {
+            this.waitForConnection().then(() => action());
+            return true;
+        }
+
+        return false;
+    }
+
+    private async waitForConnectionClose(): Promise<void> {
+        for (let retries = 0; retries < 20 && this._connection.readyState !== 3; retries++) {
+            await new Promise<void>((res) => setTimeout(() => res(), 100));
+        }
+    }
+
+    private async waitForConnection(): Promise<void> {
+        if (this._connection?.readyState === 1) return Promise.resolve();
+
+        for (let retries = 0; retries < 20 && this._connection.readyState < 1; retries++) {
+            await new Promise<void>((res) => setTimeout(() => res(), 100));
+        }
     }
 }

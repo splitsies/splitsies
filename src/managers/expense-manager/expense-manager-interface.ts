@@ -17,6 +17,7 @@ export interface IExpenseManager {
     readonly expenseJoinRequestCount$: Observable<number>;
 
     requestForUser(reset?: boolean): Promise<void>;
+    refreshCurrentExpense(): Promise<void>;
     connectToExpense(expenseId: string): Promise<void>;
     disconnectFromExpense(): void;
     requestAddUserToExpense(userId: string, expenseId: string, requestingUserId?: string): Promise<void>;
@@ -58,7 +59,7 @@ export interface IExpenseManager {
      * updating the current expense 
      */
     updateCurrentExpense(expense: IExpense): void;
-
+    
     /**
      * Sends a ping event to the image scan function to ensure a warm execution
      * environment by the time the receipt needs to be scanned
