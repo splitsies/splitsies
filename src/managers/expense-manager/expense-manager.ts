@@ -108,14 +108,16 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
             const expense = this.expenses.find((e) => e.id === expenseId);
 
             if (!expense) {
-                throw new Error("Attempted to connect to non-existent expense");
+                await this._api.getExpense(expenseId);
+                void this._api.connectToExpense(expenseId);
+                void this.requestForUser();
+                return;
             }
-            
+
             void this._api.getExpense(expenseId);
 
             this._api.updateSessionExpense(this._expenseMapper.toDto(expense));
             void this._api.connectToExpense(expenseId);
-            
         } catch {
             this._api.updateSessionExpense(null);
         }
@@ -257,11 +259,11 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     /**
      * @deprecated
-     * To be used sparingly, only to avoid latency in a server response to 
+     * To be used sparingly, only to avoid latency in a server response to
      * update the current expense
-     * @param expense 
+     * @param expense
      */
-    updateCurrentExpense(expense: IExpense): void {        
+    updateCurrentExpense(expense: IExpense): void {
         this._api.updateSessionExpense(this._expenseMapper.toDto(expense));
     }
 

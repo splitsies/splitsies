@@ -6,7 +6,6 @@ import { ActionSheet, ButtonProps, Colors, Toast } from "react-native-ui-lib";
 import { ExpenseItem } from "./ExpenseItem";
 import { lazyInject } from "../utils/lazy-inject";
 import { IColorConfiguration } from "../models/configuration/color-config/color-configuration-interface";
-import { useThemeWatcher } from "../hooks/use-theme-watcher";
 import { FlatList, TouchableOpacity } from "react-native-gesture-handler";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 import { IStyleManager } from "../managers/style-manager/style-manager-interface";
@@ -118,7 +117,7 @@ export const PersonalGroupSummary = SpThemedComponent(
 
                 <FlatList
                     style={styles.orderContainer}
-                    data={Array.from(balances.entries())}
+                    data={Array.from(balances.entries()).filter((v) => v[1] !== 0)}
                     renderItem={({ item: [userId, balance] }) => (
                         <View style={{ marginVertical: 10 }}>
                             <GroupBalanceSection

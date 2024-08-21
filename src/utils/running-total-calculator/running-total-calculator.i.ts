@@ -4,4 +4,4 @@ export interface IRunningTotalCalculator {
     calculateIndividual(expense: IExpense): number;
     calculate(expense: IExpense): number;
 }
-export const IRunningTotalculator = Symbol.for("IRunningTotalCalculator");
+export const IRunningTotalCalculator = Symbol.for("IRunningTotalCalculator");

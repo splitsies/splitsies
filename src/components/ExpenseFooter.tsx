@@ -1,6 +1,6 @@
-import { Stepper, View } from "react-native-ui-lib";
-import { ExpenseItem } from "./ExpenseItem";
 import React from "react";
+import { View } from "react-native-ui-lib";
+import { ExpenseItem } from "./ExpenseItem";
 import { IExpenseItem } from "@splitsies/shared-models";
 import { IExpense } from "../models/expense/expense-interface";
 import { TutorialTip } from "./TutorialTip";

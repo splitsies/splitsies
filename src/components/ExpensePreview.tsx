@@ -11,11 +11,14 @@ import Calendar from "../../assets/icons/calendar.svg";
 import People from "../../assets/icons/people.svg";
 import Price from "../../assets/icons/price.svg";
 import Exchange from "../../assets/icons/exchange.svg";
+import Select from "../../assets/icons/select.svg";
 import { IBalanceCalculator } from "../utils/balance-calculator/balance-calculator-interface";
 import { useComputed } from "../hooks/use-computed";
 import { IExpenseUserDetails } from "@splitsies/shared-models";
 import { BalanceResult } from "../models/balance-result";
 import { format } from "../utils/format-price";
+import { ItemSelectionProgressBar } from "./ItemSelectionProgressBar";
+import { PeopleIconList } from "./PeopleIconList";
 
 const Locale = (
     Platform.OS === "ios"
@@ -36,6 +39,7 @@ interface propTypes {
     data: IExpense;
     person: IExpenseUserDetails;
     hidePeople?: boolean;
+    showSelectionProgress?: boolean;
     onPress?: (expenseId: string) => void;
     onLongPress?: () => void;
 }
@@ -43,100 +47,95 @@ interface propTypes {
 /**
  * @{@link propTypes}
  */
-export const ExpensePreview = SpThemedComponent(({ data, onPress, onLongPress, person, hidePeople }: propTypes) => {
-    const [peopleContainerWidth, setPeopleContainerWidth] = useState<number>(Dimensions.get("window").width);
-    const PERSON_LIMIT = Math.floor((peopleContainerWidth - 20) / 34) - 1;
+export const ExpensePreview = SpThemedComponent(
+    ({ data, onPress, onLongPress, person, hidePeople, showSelectionProgress }: propTypes) => {
+        const [peopleContainerWidth, setPeopleContainerWidth] = useState<number>(Dimensions.get("window").width);
+        const PERSON_LIMIT = Math.floor((peopleContainerWidth - 20) / 34) - 1;
 
-    const balance = useComputed<BalanceResult, [IExpense, IExpenseUserDetails]>(
-        ([data, person]) => _balanceCalculator.calculate(data, person.id),
-        [data, person],
-    );
+        const balance = useComputed<BalanceResult, [IExpense, IExpenseUserDetails]>(
+            ([data, person]) => _balanceCalculator.calculate(data, person.id),
+            [data, person],
+        );
 
-    return (
-        <TouchableOpacity disabled={!!!onPress} onPress={() => onPress?.(data.id)} onLongPress={onLongPress}>
-            <View style={[styles.container]}>
-                <View style={styles.rowContainer}>
-                    <View style={styles.leftBox}>
-                        <Location width={iconSize} height={iconSize} fill={Colors.textColor} />
-                    </View>
-                    <View style={styles.rightBox}>
-                        <Text bodyBold color={Colors.textColor}>
-                            {data.name}
-                        </Text>
-                    </View>
-                </View>
-
-                <View style={styles.rowContainer}>
-                    <View style={styles.leftBox}>
-                        <Calendar width={iconSize} height={iconSize} fill={Colors.textColor} />
-                    </View>
-                    <View style={styles.rightBox}>
-                        <Text subtext color={Colors.textColor}>
-                            {data.transactionDate.toLocaleString(Locale, DATE_OPTIONS).replace(/\d{2}:\d{2}:\d{2}/, "")}
-                        </Text>
-                    </View>
-                </View>
-
-                {!hidePeople && (
+        return (
+            <TouchableOpacity disabled={!!!onPress} onPress={() => onPress?.(data.id)} onLongPress={onLongPress}>
+                <View style={[styles.container]}>
                     <View style={styles.rowContainer}>
                         <View style={styles.leftBox}>
-                            <People width={iconSize} height={iconSize} fill={Colors.textColor} />
+                            <Location width={iconSize} height={iconSize} fill={Colors.textColor} />
                         </View>
                         <View style={styles.rightBox}>
-                            <View
-                                style={styles.peopleContainer}
-                                onLayout={({ nativeEvent }) => setPeopleContainerWidth(nativeEvent.layout.width)}
-                            >
-                                {data.users.length === 0 && <Text hint>None</Text>}
-                                {data.users.length > PERSON_LIMIT
-                                    ? data.users
-                                          .slice(0, PERSON_LIMIT)
-                                          .map(({ id, givenName }) => (
-                                              <UserIcon key={id} letter={givenName[0]} style={{ marginRight: 6 }} />
-                                          ))
-                                    : data.users.map(({ id, givenName }) => (
-                                          <UserIcon key={id} letter={givenName[0]} style={{ marginRight: 6 }} />
-                                      ))}
-
-                                {data.users.length > PERSON_LIMIT && (
-                                    <Text body color={Colors.textColor}>
-                                        + {data.users.length - PERSON_LIMIT}
-                                    </Text>
-                                )}
-                            </View>
-                        </View>
-                    </View>
-                )}
-
-                <View style={styles.rowContainer}>
-                    <View style={styles.leftBox}>
-                        <Price width={iconSize} height={iconSize} fill={Colors.textColor} />
-                    </View>
-                    <View style={styles.rightBox}>
-                        <Text subtext color={Colors.textColor}>
-                            ${data.groupTotal.toFixed(2)}
-                        </Text>
-                    </View>
-                </View>
-
-                {balance.hasPayer && balance.balance !== 0 && (
-                    <View style={[styles.rowContainer, { marginTop: 4 }]}>
-                        <View style={styles.leftBox}>
-                            <Exchange width={iconSize} height={iconSize} fill={Colors.textColor} />
-                        </View>
-                        <View style={styles.rightBox}>
-                            <Text subtext color={Colors.textColor}>
-                                {balance.balance < 0
-                                    ? `You owe ${balance.payerName} ${format(-balance.balance)}`
-                                    : `You're owed ${format(balance.balance)}`}
+                            <Text bodyBold color={Colors.textColor}>
+                                {data.name}
                             </Text>
                         </View>
                     </View>
-                )}
-            </View>
-        </TouchableOpacity>
-    );
-});
+
+                    <View style={styles.rowContainer}>
+                        <View style={styles.leftBox}>
+                            <Calendar width={iconSize} height={iconSize} fill={Colors.textColor} />
+                        </View>
+                        <View style={styles.rightBox}>
+                            <Text subtext color={Colors.textColor}>
+                                {data.transactionDate
+                                    .toLocaleString(Locale, DATE_OPTIONS)
+                                    .replace(/\d{2}:\d{2}:\d{2}/, "")}
+                            </Text>
+                        </View>
+                    </View>
+
+                    {!hidePeople && (
+                        <View style={styles.rowContainer}>
+                            <View style={styles.leftBox}>
+                                <People width={iconSize} height={iconSize} fill={Colors.textColor} />
+                            </View>
+                            <View style={styles.rightBox}>
+                                <PeopleIconList expense={data} />
+                            </View>
+                        </View>
+                    )}
+
+                    <View style={styles.rowContainer}>
+                        <View style={styles.leftBox}>
+                            <Price width={iconSize} height={iconSize} fill={Colors.textColor} />
+                        </View>
+                        <View style={styles.rightBox}>
+                            <Text subtext color={Colors.textColor}>
+                                ${data.groupTotal.toFixed(2)}
+                            </Text>
+                        </View>
+                    </View>
+
+                    {balance.hasPayer && balance.balance !== 0 && (
+                        <View style={[styles.rowContainer, { marginTop: 4 }]}>
+                            <View style={styles.leftBox}>
+                                <Exchange width={iconSize} height={iconSize} fill={Colors.textColor} />
+                            </View>
+                            <View style={styles.rightBox}>
+                                <Text subtext color={Colors.textColor}>
+                                    {balance.balance < 0
+                                        ? `You owe ${balance.payerName} ${format(-balance.balance)}`
+                                        : `You're owed ${format(balance.balance)}`}
+                                </Text>
+                            </View>
+                        </View>
+                    )}
+
+                    {showSelectionProgress && (
+                        <View style={[styles.rowContainer, { marginTop: 4 }]}>
+                            <View style={styles.leftBox}>
+                                <Select width={iconSize} height={iconSize} fill={Colors.textColor} />
+                            </View>
+                            <View style={styles.rightBox}>
+                                <ItemSelectionProgressBar expense={data} />
+                            </View>
+                        </View>
+                    )}
+                </View>
+            </TouchableOpacity>
+        );
+    },
+);
 
 const styles = StyleSheet.create({
     container: {

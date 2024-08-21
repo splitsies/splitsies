@@ -89,8 +89,11 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
                 {},
                 this._authProvider.provideAuthHeader(),
             );
-            const socketUri = `${this._config.expenseSocket
-                }?expenseId=${expenseId}&userId=${this._authProvider.provideIdentity()}&connectionToken=${tokenResponse.data}`;
+            const socketUri = `${
+                this._config.expenseSocket
+            }?expenseId=${expenseId}&userId=${this._authProvider.provideIdentity()}&connectionToken=${
+                tokenResponse.data
+            }`;
             this._connected = new Promise<void>((res, rej) => {
                 try {
                     this._connection = new WebSocket(socketUri);
@@ -442,7 +445,11 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
     }
 
     private async onExpenseConnection(promiseResolver: () => void, expenseId: string): Promise<void> {
-        if (!this._allowedExpenseConnection || this._allowedExpenseConnection !== expenseId || this._connection?.readyState !== 1) {
+        if (
+            !this._allowedExpenseConnection ||
+            this._allowedExpenseConnection !== expenseId ||
+            this._connection?.readyState !== 1
+        ) {
             console.warn("Established connection after termination");
             // On rapid connect/disconnect, ensure that we don't create a background connection when
             // the connection gets through after we've decided we no longer want to be connected
@@ -485,7 +492,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
                 try {
                     this._connection?.close();
                     await this.waitForConnectionClose();
-                } catch { }
+                } catch {}
             }
             return;
         }
