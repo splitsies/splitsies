@@ -15,6 +15,7 @@ const _runningTotalCalculator = lazyInject<IRunningTotalCalculator>(IRunningTota
 
 export const ItemSelectionProgressBar = SpThemedComponent(({ expense, style }: Props) => {
     const [percentage, setPercentage] = useState<number>(_runningTotalCalculator.calculate(expense));
+
     useEffect(() => {
         setPercentage(_runningTotalCalculator.calculate(expense));
     }, [expense]);
