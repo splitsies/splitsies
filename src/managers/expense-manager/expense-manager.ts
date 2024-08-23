@@ -204,6 +204,16 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         await this._api.requestSetExpensePayerStatus(expenseId, userId, settled);
     }
 
+    async addExistingExpenseToGroup(groupExpenseId: string, childExpenseId: string): Promise<void> {
+        await this._api.addExistingExpenseToGroup(groupExpenseId, childExpenseId);
+        await this.requestForUser();
+    }
+
+    async removeExpenseFromGroup(groupExpenseId: string, childExpenseId: string): Promise<void> {
+        await this._api.removeExpenseFromGroup(groupExpenseId, childExpenseId);
+        await this.requestForUser();
+    }
+
     scanPreflight(): Promise<void> {
         return this._ocr.preflight();
     }

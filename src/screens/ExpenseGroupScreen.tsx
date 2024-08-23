@@ -177,6 +177,11 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
         setRefreshing(false);
     };
 
+    const onExpenseSelectedForGroupRemove = async (childExpenseId: string) => {
+        await _expenseManager.removeExpenseFromGroup(expense.id, childExpenseId);
+        onRefresh();
+    };
+
     return (
         <Container>
             <TutorialTip group="expense" stepKey="editNameAndDate" placement="bottom">
@@ -207,6 +212,8 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
                     onRefresh={onRefresh}
                     hidePeople
                     expenses={expense.children}
+                    showRemoveAction
+                    onExpenseSelectedForGroupRemove={onExpenseSelectedForGroupRemove}
                     onExpenseClick={(id) => {
                         _expenseViewModel.setSelectedChild(
                             expense.id === id ? expense : expense.children.find((c) => c.id === id),

@@ -22,6 +22,8 @@ export interface IExpenseApiClient extends IBaseManager {
     requestSetExpensePayers(expensePayerDto: IExpensePayerDto): Promise<void>;
     requestSetExpensePayerStatus(expenseId: string, userId: string, settled: boolean): Promise<void>;
     requestAddToExpenseGroup(expenseId: string, expense?: IExpenseDto): Promise<void>;
+    addExistingExpenseToGroup(groupExpenseId: string, childExpenseId: string): Promise<void>;
+    removeExpenseFromGroup(groupExpenseId: string, childExpenseId: string): Promise<void>;
     addItem(
         expenseId: string,
         itemName: string,

@@ -1,8 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
-import { FlatList, RefreshControl, ScrollView, StyleSheet } from "react-native";
+import { RefreshControl, ScrollView, StyleSheet } from "react-native";
 import { Colors, Text, View } from "react-native-ui-lib";
-import { ListSeparator } from "../components/ListSeparator";
-import { ExpensePreview } from "../components/ExpensePreview";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { FeedParamList, RootStackParamList } from "../types/params";
 import { CompositeScreenProps } from "@react-navigation/native";
@@ -17,7 +15,8 @@ import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-i
 import { SpThemedComponent } from "../hocs/SpThemedComponent";
 import { Container } from "../components/Container";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
-import { TutorialTip } from "../components/TutorialTip";
+import { ParentExpenseModal } from "../components/ParentExpenseModal";
+import { ExpensePreviewList } from "../components/ExpensePreviewList";
 
 type Props = CompositeScreenProps<
     BottomTabScreenProps<FeedParamList, "Feed">,
@@ -35,6 +34,8 @@ export const ExpenseFeedScreen = SpThemedComponent(({ navigation, route }: Props
     const userName = useObservableReducer(_userManager.user$, "", (userCred) => userCred?.user.givenName ?? "");
     const [fetchingPage, setFetchingPage] = useState<boolean>(false);
     const pendingConnection = useRef<boolean>(false);
+    const [parentSelectionVisible, setParentSelectionVisible] = useState<boolean>(false);
+    const [selectedExpenseForGroupAdd, setSelectedExpenseForGroupAdd] = useState<string | null>(null);
 
     useEffect(() => {
         void onLoad();
@@ -96,6 +97,26 @@ export const ExpenseFeedScreen = SpThemedComponent(({ navigation, route }: Props
         setFetchingPage(false);
     };
 
+    const onExpenseSelectedForGroupAdd = (expenseId: string): void => {
+        setSelectedExpenseForGroupAdd(expenseId);
+        setParentSelectionVisible(true);
+    };
+
+    const onExpenseAddToGroup = (groupExpenseId: string): void => {
+        if (!selectedExpenseForGroupAdd) {
+            return;
+        }
+
+        void _expenseManager.addExistingExpenseToGroup(groupExpenseId, selectedExpenseForGroupAdd);
+        setParentSelectionVisible(false);
+        setSelectedExpenseForGroupAdd(null);
+    };
+
+    const onGroupAddDismiss = (): void => {
+        setSelectedExpenseForGroupAdd(null);
+        setParentSelectionVisible(false);
+    };
+
     return expenses.length === 0 ? (
         <Container>
             <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
@@ -112,35 +133,24 @@ export const ExpenseFeedScreen = SpThemedComponent(({ navigation, route }: Props
     ) : (
         <Container>
             {_userManager.user && (
-                <FlatList
-                    contentContainerStyle={{ paddingBottom: 40 }}
-                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
-                    onEndReached={(_) => void fetchPage()}
-                    ItemSeparatorComponent={ListSeparator}
-                    renderItem={({ item, index }) =>
-                        index !== 0 ? (
-                            <ExpensePreview
-                                key={item.id}
-                                data={item}
-                                onPress={onExpenseClick}
-                                person={_userManager.expenseUserDetails}
-                                onLongPress={() => console.log("LONG")}
-                            />
-                        ) : (
-                            <TutorialTip group="home" stepKey="expenseItem" placement="bottom" renderOnLayout>
-                                <ExpensePreview
-                                    key={item.id}
-                                    data={item}
-                                    onPress={onExpenseClick}
-                                    person={_userManager.expenseUserDetails}
-                                    onLongPress={() => console.log("LONG")}
-                                />
-                            </TutorialTip>
-                        )
-                    }
-                    data={expenses}
+                <ExpensePreviewList
+                    expenses={expenses}
+                    showAddAction
+                    onExpenseClick={onExpenseClick}
+                    onRefresh={refresh}
+                    setFetchingPage={setFetchingPage}
+                    onExpenseSelectedForGroupAdd={onExpenseSelectedForGroupAdd}
                 />
             )}
+
+            <ParentExpenseModal
+                parentSelectionVisible={parentSelectionVisible}
+                onGroupAddDismiss={onGroupAddDismiss}
+                fetchPage={fetchPage}
+                onExpenseAddToGroup={onExpenseAddToGroup}
+                selectedExpenseForGroupAdd={selectedExpenseForGroupAdd}
+                expenses={expenses}
+            />
         </Container>
     );
 });

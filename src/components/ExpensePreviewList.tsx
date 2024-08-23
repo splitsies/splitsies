@@ -16,9 +16,13 @@ type Props = {
     hidePeople?: boolean;
     expenses: IExpense[];
     showSelectionProgress?: boolean;
+    showRemoveAction?: boolean;
+    showAddAction?: boolean;
     setFetchingPage?: (value: boolean) => void;
     onExpenseClick: (id: string) => void;
     onRefresh?: () => void;
+    onExpenseSelectedForGroupAdd?: (expenseId: string) => void;
+    onExpenseSelectedForGroupRemove?: (expenseId: string) => void;
 };
 
 export const ExpensePreviewList = ({
@@ -29,6 +33,10 @@ export const ExpensePreviewList = ({
     refreshDisabled,
     onRefresh,
     showSelectionProgress,
+    showRemoveAction,
+    showAddAction,
+    onExpenseSelectedForGroupAdd,
+    onExpenseSelectedForGroupRemove,
 }: Props): React.ReactNode => {
     const [refreshing, setRefreshing] = useState<boolean>(false);
 
@@ -62,6 +70,10 @@ export const ExpensePreviewList = ({
                     <ExpensePreview
                         key={item.id}
                         hidePeople={hidePeople}
+                        showAddAction={showAddAction}
+                        showRemoveAction={showRemoveAction}
+                        onExpenseSelectedForGroupAdd={onExpenseSelectedForGroupAdd}
+                        onExpenseSelectedForGroupRemove={onExpenseSelectedForGroupRemove}
                         data={item}
                         onPress={onExpenseClick}
                         person={_userManager.expenseUserDetails}
@@ -73,6 +85,10 @@ export const ExpensePreviewList = ({
                         <ExpensePreview
                             key={item.id}
                             hidePeople={hidePeople}
+                            showAddAction={showAddAction}
+                            showRemoveAction={showRemoveAction}
+                            onExpenseSelectedForGroupAdd={onExpenseSelectedForGroupAdd}
+                            onExpenseSelectedForGroupRemove={onExpenseSelectedForGroupRemove}
                             data={item}
                             onPress={onExpenseClick}
                             person={_userManager.expenseUserDetails}
