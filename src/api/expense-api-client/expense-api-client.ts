@@ -322,6 +322,24 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
     }
 
+    async addExistingExpenseToGroup(groupExpenseId: string, childExpenseId: string): Promise<void> {
+        try {
+            const url = `${this._config.expense}/${groupExpenseId}/children`;
+            await this.putJson<void>(url, { childExpenseId }, this._authProvider.provideAuthHeader());
+        } catch (e) {
+            return;
+        }
+    }
+
+    async removeExpenseFromGroup(groupExpenseId: string, childExpenseId: string): Promise<void> {
+        try {
+            const url = `${this._config.expense}/${groupExpenseId}/children/${childExpenseId}`;
+            await this.delete(url, this._authProvider.provideAuthHeader());
+        } catch (e) {
+            return;
+        }
+    }
+
     addItem(
         expenseId: string,
         itemName: string,

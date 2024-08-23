@@ -27,6 +27,8 @@ export interface IExpenseManager {
     removeExpenseJoinRequestForUser(expenseId: string, userId?: string): Promise<void>;
     requestSetExpensePayers(expenseId: string, userId: string): Promise<void>;
     requestSetExpensePayerStatus(expenseId: string, userId: string, settled: boolean): Promise<void>;
+    addExistingExpenseToGroup(groupExpenseId: string, childExpenseId: string): Promise<void>;
+    removeExpenseFromGroup(groupExpenseId: string, childExpenseId: string): Promise<void>;
     sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void>;
     getExpenseJoinRequestCount(): Promise<void>;
     addItem(
