@@ -215,6 +215,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
             );
 
             if (response.success) {
+                await this.getExpense(response.data.id);
                 await this.connectToExpense(response.data.id);
             } else {
                 return false;
@@ -480,6 +481,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
 
         // Ping the message endpoint to warm up an execution environment
         try {
+            console.log("successful connection... sending initial ping");
             this._connection.send(
                 JSON.stringify({
                     id: expenseId,

@@ -22,6 +22,8 @@ export class RunningTotalCalculator implements IRunningTotalCalculator {
 
     calculate(expense: IExpense): number {
         if (!expense.groupable) return this.calculateIndividual(expense);
+        if (expense.children.length === 0) return 0;
+
         return (
             (expense.children.reduce((sum, currentExpense) => sum + this.calculateIndividual(currentExpense), 0) /
                 (expense.children.length * 100)) *
