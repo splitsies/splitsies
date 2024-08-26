@@ -9,7 +9,7 @@ import {
     PayerShare,
 } from "@splitsies/shared-models";
 import { BehaviorSubject, Observable } from "rxjs";
-import { IExpenseApiClient } from "../../api/expense-api-client/expense-api-client-interface";
+import { IExpenseApiClient } from "../../api/expense-api-client/expense-api-client.i";
 import { lazyInject } from "../../utils/lazy-inject";
 import { BaseManager } from "../base-manager";
 import { IUserManager } from "../user-manager/user-manager-interface";
@@ -18,10 +18,12 @@ import { IExpenseMapper } from "../../mappers/expense-mapper-interface";
 import { IOcrApiClient } from "../../api/ocr-api-client/ocr-api-client-interface";
 import { IExpenseJoinRequestMapper } from "../../mappers/expense-join-request-mapper/expense-join-request-mapper-interface";
 import { IExpenseJoinRequest } from "../../models/expense-join-request/expense-join-request-interface";
+import { IExpenseSocketClient } from "../../api/expense-socket-client/expense-socket-client.i";
 
 @injectable()
 export class ExpenseManager extends BaseManager implements IExpenseManager {
     private readonly _api = lazyInject<IExpenseApiClient>(IExpenseApiClient);
+    private readonly _socket = lazyInject<IExpenseSocketClient>(IExpenseSocketClient);
     private readonly _ocr = lazyInject<IOcrApiClient>(IOcrApiClient);
     private readonly _userManager = lazyInject<IUserManager>(IUserManager);
     private readonly _expenseMapper = lazyInject<IExpenseMapper>(IExpenseMapper);
@@ -77,7 +79,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
             next: (user) => this.onUserCredentialUpdated(user),
         });
 
-        this._api.sessionExpense$.subscribe({
+        this._socket.sessionExpense$.subscribe({
             next: (data) => void this.onSessionExpenseUpdated(data),
         });
 
@@ -100,7 +102,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
             return Promise.resolve();
         }
 
-        return await this._api.getExpense(this.currentExpense.id);
+        return await this._socket.getExpense(this.currentExpense.id);
     }
 
     async connectToExpense(expenseId: string): Promise<void> {
@@ -108,18 +110,18 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
             const expense = this.expenses.find((e) => e.id === expenseId);
 
             if (!expense) {
-                await this._api.getExpense(expenseId);
-                void this._api.connectToExpense(expenseId);
+                await this._socket.getExpense(expenseId);
+                void this._socket.connectToExpense(expenseId);
                 void this.requestForUser();
                 return;
             }
 
-            void this._api.getExpense(expenseId);
+            void this._socket.getExpense(expenseId);
 
-            this._api.updateSessionExpense(this._expenseMapper.toDto(expense));
-            void this._api.connectToExpense(expenseId);
+            this._socket.updateSessionExpense(this._expenseMapper.toDto(expense));
+            void this._socket.connectToExpense(expenseId);
         } catch {
-            this._api.updateSessionExpense(null);
+            this._socket.updateSessionExpense(null);
         }
     }
 
@@ -136,29 +138,40 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     }
 
     disconnectFromExpense(): void {
-        this._api.disconnectFromExpense();
+        this._socket.disconnectFromExpense();
         this._currentExpense$.next(null);
     }
 
     async createExpense(base64Image?: string): Promise<boolean> {
+        if (this.currentExpense && !base64Image) {
+            await this._api.requestAddToExpenseGroup(this.currentExpense.id);
+            return true;
+        }
+
         if (base64Image) {
             const expense = await this._ocr.scanImage(base64Image);
             if (!expense) return false;
 
             if (this.currentExpense) {
                 await this._api.requestAddToExpenseGroup(this.currentExpense.id, expense);
+                await this.refreshCurrentExpense();
                 return true;
             }
 
-            return this._api.createFromExpense(expense);
-        }
+            const id = await this._api.createFromExpense(expense);
+            if (!id) return false;
 
-        if (this.currentExpense) {
-            await this._api.requestAddToExpenseGroup(this.currentExpense.id);
+            await this._socket.getExpense(id);
+            await this._socket.connectToExpense(id);
             return true;
         }
 
-        return this._api.createExpense(base64Image);
+        const id = await this._api.createExpense(base64Image);
+        if (!id) return false;
+
+        await this._socket.getExpense(id);
+        await this._socket.connectToExpense(id);
+        return true;
     }
 
     async requestExpenseJoinRequests(reset = true): Promise<void> {
@@ -229,15 +242,15 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         itemOwners: IExpenseUserDetails[],
         isItemProportional: boolean,
     ): void {
-        this._api.addItem(expenseId, itemName, itemPrice, itemOwners, isItemProportional);
+        this._socket.addItem(expenseId, itemName, itemPrice, itemOwners, isItemProportional);
     }
 
     removeItem(expenseId: string, item: IExpenseItem): void {
-        this._api.removeItem(expenseId, item);
+        this._socket.removeItem(expenseId, item);
     }
 
     updateItemSelections(expenseId: string, user: IExpenseUserDetails, selectedItemIds: string[]): void {
-        this._api.updateItemSelections(expenseId, user, selectedItemIds);
+        this._socket.updateItemSelections(expenseId, user, selectedItemIds);
     }
 
     updateItemDetails(
@@ -247,15 +260,15 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         itemPrice: number,
         isItemProportional: boolean,
     ): void {
-        this._api.updateItemDetails(expenseId, item, itemName, itemPrice, isItemProportional);
+        this._socket.updateItemDetails(expenseId, item, itemName, itemPrice, isItemProportional);
     }
 
     updateExpenseName(expenseId: string, expenseName: string): void {
-        this._api.updateExpenseName(expenseId, expenseName);
+        this._socket.updateExpenseName(expenseId, expenseName);
     }
 
     updateExpenseTransactionDate(expenseId: string, transactionDate: Date): void {
-        this._api.updateExpenseTransactionDate(expenseId, transactionDate);
+        this._socket.updateExpenseTransactionDate(expenseId, transactionDate);
     }
 
     updateSingleItemSelected(
@@ -264,7 +277,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         item: IExpenseItem,
         itemSelected: boolean,
     ): void {
-        this._api.updateSingleItemSelected(expenseId, user, item, itemSelected);
+        this._socket.updateSingleItemSelected(expenseId, user, item, itemSelected);
     }
 
     /**
@@ -274,7 +287,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
      * @param expense
      */
     updateCurrentExpense(expense: IExpense): void {
-        this._api.updateSessionExpense(this._expenseMapper.toDto(expense));
+        this._socket.updateSessionExpense(this._expenseMapper.toDto(expense));
     }
 
     private async onSessionExpenseUpdated(expenseDto: IExpenseDto | null): Promise<void> {
@@ -300,12 +313,12 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         if (!userCredential) {
             this._expenses$.next([]);
         } else {
-            void this._api.pingConnection();
+            void this._socket.pingConnection();
         }
 
         this._isPendingExpenseData$.next(true);
         try {
-            this._api.disconnectFromExpense();
+            this._socket.disconnectFromExpense();
         } finally {
             this._isPendingExpenseData$.next(false);
         }
