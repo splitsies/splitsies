@@ -24,7 +24,7 @@ export const EditItemsControl = SpThemedComponent(() => {
     return (
         <TouchableOpacity onPress={onSelectAction}>
             <TutorialTip group="expense" stepKey="editItems" placement="bottom">
-                <View flex row centerV style={{ columnGap: 10 }}>
+                <View row style={{ columnGap: 10 }}>
                     <ActivityIndicator animating={awaitingResponse} hidesWhenStopped color={Colors.textColor} />
                     {editing ? (
                         <Check height={_uiConfig.sizes.icon} width={_uiConfig.sizes.icon} fill={Colors.textColor} />

@@ -17,7 +17,7 @@ export const SelectItemsControl = SpThemedComponent(() => {
     return (
         <TutorialTip group="people" stepKey="selectItems" placement="bottom">
             <TouchableOpacity onPress={() => _expenseViewModel.setIsSelectingItems(true)}>
-                <View flex row centerV style={{ columnGap: 10 }}>
+                <View row centerV style={{ columnGap: 10 }}>
                     <ActivityIndicator animating={awaitingResponse} hidesWhenStopped color={Colors.textColor} />
                     <Select height={_uiConfig.sizes.icon} width={_uiConfig.sizes.icon} fill={Colors.textColor} />
                 </View>
