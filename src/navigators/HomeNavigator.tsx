@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { RootDrawerContent } from "../components/RootDrawerContent";
 import { ProfileScreen } from "../screens/ProfileScreen";
 import { createDrawerNavigator } from "@react-navigation/drawer";
@@ -22,6 +22,7 @@ import Add from "../../assets/icons/add.svg";
 import Menu from "../../assets/icons/menu.svg";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { SettingsScreen } from "../screens/SettingsScreen";
+import { IExpense } from "../models/expense/expense-interface";
 
 const _colorConfiguration = lazyInject<IColorConfiguration>(IColorConfiguration);
 const _styleManager = lazyInject<IStyleManager>(IStyleManager);
@@ -38,12 +39,20 @@ type Props = NativeStackScreenProps<RootStackParamList, "RootScreen">;
 
 export const HomeNavigator = SpThemedComponent(({ navigation }: Props) => {
     const pendingData = useObservable(_viewModel.pendingData$, false);
+    const expenseState = useRef<IExpense | null>(null);
 
     useInitialize(() => {
         const sub = _expenseManager.currentExpense$.subscribe({
             next: (e) => {
                 if (!_userManager.user) return;
-                navigation.navigate(!e ? "RootScreen" : "ExpenseScreen");
+
+                if (!expenseState.current && e) {
+                    navigation.navigate("ExpenseScreen");
+                } else if (expenseState.current && !e) {
+                    navigation.navigate("RootScreen");
+                }
+
+                expenseState.current = e;
             },
         });
 
@@ -53,7 +62,10 @@ export const HomeNavigator = SpThemedComponent(({ navigation }: Props) => {
     const Header = ({ navigation }: any) => {
         const onCreateExpense = async () => {
             _viewModel.setPendingData(true);
-            await _expenseManager.createExpense();
+            const success = await _expenseManager.createExpense();
+            if (success) {
+                navigation.navigate("ExpenseScreen");
+            }
             _viewModel.setPendingData(false);
         };
 
