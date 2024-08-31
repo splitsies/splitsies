@@ -105,23 +105,23 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         return await this._socket.getExpense(this.currentExpense.id);
     }
 
-    async connectToExpense(expenseId: string): Promise<void> {
+    async connectToExpense(expenseId: string): Promise<boolean> {
         try {
             const expense = this.expenses.find((e) => e.id === expenseId);
 
             if (!expense) {
                 await this._socket.getExpense(expenseId);
-                void this._socket.connectToExpense(expenseId);
                 void this.requestForUser();
-                return;
+                return this._socket.connectToExpense(expenseId);
             }
 
             void this._socket.getExpense(expenseId);
 
             this._socket.updateSessionExpense(this._expenseMapper.toDto(expense));
-            void this._socket.connectToExpense(expenseId);
+            return this._socket.connectToExpense(expenseId);
         } catch {
             this._socket.updateSessionExpense(null);
+            return false;
         }
     }
 
@@ -225,6 +225,20 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     async removeExpenseFromGroup(groupExpenseId: string, childExpenseId: string): Promise<void> {
         await this._api.removeExpenseFromGroup(groupExpenseId, childExpenseId);
         await this.requestForUser();
+    }
+
+    async deleteExpense(expenseId: string): Promise<void> {
+        await this._api.deleteExpense(expenseId);
+
+        if (this.currentExpense) {
+            const index = this.currentExpense.children.findIndex((c) => c.id === expenseId);
+            if (index === -1) return;
+
+            this.currentExpense.children.splice(index, 1);
+            this._socket.updateSessionExpense(this._expenseMapper.toDto(this.currentExpense));
+        }
+
+        this._expenses$.next(this.expenses.filter((e) => e.id !== expenseId));
     }
 
     scanPreflight(): Promise<void> {

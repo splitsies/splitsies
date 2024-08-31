@@ -33,8 +33,6 @@ export const ExpensePreviewList = ({
     refreshDisabled,
     onRefresh,
     showSelectionProgress,
-    showRemoveAction,
-    showAddAction,
     onExpenseSelectedForGroupAdd,
     onExpenseSelectedForGroupRemove,
 }: Props): React.ReactNode => {
@@ -52,9 +50,10 @@ export const ExpensePreviewList = ({
     };
 
     const fetchPage = async (): Promise<void> => {
-        setFetchingPage?.(true);
+        if (!setFetchingPage) return;
+        setFetchingPage(true);
         await _expenseManager.requestForUser(false);
-        setFetchingPage?.(false);
+        setFetchingPage(false);
     };
 
     return (
@@ -70,30 +69,26 @@ export const ExpensePreviewList = ({
                     <ExpensePreview
                         key={item.id}
                         hidePeople={hidePeople}
-                        showAddAction={showAddAction}
-                        showRemoveAction={showRemoveAction}
                         onExpenseSelectedForGroupAdd={onExpenseSelectedForGroupAdd}
                         onExpenseSelectedForGroupRemove={onExpenseSelectedForGroupRemove}
                         data={item}
                         onPress={onExpenseClick}
                         person={_userManager.expenseUserDetails}
                         showSelectionProgress={showSelectionProgress}
-                        onLongPress={() => console.log("LONG")}
+                        showLongPressMenu
                     />
                 ) : (
                     <TutorialTip group="home" stepKey="expenseItem" placement="bottom" renderOnLayout>
                         <ExpensePreview
                             key={item.id}
                             hidePeople={hidePeople}
-                            showAddAction={showAddAction}
-                            showRemoveAction={showRemoveAction}
                             onExpenseSelectedForGroupAdd={onExpenseSelectedForGroupAdd}
                             onExpenseSelectedForGroupRemove={onExpenseSelectedForGroupRemove}
                             data={item}
                             onPress={onExpenseClick}
                             person={_userManager.expenseUserDetails}
                             showSelectionProgress={showSelectionProgress}
-                            onLongPress={() => console.log("LONG")}
+                            showLongPressMenu
                         />
                     </TutorialTip>
                 )

@@ -5,7 +5,7 @@ import { IBaseManager } from "../../managers/base-manager-interface";
 export interface IExpenseSocketClient extends IBaseManager {
     readonly sessionExpense$: Observable<IExpenseDto | null>;
     getExpense(expenseId: string): Promise<void>;
-    connectToExpense(expenseId: string): Promise<void>;
+    connectToExpense(expenseId: string): Promise<boolean>;
     pingConnection(): Promise<void>;
     disconnectFromExpense(): void;
     addItem(

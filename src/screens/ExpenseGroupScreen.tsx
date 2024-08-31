@@ -26,7 +26,6 @@ import { IStyleManager } from "../managers/style-manager/style-manager-interface
 import { TutorialTip } from "../components/TutorialTip";
 import { ExpensePreviewList } from "../components/ExpensePreviewList";
 import { ExpenseGroupFooter } from "../components/ExpenseGroupFooter";
-import { UserIcon } from "../components/UserIcon";
 import Add from "../../assets/icons/add.svg";
 import { ExpenseFooter } from "../components/ExpenseFooter";
 import { Expense } from "../models/expense/expense";
@@ -212,7 +211,6 @@ export const ExpenseGroupScreen = SpThemedComponent(({ navigation }: Props) => {
                     onRefresh={onRefresh}
                     hidePeople
                     expenses={expense.children}
-                    showRemoveAction
                     onExpenseSelectedForGroupRemove={onExpenseSelectedForGroupRemove}
                     onExpenseClick={(id) => {
                         _expenseViewModel.setSelectedChild(
