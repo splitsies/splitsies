@@ -41,7 +41,7 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
         }
     }
 
-    async connectToExpense(expenseId: string): Promise<void> {
+    async connectToExpense(expenseId: string): Promise<boolean> {
         try {
             this._allowedExpenseConnection = expenseId;
 
@@ -65,7 +65,7 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
                 tokenResponse.data
             }`;
 
-            new Promise<boolean>((res, rej) => {
+            return new Promise<boolean>((res, rej) => {
                 try {
                     this._connection = new WebSocket(socketUri);
                     this._connection.onopen = () => void this.onExpenseConnection(res, expenseId);

@@ -72,7 +72,10 @@ export const ExpenseFeedScreen = SpThemedComponent(({ navigation, route }: Props
         if (pendingConnection.current) return;
         pendingConnection.current = true;
         _viewModel.setPendingData(true);
-        void _expenseManager.connectToExpense(expenseId);
+
+        void _expenseManager.connectToExpense(expenseId).then((_) => {
+            _viewModel.setPendingData(false);
+        });
 
         const timedExpenseObserver = race(
             _expenseManager.currentExpense$.pipe(first((e) => !!e)),
@@ -80,7 +83,7 @@ export const ExpenseFeedScreen = SpThemedComponent(({ navigation, route }: Props
         );
 
         await lastValueFrom(timedExpenseObserver);
-        _viewModel.setPendingData(false);
+
         pendingConnection.current = false;
     };
 

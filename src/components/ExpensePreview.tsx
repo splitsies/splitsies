@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, NativeModules, Platform, TouchableOpacity } from "react-native";
+import { StyleSheet, NativeModules, Platform, TouchableOpacity, Alert } from "react-native";
 import { ActionSheet, ButtonProps, Colors, Text, View } from "react-native-ui-lib";
 import { lazyInject } from "../utils/lazy-inject";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
@@ -12,13 +12,13 @@ import { BalanceResult } from "../models/balance-result";
 import { format } from "../utils/format-price";
 import { ItemSelectionProgressBar } from "./ItemSelectionProgressBar";
 import { PeopleIconList } from "./PeopleIconList";
-import More from "../../assets/icons/more.svg";
 import Location from "../../assets/icons/location.svg";
 import Calendar from "../../assets/icons/calendar.svg";
 import People from "../../assets/icons/people.svg";
 import Price from "../../assets/icons/price.svg";
 import Exchange from "../../assets/icons/exchange.svg";
 import Select from "../../assets/icons/select.svg";
+import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 
 const Locale = (
     Platform.OS === "ios"
@@ -32,6 +32,7 @@ const DATE_OPTIONS: DateTimeFormatOptions = { weekday: "long", year: "numeric", 
 
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
 const _balanceCalculator = lazyInject<IBalanceCalculator>(IBalanceCalculator);
+const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 
 const iconSize = _uiConfig.sizes.smallIcon;
 
@@ -39,12 +40,9 @@ interface propTypes {
     data: IExpense;
     person: IExpenseUserDetails;
     hidePeople?: boolean;
-    hideGroupAdd?: boolean;
-    showAddAction?: boolean;
-    showRemoveAction?: boolean;
     showSelectionProgress?: boolean;
     onPress?: (expenseId: string) => void;
-    onLongPress?: () => void;
+    showLongPressMenu?: boolean;
     onExpenseSelectedForGroupAdd?: (expenseId: string) => void;
     onExpenseSelectedForGroupRemove?: (expenseId: string) => void;
 }
@@ -55,17 +53,15 @@ interface propTypes {
 export const ExpensePreview = SpThemedComponent(
     ({
         data,
+        showLongPressMenu,
         onPress,
-        onLongPress,
         person,
         hidePeople,
-        showAddAction,
-        showRemoveAction,
         showSelectionProgress,
-        hideGroupAdd,
         onExpenseSelectedForGroupAdd,
         onExpenseSelectedForGroupRemove,
     }: propTypes) => {
+        if (!data) return null;
         const [actionsVisible, setActionsVisible] = useState<boolean>(false);
 
         const balance = useComputed<BalanceResult, [IExpense, IExpenseUserDetails]>(
@@ -73,16 +69,37 @@ export const ExpensePreview = SpThemedComponent(
             [data, person],
         );
 
+        const onDeleteExpense = () => {
+            Alert.alert(
+                "Are you sure you want to delete this expense?",
+                "This expense will also be deleted for anyone else invited.",
+                [
+                    { text: "Yes", onPress: () => void _expenseManager.deleteExpense(data.id) },
+                    { text: "No", style: "cancel" },
+                ],
+            );
+        };
+
+        const onLongPress = () => {
+            if (showLongPressMenu) {
+                setActionsVisible(true);
+            }
+        };
+
         const defaultActions: ButtonProps[] = [
             {
                 label: "Add to Group",
                 onPress: () => onExpenseSelectedForGroupAdd?.(data.id),
-                disabled: !showAddAction,
+                disabled: !onExpenseSelectedForGroupAdd || data.children.length > 0,
             },
             {
                 label: "Remove from Group",
                 onPress: () => onExpenseSelectedForGroupRemove?.(data.id),
-                disabled: !showRemoveAction,
+                disabled: !onExpenseSelectedForGroupRemove,
+            },
+            {
+                label: "Delete",
+                onPress: () => onDeleteExpense(),
             },
             { label: "Cancel", onPress: () => setActionsVisible(false) },
         ];
@@ -100,12 +117,6 @@ export const ExpensePreview = SpThemedComponent(
                                 {data.name}
                             </Text>
                         </View>
-
-                        {!hideGroupAdd && data.children.length === 0 && (
-                            <TouchableOpacity onPress={() => setActionsVisible(true)}>
-                                <More width={iconSize} height={iconSize} fill={Colors.textColor} />
-                            </TouchableOpacity>
-                        )}
                     </View>
 
                     <View style={styles.rowContainer}>

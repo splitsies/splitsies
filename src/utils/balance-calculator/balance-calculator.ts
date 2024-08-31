@@ -21,7 +21,7 @@ export class BalanceCalculator implements IBalanceCalculator {
 
         if (expense.payers.length === 0) return new BalanceResult(false, 0, "");
 
-        const payer = expense.users.find((u) => u.id === expense.payers[0].userId)!;
+        const payer = expense.users.find((u) => u.id === expense.payers[0]?.userId)!;
 
         if (!payer) {
             return new BalanceResult(false, 0, "");
@@ -57,8 +57,9 @@ export class BalanceCalculator implements IBalanceCalculator {
         }
 
         for (const ex of expense.children) {
-            const payerId = ex.payers[0].userId;
+            const payerId = ex.payers[0]?.userId;
 
+            if (!payerId) continue;
             if (payerId === personId) {
                 // This person is the payer, need to subtract the amount any other payer owes
                 for (const userId of otherUserIds) {

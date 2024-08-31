@@ -79,15 +79,10 @@ export class TransactionNoteBuilder implements ITransactionNoteBuilder {
         maxNoteLength: number = Number.MAX_SAFE_INTEGER,
     ): string {
         const balance = balances.get(otherId)!;
-
         const lines = [];
 
-        const netTotalLine =
-            balance > 0
-                ? `${group.users.find((u) => u.id === otherId)?.givenName} owes you ${format(balance)}`
-                : `You owe ${group.users.find((u) => u.id === otherId)?.givenName} ${format(-balance)}`;
-
-        lines.push(netTotalLine);
+        lines.push(group.name);
+        lines.push(`Total: ${Math.abs(balance).toFixed(2)}`);
 
         const expensesPaidByUsers = group.children.filter(
             (e) => e.payers[0]?.userId === personId || e.payers[0]?.userId === otherId,
@@ -99,10 +94,19 @@ export class TransactionNoteBuilder implements ITransactionNoteBuilder {
                 ? this._balanceCalculator.calculate(c, otherId)
                 : this._balanceCalculator.calculate(c, personId);
 
-            lines.push(`${c.name}: ${format(isPayer ? balanceResult.balance : -balanceResult.balance)}`);
+            if (balanceResult.balance !== 0) {
+                lines.push(`${c.name}: ${format(isPayer ? -balanceResult.balance : balanceResult.balance)}`);
+            }
         }
 
-        return lines.join("\n");
+        let note = lines.join("\n").replace(/&/g, "%26");
+
+        if (note.length > maxNoteLength) {
+            note = note.slice(0, maxNoteLength - 4);
+            return note + "...";
+        }
+
+        return note;
     }
 
     buildForGroupSummary(group: IExpense, balances: Map<string, number>, personId: string): string {

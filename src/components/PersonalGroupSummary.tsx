@@ -125,6 +125,7 @@ export const PersonalGroupSummary = SpThemedComponent(
                                 expense={expense}
                                 userId={userId}
                                 balance={balance}
+                                balances={balances}
                                 person={person}
                                 allExpanded={allExpanded}
                                 onCopyPress={onSectionCopyPress}

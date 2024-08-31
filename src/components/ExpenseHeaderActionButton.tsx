@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Colors, TouchableOpacity, View } from "react-native-ui-lib/core";
 import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
@@ -9,12 +9,14 @@ import { EditItemsControl } from "./EditItemsControl";
 import { ScanUserQrControl } from "./ScanUserQrControl";
 import { SelectItemsControl } from "./SelectItemsControl";
 import { IExpense } from "../models/expense/expense-interface";
-import { Alert } from "react-native";
+import { ActivityIndicator, Alert } from "react-native";
 import { IExpenseManager } from "../managers/expense-manager/expense-manager-interface";
 import Add from "../../assets/icons/add.svg";
-import { TutorialTip } from "./TutorialTip";
-import Edit from "../../assets/icons/edit.svg";
+import { useInitialize } from "../hooks/use-initialize";
+import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-interface";
+import { zip } from "rxjs";
 
+const _homeViewModel = lazyInject<IHomeViewModel>(IHomeViewModel);
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 const _expenseManager = lazyInject<IExpenseManager>(IExpenseManager);
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
@@ -26,6 +28,17 @@ type Props = {
 export const ExpenseHeaderActionButton = ({ currentExpense }: Props) => {
     const selectedChild = useObservable(_expenseViewModel.selectedChild$, undefined);
     const screen = useObservable(_expenseViewModel.screen$, "Items");
+    const [awaitingResponse, setAwaitingResponse] = useState<boolean>(false);
+
+    useInitialize(() => {
+        const sub = zip([_expenseViewModel.awaitingResponse$, _homeViewModel.pendingData$]).subscribe({
+            next: ([expensePendingData, homePendingData]) => {
+                setAwaitingResponse(expensePendingData || homePendingData);
+            },
+        });
+
+        return () => sub.unsubscribe();
+    });
 
     const onAddPress = () => {
         Alert.alert(`Create an empty expense?`, "", [
@@ -48,7 +61,18 @@ export const ExpenseHeaderActionButton = ({ currentExpense }: Props) => {
                 ) : (
                     <View>
                         <TouchableOpacity onPress={onAddPress}>
-                            <Add width={_uiConfig.sizes.icon} height={_uiConfig.sizes.icon} fill={Colors.textColor} />
+                            <View row style={{ columnGap: 10 }}>
+                                <ActivityIndicator
+                                    animating={awaitingResponse}
+                                    hidesWhenStopped
+                                    color={Colors.textColor}
+                                />
+                                <Add
+                                    width={_uiConfig.sizes.icon}
+                                    height={_uiConfig.sizes.icon}
+                                    fill={Colors.textColor}
+                                />
+                            </View>
                         </TouchableOpacity>
                     </View>
                 );

@@ -232,4 +232,13 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
             return;
         }
     }
+
+    async deleteExpense(expenseId: string): Promise<void> {
+        try {
+            const url = `${this._config.expense}/${expenseId}`;
+            await this.delete(url, this._authProvider.provideAuthHeader());
+        } catch (e) {
+            return;
+        }
+    }
 }

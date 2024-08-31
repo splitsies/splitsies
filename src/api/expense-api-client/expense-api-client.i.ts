@@ -19,6 +19,7 @@ export interface IExpenseApiClient extends IBaseManager {
     requestAddToExpenseGroup(expenseId: string, expense?: IExpenseDto): Promise<void>;
     addExistingExpenseToGroup(groupExpenseId: string, childExpenseId: string): Promise<void>;
     removeExpenseFromGroup(groupExpenseId: string, childExpenseId: string): Promise<void>;
+    deleteExpense(expenseId: string): Promise<void>;
 }
 
 export const IExpenseApiClient = Symbol.for("IExpenseApiClient");
