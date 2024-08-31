@@ -54,7 +54,7 @@ export const People = ({ isSelecting, people, expense, updateItemOwners, endSele
                     itemSpacings={_uiConfig.sizes.carouselPadding}
                     containerStyle={{ width: "100%", alignItems: "center" }}
                 >
-                    {people.map((person, index) =>
+                    {people.sort().map((person, index) =>
                         expense.children.length === 0 || selectedChild ? (
                             <PersonalOrder
                                 key={person.id}
