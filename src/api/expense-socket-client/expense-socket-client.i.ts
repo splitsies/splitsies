@@ -3,6 +3,7 @@ import { Observable } from "rxjs";
 import { IBaseManager } from "../../managers/base-manager-interface";
 
 export interface IExpenseSocketClient extends IBaseManager {
+    readonly connected: Promise<boolean>;
     readonly sessionExpense$: Observable<IExpenseDto | null>;
     getExpense(expenseId: string): Promise<void>;
     connectToExpense(expenseId: string): Promise<boolean>;
@@ -33,6 +34,7 @@ export interface IExpenseSocketClient extends IBaseManager {
         itemSelected: boolean,
     ): void;
     updateSessionExpense(expenseDto: IExpenseDto | null): void;
+    ensureConnection(): Promise<void>;
 }
 
 export const IExpenseSocketClient = Symbol.for("IExpenseSocketClient");

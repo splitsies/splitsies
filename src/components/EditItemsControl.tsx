@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Colors, Text, TouchableOpacity, View } from "react-native-ui-lib/core";
 import { lazyInject } from "../utils/lazy-inject";
 import { IExpenseViewModel } from "../view-models/expense-view-model/expense-view-model-interface";
@@ -9,13 +9,27 @@ import { TutorialTip } from "./TutorialTip";
 import Edit from "../../assets/icons/edit.svg";
 import Check from "../../assets/icons/check.svg";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
+import { IHomeViewModel } from "../view-models/home-view-model/home-view-model-interface";
+import { zip } from "rxjs";
+import { useInitialize } from "../hooks/use-initialize";
 
 const _expenseViewModel = lazyInject<IExpenseViewModel>(IExpenseViewModel);
 const _uiConfig = lazyInject<IUiConfiguration>(IUiConfiguration);
+const _homeViewModel = lazyInject<IHomeViewModel>(IHomeViewModel);
 
 export const EditItemsControl = SpThemedComponent(() => {
     const editing = useObservable(_expenseViewModel.isEditingItems$, false);
-    const awaitingResponse = useObservable(_expenseViewModel.awaitingResponse$, false);
+    const [awaitingResponse, setAwaitingResponse] = useState<boolean>(false);
+
+    useInitialize(() => {
+        const sub = zip([_expenseViewModel.awaitingResponse$, _homeViewModel.pendingData$]).subscribe({
+            next: ([expensePendingData, homePendingData]) => {
+                setAwaitingResponse(expensePendingData || homePendingData);
+            },
+        });
+
+        return () => sub.unsubscribe();
+    });
 
     const onSelectAction = () => {
         _expenseViewModel.setIsEditingItems(!editing);

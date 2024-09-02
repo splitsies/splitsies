@@ -1,6 +1,7 @@
 import {
     ExpenseMessage,
     ExpenseMessageParameters,
+    ExpenseMessageType,
     IExpenseDto,
     IExpenseItem,
     IExpenseMessageParametersMapper,
@@ -23,11 +24,17 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
     private readonly _paramMapper = lazyInject<IExpenseMessageParametersMapper>(IExpenseMessageParametersMapper);
     private readonly _connectionConfig = lazyInject<IRequestConfiguration>(IRequestConfiguration);
     private _connection!: WebSocket;
+    private _connected: Promise<boolean> = Promise.resolve(false);
+    private _connectedExpenseId: string | null = null;
 
     private _allowedExpenseConnection = "";
 
     get sessionExpense$(): Observable<IExpenseDto | null> {
         return this._sessionExpense$.asObservable();
+    }
+
+    get connected(): Promise<boolean> {
+        return this._connected;
     }
 
     async getExpense(expenseId: string): Promise<void> {
@@ -43,6 +50,7 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
 
     async connectToExpense(expenseId: string): Promise<boolean> {
         try {
+            this._connectedExpenseId = expenseId;
             this._allowedExpenseConnection = expenseId;
 
             if (this._connection?.readyState !== 1) {
@@ -65,7 +73,7 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
                 tokenResponse.data
             }`;
 
-            return new Promise<boolean>((res, rej) => {
+            this._connected = new Promise<boolean>((res, rej) => {
                 try {
                     this._connection = new WebSocket(socketUri);
                     this._connection.onopen = () => void this.onExpenseConnection(res, expenseId);
@@ -76,6 +84,8 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
                     rej(e);
                 }
             });
+
+            return this._connected;
         } catch (e) {
             console.warn("Error on connection attempt", e);
             return Promise.reject();
@@ -102,6 +112,7 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
 
     disconnectFromExpense(): void {
         this._allowedExpenseConnection = "";
+        this._connected = Promise.resolve(false);
         if (!this._connection || this._connection.readyState >= 2) {
             this._sessionExpense$.next(null);
             return;
@@ -119,7 +130,7 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
         isItemProportional: boolean,
     ): void {
         if (
-            this.queueIfPendingConnection(expenseId, () =>
+            this.queueIfPendingConnection(this._connectedExpenseId!, () =>
                 this.addItem(expenseId, itemName, itemPrice, itemOwners, isItemProportional),
             )
         ) {
@@ -131,7 +142,7 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
     }
 
     removeItem(expenseId: string, item: IExpenseItem): void {
-        if (this.queueIfPendingConnection(expenseId, () => this.removeItem(expenseId, item))) {
+        if (this.queueIfPendingConnection(this._connectedExpenseId!, () => this.removeItem(expenseId, item))) {
             return;
         }
 
@@ -142,7 +153,9 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
 
     updateItemSelections(expenseId: string, user: IExpenseUserDetails, selectedItemIds: string[]): void {
         if (
-            this.queueIfPendingConnection(expenseId, () => this.updateItemSelections(expenseId, user, selectedItemIds))
+            this.queueIfPendingConnection(this._connectedExpenseId!, () =>
+                this.updateItemSelections(expenseId, user, selectedItemIds),
+            )
         ) {
             return;
         }
@@ -160,7 +173,7 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
         isItemProportional: boolean,
     ): void {
         if (
-            this.queueIfPendingConnection(expenseId, () =>
+            this.queueIfPendingConnection(this._connectedExpenseId!, () =>
                 this.updateItemDetails(expenseId, item, itemName, itemPrice, isItemProportional),
             )
         ) {
@@ -173,7 +186,11 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
     }
 
     updateExpenseName(expenseId: string, expenseName: string): void {
-        if (this.queueIfPendingConnection(expenseId, () => this.updateExpenseName(expenseId, expenseName))) {
+        if (
+            this.queueIfPendingConnection(this._connectedExpenseId!, () =>
+                this.updateExpenseName(expenseId, expenseName),
+            )
+        ) {
             return;
         }
 
@@ -184,7 +201,7 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
 
     updateExpenseTransactionDate(expenseId: string, transactionDate: Date): void {
         if (
-            this.queueIfPendingConnection(expenseId, () =>
+            this.queueIfPendingConnection(this._connectedExpenseId!, () =>
                 this.updateExpenseTransactionDate(expenseId, transactionDate),
             )
         ) {
@@ -203,7 +220,7 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
         itemSelected: boolean,
     ): void {
         if (
-            this.queueIfPendingConnection(expenseId, () =>
+            this.queueIfPendingConnection(this._connectedExpenseId!, () =>
                 this.updateSingleItemSelected(expenseId, user, item, itemSelected),
             )
         ) {
@@ -217,6 +234,16 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
 
     updateSessionExpense(expenseDto: IExpenseDto | null): void {
         this._sessionExpense$.next(expenseDto);
+    }
+
+    async ensureConnection(): Promise<void> {
+        if (await this._connected) return;
+
+        if (this._connection?.readyState === 0) {
+            await this._connected;
+        } else if (this._connection?.readyState >= 2) {
+            await this.connectToExpense(this._connectedExpenseId!);
+        }
     }
 
     private async onExpenseConnection(promiseResolver: (value: boolean) => void, expenseId: string): Promise<void> {
@@ -244,6 +271,7 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
                     params: new ExpenseMessageParameters({ expenseId }),
                 }),
             );
+            await this.getExpense(this._connectedExpenseId!);
             promiseResolver(true);
         } catch (e) {
             console.warn("Error sending initial ping event", e);
@@ -268,6 +296,11 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
         }
 
         if (!this._sessionExpense$.value) {
+            if (message.type === ExpenseMessageType.ExpenseDto) {
+                this._sessionExpense$.next(message.expenseDto ? message.expenseDto : null);
+                return;
+            }
+
             console.warn("Received an expense message without a session");
             return;
         }
@@ -279,12 +312,17 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
     private queueIfPendingConnection(expenseId: string, action: () => void): boolean {
         if (!this._connection || this._connection.readyState >= 2) {
             // requires reconnection
-            this.connectToExpense(expenseId).then(() => action());
+            this.connectToExpense(expenseId).then(() => {
+                action();
+            });
+
             return true;
         }
 
         if (this._connection.readyState === 0) {
-            this.waitForConnection().then(() => action());
+            this.waitForConnection().then(() => {
+                action();
+            });
             return true;
         }
 

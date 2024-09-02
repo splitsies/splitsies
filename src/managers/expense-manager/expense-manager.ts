@@ -125,15 +125,17 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         }
     }
 
-    requestAddUserToExpense(
+    async requestAddUserToExpense(
         userId: string,
         expenseId: string,
         requestingUserId: string | undefined = undefined,
     ): Promise<void> {
+        await this._socket.ensureConnection();
         return this._api.addUserToExpense(userId, expenseId, requestingUserId);
     }
 
     async requestRemoveUserFromExpense(userId: string, expenseId: string): Promise<void> {
+        await this._socket.ensureConnection();
         await this._api.removeUserFromExpense(userId, expenseId);
     }
 
@@ -197,6 +199,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     }
 
     async removeExpenseJoinRequestForUser(expenseId: string, userId: string | undefined = undefined): Promise<void> {
+        await this._socket.ensureConnection();
         await this._api.removeExpenseJoinRequest(expenseId, userId);
         const requests = this._expenseJoinRequests$.value;
         const requestIndex = requests.findIndex((r) => r.expense.id === expenseId);
@@ -209,25 +212,30 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     // TODO: This method signture ensures only one payer per expense, but the backing
     // design allows multiple. At some point, UX should be defined for multiple payer workflows
     async requestSetExpensePayers(expenseId: string, userId: string): Promise<void> {
+        await this._socket.ensureConnection();
         const expensePayerDto = new ExpensePayerDto(expenseId, [new PayerShare(userId, 1)]);
         await this._api.requestSetExpensePayers(expensePayerDto);
     }
 
     async requestSetExpensePayerStatus(expenseId: string, userId: string, settled: boolean): Promise<void> {
+        await this._socket.ensureConnection();
         await this._api.requestSetExpensePayerStatus(expenseId, userId, settled);
     }
 
     async addExistingExpenseToGroup(groupExpenseId: string, childExpenseId: string): Promise<void> {
+        await this._socket.ensureConnection();
         await this._api.addExistingExpenseToGroup(groupExpenseId, childExpenseId);
         await this.requestForUser();
     }
 
     async removeExpenseFromGroup(groupExpenseId: string, childExpenseId: string): Promise<void> {
+        await this._socket.ensureConnection();
         await this._api.removeExpenseFromGroup(groupExpenseId, childExpenseId);
         await this.requestForUser();
     }
 
     async deleteExpense(expenseId: string): Promise<void> {
+        await this._socket.ensureConnection();
         await this._api.deleteExpense(expenseId);
 
         if (this.currentExpense) {
@@ -245,7 +253,8 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         return this._ocr.preflight();
     }
 
-    sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void> {
+    async sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void> {
+        await this._socket.ensureConnection();
         return this._api.sendExpenseJoinRequest(userId, expenseId);
     }
 
