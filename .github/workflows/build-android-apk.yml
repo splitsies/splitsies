@@ -43,7 +43,7 @@ jobs:
           cd android && ./gradlew assembleProductionRelease
 
       - name: Upload .apk Artifact
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v4
         with:
           name: app-production-release.apk
           path: android/app/build/outputs/apk/production/release/
