@@ -237,7 +237,7 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
     }
 
     async ensureConnection(): Promise<void> {
-        if (await this._connected) return;
+        if (!this._allowedExpenseConnection || (await this._connected)) return;
 
         if (this._connection?.readyState === 0) {
             await this._connected;
