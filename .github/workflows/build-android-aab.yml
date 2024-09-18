@@ -55,9 +55,12 @@ jobs:
           name: app-production-release.aab
           path: android/app/build/outputs/bundle/productionRelease/
 
-      - name: Create service_account.json
-        id: createServiceAccount
-        run: echo '${{ secrets.PLAYSTORE_SERVICE_ACCOUNT_JSON }}' > service_account.json
+      - name: Decode Play Store Service Account
+        env:
+          PLAYSTORE_SERVICE_ACCOUNT_JSON_BASE64: ${{ secrets.PLAYSTORE_SERVICE_ACCOUNT_JSON_BASE64 }}
+        run: |
+            echo $PLAYSTORE_SERVICE_ACCOUNT_JSON_BASE64 > sa.base64
+            base64 -d sa.base64 > service_account.json
 
       - name: Deploy to Play Store (BETA)
         id: deploy
