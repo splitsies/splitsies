@@ -64,8 +64,9 @@ jobs:
 
       - name: Create default whatsnew
         run: /
-            mkdir -p whatsnew
-            echo "Bug fixes and performance improvements" > whatsnew/whatsnew-en-US
+            mkdir -p ./whatsnew/
+            cd ./whatsnew
+            echo "Bug fixes and performance improvements" > whatsnew-en-US
 
 
       - name: Deploy to Play Store (BETA)
