@@ -17,17 +17,15 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v3
+
+      - name: Create default whatsnew
+        run: |
+            mkdir -p ./whatsnew/
+            echo "Bug fixes and performance improvements" > whatsnew/whatsnew-en-US
+            
       - name: Install npm dependencies
         run: |
           npm install
-
-      - name: Create default whatsnew
-        run: /
-            mkdir -p ./whatsnew/
-            cd ./whatsnew
-            echo "Bug fixes and performance improvements" > whatsnew-en-US
-            cd ..
-            cat whatsnew/whatsnew-en-US
 
       - name: Decode Keystore
         env:
