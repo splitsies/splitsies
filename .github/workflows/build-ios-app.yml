@@ -2,7 +2,7 @@ name: "Build iOS app"
 
 on:
   release:
-    types: [created]
+    types: [prereleased]
 
 jobs:
   build_with_signing:
