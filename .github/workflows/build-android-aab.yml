@@ -21,6 +21,12 @@ jobs:
         run: |
           npm install
 
+      - name: Create default whatsnew
+        run: /
+            mkdir -p ./whatsnew/
+            cd ./whatsnew
+            echo "Bug fixes and performance improvements" > whatsnew-en-US
+
       - name: Decode Keystore
         env:
             ENCODED_STRING: ${{ secrets.SIGNING_KEYSTORE }}
@@ -61,12 +67,6 @@ jobs:
         run: |
             echo $PLAYSTORE_SERVICE_ACCOUNT_JSON_BASE64 > sa.base64
             base64 -d sa.base64 > service_account.json
-
-      - name: Create default whatsnew
-        run: /
-            mkdir -p ./whatsnew/
-            cd ./whatsnew
-            echo "Bug fixes and performance improvements" > whatsnew-en-US
 
 
       - name: Deploy to Play Store (BETA)
