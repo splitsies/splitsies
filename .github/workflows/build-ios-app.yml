@@ -1,9 +1,8 @@
 name: "Build iOS app"
 
 on:
-  push:
-    branches:
-      - "releases/**"
+  release:
+    types: [created]
 
 jobs:
   build_with_signing:
