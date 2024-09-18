@@ -1,6 +1,8 @@
 name: iOS binary build & upload
 on:
-  workflow_dispatch:
+  pull_request:
+    branches:
+      - "releases/**"
 
 jobs:
  build-ios:
