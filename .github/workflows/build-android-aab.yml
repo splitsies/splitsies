@@ -26,6 +26,8 @@ jobs:
             mkdir -p ./whatsnew/
             cd ./whatsnew
             echo "Bug fixes and performance improvements" > whatsnew-en-US
+            cd ..
+            cat whatsnew/whatsnew-en-US
 
       - name: Decode Keystore
         env:
