@@ -1,0 +1,60 @@
+name: iOS binary build & upload
+on:
+  workflow_dispatch:
+
+jobs:
+ build-ios:
+   runs-on: macos-13
+   steps:
+     - name: Checkout repository
+       uses: actions/checkout@v2
+     - name: Set up ruby env
+       uses: ruby/setup-ruby@v1
+       with:
+         ruby-version: 3.2.2
+         bundler-cache: true
+     - name: Decode signing certificate into a file
+       env:
+         CERTIFICATE_BASE64: ${{ secrets.IOS_DIST_SIGNING_KEY }}
+       run: |
+         echo $CERTIFICATE_BASE64 | base64 --decode > signing-cert.p12
+     - name: pod install
+       run: pod install
+     - name: pod update
+       run: pod update
+     - name: Select Xcode
+       run: sudo Xcode-select -switch /Applications/Xcode_14.2.app/Contents/Developer
+     - name: Build
+       run: xcodebuild clean build -workspace example.xcworkspace -scheme <Your_proj_scheme> -destination 'platform=iOS Simulator,name=iPhone 14 Pro example,OS=16.2'
+     - name: upload iOS binary
+       uses: maierj/fastlane-action@v1.4.0
+       with:
+        lane: bundle exec fastlane ios upload_ios_beta_Testflight
+       env:
+         DEVELOPER_APP_ID: '${{ secrets.DEVELOPER_APP_ID }}'
+         DEVELOPER_APP_IDENTIFIER: '${{ secrets.DEVELOPER_APP_IDENTIFIER }}'
+         DEVELOPER_PORTAL_TEAM_ID: '${{ secrets.DEVELOPER_PORTAL_TEAM_ID }}'
+         FASTLANE_APPLE_ID: '${{ secrets.FASTLANE_APPLE_ID }}'
+         FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: '${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}'
+         MATCH_PASSWORD: '${{ secrets.MATCH_PASSWORD }}'
+         GIT_AUTHORIZATION: '${{ secrets.GIT_AUTHORIZATION }}'
+         PROVISIONING_PROFILE_SPECIFIER: '${{ secrets.PROVISIONING_PROFILE_SPECIFIER }}'
+         PROVISIONING_PROFILE_ID: '${{ secrets.PROVISIONING_PROFILE_ID }}'
+         TEMP_KEYCHAIN_PASSWORD: '${{ secrets.TEMP_KEYCHAIN_PASSWORD }}'
+         TEMP_KEYCHAIN_USER: '${{ secrets.TEMP_KEYCHAIN_USER }}'
+         ASC_KEY_ID: '${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}'
+         ASC_ISSUER_ID: '${{ secrets.APP_STORE_CONNECT_ISSUER_ID }}'
+         ASC_KEY: '${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}'
+        #  SIGNING_KEY_PASSWORD: '${{ secrets.IOS_DIST_SIGNING_KEY_PASSWORD }}'
+        #  SIGNING_KEY_FILE_PATH: 'signing-cert.p12'
+
+# For uploading the output of the build and archiving...
+# you can use github artifacts to store the output of the workflow.
+
+     - name: Upload app-store ipa and dsyms to artifacts
+       uses: actions/upload-artifact@v2
+       with:
+         name: app-store ipa & dsyms
+         path: |
+           ${{ github.workspace }}/splitsies.ipa
+           ${{ github.workspace }}/*splitsies.app.dSYM.zip
