@@ -63,11 +63,12 @@ jobs:
 
       - name: Decode Google Services
         env:
-            GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES_IOS_BASE64_PRODUCTION }}
+          GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES_IOS_BASE64_PRODUCTION }}
   
         run: |
-            echo $GOOGLE_SERVICES > gs.ios.plist
-            base64 -d -i gs.ios.plist > ./google-services/ios/production-GoogleService-Info.plist
+          mkdir -p google-services/ios
+          echo $GOOGLE_SERVICES > gs.ios.plist
+          base64 -d -i gs.ios.plist > ./google-services/ios/production-GoogleService-Info.plist
 
       - name: Clean Xcode Build
         run: |
