@@ -1,15 +1,9 @@
-
 name: Build and Upload Android Release aab 
 
-# on:
-#   release:
-#     types: [created]
-
 on:
-  pull_request:
-    branches:
-      - main
-      - "releases/**"
+  release:
+    types: [prereleased]
+
 
 jobs:
   build-android:
@@ -22,7 +16,7 @@ jobs:
         run: |
             mkdir -p ./whatsnew/
             echo "Bug fixes and performance improvements" > whatsnew/whatsnew-en-US
-            
+
       - name: Install npm dependencies
         run: |
           npm install
