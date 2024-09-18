@@ -61,6 +61,11 @@ jobs:
           git clean -ffdx
           npm cache clean --force
 
+      
+      - name: Install npm dependencies
+        run: |
+          npm install
+
       - name: Decode Google Services
         env:
           GOOGLE_SERVICES: ${{ secrets.GOOGLE_SERVICES_IOS_BASE64_PRODUCTION }}
