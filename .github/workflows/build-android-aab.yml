@@ -1,9 +1,15 @@
 
-name: Build Android Release aab 
+name: Build and Upload Android Release aab 
+
+# on:
+#   release:
+#     types: [created]
 
 on:
-  release:
-    types: [created]
+  pull_request:
+    branches:
+      - main
+      - "releases/**"
 
 jobs:
   build-android:
@@ -48,3 +54,17 @@ jobs:
         with:
           name: app-production-release.aab
           path: android/app/build/outputs/bundle/productionRelease/
+
+      - name: Create service_account.json
+        id: createServiceAccount
+        run: echo '${{ secrets.PLAYSTORE_SERVICE_ACCOUNT_JSON }}' > service_account.json
+
+      - name: Deploy to Play Store (BETA)
+        id: deploy
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJson: service_account.json
+          packageName: com.kchen.Splitsies
+          releaseFiles: app/build/outputs/bundle/productionRelease/app-production-release.aab
+          track: beta
+          whatsNewDirectory: whatsnew/
