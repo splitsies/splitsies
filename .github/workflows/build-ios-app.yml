@@ -118,4 +118,6 @@ jobs:
           USERNAME: ${{ secrets.APPLE_DEVELOPER_USERNAME }}
           PASSWORD: ${{ secrets.APPLE_DEVELOPER_PASSWORD }}
         run: |
-          cd ios && xcrun altool --upload-app -f $RUNNER_TEMP/build/Apps/Splitsies.ipa -t ios -u $USERNAME -p $PASSWORD
+          ls -l $RUNNER_TEMP/Apps
+          ls -l $RUNNER_TEMP/build
+          cd ios && xcrun altool --upload-app -f $RUNNER_TEMP/build/Splitsies.ipa -t ios -u $USERNAME -p $PASSWORD
