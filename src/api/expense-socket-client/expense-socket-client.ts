@@ -310,8 +310,6 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
     }
 
     private queueIfPendingConnection(expenseId: string, action: () => void): boolean {
-        if (!this._allowedExpenseConnection) return false;
-
         if (!this._connection || this._connection.readyState >= 2) {
             // requires reconnection
             this.connectToExpense(expenseId).then(() => {
