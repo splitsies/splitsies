@@ -1,6 +1,6 @@
 {
   "name": "splitsies",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "private": true,
   "scripts": {
     "android": "npm run android-emulator-ports && react-native run-android --mode localDebug",
