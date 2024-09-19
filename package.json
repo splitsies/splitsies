@@ -1,6 +1,6 @@
 {
   "name": "splitsies",
-  "version": "1.4.0",
+  "version": "1.4.1",
   "private": true,
   "scripts": {
     "android": "npm run android-emulator-ports && react-native run-android --mode localDebug",
@@ -35,7 +35,7 @@
     "@react-navigation/material-top-tabs": "^6.6.5",
     "@react-navigation/native": "^6.1.9",
     "@react-navigation/native-stack": "^6.9.14",
-    "@splitsies/shared-models": "^0.0.34",
+    "@splitsies/shared-models": "^0.0.36",
     "http2": "^3.3.7",
     "inversify": "^6.0.1",
     "inversify-inject-decorators": "^3.1.0",

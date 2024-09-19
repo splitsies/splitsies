@@ -1,15 +1,6 @@
 import { injectable } from "inversify";
-import { IExpenseApiClient } from "./expense-api-client-interface";
-import { BehaviorSubject, Observable } from "rxjs";
-import {
-    ExpenseMessageParameters,
-    IExpenseDto,
-    IExpenseItem,
-    IExpenseMessageParametersMapper,
-    IExpensePayerDto,
-    IExpenseUserDetails,
-    IScanResult,
-} from "@splitsies/shared-models";
+import { IExpenseApiClient } from "./expense-api-client.i";
+import { IExpenseDto, IExpensePayerDto, IScanResult } from "@splitsies/shared-models";
 import { ClientBase } from "../client-base";
 import { lazyInject } from "../../utils/lazy-inject";
 import { IAuthProvider } from "../../providers/auth-provider/auth-provider-interface";
@@ -17,19 +8,10 @@ import { IUserExpenseDto } from "../../models/user-expense-dto/user-expense-dto-
 
 @injectable()
 export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
-    private _connection!: WebSocket;
-    private readonly _sessionExpense$ = new BehaviorSubject<IExpenseDto | null>(null);
     private readonly _authProvider = lazyInject<IAuthProvider>(IAuthProvider);
-    private readonly _expenseMessageParametersMapper = lazyInject<IExpenseMessageParametersMapper>(
-        IExpenseMessageParametersMapper,
-    );
 
     constructor() {
         super();
-    }
-
-    get sessionExpense$(): Observable<IExpenseDto | null> {
-        return this._sessionExpense$.asObservable();
     }
 
     async getAllExpenses(reset = true): Promise<IExpenseDto[]> {
@@ -55,66 +37,14 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
     }
 
-    async getExpense(expenseId: string): Promise<void> {
+    async getExpense(expenseId: string): Promise<IExpenseDto | null> {
         const uri = `${this._config.expense}/${expenseId}`;
         try {
             const expense = await this.get<IExpenseDto>(uri, this._authProvider.provideAuthHeader());
-            this._sessionExpense$.next(expense.data);
+            return expense.data;
         } catch (e) {
-            return;
+            return null;
         }
-    }
-
-    async connectToExpense(expenseId: string): Promise<void> {
-        const tokenResponse = await this.postJson<string>(
-            `${this._config.expense}/${expenseId}/connections/tokens`,
-            {},
-            this._authProvider.provideAuthHeader(),
-        );
-        const socketUri = `${
-            this._config.expenseSocket
-        }?expenseId=${expenseId}&userId=${this._authProvider.provideIdentity()}&connectionToken=${tokenResponse.data}`;
-        const onConnected = new Promise<void>((res, rej) => {
-            try {
-                this._connection = new WebSocket(socketUri);
-                this._connection.onopen = () => void this.onExpenseConnection(res, expenseId);
-                this._connection.onmessage = (e) => this.onMessage(e);
-                this._connection.onclose = () => this.disconnectFromExpense();
-            } catch (e) {
-                console.error(e);
-                rej(e);
-            }
-        });
-
-        return onConnected;
-    }
-
-    async pingConnection(): Promise<void> {
-        const socketUri = `${this._config.expenseSocket}?ping=true`;
-
-        const onConnected = new Promise<void>((res, rej) => {
-            try {
-                const conn = new WebSocket(socketUri);
-                conn.onopen = () => {
-                    res();
-                };
-            } catch (e) {
-                console.error(e);
-                rej(e);
-            }
-        });
-
-        return onConnected;
-    }
-
-    disconnectFromExpense(): void {
-        if (!this._connection || this._connection.readyState >= 2) {
-            this._sessionExpense$.next(null);
-            return;
-        }
-
-        this._connection.close();
-        this._sessionExpense$.next(null);
     }
 
     async getUserIdsForExpense(expenseId: string): Promise<string[]> {
@@ -157,7 +87,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
     }
 
-    async createFromExpense(expenseDto: IExpenseDto): Promise<boolean> {
+    async createFromExpense(expenseDto: IExpenseDto): Promise<string> {
         try {
             const body = { userId: this._authProvider.provideIdentity(), expense: expenseDto };
 
@@ -167,20 +97,14 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
                 this._authProvider.provideAuthHeader(),
             );
 
-            if (response.success) {
-                await this.connectToExpense(response.data.id);
-            } else {
-                return false;
-            }
-
-            return true;
+            return response.success ? response.data.id : "";
         } catch (e) {
             console.error(e);
-            return false;
+            return "";
         }
     }
 
-    async createExpense(base64Image: string | undefined = undefined): Promise<boolean> {
+    async createExpense(base64Image: string | undefined = undefined): Promise<string> {
         try {
             const body = { userId: this._authProvider.provideIdentity() };
             const response = await this.postJson<IExpenseDto>(
@@ -189,16 +113,10 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
                 this._authProvider.provideAuthHeader(),
             );
 
-            if (response.success) {
-                await this.connectToExpense(response.data.id);
-            } else {
-                return false;
-            }
-
-            return true;
+            return response.success ? response.data.id : "";
         } catch (e) {
             console.error(e);
-            return false;
+            return "";
         }
     }
 
@@ -288,93 +206,39 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
     }
 
-    addItem(
-        expenseId: string,
-        itemName: string,
-        itemPrice: number,
-        itemOwners: IExpenseUserDetails[],
-        isItemProportional: boolean,
-    ): void {
-        const params = this._expenseMessageParametersMapper.toDtoModel(
-            new ExpenseMessageParameters({ expenseId, itemName, itemPrice, itemOwners, isItemProportional }),
-        );
-        this._connection.send(JSON.stringify({ id: expenseId, method: "addItem", params }));
+    async requestAddToExpenseGroup(expenseId: string, expense: IExpenseDto | undefined): Promise<void> {
+        try {
+            const url = `${this._config.expense}/${expenseId}/children`;
+            await this.postJson<IExpenseDto>(url, { expense }, this._authProvider.provideAuthHeader());
+        } catch (e) {
+            return;
+        }
     }
 
-    removeItem(expenseId: string, item: IExpenseItem): void {
-        const params = this._expenseMessageParametersMapper.toDtoModel(
-            new ExpenseMessageParameters({ expenseId, item }),
-        );
-
-        this._connection.send(JSON.stringify({ id: expenseId, method: "removeItem", params }));
+    async addExistingExpenseToGroup(groupExpenseId: string, childExpenseId: string): Promise<void> {
+        try {
+            const url = `${this._config.expense}/${groupExpenseId}/children`;
+            await this.putJson<void>(url, { childExpenseId }, this._authProvider.provideAuthHeader());
+        } catch (e) {
+            return;
+        }
     }
 
-    updateItemSelections(expenseId: string, user: IExpenseUserDetails, selectedItemIds: string[]): void {
-        const params = this._expenseMessageParametersMapper.toDtoModel(
-            new ExpenseMessageParameters({ expenseId, user, selectedItemIds }),
-        );
-
-        this._connection.send(JSON.stringify({ id: expenseId, method: "updateItemSelections", params }));
+    async removeExpenseFromGroup(groupExpenseId: string, childExpenseId: string): Promise<void> {
+        try {
+            const url = `${this._config.expense}/${groupExpenseId}/children/${childExpenseId}`;
+            await this.delete(url, this._authProvider.provideAuthHeader());
+        } catch (e) {
+            return;
+        }
     }
 
-    updateItemDetails(
-        expenseId: string,
-        item: IExpenseItem,
-        itemName: string,
-        itemPrice: number,
-        isItemProportional: boolean,
-    ): void {
-        const params = this._expenseMessageParametersMapper.toDtoModel(
-            new ExpenseMessageParameters({ expenseId, item, itemName, itemPrice, isItemProportional }),
-        );
-
-        this._connection.send(JSON.stringify({ id: expenseId, method: "updateItemDetails", params }));
-    }
-
-    updateExpenseName(expenseId: string, expenseName: string): void {
-        const params = this._expenseMessageParametersMapper.toDtoModel(
-            new ExpenseMessageParameters({ expenseId, expenseName }),
-        );
-
-        this._connection.send(JSON.stringify({ id: expenseId, method: "updateExpenseName", params }));
-    }
-
-    updateExpenseTransactionDate(expenseId: string, transactionDate: Date): void {
-        const params = this._expenseMessageParametersMapper.toDtoModel(
-            new ExpenseMessageParameters({ expenseId, transactionDate }),
-        );
-
-        this._connection.send(JSON.stringify({ id: expenseId, method: "updateTransactionDate", params }));
-    }
-
-    updateSingleItemSelected(
-        expenseId: string,
-        user: IExpenseUserDetails,
-        item: IExpenseItem,
-        itemSelected: boolean,
-    ): void {
-        const params = this._expenseMessageParametersMapper.toDtoModel(
-            new ExpenseMessageParameters({ expenseId, item, itemSelected, user }),
-        );
-        this._connection.send(JSON.stringify({ id: expenseId, method: "updateSingleItemSelected", params }));
-    }
-
-    private async onExpenseConnection(promiseResolver: () => void, expenseId: string): Promise<void> {
-        await this.getExpense(expenseId);
-        promiseResolver();
-
-        // Ping the message endpoint to warm up an execution environment
-        this._connection.send(
-            JSON.stringify({
-                id: expenseId,
-                method: "ping",
-                params: new ExpenseMessageParameters({ expenseId }),
-            }),
-        );
-    }
-
-    private async onMessage(e: WebSocketMessageEvent): Promise<void> {
-        const message = JSON.parse(e.data) as IExpenseDto;
-        this._sessionExpense$.next(message);
+    async deleteExpense(expenseId: string): Promise<void> {
+        try {
+            const url = `${this._config.expense}/${expenseId}`;
+            await this.delete(url, this._authProvider.provideAuthHeader());
+        } catch (e) {
+            return;
+        }
     }
 }

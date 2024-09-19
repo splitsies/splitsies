@@ -4,7 +4,7 @@ import { IExpenseManager } from "../managers/expense-manager/expense-manager-int
 import { ExpenseManager } from "../managers/expense-manager/expense-manager";
 import { IUsersApiClient } from "../api/users-api-client/users-api-client-interface";
 import { UsersApiClient } from "../api/users-api-client/users-api-client";
-import { IExpenseApiClient } from "../api/expense-api-client/expense-api-client-interface";
+import { IExpenseApiClient } from "../api/expense-api-client/expense-api-client.i";
 import { ExpenseApiClient } from "../api/expense-api-client/expense-api-client";
 import { IUserManager } from "../managers/user-manager/user-manager-interface";
 import { UserManager } from "../managers/user-manager/user-manager";
@@ -85,6 +85,13 @@ import { ITutorialManager } from "../managers/tutorial-manager/tutorial-manager.
 import { TutorialManager } from "../managers/tutorial-manager/tutorial-manager";
 import { ITutorialConfiguration } from "../models/configuration/tutorial-configuration/tutorial-configuration.i";
 import { TutorialConfiguration } from "../models/configuration/tutorial-configuration/tutorial-configuration";
+import { IRunningTotalCalculator } from "../utils/running-total-calculator/running-total-calculator.i";
+import { RunningTotalCalculator } from "../utils/running-total-calculator/running-total-calculator";
+import { IExpenseMessageStrategy } from "../strategies/expense-message-strategy/expense-message-strategy.i";
+import { ExpenseMessageStrategy } from "../strategies/expense-message-strategy/expense-message-strategy";
+import { IExpenseSocketClient } from "../api/expense-socket-client/expense-socket-client.i";
+import { ExpenseSocketClient } from "../api/expense-socket-client/expense-socket-client";
+
 const container = new Container({ defaultScope: "Singleton" });
 
 const messageHub = new WritableMessageHub();
@@ -134,4 +141,8 @@ container
     .to(AuthenticatedLinkingConfigurationProvider);
 container.bind<ITutorialManager>(ITutorialManager).to(TutorialManager);
 container.bind<ITutorialConfiguration>(ITutorialConfiguration).to(TutorialConfiguration);
+container.bind<IRunningTotalCalculator>(IRunningTotalCalculator).to(RunningTotalCalculator);
+container.bind<IExpenseMessageStrategy>(IExpenseMessageStrategy).to(ExpenseMessageStrategy);
+container.bind<IExpenseSocketClient>(IExpenseSocketClient).to(ExpenseSocketClient);
+
 export { container };

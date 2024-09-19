@@ -29,7 +29,16 @@ export class PriceCalculator {
 
         // Put it into an expense to have it calculate subtotal and use that to
         // calculate the proportional split on each proportional item
-        const personalExpense = new Expense(expense.id, expense.name, expense.transactionDate, items, expense.users);
+        const personalExpense = new Expense(
+            expense.id,
+            expense.name,
+            expense.transactionDate,
+            items,
+            expense.users,
+            expense.payers,
+            expense.payerStatuses,
+            expense.children,
+        );
         const proportionalItems: IExpenseItem[] = [];
         expense.items
             .filter((i) => i.isProportional)

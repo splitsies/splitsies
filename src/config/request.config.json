@@ -1,3 +1,4 @@
 {
-    "connectionTimeoutMs": 10000
+    "connectionTimeoutMs": 10000,
+    "connectionCheckIntervalMs": 100
 }

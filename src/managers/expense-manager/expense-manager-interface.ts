@@ -17,7 +17,8 @@ export interface IExpenseManager {
     readonly expenseJoinRequestCount$: Observable<number>;
 
     requestForUser(reset?: boolean): Promise<void>;
-    connectToExpense(expenseId: string): Promise<void>;
+    refreshCurrentExpense(): Promise<void>;
+    connectToExpense(expenseId: string): Promise<boolean>;
     disconnectFromExpense(): void;
     requestAddUserToExpense(userId: string, expenseId: string, requestingUserId?: string): Promise<void>;
     requestRemoveUserFromExpense(userId: string, expenseId: string): Promise<void>;
@@ -26,6 +27,9 @@ export interface IExpenseManager {
     removeExpenseJoinRequestForUser(expenseId: string, userId?: string): Promise<void>;
     requestSetExpensePayers(expenseId: string, userId: string): Promise<void>;
     requestSetExpensePayerStatus(expenseId: string, userId: string, settled: boolean): Promise<void>;
+    addExistingExpenseToGroup(groupExpenseId: string, childExpenseId: string): Promise<void>;
+    removeExpenseFromGroup(groupExpenseId: string, childExpenseId: string): Promise<void>;
+    deleteExpense(expenseId: string): Promise<void>;
     sendExpenseJoinRequest(userId: string, expenseId: string): Promise<void>;
     getExpenseJoinRequestCount(): Promise<void>;
     addItem(
@@ -52,6 +56,12 @@ export interface IExpenseManager {
         item: IExpenseItem,
         itemSelected: boolean,
     ): void;
+
+    /**
+     * @deprecated Do not use unless warranted, specifically to reduce server latency in
+     * updating the current expense
+     */
+    updateCurrentExpense(expense: IExpense): void;
 
     /**
      * Sends a ping event to the image scan function to ensure a warm execution
