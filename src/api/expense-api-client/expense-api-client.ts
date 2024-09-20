@@ -87,7 +87,7 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
         }
     }
 
-    async createFromExpense(expenseDto: IExpenseDto): Promise<string> {
+    async createFromExpense(expenseDto: IExpenseDto): Promise<IExpenseDto | null> {
         try {
             const body = { userId: this._authProvider.provideIdentity(), expense: expenseDto };
 
@@ -97,14 +97,14 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
                 this._authProvider.provideAuthHeader(),
             );
 
-            return response.success ? response.data.id : "";
+            return response.success ? response.data : null;
         } catch (e) {
             console.error(e);
-            return "";
+            return null;
         }
     }
 
-    async createExpense(base64Image: string | undefined = undefined): Promise<string> {
+    async createExpense(base64Image: string | undefined = undefined): Promise<IExpenseDto | null> {
         try {
             const body = { userId: this._authProvider.provideIdentity() };
             const response = await this.postJson<IExpenseDto>(
@@ -113,10 +113,10 @@ export class ExpenseApiClient extends ClientBase implements IExpenseApiClient {
                 this._authProvider.provideAuthHeader(),
             );
 
-            return response.success ? response.data.id : "";
+            return response.success ? response.data : null;
         } catch (e) {
             console.error(e);
-            return "";
+            return null;
         }
     }
 
