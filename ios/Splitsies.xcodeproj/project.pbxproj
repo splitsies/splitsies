@@ -756,7 +756,7 @@
 				CODE_SIGN_ENTITLEMENTS = Splitsies/Splitsies.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 6KH87N33A6;
 				ENABLE_BITCODE = NO;
@@ -796,7 +796,7 @@
 				CODE_SIGN_ENTITLEMENTS = Splitsies/Splitsies.entitlements;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2;
 				DEVELOPMENT_TEAM = "";
 				"DEVELOPMENT_TEAM[sdk=iphoneos*]" = 6KH87N33A6;
 				INFOPLIST_FILE = Splitsies/Info.plist;
