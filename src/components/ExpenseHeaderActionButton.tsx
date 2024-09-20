@@ -31,9 +31,9 @@ export const ExpenseHeaderActionButton = ({ currentExpense }: Props) => {
     const [awaitingResponse, setAwaitingResponse] = useState<boolean>(false);
 
     useInitialize(() => {
-        const sub = zip([_expenseViewModel.awaitingResponse$, _homeViewModel.pendingData$]).subscribe({
-            next: ([expensePendingData, homePendingData]) => {
-                setAwaitingResponse(expensePendingData || homePendingData);
+        const sub = zip([_expenseViewModel.awaitingResponse$, _expenseManager.connectionPending$]).subscribe({
+            next: ([expensePendingData, connectionPending]) => {
+                setAwaitingResponse(expensePendingData || connectionPending);
             },
         });
 
