@@ -8,8 +8,8 @@ export interface IExpenseApiClient extends IBaseManager {
     getUserIdsForExpense(expenseId: string): Promise<string[]>;
     addUserToExpense(userId: string, expenseId: string, requestingUserId?: string): Promise<void>;
     removeUserFromExpense(userId: string, expenseId: string): Promise<void>;
-    createFromExpense(expense: IExpenseDto): Promise<string>;
-    createExpense(base64Image?: string): Promise<string>;
+    createFromExpense(expense: IExpenseDto): Promise<IExpenseDto | null>;
+    createExpense(base64Image?: string): Promise<IExpenseDto | null>;
     getExpenseJoinRequests(reset?: boolean): Promise<IUserExpenseDto[]>;
     getExpenseJoinRequestCount(): Promise<number>;
     removeExpenseJoinRequest(expenseId: string, userId?: string): Promise<void>;

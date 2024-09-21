@@ -33,6 +33,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     private readonly _isPendingExpenseData$ = new BehaviorSubject<boolean>(false);
     private readonly _expenseJoinRequests$ = new BehaviorSubject<IExpenseJoinRequest[]>([]);
     private readonly _expenseJoinRequestCount$ = new BehaviorSubject<number>(0);
+    private readonly _connectionPending$ = new BehaviorSubject<boolean>(false);
 
     get expenses$(): Observable<IExpense[]> {
         return this._expenses$.asObservable();
@@ -64,6 +65,10 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     get expenseJoinRequestCount$(): Observable<number> {
         return this._expenseJoinRequestCount$.asObservable();
+    }
+
+    get connectionPending$(): Observable<boolean> {
+        return this._connectionPending$.asObservable();
     }
 
     constructor() {
@@ -112,13 +117,20 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
             if (!expense) {
                 await this._socket.getExpense(expenseId);
                 void this.requestForUser();
-                return this._socket.connectToExpense(expenseId);
+                this._connectionPending$.next(true);
+                return this._socket.connectToExpense(expenseId).then((value) => {
+                    this._connectionPending$.next(false);
+                    return value;
+                });
             }
 
             void this._socket.getExpense(expenseId);
 
             this._socket.updateSessionExpense(this._expenseMapper.toDto(expense));
-            return this._socket.connectToExpense(expenseId);
+            return this._socket.connectToExpense(expenseId).then((value) => {
+                this._connectionPending$.next(false);
+                return value;
+            });
         } catch {
             this._socket.updateSessionExpense(null);
             return false;
@@ -160,19 +172,19 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
                 return true;
             }
 
-            const id = await this._api.createFromExpense(expense);
-            if (!id) return false;
+            const createdExpense = await this._api.createFromExpense(expense);
+            if (!createdExpense) return false;
 
-            await this._socket.getExpense(id);
-            await this._socket.connectToExpense(id);
+            await this.onSessionExpenseUpdated(createdExpense);
+            void this._socket.connectToExpense(createdExpense.id);
             return true;
         }
 
-        const id = await this._api.createExpense(base64Image);
-        if (!id) return false;
+        const createdExpense = await this._api.createExpense(base64Image);
+        if (!createdExpense) return false;
 
-        await this._socket.getExpense(id);
-        await this._socket.connectToExpense(id);
+        await this.onSessionExpenseUpdated(createdExpense);
+        void this._socket.connectToExpense(createdExpense.id);
         return true;
     }
 

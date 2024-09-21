@@ -42,6 +42,12 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
 
         try {
             const expense = await this.get<IExpenseDto>(uri, this._authProvider.provideAuthHeader());
+
+            if (!this._allowedExpenseConnection) {
+                console.warn("Successfully fetched expense, but connection was ended.");
+                return;
+            }
+
             this._sessionExpense$.next(expense.data);
         } catch (e) {
             return;
@@ -78,7 +84,6 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
                     this._connection = new WebSocket(socketUri);
                     this._connection.onopen = () => void this.onExpenseConnection(res, expenseId);
                     this._connection.onmessage = (e) => this.onMessage(e);
-                    this._connection.onclose = () => this.disconnectFromExpense();
                 } catch (e) {
                     console.error(e);
                     rej(e);
@@ -113,12 +118,13 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
     disconnectFromExpense(): void {
         this._allowedExpenseConnection = "";
         this._connected = Promise.resolve(false);
-        if (!this._connection || this._connection.readyState >= 2) {
-            this._sessionExpense$.next(null);
-            return;
+        if (this._connection) {
+            this._connection.onopen = null;
+            this._connection.onclose = null;
+            this._connection.onmessage = null;
+            this._connection.close();
         }
 
-        this._connection.close();
         this._sessionExpense$.next(null);
     }
 
@@ -218,16 +224,18 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
         user: IExpenseUserDetails,
         item: IExpenseItem,
         itemSelected: boolean,
+        ignoreResponse = true,
     ): void {
         if (
             this.queueIfPendingConnection(this._connectedExpenseId!, () =>
-                this.updateSingleItemSelected(expenseId, user, item, itemSelected),
+                // queue with ignoreResponse = false to ensure we get the lastest data once updated
+                this.updateSingleItemSelected(expenseId, user, item, itemSelected, false),
             )
         ) {
             return;
         }
 
-        const params = this._paramMapper.toDtoModel({ expenseId, item, itemSelected, user, ignoreResponse: true });
+        const params = this._paramMapper.toDtoModel({ expenseId, item, itemSelected, user, ignoreResponse });
 
         this._connection.send(JSON.stringify({ id: expenseId, method: "updateSingleItemSelected", params }));
     }
@@ -240,8 +248,13 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
         if (!this._allowedExpenseConnection || (await this._connected)) return;
 
         if (this._connection?.readyState === 0) {
-            await this._connected;
-        } else if (this._connection?.readyState >= 2) {
+            // We're connecting, wait for the connection first...
+            await this.waitForConnection();
+        } else if (this._connection?.readyState === 2) {
+            // Closing, wait for close then reconnect
+            await this.waitForConnectionClose();
+            await this.connectToExpense(this._connectedExpenseId!);
+        } else if (this._connection?.readyState === 3) {
             await this.connectToExpense(this._connectedExpenseId!);
         }
     }
@@ -310,6 +323,8 @@ export class ExpenseSocketClient extends ClientBase implements IExpenseSocketCli
     }
 
     private queueIfPendingConnection(expenseId: string, action: () => void): boolean {
+        if (!this._allowedExpenseConnection) return false;
+
         if (!this._connection || this._connection.readyState >= 2) {
             // requires reconnection
             this.connectToExpense(expenseId).then(() => {
