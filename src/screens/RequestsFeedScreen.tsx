@@ -98,9 +98,13 @@ export const RequestsFeedScreen = ({ navigation }: Props): JSX.Element => {
     return (
         <Container>
             {joinRequests.length === 0 ? (
-                <View style={styles.messageContainer}>
-                    <Text hint>Doesn't look like there are any requests here</Text>
-                </View>
+                <ScrollView
+                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
+                >
+                    <View style={styles.messageContainer}>
+                        <Text hint>Doesn't look like there are any requests here</Text>
+                    </View>
+                </ScrollView>
             ) : (
                 <FlatList
                     refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
