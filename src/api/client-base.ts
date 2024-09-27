@@ -90,30 +90,33 @@ export abstract class ClientBase extends BaseManager {
         const baseWaitTimeMs = 50;
 
         let response: Response | undefined = undefined;
+        let dataResponse: IDataResponse<T> | undefined = undefined;
         let retries = 0;
 
         do {
-            try {
-                response = await request();
+            response = await request();
 
-                if ((response.headers as unknown as any)?.map?.["x-amzn-errortype"]) {
-                    // Could be rate limiting errors - need to dig in to how to change
-                    // APIGW response from a proxy integration error status code
-                    const requestCooldownMs = baseWaitTimeMs * 2 ** retries;
-                    await new Promise<void>((res) => setTimeout(() => res(), requestCooldownMs));
-                    console.log(`Hitting ${endpoint} again after ${requestCooldownMs}. Retries=${retries++}`);
-                    continue;
-                }
+            if ((response.headers as unknown as any)?.map?.["x-amzn-errortype"]) {
+                // Could be rate limiting errors - need to dig in to how to change
+                // APIGW response from a proxy integration error status code
+                const requestCooldownMs = baseWaitTimeMs * 2 ** retries;
+                await new Promise<void>((res) => setTimeout(() => res(), requestCooldownMs));
+                console.log(`Hitting ${endpoint} again after ${requestCooldownMs}. Retries=${retries++}`);
+                continue;
+            }
 
-                const dataResponse = await response.json();
-                if (!dataResponse.success) {
-                    console.error(`endpoint = ${endpoint}, response - ${JSON.stringify(response, null, 2)}`);
-                    throw new Error(dataResponse.data);
-                }
+            const parsedResponse = await response.json();
+            if (!parsedResponse.success) {
+                console.error(`endpoint = ${endpoint}, response - ${JSON.stringify(response, null, 2)}`);
+                throw new Error(parsedResponse.data);
+            }
 
-                return this.parseResponse(dataResponse);
-            } catch (e) {}
-        } while (response === undefined && retries <= maxRetries);
+            dataResponse = this.parseResponse(parsedResponse);
+        } while (dataResponse === undefined && retries <= maxRetries);
+
+        if (dataResponse) {
+            return dataResponse;
+        }
 
         console.error(`endpoint = ${endpoint} failed after ${maxRetries} retries`);
         throw new Error();
