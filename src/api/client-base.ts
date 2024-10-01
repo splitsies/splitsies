@@ -94,14 +94,19 @@ export abstract class ClientBase extends BaseManager {
         let retries = 0;
 
         do {
-            response = await request();
+            try {
+                response = await request();
+            } catch (e) {
+                console.error(`error on fetch. url=${endpoint}`, e);
+                throw e;
+            }
 
-            if ((response.headers as unknown as any)?.map?.["x-amzn-errortype"]) {
+            if ((response.headers as unknown as any)?.map?.["x-amzn-errortype"] && response.status === 500) {
                 // Could be rate limiting errors - need to dig in to how to change
                 // APIGW response from a proxy integration error status code
                 const requestCooldownMs = baseWaitTimeMs * 2 ** retries;
                 await new Promise<void>((res) => setTimeout(() => res(), requestCooldownMs));
-                console.log(`Hitting ${endpoint} again after ${requestCooldownMs}. Retries=${retries++}`);
+                console.log(`Hitting ${endpoint} again after ${requestCooldownMs}. Retries=${retries++}`, response);
                 continue;
             }
 

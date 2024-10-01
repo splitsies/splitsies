@@ -1,7 +1,7 @@
 {
-    "expense": "https://sq2y12nyd3.execute-api.us-east-1.amazonaws.com/staging/expenses",
-    "expenseSocket": "wss://djb25cevxg.execute-api.us-east-1.amazonaws.com/staging",
-    "users": "https://8v9glcff5m.execute-api.us-east-1.amazonaws.com/staging/users",
-    "ocr": "https://hbtu902b92.execute-api.us-east-1.amazonaws.com/staging/",
-    "notification": "https://27lec33uje.execute-api.us-east-1.amazonaws.com/staging/"
+    "expense": "https://jaleakrx8e.execute-api.us-east-1.amazonaws.com/staging/expenses",
+    "expenseSocket": "wss://bq5chgizig.execute-api.us-east-1.amazonaws.com/staging",
+    "users": "https://xu0mgubxe7.execute-api.us-east-1.amazonaws.com/staging/users",
+    "ocr": "https://p5f3owx2rj.execute-api.us-east-1.amazonaws.com/staging/",
+    "notification": "https://s35nvoojoa.execute-api.us-east-1.amazonaws.com/staging/"
 }

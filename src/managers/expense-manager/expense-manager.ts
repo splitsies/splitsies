@@ -88,7 +88,9 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
             next: (data) => void this.onSessionExpenseUpdated(data),
         });
 
-        await this.requestExpenseJoinRequests();
+        if (this._userManager.user) {
+            await this.requestExpenseJoinRequests();
+        }
     }
 
     async requestForUser(reset = true): Promise<void> {
@@ -191,6 +193,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     async requestExpenseJoinRequests(reset = true): Promise<void> {
         if (reset) {
+            console.trace("hello world 2");
             await this.getExpenseJoinRequestCount();
         }
 
@@ -211,6 +214,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     }
 
     async getExpenseJoinRequestCount(): Promise<void> {
+        console.trace("hello world");
         const count = await this._api.getExpenseJoinRequestCount();
         this._expenseJoinRequestCount$.next(count);
     }
@@ -353,6 +357,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         if (!userCredential) {
             this._expenses$.next([]);
         } else {
+            void this.requestExpenseJoinRequests();
             void this._socket.pingConnection();
         }
 
