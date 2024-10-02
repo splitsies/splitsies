@@ -31,7 +31,7 @@
 			<dict>
 				<key>CFBundleURLSchemes</key>
 				<array>
-					<string>www.splitsiesapp.com</string>
+					<string>splitsiesapp.com</string>
 				</array>
 			</dict>
 		</array>
