@@ -16,7 +16,7 @@
         android:windowSoftInputMode="adjustPan"
         android:exported="true"
         android:theme="@style/BootTheme">
-      <intent-filter>
+      <intent-filter android:autoVerify="true">
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
@@ -25,6 +25,8 @@
         <category android:name="android.intent.category.DEFAULT"/>
         <category android:name="android.intent.category.BROWSABLE"/>
         <data android:scheme="splitsies"/>
+        <data android:scheme="https" />
+        <data android:host="splitsiesapp.com" />
       </intent-filter>
     </activity>
   </application>

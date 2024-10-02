@@ -1,5 +1,5 @@
 export const linking = {
-  prefixes: ['splitsies://'],
+  prefixes: ['splitsies://', 'https://splitsiesapp.com'],
   config: {
     screens: {
       RootScreen: {                
@@ -17,7 +17,7 @@ export const linking = {
 };
 
 export const unauthenticatedLinking = {
-    prefixes: ['splitsies://'],
+    prefixes: ['splitsies://', 'https://splitsiesapp.com'],
     config: {
         screens: {
             LoginScreen: "*"
