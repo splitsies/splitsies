@@ -88,7 +88,9 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
             next: (data) => void this.onSessionExpenseUpdated(data),
         });
 
-        await this.requestExpenseJoinRequests();
+        if (this._userManager.user) {
+            await this.requestExpenseJoinRequests();
+        }
     }
 
     async requestForUser(reset = true): Promise<void> {
@@ -115,7 +117,10 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
             const expense = this.expenses.find((e) => e.id === expenseId);
 
             if (!expense) {
-                await this._socket.getExpense(expenseId);
+                const fetchedExpense = await this._api.getExpense(expenseId);
+                if (!fetchedExpense) return false;
+
+                this._socket.updateSessionExpense(fetchedExpense);
                 void this.requestForUser();
                 this._connectionPending$.next(true);
                 return this._socket.connectToExpense(expenseId).then((value) => {
@@ -123,8 +128,6 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
                     return value;
                 });
             }
-
-            void this._socket.getExpense(expenseId);
 
             this._socket.updateSessionExpense(this._expenseMapper.toDto(expense));
             return this._socket.connectToExpense(expenseId).then((value) => {
@@ -190,6 +193,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     async requestExpenseJoinRequests(reset = true): Promise<void> {
         if (reset) {
+            console.trace("hello world 2");
             await this.getExpenseJoinRequestCount();
         }
 
@@ -197,15 +201,20 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         const joinRequests: IExpenseJoinRequest[] = [];
 
         for (const r of requests) {
+            if (!reset && this._expenseJoinRequests$.value.find(jr => jr.expense.id === r.expense.id)) continue;
             const result = await this._expenseJoinRequestMapper.toDomain(r);
             if (result) joinRequests.push(result);
         }
 
-        const newCollection = reset ? joinRequests : [...this._expenseJoinRequests$.value, ...joinRequests];
+        const newCollection = reset
+            ? joinRequests
+            : [...this._expenseJoinRequests$.value, ...joinRequests];
+        
         this._expenseJoinRequests$.next(newCollection.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()));
     }
 
     async getExpenseJoinRequestCount(): Promise<void> {
+        console.trace("hello world");
         const count = await this._api.getExpenseJoinRequestCount();
         this._expenseJoinRequestCount$.next(count);
     }
@@ -348,6 +357,7 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         if (!userCredential) {
             this._expenses$.next([]);
         } else {
+            void this.requestExpenseJoinRequests();
             void this._socket.pingConnection();
         }
 
