@@ -12,7 +12,7 @@ import { DataResponse, IDataResponse } from "@splitsies/shared-models";
  */
 @injectable()
 export class VersionApiClient implements IVersionApiClient {
-    private readonly _endpoint: string = "https://3bagj5p6y2.execute-api.us-east-1.amazonaws.com/production";
+    private readonly _endpoint: string = "https://d3kcws6fbmdvqa.cloudfront.net";
 
     constructor() {
         if (Config.STAGE !== "production") {
