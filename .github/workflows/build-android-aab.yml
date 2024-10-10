@@ -70,5 +70,5 @@ jobs:
           serviceAccountJson: service_account.json
           packageName: com.kchen.Splitsies
           releaseFiles: android/app/build/outputs/bundle/productionRelease/app-production-release.aab
-          track: beta
+          track: alpha
           whatsNewDirectory: whatsnew/
