@@ -2,14 +2,13 @@ import { Colors, Text, View } from "react-native-ui-lib";
 import Tooltip, { TooltipProps } from "react-native-walkthrough-tooltip";
 import Close from "../../assets/icons/close.svg";
 import TipsOff from "../../assets/icons/tips-off.svg";
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { lazyInject } from "../utils/lazy-inject";
 import { ITutorialManager } from "../managers/tutorial-manager/tutorial-manager.i";
 import { useTutorialState } from "../hooks/use-tutorial-state";
 import { IUiConfiguration } from "../models/configuration/ui-configuration/ui-configuration-interface";
 import { useComputed } from "../hooks/use-computed";
-import { TouchableOpacity } from "react-native-gesture-handler";
-import { Alert, Platform, Pressable, StatusBar } from "react-native";
+import { Alert, Pressable, StyleSheet } from "react-native";
 import Next from "../../assets/icons/next.svg";
 import { TutorialGroup } from "../models/tutorial-group";
 import { ITutorialConfiguration } from "../models/configuration/tutorial-configuration/tutorial-configuration.i";
@@ -54,8 +53,8 @@ export const TutorialTip = SpThemedComponent((props: Props) => {
 
     const onDisablePress = useCallback(() => {
         Alert.alert(
-            `Turn off Tips?`,
-            "These will help guide you through using Splitsies. Are you sure you want to disable?",
+            `Skip Tutorial?`,
+            "These will help guide you through using Splitsies. Are you sure you want to skip?",
             [
                 {
                     text: "Yes",
@@ -95,21 +94,31 @@ export const TutorialTip = SpThemedComponent((props: Props) => {
                         style={{
                             marginTop: 10,
                             display: "flex",
-                            columnGap: 12,
+                            columnGap: 18,
                             flexGrow: 1,
                             justifyContent: "flex-end",
                             alignItems: "center",
                             flexDirection: "row",
                         }}
                     >
-                        <Pressable onPress={onDisablePress}>
+                        <Pressable
+                            onPress={onDisablePress}
+                            style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1.0 }, styles.labelButton]}
+                        >
                             <TipsOff
                                 width={_uiConfig.sizes.icon - 7}
                                 height={_uiConfig.sizes.icon - 7}
                                 fill={Colors.black}
                             />
+                            <Text black subtext>
+                                Skip Tutorial
+                            </Text>
                         </Pressable>
-                        <Pressable onPress={onNext}>
+
+                        <Pressable
+                            onPress={onNext}
+                            style={({ pressed }) => [{ opacity: pressed ? 0.3 : 1.0 }, styles.labelButton]}
+                        >
                             {isLastStep ? (
                                 <Close
                                     width={_uiConfig.sizes.icon - 4}
@@ -123,6 +132,9 @@ export const TutorialTip = SpThemedComponent((props: Props) => {
                                     fill={Colors.black}
                                 />
                             )}
+                            <Text black subtext>
+                                {isLastStep ? "Close" : "Next"}
+                            </Text>
                         </Pressable>
                     </View>
                     <Text black style={{ marginTop: 5 }}>
@@ -136,4 +148,13 @@ export const TutorialTip = SpThemedComponent((props: Props) => {
             {props.children}
         </Tooltip>
     );
+});
+
+const styles = StyleSheet.create({
+    labelButton: {
+        display: "flex",
+        columnGap: 3,
+        alignItems: "center",
+        flexDirection: "row",
+    },
 });

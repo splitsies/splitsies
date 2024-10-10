@@ -10,11 +10,14 @@ import localConfig from "../../config/api-local.config.json";
 import devPrConfig from "../../config/api-dev-pr.config.json";
 import stagingConfig from "../../config/api-staging.config.json";
 import productionConfig from "../../config/api-production.config.json";
+import { IRegionSelectionStrategy } from "../../strategies/region-selection-strategy/region-selection-strategy.i";
 
 @injectable()
 export class ApiConfigurationProvider extends BaseManager implements IApiConfigurationProvider {
     private readonly _versionManager = lazyInject<IVersionManager>(IVersionManager);
-    private _apiConfiguration: IApiConfig = localConfig;
+    private readonly _regionSelectionStrategy = lazyInject<IRegionSelectionStrategy>(IRegionSelectionStrategy);
+    private _apiConfiguration: IApiConfig = localConfig["us-east-1"];
+    private _region: "us-east-1" | "us-west-1" = "us-east-1";
 
     constructor() {
         super();
@@ -22,9 +25,10 @@ export class ApiConfigurationProvider extends BaseManager implements IApiConfigu
 
     protected async initialize(): Promise<void> {
         await this._versionManager.initialized;
-        this._apiConfiguration = this._versionManager.isPrerelease
-            ? new ApiConfig(stagingConfig)
-            : new ApiConfig(this.provideConfig());
+
+        // Ideally this isn't done client-side, but it's free this way.
+        this._region = await this._regionSelectionStrategy.byLowestLatency();
+        this._apiConfiguration = new ApiConfig(this.provideConfig());
     }
 
     async provide(): Promise<IApiConfig> {
@@ -33,10 +37,14 @@ export class ApiConfigurationProvider extends BaseManager implements IApiConfigu
     }
 
     private provideConfig(): IApiConfig {
-        console.log(`Setting up ${Config.STAGE} API endpoints.`);
+        if (this._versionManager.isPrerelease) {
+            return stagingConfig[this._region] ?? stagingConfig["us-east-1"];
+        }
+
+        console.log(`Setting up ${Config.STAGE} API endpoints for ${this._region}`);
         switch (Config.STAGE) {
             case "local":
-                return localConfig;
+                return localConfig["us-east-1"];
             // case "lan":
             //     // require this one as a special case - since the file isn't in
             //     // git, it may not exist
@@ -48,13 +56,13 @@ export class ApiConfigurationProvider extends BaseManager implements IApiConfigu
             //         return localConfig;
             //     }
             case "dev-pr":
-                return devPrConfig;
+                return devPrConfig[this._region] ?? devPrConfig["us-east-1"];
             case "staging":
-                return stagingConfig;
+                return stagingConfig[this._region] ?? stagingConfig["us-east-1"];
             case "production":
-                return productionConfig;
+                return productionConfig[this._region] ?? productionConfig["us-east-1"];
             default:
-                return localConfig;
+                return localConfig["us-east-1"];
         }
     }
 }
