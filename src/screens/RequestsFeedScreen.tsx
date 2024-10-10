@@ -98,9 +98,7 @@ export const RequestsFeedScreen = ({ navigation }: Props): JSX.Element => {
     return (
         <Container>
             {joinRequests.length === 0 ? (
-                <ScrollView
-                    refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
-                >
+                <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
                     <View style={styles.messageContainer}>
                         <Text hint>Doesn't look like there are any requests here</Text>
                     </View>
