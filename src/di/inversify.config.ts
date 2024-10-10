@@ -91,6 +91,8 @@ import { IExpenseMessageStrategy } from "../strategies/expense-message-strategy/
 import { ExpenseMessageStrategy } from "../strategies/expense-message-strategy/expense-message-strategy";
 import { IExpenseSocketClient } from "../api/expense-socket-client/expense-socket-client.i";
 import { ExpenseSocketClient } from "../api/expense-socket-client/expense-socket-client";
+import { IRegionSelectionStrategy } from "../strategies/region-selection-strategy/region-selection-strategy.i";
+import { RegionSelectionStrategy } from "../strategies/region-selection-strategy/region-selection-strategy";
 
 const container = new Container({ defaultScope: "Singleton" });
 
@@ -144,5 +146,6 @@ container.bind<ITutorialConfiguration>(ITutorialConfiguration).to(TutorialConfig
 container.bind<IRunningTotalCalculator>(IRunningTotalCalculator).to(RunningTotalCalculator);
 container.bind<IExpenseMessageStrategy>(IExpenseMessageStrategy).to(ExpenseMessageStrategy);
 container.bind<IExpenseSocketClient>(IExpenseSocketClient).to(ExpenseSocketClient);
+container.bind<IRegionSelectionStrategy>(IRegionSelectionStrategy).to(RegionSelectionStrategy);
 
 export { container };

@@ -1,7 +1,16 @@
 {
-    "expense": "https://jaleakrx8e.execute-api.us-east-1.amazonaws.com/staging/expenses",
-    "expenseSocket": "wss://bq5chgizig.execute-api.us-east-1.amazonaws.com/staging",
-    "users": "https://xu0mgubxe7.execute-api.us-east-1.amazonaws.com/staging/users",
-    "ocr": "https://p5f3owx2rj.execute-api.us-east-1.amazonaws.com/staging/",
-    "notification": "https://s35nvoojoa.execute-api.us-east-1.amazonaws.com/staging/"
+    "us-east-1": {
+        "expense": "https://jaleakrx8e.execute-api.us-east-1.amazonaws.com/staging/expenses",
+        "expenseSocket": "wss://bq5chgizig.execute-api.us-east-1.amazonaws.com/staging",
+        "users": "https://louzkuf36l.execute-api.us-east-1.amazonaws.com/staging/users",
+        "ocr": "https://p5f3owx2rj.execute-api.us-east-1.amazonaws.com/staging/",
+        "notification": "https://wlymkgcgyf.execute-api.us-east-1.amazonaws.com/staging/"
+    },
+    "us-west-1": {
+        "expense": "https://fp3tta6hoj.execute-api.us-west-1.amazonaws.com/staging/expenses",
+        "expenseSocket": "wss://ywizdij9li.execute-api.us-west-1.amazonaws.com/staging",
+        "users": "https://ugf4ypywxd.execute-api.us-west-1.amazonaws.com/staging/users",
+        "ocr": "https://llkm10devi.execute-api.us-west-1.amazonaws.com/staging/",
+        "notification": "https://wq0eibz1yi.execute-api.us-west-1.amazonaws.com/staging/"
+    }
 }

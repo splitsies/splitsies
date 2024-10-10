@@ -200,15 +200,13 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
         const joinRequests: IExpenseJoinRequest[] = [];
 
         for (const r of requests) {
-            if (!reset && this._expenseJoinRequests$.value.find(jr => jr.expense.id === r.expense.id)) continue;
+            if (!reset && this._expenseJoinRequests$.value.find((jr) => jr.expense.id === r.expense.id)) continue;
             const result = await this._expenseJoinRequestMapper.toDomain(r);
             if (result) joinRequests.push(result);
         }
 
-        const newCollection = reset
-            ? joinRequests
-            : [...this._expenseJoinRequests$.value, ...joinRequests];
-        
+        const newCollection = reset ? joinRequests : [...this._expenseJoinRequests$.value, ...joinRequests];
+
         this._expenseJoinRequests$.next(newCollection.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime()));
     }
 

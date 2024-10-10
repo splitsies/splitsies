@@ -1,7 +1,17 @@
 {
-    "expense": "https://ijdka0fcqg.execute-api.us-east-1.amazonaws.com/dev/expenses",
-    "expenseSocket": "wss://i1nnpdkz89.execute-api.us-east-1.amazonaws.com/dev",
-    "users": "https://rrysmys7f2.execute-api.us-east-1.amazonaws.com/dev/users",
-    "ocr": "https://96kkqcs4ok.execute-api.us-east-1.amazonaws.com/dev/",
-    "notification": "https://p1u04796od.execute-api.us-east-1.amazonaws.com/dev/"
+
+    "us-west-1": {
+        "expense": "https://h2kgdnsux5.execute-api.us-west-1.amazonaws.com/dev/expenses",
+        "expenseSocket": "wss://d5zp4ez1b3.execute-api.us-west-1.amazonaws.com/dev",
+        "users": "https://lj0z6nm166.execute-api.us-west-1.amazonaws.com/dev/users",
+        "ocr": "https://e12cb1yfk2.execute-api.us-west-1.amazonaws.com/dev/",
+        "notification": "https://l8izz1jcyg.execute-api.us-west-1.amazonaws.com/dev/"
+    },
+    "us-east-1": {
+        "expense": "https://ijdka0fcqg.execute-api.us-east-1.amazonaws.com/dev/expenses",
+        "expenseSocket": "wss://i1nnpdkz89.execute-api.us-east-1.amazonaws.com/dev",
+        "users": "https://rrysmys7f2.execute-api.us-east-1.amazonaws.com/dev/users",
+        "ocr": "https://96kkqcs4ok.execute-api.us-east-1.amazonaws.com/dev/",
+        "notification": "https://p1u04796od.execute-api.us-east-1.amazonaws.com/dev/"
+    }
 }
