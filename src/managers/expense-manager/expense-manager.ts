@@ -193,7 +193,6 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
 
     async requestExpenseJoinRequests(reset = true): Promise<void> {
         if (reset) {
-            console.trace("hello world 2");
             await this.getExpenseJoinRequestCount();
         }
 
@@ -214,7 +213,6 @@ export class ExpenseManager extends BaseManager implements IExpenseManager {
     }
 
     async getExpenseJoinRequestCount(): Promise<void> {
-        console.trace("hello world");
         const count = await this._api.getExpenseJoinRequestCount();
         this._expenseJoinRequestCount$.next(count);
     }
