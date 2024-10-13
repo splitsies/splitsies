@@ -1,7 +1,16 @@
 {
-    "expense": "https://tdi8ue4lj3.execute-api.us-east-1.amazonaws.com/production/expenses",
-    "expenseSocket": "wss://o1bk5shwae.execute-api.us-east-1.amazonaws.com/production",
-    "users": "https://g882ndqc41.execute-api.us-east-1.amazonaws.com/production/users",
-    "ocr": "https://g5i228tgg4.execute-api.us-east-1.amazonaws.com/production/",
-    "notification": "https://y7m209z0wc.execute-api.us-east-1.amazonaws.com/production/"
+    "us-east-1": {
+        "expense": "https://7ewqwli6w0.execute-api.us-east-1.amazonaws.com/production/expenses",
+        "expenseSocket": "wss://bybk9vinge.execute-api.us-east-1.amazonaws.com/production",
+        "users": "https://zfdrd5djsk.execute-api.us-east-1.amazonaws.com/production/users",
+        "ocr": "https://2sgpqafik9.execute-api.us-east-1.amazonaws.com/production/",
+        "notification": "https://swnu42vndf.execute-api.us-east-1.amazonaws.com/production/"
+    },
+    "us-west-1": {
+        "expense": "https://emov8petcg.execute-api.us-west-1.amazonaws.com/production/expenses",
+        "expenseSocket": "wss://4ifo4v6qka.execute-api.us-west-1.amazonaws.com/production",
+        "users": "https://1fvbhudand.execute-api.us-west-1.amazonaws.com/production/users",
+        "ocr": "https://c1o5owl3y4.execute-api.us-west-1.amazonaws.com/production/",
+        "notification": "https://qjzoabfxta.execute-api.us-west-1.amazonaws.com/production/"
+    }
 }

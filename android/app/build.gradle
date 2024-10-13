@@ -80,8 +80,8 @@ android {
         applicationId "com.kchen.Splitsies"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 25
-        versionName "1.4.2"
+        versionCode 27
+        versionName "1.4.3"
         resValue "string", "build_config_package", "com.kchen.Splitsies"
     }
     signingConfigs {

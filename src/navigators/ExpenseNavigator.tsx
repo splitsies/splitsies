@@ -98,8 +98,8 @@ const InternalExpenseNavigator = SpThemedComponent((_: Props) => {
                 message:
                     Platform.OS === "ios"
                         ? `Hello! Let's go Splitsies on ${_expenseManager.currentExpense?.name}, click the link the join.\n`
-                        : `splitsies://expenses/${_expenseManager.currentExpense?.id}/${_userManager.userId}`,
-                url: `splitsies://expenses/${_expenseManager.currentExpense?.id}/${_userManager.userId}`,
+                        : `https://splitsiesapp.com/expenses/${_expenseManager.currentExpense?.id}/${_userManager.userId}`,
+                url: `https://splitsiesapp.com/expenses/${_expenseManager.currentExpense?.id}/${_userManager.userId}`,
                 title: "`Hello! Let's go Splitsies on ${_expenseManager.currentExpense?.name}, click the link the join.`",
             },
             {

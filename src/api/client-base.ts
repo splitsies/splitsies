@@ -26,77 +26,104 @@ export abstract class ClientBase extends BaseManager {
     }
 
     async get<T>(url: string, headers: any = {}): Promise<IDataResponse<T>> {
-        const response = await fetch(url, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-                ...headers,
-            },
-        });
-
-        const dataResponse = await response.json();
-
-        if (!dataResponse.success) {
-            console.error(`endpoint = ${url}, response - ${JSON.stringify(response, null, 2)}`);
-            throw new Error(dataResponse.data);
-        }
-
-        return this.parseResponse(dataResponse);
+        return await this.runWithExponentialBackoff(
+            () =>
+                fetch(url, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...headers,
+                    },
+                }),
+            url,
+        );
     }
 
     async postJson<T>(url: string, body: any = {}, headers: any = {}): Promise<IDataResponse<T>> {
-        const response = await fetch(url, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                ...headers,
-            },
-            body: JSON.stringify(body),
-        });
-
-        const dataResponse = await response.json();
-
-        if (!dataResponse.success) {
-            console.error(`endpoint = ${url}, response - ${JSON.stringify(response, null, 2)}`);
-            throw new Error(dataResponse.data);
-        }
-
-        return this.parseResponse(dataResponse);
+        return await this.runWithExponentialBackoff(
+            () =>
+                fetch(url, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...headers,
+                    },
+                    body: JSON.stringify(body),
+                }),
+            url,
+        );
     }
 
     async putJson<T>(url: string, body: any = {}, headers: any = {}): Promise<IDataResponse<T>> {
-        const response = await fetch(url, {
-            method: "PUT",
-            headers: {
-                "Content-Type": "application/json",
-                ...headers,
-            },
-            body: JSON.stringify(body),
-        });
-
-        const dataResponse = await response.json();
-
-        if (!dataResponse.success) {
-            console.error(`endpoint = ${url}, response - ${JSON.stringify(response, null, 2)}`);
-            throw new Error(dataResponse.data);
-        }
-
-        return this.parseResponse(dataResponse);
+        return await this.runWithExponentialBackoff(
+            () =>
+                fetch(url, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        ...headers,
+                    },
+                    body: JSON.stringify(body),
+                }),
+            url,
+        );
     }
 
     async delete(url: string, headers: any = {}): Promise<void> {
-        const response = await fetch(url, {
-            method: "DELETE",
-            headers: {
-                ...headers,
-            },
-        });
+        await this.runWithExponentialBackoff(
+            () =>
+                fetch(url, {
+                    method: "DELETE",
+                    headers: {
+                        ...headers,
+                    },
+                }),
+            url,
+        );
+    }
 
-        const dataResponse = await response.json();
+    private async runWithExponentialBackoff<T>(
+        request: () => Promise<Response>,
+        endpoint: string,
+    ): Promise<IDataResponse<T>> {
+        const maxRetries = 5;
+        const baseWaitTimeMs = 50;
 
-        if (!dataResponse.success) {
-            console.error(`DELETE endpoint = ${url}, response - ${JSON.stringify(response, null, 2)}`);
-            throw new Error();
+        let response: Response | undefined = undefined;
+        let dataResponse: IDataResponse<T> | undefined = undefined;
+        let retries = 0;
+
+        do {
+            try {
+                response = await request();
+            } catch (e) {
+                console.error(`error on fetch. url=${endpoint}`, e);
+                throw e;
+            }
+
+            if ((response.headers as unknown as any)?.map?.["x-amzn-errortype"] && response.status === 500) {
+                // Could be rate limiting errors - need to dig in to how to change
+                // APIGW response from a proxy integration error status code
+                const requestCooldownMs = baseWaitTimeMs * 2 ** retries;
+                await new Promise<void>((res) => setTimeout(() => res(), requestCooldownMs));
+                console.log(`Hitting ${endpoint} again after ${requestCooldownMs}. Retries=${retries++}`, response);
+                continue;
+            }
+
+            const parsedResponse = await response.json();
+            if (!parsedResponse.success) {
+                console.error(`endpoint = ${endpoint}, response - ${JSON.stringify(response, null, 2)}`);
+                throw new Error(parsedResponse.data);
+            }
+
+            dataResponse = this.parseResponse(parsedResponse);
+        } while (dataResponse === undefined && retries <= maxRetries);
+
+        if (dataResponse) {
+            return dataResponse;
         }
+
+        console.error(`endpoint = ${endpoint} failed after ${maxRetries} retries`);
+        throw new Error();
     }
 }
